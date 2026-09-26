@@ -3703,23 +3703,12 @@ function limpiarConsistencia(){
 }
 
 // ── SINCRONIZACIÓN CON SUPABASE ───────────────────────────────────────────────
+// Solo guarda a Supabase, NO carga automáticamente para no sobreescribir datos locales
 (async ()=>{
   const ind = document.getElementById('sync-indicator');
-  if(ind){ ind.textContent='☁️ Sincronizando...'; ind.style.color='var(--accent)'; }
-  const ok = await cargarDesdeSupabase();
-  if(ok){
-    motos       = JSON.parse(localStorage.getItem(KEY_MOTOS)  ||'[]');
-    movimientos = JSON.parse(localStorage.getItem(KEY_MOVS)   ||'[]');
-    ventas      = JSON.parse(localStorage.getItem(KEY_VENTAS) ||'[]');
-    carros      = JSON.parse(localStorage.getItem(KEY_CARROS) ||'[]');
-    try{ contactos=JSON.parse(localStorage.getItem('mc_contactos_v1')||'[]'); }catch(e){}
-    try{ metas   =JSON.parse(localStorage.getItem('mc_metas_v1')    ||'[]'); }catch(e){}
-    limpiarConsistencia();
-    renderResumen();
-  }
-  if(ind){ ind.textContent=ok?'☁️ Sincronizado':'☁️ Sin conexión'; ind.style.color=ok?'var(--green)':'var(--text3)';
-    setTimeout(()=>{ if(ind) ind.textContent='☁️ Nube'; ind.style.color='var(--text3)'; },3000);
-  }
+  if(ind){ ind.textContent='☁️ Nube'; ind.style.color='var(--text3)'; }
+  // Subir datos locales a Supabase al iniciar
+  guardarEnSupabase();
 })();
 document.querySelectorAll('.nav-item').forEach((el,i)=>{
   el.addEventListener('click',()=>{ if(i===5) document.getElementById('nm-edit-id').value=''; });
