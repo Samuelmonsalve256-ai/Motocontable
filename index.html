@@ -2943,36 +2943,33 @@ function importarDatos(input){
     try {
       const data = JSON.parse(e.target.result);
 
-      // Validar que es un backup de MotoContable
       if(data.app !== 'MotoContable'){
-        if(status){ status.style.display='block'; status.style.color='var(--red)'; status.textContent='❌ Este archivo no es un backup válido de MotoContable.'; }
+        if(status){ status.style.display='block'; status.style.color='var(--red)'; status.textContent='❌ Archivo no válido de MotoContable.'; }
         return;
       }
 
-      confirm2('Importar backup',
-        `¿Importar backup del ${new Date(data.fecha).toLocaleDateString('es-CO')}? Esto reemplaza TODOS tus datos actuales.`,
-        ()=>{
-          // Restaurar todos los datos
-          if(data.motos)       localStorage.setItem('mc_motos_v3',       JSON.stringify(data.motos));
-          if(data.movimientos) localStorage.setItem('mc_movs_v3',        JSON.stringify(data.movimientos));
-          if(data.ventas)      localStorage.setItem('mc_ventas_v3',      JSON.stringify(data.ventas));
-          if(data.carros)      localStorage.setItem('mc_carros_v1',      JSON.stringify(data.carros));
-          if(data.contactos)   localStorage.setItem('mc_contactos_v1',   JSON.stringify(data.contactos));
-          if(data.metas)       localStorage.setItem('mc_metas_v1',       JSON.stringify(data.metas));
-          if(data.config)      localStorage.setItem('mc_config',         JSON.stringify(data.config));
+      // Restaurar todos los datos directamente sin confirm2
+      if(data.motos)       localStorage.setItem('mc_motos_v3',       JSON.stringify(data.motos));
+      if(data.movimientos) localStorage.setItem('mc_movs_v3',        JSON.stringify(data.movimientos));
+      if(data.ventas)      localStorage.setItem('mc_ventas_v3',      JSON.stringify(data.ventas));
+      if(data.carros)      localStorage.setItem('mc_carros_v1',      JSON.stringify(data.carros));
+      if(data.contactos)   localStorage.setItem('mc_contactos_v1',   JSON.stringify(data.contactos));
+      if(data.metas)       localStorage.setItem('mc_metas_v1',       JSON.stringify(data.metas));
+      if(data.config)      localStorage.setItem('mc_config',         JSON.stringify(data.config));
 
-          if(status){ status.style.display='block'; status.style.color='var(--green)'; status.textContent='✅ Datos importados correctamente. Recargando...'; }
+      // Subir a Supabase
+      guardarEnSupabase();
 
-          // Recargar para aplicar todo
-          setTimeout(()=>window.location.reload(), 1200);
-        }
-      );
+      if(status){ status.style.display='block'; status.style.color='var(--green)'; status.textContent='✅ Datos restaurados. Recargando...'; }
+
+      setTimeout(()=>window.location.reload(), 1500);
+
     } catch(err){
-      if(status){ status.style.display='block'; status.style.color='var(--red)'; status.textContent='❌ Error al leer el archivo. Asegúrate de que sea un JSON válido.'; }
+      if(status){ status.style.display='block'; status.style.color='var(--red)'; status.textContent='❌ Error al leer el archivo.'; }
+      console.log('Import error:', err);
     }
   };
   reader.readAsText(file);
-  // Reset input
   input.value='';
 }
 
