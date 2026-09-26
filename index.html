@@ -3721,18 +3721,67 @@ async function sincronizarAhora(){
     };
     const {error} = await _supa.from('mc_datos').upsert(payload);
     if(error) throw error;
-    if(ind){ ind.textContent='☁️ Guardado ✓'; ind.style.color='var(--green)'; 
+    if(ind){ ind.textContent='☁️ Guardado ✓'; ind.style.color='var(--green)';
       setTimeout(()=>{ if(ind){ind.textContent='☁️ Nube';ind.style.color='var(--text3)';} },3000); }
     toast('✅ Datos sincronizados con la nube');
   } catch(e){
     if(ind){ ind.textContent='☁️ Error'; ind.style.color='var(--red)'; }
-    toast('❌ Error al sincronizar: '+e.message, 'err');
     console.log('Sync error:', e);
   }
 }
 
-// Sincronizar al iniciar
-sincronizarAhora();
+async function cargarYRenderizar(){
+  const ind = document.getElementById('sync-indicator');
+  if(ind){ ind.textContent='☁️ Cargando...'; ind.style.color='var(--accent)'; }
+  try {
+    if(!_supa) throw new Error('Sin Supabase');
+    const {data, error} = await _supa.from('mc_datos').select('*').eq('id','principal').single();
+    if(error || !data) throw new Error('Sin datos en nube');
+
+    // Solo cargar si Supabase tiene datos
+    const motosNube = data.motos || [];
+    const ventasNube = data.ventas || [];
+    const totalNube = motosNube.length + ventasNube.length + (data.carros||[]).length;
+    const totalLocal = motos.length + ventas.length + carros.length;
+
+    // Cargar desde Supabase si tiene más datos O si local está vacío
+    if(totalNube > 0 && totalNube >= totalLocal){
+      localStorage.setItem(KEY_MOTOS,  JSON.stringify(data.motos       ||[]));
+      localStorage.setItem(KEY_MOVS,   JSON.stringify(data.movimientos ||[]));
+      localStorage.setItem(KEY_VENTAS, JSON.stringify(data.ventas      ||[]));
+      localStorage.setItem(KEY_CARROS, JSON.stringify(data.carros      ||[]));
+      localStorage.setItem('mc_contactos_v1', JSON.stringify(data.contactos||[]));
+      localStorage.setItem('mc_metas_v1',     JSON.stringify(data.metas    ||[]));
+      if(data.config) localStorage.setItem('mc_config', JSON.stringify(data.config));
+
+      // Recargar variables en memoria
+      motos       = JSON.parse(localStorage.getItem(KEY_MOTOS)  ||'[]');
+      movimientos = JSON.parse(localStorage.getItem(KEY_MOVS)   ||'[]');
+      ventas      = JSON.parse(localStorage.getItem(KEY_VENTAS) ||'[]');
+      carros      = JSON.parse(localStorage.getItem(KEY_CARROS) ||'[]');
+      try{ contactos=JSON.parse(localStorage.getItem('mc_contactos_v1')||'[]'); }catch(e){}
+      try{ metas   =JSON.parse(localStorage.getItem('mc_metas_v1')    ||'[]'); }catch(e){}
+
+      limpiarConsistencia();
+      renderResumen();
+    } else if(totalLocal > 0){
+      // Local tiene más datos — subir a Supabase
+      sincronizarAhora();
+      return;
+    }
+
+    if(ind){ ind.textContent='☁️ Sincronizado ✓'; ind.style.color='var(--green)';
+      setTimeout(()=>{ if(ind){ind.textContent='☁️ Nube';ind.style.color='var(--text3)';} },3000); }
+  } catch(e){
+    // Sin nube — usar datos locales y subir
+    if(motos.length>0 || ventas.length>0) sincronizarAhora();
+    if(ind){ ind.textContent='☁️ Local'; ind.style.color='var(--text3)'; }
+    console.log('Load error:', e);
+  }
+}
+
+// Al iniciar — cargar desde Supabase
+cargarYRenderizar();
 document.querySelectorAll('.nav-item').forEach((el,i)=>{
   el.addEventListener('click',()=>{ if(i===5) document.getElementById('nm-edit-id').value=''; });
 });
