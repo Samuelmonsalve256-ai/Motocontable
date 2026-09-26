@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MotoContable – Control Financiero</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 // ── CONTACTOS ─────────────────────────────────────────────────────────────────
 const MC_CONTACTOS_KEY = 'mc_contactos_v1';
 let contactos = [];
@@ -170,7 +171,7 @@ function seleccionarContacto(id){
 const MC_METAS_KEY = 'mc_metas_v1';
 let metas = [];
 try{ metas = JSON.parse(localStorage.getItem(MC_METAS_KEY)||'[]'); }catch(e){ metas=[]; }
-function saveMetas(){ localStorage.setItem(MC_METAS_KEY, JSON.stringify(metas)); }
+function saveMetas(){ localStorage.setItem(MC_METAS_KEY, JSON.stringify(metas)); guardarEnSupabase(); }
 
 function setTipoMeta(tipo){
   document.getElementById('m-tipo-val').value = tipo;
@@ -1184,7 +1185,7 @@ textarea{resize:vertical;min-height:65px}
     <div class="nav-item" onclick="go('contactos')"><span class="nav-ico">👥</span>Contactos<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('ajustes')"><span class="nav-ico">🎨</span>Personalizar paneles<div class="nav-dot" style="margin-left:auto"></div></div>
   </nav>
-  <div class="sidebar-footer"><p>Datos guardados en tu navegador.</p></div>
+  <div class="sidebar-footer"><p>Datos guardados en tu navegador.</p><div id="sync-indicator" style="font-size:11px;color:var(--text3);margin-top:2px">☁️ Nube</div></div>
 </div>
 
 <!-- MAIN -->
@@ -1749,6 +1750,52 @@ textarea{resize:vertical;min-height:65px}
 </div>
 
 <script>
+// ── SUPABASE CONFIG ────────────────────────────────────────────────────────────
+const SUPA_URL = 'https://llyovzgwdqoeunvyczcy.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxseW92emd3ZHFvZXVudnljemN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MzUzNjcsImV4cCI6MjEwNjAxMTM2N30.g1DgUdTGPHDz8HEI1Kgv4SOJ13zyOwOfcAp8Ak2BRGQ';
+let _supa = null;
+let _syncTimer = null;
+try { _supa = supabase.createClient(SUPA_URL, SUPA_KEY); } catch(e){}
+
+async function cargarDesdeSupabase(){
+  if(!_supa) return false;
+  try {
+    const {data, error} = await _supa.from('mc_datos').select('*').eq('id','principal').single();
+    if(error || !data) return false;
+    if(data.motos)       localStorage.setItem('mc_motos_v3',       JSON.stringify(data.motos));
+    if(data.movimientos) localStorage.setItem('mc_movs_v3',        JSON.stringify(data.movimientos));
+    if(data.ventas)      localStorage.setItem('mc_ventas_v3',      JSON.stringify(data.ventas));
+    if(data.carros)      localStorage.setItem('mc_carros_v1',      JSON.stringify(data.carros));
+    if(data.contactos)   localStorage.setItem('mc_contactos_v1',   JSON.stringify(data.contactos));
+    if(data.metas)       localStorage.setItem('mc_metas_v1',       JSON.stringify(data.metas));
+    if(data.config)      localStorage.setItem('mc_config',         JSON.stringify(data.config));
+    return true;
+  } catch(e){ return false; }
+}
+
+async function guardarEnSupabase(){
+  if(!_supa) return;
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(async ()=>{
+    try {
+      await _supa.from('mc_datos').upsert({
+        id:          'principal',
+        motos:       JSON.parse(localStorage.getItem('mc_motos_v3')    ||'[]'),
+        movimientos: JSON.parse(localStorage.getItem('mc_movs_v3')     ||'[]'),
+        ventas:      JSON.parse(localStorage.getItem('mc_ventas_v3')   ||'[]'),
+        carros:      JSON.parse(localStorage.getItem('mc_carros_v1')   ||'[]'),
+        contactos:   JSON.parse(localStorage.getItem('mc_contactos_v1')||'[]'),
+        metas:       JSON.parse(localStorage.getItem('mc_metas_v1')    ||'[]'),
+        config:      JSON.parse(localStorage.getItem('mc_config')      ||'{}'),
+        updated_at:  new Date().toISOString()
+      });
+      const ind=document.getElementById('sync-indicator');
+      if(ind){ind.textContent='☁️ Guardado';ind.style.color='var(--green)';
+        setTimeout(()=>{ind.textContent='☁️ Nube';ind.style.color='var(--text3)';},2000);}
+    } catch(e){}
+  }, 2000);
+}
+
 // ── DATA ──────────────────────────────────────────────────────────────────────
 const KEY_MOTOS  = 'mc_motos_v3';
 const KEY_MOVS   = 'mc_movs_v3';
@@ -1760,10 +1807,10 @@ let movimientos = JSON.parse(localStorage.getItem(KEY_MOVS)   || '[]');
 let ventas      = JSON.parse(localStorage.getItem(KEY_VENTAS) || '[]');
 let carros      = JSON.parse(localStorage.getItem(KEY_CARROS) || '[]');
 
-const saveMotos  = () => localStorage.setItem(KEY_MOTOS,  JSON.stringify(motos));
-const saveMovs   = () => localStorage.setItem(KEY_MOVS,   JSON.stringify(movimientos));
-const saveVentas = () => localStorage.setItem(KEY_VENTAS, JSON.stringify(ventas));
-const saveCarros = () => localStorage.setItem(KEY_CARROS, JSON.stringify(carros));
+const saveMotos  = () => { localStorage.setItem(KEY_MOTOS,  JSON.stringify(motos));  guardarEnSupabase(); };
+const saveMovs   = () => { localStorage.setItem(KEY_MOVS,   JSON.stringify(movimientos)); guardarEnSupabase(); };
+const saveVentas = () => { localStorage.setItem(KEY_VENTAS, JSON.stringify(ventas)); guardarEnSupabase(); };
+const saveCarros = () => { localStorage.setItem(KEY_CARROS, JSON.stringify(carros)); guardarEnSupabase(); };
 
 // ── HELPERS TIPO VEHÍCULO ─────────────────────────────────────────────────────
 function nomVeh(tipo, forma='singular'){
@@ -4310,6 +4357,26 @@ function confirmarElimCarro(id){
 }
 renderResumen();
 aplicarConfigInicial();
+
+// ── SINCRONIZACIÓN CON SUPABASE ───────────────────────────────────────────────
+(async ()=>{
+  const ind = document.getElementById('sync-indicator');
+  if(ind){ ind.textContent='☁️ Sincronizando...'; ind.style.color='var(--accent)'; }
+  const ok = await cargarDesdeSupabase();
+  if(ok){
+    motos       = JSON.parse(localStorage.getItem(KEY_MOTOS)  ||'[]');
+    movimientos = JSON.parse(localStorage.getItem(KEY_MOVS)   ||'[]');
+    ventas      = JSON.parse(localStorage.getItem(KEY_VENTAS) ||'[]');
+    carros      = JSON.parse(localStorage.getItem(KEY_CARROS) ||'[]');
+    try{ contactos=JSON.parse(localStorage.getItem('mc_contactos_v1')||'[]'); }catch(e){}
+    try{ metas   =JSON.parse(localStorage.getItem('mc_metas_v1')    ||'[]'); }catch(e){}
+    limpiarConsistencia();
+    renderResumen();
+  }
+  if(ind){ ind.textContent=ok?'☁️ Sincronizado':'☁️ Sin conexión'; ind.style.color=ok?'var(--green)':'var(--text3)';
+    setTimeout(()=>{ if(ind) ind.textContent='☁️ Nube'; ind.style.color='var(--text3)'; },3000);
+  }
+})();
 document.querySelectorAll('.nav-item').forEach((el,i)=>{
   el.addEventListener('click',()=>{ if(i===5) document.getElementById('nm-edit-id').value=''; });
 });
@@ -4776,7 +4843,7 @@ function seleccionarContacto(id){
 const MC_METAS_KEY = 'mc_metas_v1';
 let metas = [];
 try{ metas = JSON.parse(localStorage.getItem(MC_METAS_KEY)||'[]'); }catch(e){ metas=[]; }
-function saveMetas(){ localStorage.setItem(MC_METAS_KEY, JSON.stringify(metas)); }
+function saveMetas(){ localStorage.setItem(MC_METAS_KEY, JSON.stringify(metas)); guardarEnSupabase(); }
 
 function setTipoMeta(tipo){
   document.getElementById('m-tipo-val').value = tipo;
