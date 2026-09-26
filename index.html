@@ -3694,6 +3694,17 @@ function confirmarElimCarro(id){
 renderResumen();
 aplicarConfigInicial();
 
+// ── LIMPIEZA DE CONSISTENCIA ──────────────────────────────────────────────────
+function limpiarConsistencia(){
+  const idsEnVentas = new Set(ventas.map(v=>v.vehiculoId).filter(Boolean));
+  const motosAntes  = motos.length;
+  const carrosAntes = carros.length;
+  motos  = motos.filter(m=>!idsEnVentas.has(m.id));
+  carros = carros.filter(c=>!idsEnVentas.has(c.id));
+  if(motos.length  !== motosAntes)  saveMotos();
+  if(carros.length !== carrosAntes) saveCarros();
+}
+
 // ── SINCRONIZACIÓN CON SUPABASE ───────────────────────────────────────────────
 (async ()=>{
   const ind = document.getElementById('sync-indicator');
