@@ -521,7 +521,7 @@ textarea{resize:vertical;min-height:65px}
     <div class="nav-item" onclick="go('contactos')"><span class="nav-ico">👥</span>Contactos<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('ajustes')"><span class="nav-ico">🎨</span>Personalizar paneles<div class="nav-dot" style="margin-left:auto"></div></div>
   </nav>
-  <div class="sidebar-footer"><p>Datos guardados en tu navegador.</p><div id="sync-indicator" style="font-size:11px;color:var(--text3);margin-top:2px">☁️ Nube</div></div>
+  <div class="sidebar-footer"><p>Datos guardados en tu navegador.</p><div id="sync-indicator" style="font-size:11px;color:var(--text3);margin-top:2px;cursor:pointer" onclick="sincronizarAhora()" title="Toca para sincronizar">☁️ Nube</div></div>
 </div>
 
 <!-- MAIN -->
@@ -3703,13 +3703,36 @@ function limpiarConsistencia(){
 }
 
 // ── SINCRONIZACIÓN CON SUPABASE ───────────────────────────────────────────────
-// Solo guarda a Supabase, NO carga automáticamente para no sobreescribir datos locales
-(async ()=>{
+async function sincronizarAhora(){
   const ind = document.getElementById('sync-indicator');
-  if(ind){ ind.textContent='☁️ Nube'; ind.style.color='var(--text3)'; }
-  // Subir datos locales a Supabase al iniciar
-  guardarEnSupabase();
-})();
+  if(ind){ ind.textContent='☁️ Subiendo...'; ind.style.color='var(--accent)'; }
+  try {
+    if(!_supa) throw new Error('Sin conexión');
+    const payload = {
+      id:          'principal',
+      motos:       JSON.parse(localStorage.getItem(KEY_MOTOS)          ||'[]'),
+      movimientos: JSON.parse(localStorage.getItem(KEY_MOVS)           ||'[]'),
+      ventas:      JSON.parse(localStorage.getItem(KEY_VENTAS)         ||'[]'),
+      carros:      JSON.parse(localStorage.getItem(KEY_CARROS)         ||'[]'),
+      contactos:   JSON.parse(localStorage.getItem('mc_contactos_v1') ||'[]'),
+      metas:       JSON.parse(localStorage.getItem('mc_metas_v1')     ||'[]'),
+      config:      JSON.parse(localStorage.getItem('mc_config')        ||'{}'),
+      updated_at:  new Date().toISOString()
+    };
+    const {error} = await _supa.from('mc_datos').upsert(payload);
+    if(error) throw error;
+    if(ind){ ind.textContent='☁️ Guardado ✓'; ind.style.color='var(--green)'; 
+      setTimeout(()=>{ if(ind){ind.textContent='☁️ Nube';ind.style.color='var(--text3)';} },3000); }
+    toast('✅ Datos sincronizados con la nube');
+  } catch(e){
+    if(ind){ ind.textContent='☁️ Error'; ind.style.color='var(--red)'; }
+    toast('❌ Error al sincronizar: '+e.message, 'err');
+    console.log('Sync error:', e);
+  }
+}
+
+// Sincronizar al iniciar
+sincronizarAhora();
 document.querySelectorAll('.nav-item').forEach((el,i)=>{
   el.addEventListener('click',()=>{ if(i===5) document.getElementById('nm-edit-id').value=''; });
 });
