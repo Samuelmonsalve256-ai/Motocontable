@@ -1173,7 +1173,13 @@ let _mcSesion      = null;   // sesión de Supabase Auth
 let _mcEstado      = null;   // {userId, cursor, sombra:{'col|id':{v,h,d,c}}}
 let _mcSync        = null;   // promesa de la sincronización en curso
 let _mcRepetir     = false;
-let _mcTimer       = null;
+let _mcTimer       = null;   // espera antes de enviar (agrupa cambios seguidos)
+let _mcPrimerCambio = 0;     // hora del primer cambio aún no enviado
+let _mcTimerRemoto = null;
+// Guardado automático: se envía 1,2 s después del último cambio, y nunca más de 5 s
+// después del primero aunque sigas haciendo cambios.
+const MC_ESPERA_GUARDADO = 1200;
+const MC_ESPERA_MAXIMA   = 5000;
 let _mcReintento   = null;
 let _mcFallos      = 0;
 let _mcCanal       = null;
@@ -1480,10 +1486,11 @@ async function mcReconciliar(){
 function mcSincronizar(motivo, opciones){
   if(!_supa || !_mcSesion || !_mcEstadoListo || !_mcEstado || _mcMigrando) { mcActualizarIndicador(); return Promise.resolve(false); }
   if(_mcSync){ _mcRepetir = true; return _mcSync; }
+  if(!navigator.onLine){ mcActualizarIndicador(); return Promise.resolve(false); }
   _mcSync = (async ()=>{
     let ok = false;
     try {
-      mcIndicador('sincronizando');
+      mcActualizarIndicador();
       const sucias = _mcEstado.sucias || [];
       if(sucias.length) await mcTraerCambios(0, f=>sucias.includes(f.coleccion));
       else if(opciones && opciones.reconciliar && await mcReconciliar()) await mcTraerCambios(0);
@@ -1494,6 +1501,8 @@ function mcSincronizar(motivo, opciones){
     } catch(e){
       console.log('Error de sincronización ('+motivo+'):', e);
       _mcFallos++;
+      if(_mcFallos===1 && mcCalcularPendientes().length)
+        toast('No se pudo guardar en la nube. Tus cambios están a salvo en este dispositivo y se reintentará automáticamente', 'err');
       if(e && (e.code==='42501' || e.status===401 || /JWT|sesi/i.test(e.message||''))){
         const {data} = await _supa.auth.getSession();
         if(!data || !data.session){ _mcSesion = null; mcMostrarLogin('login'); }
@@ -1503,7 +1512,7 @@ function mcSincronizar(motivo, opciones){
       _mcReintento = setTimeout(()=>mcSincronizar('reintento'), espera);
     } finally {
       _mcSync = null;
-      mcActualizarIndicador(ok ? null : 'error');
+      mcActualizarIndicador();
       if(_mcRepetir){ _mcRepetir = false; setTimeout(()=>mcSincronizar('repetir'), 0); }
     }
     return ok;
@@ -1511,15 +1520,23 @@ function mcSincronizar(motivo, opciones){
   return _mcSync;
 }
 
-// Lo llaman todas las funciones de guardado. Agrupa los guardados de una misma acción
-// (por ejemplo, una venta guarda motos y ventas) en un solo envío.
+// Lo llaman todas las funciones de guardado (motos, movimientos, ventas, carros,
+// contactos, metas y personalización). Los cambios seguidos se agrupan en un solo envío.
 function mcMarcarCambios(col){
   if(col) mcColLimpia(col);
+  const ahora = Date.now();
+  if(!_mcPrimerCambio) _mcPrimerCambio = ahora;
   clearTimeout(_mcTimer);
-  _mcTimer = setTimeout(()=>{
-    if(_mcSesion && _mcEstadoListo) mcSincronizar('guardado');
-    else mcActualizarIndicador();
-  }, 50);
+  const espera = Math.max(0, Math.min(MC_ESPERA_GUARDADO, _mcPrimerCambio + MC_ESPERA_MAXIMA - ahora));
+  _mcTimer = setTimeout(()=>mcGuardarAhora('guardado'), espera);
+  mcActualizarIndicador();
+}
+// Envía ya lo pendiente, sin esperar (al ocultar la app, al volver internet, etc.)
+function mcGuardarAhora(motivo){
+  clearTimeout(_mcTimer); _mcTimer = null; _mcPrimerCambio = 0;
+  if(_mcSesion && _mcEstadoListo) return mcSincronizar(motivo || 'guardado');
+  mcActualizarIndicador();
+  return Promise.resolve(false);
 }
 function guardarEnSupabase(){ mcMarcarCambios(); }
 
@@ -1551,28 +1568,28 @@ function mcEnvioDeEmergencia(){
 function mcIndicador(estado, n){
   const ind = document.getElementById('sync-indicator');
   if(!ind) return;
+  const cambios = n===1 ? '1 cambio' : n+' cambios';
   const e = {
-    'guardado':      ['☁️ Guardado ✓',           'var(--green)'],
-    'pendiente':     ['☁️ Pendiente ('+n+')',     'var(--amber)'],
-    'sincronizando': ['☁️ Sincronizando...',      'var(--accent)'],
-    'sin-conexion':  ['☁️ Sin conexión',          'var(--amber)'],
-    'sin-sesion':    ['☁️ Sin sesión',            'var(--amber)'],
-    'error':         ['☁️ Error — toca para reintentar', 'var(--red)'],
-    'pendiente-error': ['☁️ Pendiente ('+n+') — toca para reintentar', 'var(--red)'],
-    'cargando':      ['☁️ Cargando...',           'var(--accent)'],
-  }[estado] || ['☁️ Nube','var(--text3)'];
-  ind.textContent = e[0]; ind.style.color = e[1];
+    'guardando':     ['☁️ Guardando…',                                  'var(--accent)', 'Enviando tus cambios a la nube'],
+    'guardado':      ['☁️ Guardado en la nube',                         'var(--green)',  'Todo está guardado en la nube. Toca para sincronizar ahora'],
+    'error':         ['☁️ Error al guardar — toca para reintentar',     'var(--red)',    cambios+' guardado(s) solo en este dispositivo. Se reintentará automáticamente'],
+    'sin-nube':      ['☁️ Sin conexión con la nube — toca para reintentar', 'var(--amber)', 'Tus datos ya están guardados; no se pudieron traer cambios de otros dispositivos'],
+    'sin-conexion':  [n ? '☁️ Sin conexión — '+cambios+' en este dispositivo' : '☁️ Sin conexión',
+                                                                        'var(--amber)',  'Se guardarán en la nube automáticamente cuando vuelva internet'],
+    'sin-sesion':    ['☁️ Sin sesión',                                  'var(--amber)',  'Toca para iniciar sesión y guardar en la nube'],
+    'cargando':      ['☁️ Cargando…',                                   'var(--accent)', ''],
+  }[estado] || ['☁️ Nube','var(--text3)',''];
+  ind.textContent = e[0]; ind.style.color = e[1]; ind.title = e[2];
 }
-function mcActualizarIndicador(forzado){
+function mcActualizarIndicador(){
   let n = 0;
   try { n = _mcEstado ? mcCalcularPendientes().length : 0; } catch(e){}
-  if(!_supa)                  mcIndicador('sin-conexion');
-  else if(!_mcSesion || !_mcEstadoListo) mcIndicador(_mcMigrando ? 'sincronizando' : 'sin-sesion');
-  else if(_mcSync)            mcIndicador('sincronizando');
-  else if(!navigator.onLine)  mcIndicador(n ? 'pendiente' : 'sin-conexion', n);
-  else if(forzado==='error')  mcIndicador(n ? 'pendiente-error' : 'error', n);
-  else if(n)                  mcIndicador('pendiente', n);
-  else                        mcIndicador('guardado');
+  if(!_supa)                              mcIndicador('sin-conexion', n);
+  else if(!_mcSesion || !_mcEstadoListo)  mcIndicador(_mcMigrando ? 'cargando' : 'sin-sesion');
+  else if(!navigator.onLine)              mcIndicador('sin-conexion', n);
+  else if(_mcFallos && !_mcSync)          mcIndicador(n ? 'error' : 'sin-nube', n);
+  else if(n)                              mcIndicador('guardando', n);
+  else                                    mcIndicador('guardado');
   mcActualizarCuenta(n);
 }
 function mcActualizarCuenta(n){
@@ -1853,17 +1870,17 @@ function mcSuscribirTiempoReal(uid){
   try {
     _mcCanal = _supa.channel('mc-registros-' + mcDeviceId)
       .on('postgres_changes', {event:'*', schema:'public', table:'mc_registros', filter:'user_id=eq.'+uid},
-          ()=>{ clearTimeout(_mcTimer); _mcTimer = setTimeout(()=>mcSincronizar('tiempo-real'), 400); })
+          ()=>{ clearTimeout(_mcTimerRemoto); _mcTimerRemoto = setTimeout(()=>mcSincronizar('tiempo-real'), 400); })
       .subscribe();
   } catch(e){ console.log('Tiempo real no disponible:', e); }
 }
 function mcRegistrarEventos(){
   if(_mcEventosListos) return;
   _mcEventosListos = true;
-  window.addEventListener('online',  ()=>mcSincronizar('online'));
+  window.addEventListener('online',  ()=>{ _mcFallos = 0; mcGuardarAhora('online'); });
   window.addEventListener('offline', ()=>mcActualizarIndicador());
   document.addEventListener('visibilitychange', ()=>{
-    if(document.visibilityState==='hidden') mcSincronizar('oculta');
+    if(document.visibilityState==='hidden') mcGuardarAhora('oculta');
     else mcSincronizar('visible');
   });
   window.addEventListener('pagehide', mcEnvioDeEmergencia);
@@ -1897,7 +1914,7 @@ async function mcIniciar(){
 async function sincronizarAhora(){
   if(!_supa){ toast('Sin conexión con la nube','err'); return; }
   if(!_mcSesion){ mcMostrarLogin('login'); return; }
-  const ok = await mcSincronizar('manual');
+  const ok = await mcGuardarAhora('manual');
   if(ok) toast('✅ Datos sincronizados con la nube');
   else if(!navigator.onLine) toast('Sin conexión: los cambios se enviarán al volver internet','err');
   else toast('No se pudo sincronizar. Se reintentará automáticamente','err');

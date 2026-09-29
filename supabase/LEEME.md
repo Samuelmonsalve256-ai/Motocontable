@@ -141,16 +141,21 @@ Si un archivo muestra un error en rojo, **detente** y guarda el mensaje. No siga
 4. Al terminar muestra un resumen, por ejemplo *"3 subidos, 1 guardado en historial"*.
 5. Repite en cada dispositivo: computador, iPhone, etc.
 
+**Guardado automático:** no hace falta pulsar nada.
+- Cada vez que creas, editas o eliminas una moto, movimiento, venta, carro, contacto, meta o la personalización, la app lo envía sola a la nube.
+- Los cambios seguidos se agrupan: se envían 1,2 segundos después del último, y nunca más de 5 segundos después del primero.
+- El botón de la nube sigue funcionando como respaldo: envía y trae los cambios de inmediato.
+
 **Indicador de la barra lateral:**
 
 | Indicador | Significado |
 |---|---|
-| ☁️ Guardado ✓ | Todo está confirmado en la nube |
-| ☁️ Pendiente (n) | Hay n cambios todavía no confirmados. No borres la caché de ese dispositivo hasta que diga "Guardado" |
-| ☁️ Sin conexión | Sin internet: los cambios se envían solos al volver la conexión |
-| ☁️ Sin sesión | Estás usando la app sin iniciar sesión: los cambios solo quedan en este dispositivo |
-| ☁️ Pendiente (n) — toca para reintentar | Falló el envío de n cambios. La app reintenta sola; también puedes tocar el indicador |
-| ☁️ Error — toca para reintentar | Algo falló. Toca el indicador para reintentar |
+| ☁️ Guardando… | Hay cambios que se están enviando o están por enviarse |
+| ☁️ Guardado en la nube | Todo está confirmado en la nube |
+| ☁️ Error al guardar — toca para reintentar | La nube no respondió. Tus cambios están a salvo en este dispositivo y la app reintenta sola (a los 5 s, 10 s, 20 s… hasta 1 minuto) |
+| ☁️ Sin conexión — n cambios en este dispositivo | Sin internet. Se envían solos cuando vuelva la conexión. No borres la caché de ese dispositivo mientras tanto |
+| ☁️ Sin conexión con la nube — toca para reintentar | Tus datos ya están guardados, pero no se pudieron traer los cambios de otros dispositivos |
+| ☁️ Sin sesión | Estás usando la app sin iniciar sesión: los cambios quedan solo en este dispositivo. Toca para iniciar sesión |
 
 ---
 
