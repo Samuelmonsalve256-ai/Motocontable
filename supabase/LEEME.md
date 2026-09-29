@@ -149,7 +149,8 @@ Si un archivo muestra un error en rojo, **detente** y guarda el mensaje. No siga
 | ☁️ Pendiente (n) | Hay n cambios todavía no confirmados. No borres la caché de ese dispositivo hasta que diga "Guardado" |
 | ☁️ Sin conexión | Sin internet: los cambios se envían solos al volver la conexión |
 | ☁️ Sin sesión | Estás usando la app sin iniciar sesión: los cambios solo quedan en este dispositivo |
-| ☁️ Error | Algo falló. Toca el indicador para reintentar |
+| ☁️ Pendiente (n) — toca para reintentar | Falló el envío de n cambios. La app reintenta sola; también puedes tocar el indicador |
+| ☁️ Error — toca para reintentar | Algo falló. Toca el indicador para reintentar |
 
 ---
 

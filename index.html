@@ -6,7 +6,7 @@
 <title>MotoContable – Control Financiero</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 
 <style>
 :root{
@@ -324,7 +324,7 @@ tr:hover td{background:rgba(42,127,255,.03)}
 .form-group{display:flex;flex-direction:column;gap:5px}
 .form-label{font-size:11.5px;font-weight:600;color:var(--text2);letter-spacing:.02em}
 .form-label span{color:var(--accent)}
-input[type=text],input[type=number],input[type=date],select,textarea{
+input[type=text],input[type=number],input[type=date],input[type=email],input[type=password],select,textarea{
   background:var(--bg3);border:1px solid var(--border);
   border-radius:var(--r);padding:9px 12px;
   color:var(--text);font-family:'Inter',sans-serif;
@@ -521,7 +521,7 @@ textarea{resize:vertical;min-height:65px}
     <div class="nav-item" onclick="go('contactos')"><span class="nav-ico">👥</span>Contactos<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('ajustes')"><span class="nav-ico">🎨</span>Personalizar paneles<div class="nav-dot" style="margin-left:auto"></div></div>
   </nav>
-  <div class="sidebar-footer"><p>Datos guardados en tu navegador.</p><div id="sync-indicator" style="font-size:11px;color:var(--text3);margin-top:2px;cursor:pointer" onclick="sincronizarAhora()" title="Toca para sincronizar">☁️ Nube</div></div>
+  <div class="sidebar-footer"><p id="sync-cuenta">Datos guardados en la nube.</p><div id="sync-indicator" style="font-size:11px;color:var(--text3);margin-top:2px;cursor:pointer" onclick="sincronizarAhora()" title="Toca para sincronizar">☁️ Nube</div></div>
 </div>
 
 <!-- MAIN -->
@@ -949,6 +949,18 @@ textarea{resize:vertical;min-height:65px}
     </div>
   </div>
 
+  <!-- CUENTA Y SINCRONIZACIÓN -->
+  <div class="card">
+    <div class="card-head"><span class="card-head-title">☁️ Cuenta y sincronización</span></div>
+    <div class="card-body">
+      <div id="mc-cuenta-info" style="font-size:13px;color:var(--text2);margin-bottom:.85rem;line-height:1.7"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="sincronizarAhora()">🔄 Sincronizar ahora</button>
+        <button class="btn btn-ghost" id="mc-btn-sesion" onclick="mcBotonSesion()">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+
   <!-- BACKUP Y RESTAURACIÓN -->
   <div class="card">
     <div class="card-head"><span class="card-head-title">💾 Backup y restauración de datos</span></div>
@@ -1071,6 +1083,42 @@ textarea{resize:vertical;min-height:65px}
   <img id="visor-img" src="" alt="" style="max-width:92vw;max-height:92vh;object-fit:contain;border-radius:12px;box-shadow:0 8px 64px rgba(0,0,0,.8)">
 </div>
 
+<!-- INICIO DE SESIÓN -->
+<div id="mc-login" class="modal-hidden" style="position:fixed;inset:0;background:var(--bg);align-items:center;justify-content:center;z-index:900;padding:1rem;overflow-y:auto">
+  <div class="modal" style="width:100%;max-width:380px">
+    <div style="font-size:34px;text-align:center;margin-bottom:.5rem">🏍️</div>
+    <div class="modal-title" id="mc-login-titulo" style="text-align:center">Inicia sesión</div>
+    <div class="modal-sub" id="mc-login-sub" style="text-align:center">Tus datos se guardan en la nube y los verás en cualquier dispositivo.</div>
+    <form id="mc-login-form" onsubmit="event.preventDefault();mcLoginEnviar()">
+      <div class="form-group" id="mc-login-email-g" style="margin-bottom:10px">
+        <label class="form-label" for="mc-login-email">Correo</label>
+        <input type="email" id="mc-login-email" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label" for="mc-login-pass">Contraseña</label>
+        <input type="password" id="mc-login-pass" autocomplete="current-password" required>
+      </div>
+      <div id="mc-login-msg" style="font-size:12px;margin-bottom:10px;display:none;line-height:1.5"></div>
+      <button type="submit" class="btn btn-primary" id="mc-login-btn" style="width:100%;justify-content:center">Iniciar sesión</button>
+    </form>
+    <div id="mc-login-extra" style="display:flex;justify-content:space-between;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button type="button" class="btn btn-ghost btn-sm" onclick="mcLoginOlvide()">¿Olvidaste tu contraseña?</button>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="mcLoginSinSesion()">Continuar sin iniciar sesión</button>
+    </div>
+  </div>
+</div>
+
+<div id="mc-pregunta" class="modal-hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:950;backdrop-filter:blur(4px);padding:1rem">
+  <div class="modal" style="max-width:100%">
+    <div class="modal-title" id="mc-pregunta-titulo"></div>
+    <div class="modal-sub" id="mc-pregunta-texto" style="white-space:pre-line"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="mc-pregunta-no">Cancelar</button>
+      <button class="btn btn-primary" id="mc-pregunta-si">Aceptar</button>
+    </div>
+  </div>
+</div>
+
 <input type="file" accept="image/*" id="foto-input-global" style="display:none">
 <div id="toast"></div>
 
@@ -1090,46 +1138,769 @@ textarea{resize:vertical;min-height:65px}
 const SUPA_URL = 'https://llyovzgwdqoeunvyczcy.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxseW92emd3ZHFvZXVudnljemN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MzUzNjcsImV4cCI6MjEwNjAxMTM2N30.g1DgUdTGPHDz8HEI1Kgv4SOJ13zyOwOfcAp8Ak2BRGQ';
 let _supa = null;
-let _syncTimer = null;
-try { _supa = supabase.createClient(SUPA_URL, SUPA_KEY); } catch(e){}
+try {
+  _supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
+    auth: {
+      persistSession:     true,
+      autoRefreshToken:   true,
+      detectSessionInUrl: true,
+      flowType:           'implicit',
+      storageKey:         'mc-auth'   // todos los proyectos de *.github.io comparten almacenamiento
+    }
+  });
+} catch(e){ console.log('Supabase no disponible:', e); }
 
-async function cargarDesdeSupabase(){
-  if(!_supa) return false;
+// ── SINCRONIZACIÓN CON LA NUBE ────────────────────────────────────────────────
+// La nube (tabla mc_registros) es la fuente principal; localStorage es la copia local.
+// La "sombra" guarda, por registro, la última versión confirmada por la nube y el hash
+// de su contenido. Lo que difiere de la sombra es un cambio pendiente y se envía con
+// mc_push, que rechaza (y guarda en mc_historial) cualquier cambio basado en una
+// versión vieja. Ver supabase/LEEME.md.
+const MC_SYNC_KEY   = 'mc_sync_v1';
+const MC_DEVICE_KEY = 'mc_device_id';
+const MC_COLS = {
+  motos:       {key:'mc_motos_v3',     nuevosAlInicio:true,  get:()=>motos,       set:v=>{ motos=v; }},
+  movimientos: {key:'mc_movs_v3',      nuevosAlInicio:false, get:()=>movimientos, set:v=>{ movimientos=v; }},
+  ventas:      {key:'mc_ventas_v3',    nuevosAlInicio:false, get:()=>ventas,      set:v=>{ ventas=v; }},
+  carros:      {key:'mc_carros_v1',    nuevosAlInicio:true,  get:()=>carros,      set:v=>{ carros=v; }},
+  contactos:   {key:'mc_contactos_v1', nuevosAlInicio:true,  get:()=>contactos,   set:v=>{ contactos=v; }},
+  metas:       {key:'mc_metas_v1',     nuevosAlInicio:true,  get:()=>metas,       set:v=>{ metas=v; }},
+};
+const MC_COLECCIONES = [...Object.keys(MC_COLS), 'config'];
+const MC_FORMULARIOS = ['nueva-moto','nuevo-carro','nueva-venta','ajustes'];
+
+let _mcSesion      = null;   // sesión de Supabase Auth
+let _mcEstado      = null;   // {userId, cursor, sombra:{'col|id':{v,h,d,c}}}
+let _mcSync        = null;   // promesa de la sincronización en curso
+let _mcRepetir     = false;
+let _mcTimer       = null;
+let _mcReintento   = null;
+let _mcFallos      = 0;
+let _mcCanal       = null;
+let _mcUltimoOk    = null;
+let _mcRefrescar   = false;
+let _mcEventosListos = false;
+let _mcMigrando    = false;
+let _mcEstadoListo = false;  // sesión iniciada y copia local unida con la nube
+// Enlace de "olvidé mi contraseña": Supabase vuelve a la app con type=recovery
+let _mcRecuperacion = /type=recovery/.test(location.hash);
+const _mcErrorEnlace = (()=>{ try { return new URLSearchParams(location.hash.slice(1)).get('error_description'); } catch(e){ return null; } })();
+
+const mcDeviceId = (()=>{
   try {
-    const {data, error} = await _supa.from('mc_datos').select('*').eq('id','principal').single();
-    if(error || !data) return false;
-    if(data.motos)       localStorage.setItem('mc_motos_v3',       JSON.stringify(data.motos));
-    if(data.movimientos) localStorage.setItem('mc_movs_v3',        JSON.stringify(data.movimientos));
-    if(data.ventas)      localStorage.setItem('mc_ventas_v3',      JSON.stringify(data.ventas));
-    if(data.carros)      localStorage.setItem('mc_carros_v1',      JSON.stringify(data.carros));
-    if(data.contactos)   localStorage.setItem('mc_contactos_v1',   JSON.stringify(data.contactos));
-    if(data.metas)       localStorage.setItem('mc_metas_v1',       JSON.stringify(data.metas));
-    if(data.config)      localStorage.setItem('mc_config',         JSON.stringify(data.config));
-    return true;
-  } catch(e){ return false; }
+    let d = localStorage.getItem(MC_DEVICE_KEY);
+    if(!d){
+      const ua = navigator.userAgent;
+      const tipo = /iPhone/.test(ua)?'iphone':/iPad/.test(ua)?'ipad':/Android/.test(ua)?'android':/Mac/.test(ua)?'mac':/Windows/.test(ua)?'windows':'web';
+      d = tipo + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+      localStorage.setItem(MC_DEVICE_KEY, d);
+    }
+    return d;
+  } catch(e){ return 'web_' + Math.random().toString(36).slice(2,8); }
+})();
+
+// JSON con las claves ordenadas: el mismo contenido da el mismo texto aunque la nube
+// (jsonb) devuelva las claves en otro orden.
+function mcCanon(v){
+  return JSON.stringify(v, (k,val)=>{
+    if(val && typeof val==='object' && !Array.isArray(val)){
+      const o={}; Object.keys(val).sort().forEach(key=>{ o[key]=val[key]; }); return o;
+    }
+    return val;
+  });
+}
+function mcHash(v){
+  const s = mcCanon(v);
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for(let i=0;i<s.length;i++){
+    const ch = s.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909);
+  return (h2>>>0).toString(36) + (h1>>>0).toString(36) + ':' + s.length;
 }
 
-async function guardarEnSupabase(){
-  if(!_supa) return;
-  clearTimeout(_syncTimer);
-  _syncTimer = setTimeout(async ()=>{
+function mcCargarEstado(){
+  try { _mcEstado = JSON.parse(localStorage.getItem(MC_SYNC_KEY) || 'null'); } catch(e){ _mcEstado = null; }
+  return _mcEstado;
+}
+function mcGuardarEstado(){
+  try { localStorage.setItem(MC_SYNC_KEY, JSON.stringify(_mcEstado)); return true; }
+  catch(e){ console.log('No se pudo guardar el estado de sincronización:', e); return false; }
+}
+
+// Registros locales de una colección como Map id → objeto
+function mcMapaLocal(col){
+  const m = new Map();
+  if(col==='config'){
+    if(cfgData && typeof cfgData==='object' && Object.keys(cfgData).length) m.set('config', cfgData);
+    return m;
+  }
+  (MC_COLS[col].get() || []).forEach(o=>{ if(o && o.id!=null && o.id!=='') m.set(String(o.id), o); });
+  return m;
+}
+
+// Escribe una colección en localStorage sin disparar otra sincronización
+// Si localStorage está lleno, la colección queda marcada como "sucia": al reabrir la
+// app se reconstruye desde la nube en vez de confiar en una copia local incompleta.
+function mcPersistirLocal(col){
+  try {
+    if(col==='config') localStorage.setItem(KEY_CFG, JSON.stringify(cfgData));
+    else localStorage.setItem(MC_COLS[col].key, JSON.stringify(MC_COLS[col].get()));
+    mcColLimpia(col);
+    return true;
+  } catch(e){
+    console.log('localStorage lleno al guardar '+col+':', e);
+    if(_mcEstado){ _mcEstado.sucias = [...new Set([...(_mcEstado.sucias||[]), col])]; mcGuardarEstado(); }
+    return false;
+  }
+}
+function mcColLimpia(col){
+  if(_mcEstado && _mcEstado.sucias && _mcEstado.sucias.includes(col)){
+    _mcEstado.sucias = _mcEstado.sucias.filter(c=>c!==col);
+    mcGuardarEstado();
+  }
+}
+
+// Cambios pendientes = diferencias entre los datos locales y la sombra
+function mcCalcularPendientes(){
+  const cambios = [];
+  if(!_mcEstado) return cambios;
+  const sombra = _mcEstado.sombra;
+  const porCol = {};
+  Object.keys(sombra).forEach(k=>{
+    const i = k.indexOf('|'); const col = k.slice(0,i);
+    (porCol[col] = porCol[col] || []).push(k.slice(i+1));
+  });
+  MC_COLECCIONES.forEach(col=>{
+    const mapa = mcMapaLocal(col);
+    mapa.forEach((obj,id)=>{
+      const sh = sombra[col+'|'+id];
+      const h  = mcHash(obj);
+      if(!sh)            cambios.push({coleccion:col, id, data:obj, base_version:null, _h:h});
+      else if(sh.d)      cambios.push({coleccion:col, id, data:obj, base_version:sh.v, _h:h});
+      else if(sh.h!==h)  cambios.push({coleccion:col, id, data:obj, base_version:sh.v, _h:h});
+    });
+    (porCol[col]||[]).forEach(id=>{
+      const sh = sombra[col+'|'+id];
+      if(!sh.d && !mapa.has(id)) cambios.push({coleccion:col, id, eliminar:true, base_version:sh.v});
+    });
+  });
+  return cambios;
+}
+
+// Protección: si de golpe desaparece más de la mitad de una colección (por ejemplo, al
+// restaurar un backup viejo o por un error), se pregunta antes de eliminar en la nube.
+function mcBorradosMasivos(cambios){
+  const vivos = {}, borrados = {};
+  Object.entries(_mcEstado.sombra).forEach(([k,sh])=>{ if(!sh.d){ const c=k.slice(0,k.indexOf('|')); vivos[c]=(vivos[c]||0)+1; } });
+  cambios.forEach(c=>{ if(c.eliminar) borrados[c.coleccion]=(borrados[c.coleccion]||0)+1; });
+  return Object.keys(borrados).filter(c=>borrados[c]>=5 && borrados[c] > (vivos[c]||0)/2)
+    .map(c=>({coleccion:c, cantidad:borrados[c], total:vivos[c]||0}));
+}
+
+function mcInsertarOrdenado(col, obj){
+  const arr = MC_COLS[col].get();
+  if(MC_COLS[col].nuevosAlInicio) arr.unshift(obj); else arr.push(obj);
+}
+
+// Reordena una colección según la fecha de creación en la nube (el orden en que la app
+// la mostraba). Los registros aún sin confirmar se consideran los más nuevos.
+function mcOrdenar(col){
+  const sombra = _mcEstado.sombra;
+  const fecha = o=>{ const sh = sombra[col+'|'+o.id]; return sh && sh.c!=null ? sh.c : Infinity; };
+  const arr = MC_COLS[col].get().slice();
+  const dir = MC_COLS[col].nuevosAlInicio ? -1 : 1;
+  arr.sort((a,b)=>{ const fa=fecha(a), fb=fecha(b); return fa===fb ? 0 : (fa<fb ? -dir : dir); });
+  MC_COLS[col].set(arr);
+}
+
+// Aplica un registro que viene de la nube. Si el registro tiene un cambio local
+// pendiente, no se toca: ese cambio se enviará y mc_push resolverá el conflicto.
+// Devuelve true si cambió algo local.
+function mcAplicarRemota(fila, forzar){
+  const col = fila.coleccion, id = String(fila.id), key = col+'|'+id;
+  if(!MC_COLECCIONES.includes(col)) return false;
+  const sombra = _mcEstado.sombra;
+  const sh     = sombra[key];
+  const mapa   = mcMapaLocal(col);
+  const local  = mapa.get(id);
+  const c      = fila.created_at ? Date.parse(fila.created_at) : (sh && sh.c);
+  const hRemoto = fila.eliminado ? null : mcHash(fila.data);
+
+  // La copia local ya coincide con la nube: solo se actualiza la sombra
+  if(fila.eliminado ? !local : (local && mcHash(local)===hRemoto)){
+    sombra[key] = fila.eliminado ? {v:fila.version, d:1, c} : {v:fila.version, h:hRemoto, c};
+    return false;
+  }
+  const pendiente = sh ? (sh.d ? !!local : (!local || mcHash(local)!==sh.h)) : !!local;
+  if(pendiente && !forzar) return false;
+
+  if(col==='config'){
+    if(!fila.eliminado){ cfgData = fila.data; }
+  } else if(fila.eliminado){
+    MC_COLS[col].set(MC_COLS[col].get().filter(o=>String(o.id)!==id));
+  } else if(local){
+    const arr = MC_COLS[col].get();
+    const idx = arr.indexOf(local);
+    arr[idx] = fila.data;
+  } else {
+    mcInsertarOrdenado(col, fila.data);
+  }
+  sombra[key] = fila.eliminado ? {v:fila.version, d:1, c} : {v:fila.version, h:hRemoto, c};
+  return true;
+}
+
+// Trae de la nube todo lo que cambió después del cursor
+async function mcTraerCambios(desde, forzar){
+  let cursor = desde;
+  const tocadas = new Set(), insertadas = new Set();
+  while(true){
+    const {data, error} = await _supa.rpc('mc_pull', {p_desde:cursor, p_limite:500});
+    if(error) throw error;
+    const filas = data || [];
+    filas.forEach(f=>{
+      const existia = mcMapaLocal(f.coleccion).has(String(f.id));
+      if(mcAplicarRemota(f, !!(forzar && forzar(f)))){
+        tocadas.add(f.coleccion);
+        if(!existia && !f.eliminado) insertadas.add(f.coleccion);
+      }
+      if(f.seq > cursor) cursor = f.seq;
+    });
+    if(filas.length < 500) break;
+  }
+  insertadas.forEach(col=>{ if(col!=='config') mcOrdenar(col); });
+  tocadas.forEach(col=>mcPersistirLocal(col));
+  _mcEstado.cursor = cursor;
+  mcGuardarEstado();
+  if(tocadas.size) mcRefrescarUI(tocadas);
+  return tocadas.size;
+}
+
+// Divide los cambios en lotes para no mandar peticiones enormes (las fotos pesan)
+function mcLotes(cambios){
+  const lotes = []; let actual = [], tam = 0;
+  cambios.forEach(c=>{
+    const t = c.data ? JSON.stringify(c.data).length : 100;
+    if(actual.length && (actual.length>=100 || tam+t > 1500000)){ lotes.push(actual); actual=[]; tam=0; }
+    actual.push(c); tam += t;
+  });
+  if(actual.length) lotes.push(actual);
+  return lotes;
+}
+const mcSinHash = c=>{ const {_h, ...resto} = c; return resto; };
+
+// Envía los cambios pendientes. Devuelve {enviados, conflictos}.
+async function mcEnviarPendientes(){
+  let cambios = mcCalcularPendientes();
+  if(!cambios.length) return {enviados:0, conflictos:0};
+
+  const masivos = mcBorradosMasivos(cambios);
+  if(masivos.length){
+    const detalle = masivos.map(m=>`• ${m.cantidad} de ${m.total} registros de "${m.coleccion}"`).join('\n');
+    const ok = await mcPreguntar({
+      titulo: '⚠️ Confirmar eliminación',
+      texto:  `Se van a eliminar de la nube, y por lo tanto de todos tus dispositivos:\n${detalle}\n\nSi esto no es lo que querías, pulsa "Recuperar" y se volverán a descargar de la nube. Aunque confirmes, quedarán guardados en el historial de Supabase.`,
+      si: 'Sí, eliminar', no: 'Recuperar'
+    });
+    if(!ok){
+      const recuperar = new Set(cambios.filter(c=>c.eliminar && masivos.some(m=>m.coleccion===c.coleccion)).map(c=>c.coleccion+'|'+c.id));
+      await mcTraerCambios(0, f=>recuperar.has(f.coleccion+'|'+f.id));
+      cambios = mcCalcularPendientes().filter(c=>!(c.eliminar && recuperar.has(c.coleccion+'|'+c.id)));
+      if(!cambios.length) return {enviados:0, conflictos:0};
+    }
+  }
+
+  const sombra = _mcEstado.sombra;
+  const tocadas = new Set(), insertadas = new Set();
+  let conflictos = 0, enviados = 0;
+  for(const lote of mcLotes(cambios)){
+    const enviado = {};
+    lote.forEach(c=>{ enviado[c.coleccion+'|'+c.id] = c; });
+    const {data, error} = await _supa.rpc('mc_push', {p_cambios: lote.map(mcSinHash), p_device: mcDeviceId});
+    if(error) throw error;
+    (data.aplicados||[]).forEach(a=>{
+      const key = a.coleccion+'|'+a.id, c = enviado[key], prev = sombra[key] || {};
+      if(a.resultado==='inexistente') delete sombra[key];
+      else if(a.eliminado) sombra[key] = {v:a.version, d:1, c:prev.c};
+      // Se guarda el hash de lo ENVIADO: si el usuario editó otra vez mientras tanto,
+      // ese cambio nuevo sigue pendiente y se enviará en la próxima vuelta.
+      else sombra[key] = {v:a.version, h:c._h, c: prev.c!=null ? prev.c : Date.now()};
+      enviados++;
+    });
+    const aHistorial = [];
+    (data.conflictos||[]).forEach(f=>{
+      conflictos++;
+      const key = f.coleccion+'|'+f.id, c = enviado[key];
+      const actual = mcMapaLocal(f.coleccion).get(String(f.id));
+      // Si hubo otra edición local mientras viajaba el envío, también se guarda en el historial
+      if(actual && c && !c.eliminar && mcHash(actual)!==c._h) aHistorial.push({coleccion:f.coleccion, id:String(f.id), data:actual, base_version:null});
+      const existia = !!actual;
+      if(mcAplicarRemota(f, true)){
+        tocadas.add(f.coleccion);
+        if(!existia && !f.eliminado) insertadas.add(f.coleccion);
+      }
+    });
+    if(aHistorial.length){
+      const r = await _supa.rpc('mc_push', {p_cambios: aHistorial, p_device: mcDeviceId});
+      if(r.error) throw r.error;
+    }
+    mcGuardarEstado();
+  }
+  insertadas.forEach(col=>{ if(col!=='config') mcOrdenar(col); });
+  tocadas.forEach(col=>mcPersistirLocal(col));
+  mcGuardarEstado();
+  if(tocadas.size) mcRefrescarUI(tocadas);
+  if(conflictos){
+    toast(`${conflictos} cambio${conflictos>1?'s':''} en conflicto: se conservó la versión más reciente de la nube y la tuya quedó en el historial`, 'err');
+  }
+  return {enviados, conflictos};
+}
+
+// Compara la lista completa de la nube (sin datos) con la sombra. Si algo no coincide,
+// se vuelve a pedir todo desde el principio.
+async function mcReconciliar(){
+  const {data, error} = await _supa.rpc('mc_indice');
+  if(error) throw error;
+  const sombra = _mcEstado.sombra;
+  const enNube = new Set();
+  let difiere = false;
+  (data||[]).forEach(r=>{
+    const key = r.coleccion+'|'+r.id; enNube.add(key);
+    const sh = sombra[key];
+    if(!sh || sh.v!==r.version || !!sh.d!==!!r.eliminado) difiere = true;
+  });
+  Object.keys(sombra).forEach(k=>{ if(!enNube.has(k)) delete sombra[k]; });
+  return difiere;
+}
+
+// Ciclo completo: traer de la nube → enviar lo pendiente. Nunca corren dos a la vez.
+function mcSincronizar(motivo, opciones){
+  if(!_supa || !_mcSesion || !_mcEstadoListo || !_mcEstado || _mcMigrando) { mcActualizarIndicador(); return Promise.resolve(false); }
+  if(_mcSync){ _mcRepetir = true; return _mcSync; }
+  _mcSync = (async ()=>{
+    let ok = false;
     try {
-      await _supa.from('mc_datos').upsert({
-        id:          'principal',
-        motos:       JSON.parse(localStorage.getItem('mc_motos_v3')    ||'[]'),
-        movimientos: JSON.parse(localStorage.getItem('mc_movs_v3')     ||'[]'),
-        ventas:      JSON.parse(localStorage.getItem('mc_ventas_v3')   ||'[]'),
-        carros:      JSON.parse(localStorage.getItem('mc_carros_v1')   ||'[]'),
-        contactos:   JSON.parse(localStorage.getItem('mc_contactos_v1')||'[]'),
-        metas:       JSON.parse(localStorage.getItem('mc_metas_v1')    ||'[]'),
-        config:      JSON.parse(localStorage.getItem('mc_config')      ||'{}'),
-        updated_at:  new Date().toISOString()
+      mcIndicador('sincronizando');
+      const sucias = _mcEstado.sucias || [];
+      if(sucias.length) await mcTraerCambios(0, f=>sucias.includes(f.coleccion));
+      else if(opciones && opciones.reconciliar && await mcReconciliar()) await mcTraerCambios(0);
+      else await mcTraerCambios(_mcEstado.cursor || 0);
+      await mcEnviarPendientes();
+      _mcFallos = 0; _mcUltimoOk = new Date(); ok = true;
+      clearTimeout(_mcReintento); _mcReintento = null;
+    } catch(e){
+      console.log('Error de sincronización ('+motivo+'):', e);
+      _mcFallos++;
+      if(e && (e.code==='42501' || e.status===401 || /JWT|sesi/i.test(e.message||''))){
+        const {data} = await _supa.auth.getSession();
+        if(!data || !data.session){ _mcSesion = null; mcMostrarLogin('login'); }
+      }
+      const espera = Math.min(60000, 5000 * Math.pow(2, _mcFallos-1));
+      clearTimeout(_mcReintento);
+      _mcReintento = setTimeout(()=>mcSincronizar('reintento'), espera);
+    } finally {
+      _mcSync = null;
+      mcActualizarIndicador(ok ? null : 'error');
+      if(_mcRepetir){ _mcRepetir = false; setTimeout(()=>mcSincronizar('repetir'), 0); }
+    }
+    return ok;
+  })();
+  return _mcSync;
+}
+
+// Lo llaman todas las funciones de guardado. Agrupa los guardados de una misma acción
+// (por ejemplo, una venta guarda motos y ventas) en un solo envío.
+function mcMarcarCambios(col){
+  if(col) mcColLimpia(col);
+  clearTimeout(_mcTimer);
+  _mcTimer = setTimeout(()=>{
+    if(_mcSesion && _mcEstadoListo) mcSincronizar('guardado');
+    else mcActualizarIndicador();
+  }, 50);
+}
+function guardarEnSupabase(){ mcMarcarCambios(); }
+
+// Último intento al cerrar la página: petición "keepalive" que el navegador termina
+// aunque la pestaña ya se haya cerrado. Si falla, los cambios siguen pendientes en este
+// dispositivo y se envían al volver a abrir la app.
+function mcEnvioDeEmergencia(){
+  try {
+    if(!_mcSesion || !_mcEstadoListo || !_mcEstado || _mcMigrando) return;
+    let cambios = mcCalcularPendientes();
+    if(!cambios.length) return;
+    if(mcBorradosMasivos(cambios).length) cambios = cambios.filter(c=>!c.eliminar);
+    const lote = []; let tam = 200;
+    for(const c of cambios){
+      const t = JSON.stringify(mcSinHash(c)).length;
+      if(tam + t > 60000) continue;
+      lote.push(mcSinHash(c)); tam += t;
+    }
+    if(!lote.length) return;
+    fetch(SUPA_URL + '/rest/v1/rpc/mc_push', {
+      method:'POST', keepalive:true,
+      headers:{'Content-Type':'application/json', apikey:SUPA_KEY, Authorization:'Bearer '+_mcSesion.access_token},
+      body: JSON.stringify({p_cambios:lote, p_device:mcDeviceId})
+    }).catch(()=>{});
+  } catch(e){}
+}
+
+// ── Estado visible ────────────────────────────────────────────────────────────
+function mcIndicador(estado, n){
+  const ind = document.getElementById('sync-indicator');
+  if(!ind) return;
+  const e = {
+    'guardado':      ['☁️ Guardado ✓',           'var(--green)'],
+    'pendiente':     ['☁️ Pendiente ('+n+')',     'var(--amber)'],
+    'sincronizando': ['☁️ Sincronizando...',      'var(--accent)'],
+    'sin-conexion':  ['☁️ Sin conexión',          'var(--amber)'],
+    'sin-sesion':    ['☁️ Sin sesión',            'var(--amber)'],
+    'error':         ['☁️ Error — toca para reintentar', 'var(--red)'],
+    'pendiente-error': ['☁️ Pendiente ('+n+') — toca para reintentar', 'var(--red)'],
+    'cargando':      ['☁️ Cargando...',           'var(--accent)'],
+  }[estado] || ['☁️ Nube','var(--text3)'];
+  ind.textContent = e[0]; ind.style.color = e[1];
+}
+function mcActualizarIndicador(forzado){
+  let n = 0;
+  try { n = _mcEstado ? mcCalcularPendientes().length : 0; } catch(e){}
+  if(!_supa)                  mcIndicador('sin-conexion');
+  else if(!_mcSesion || !_mcEstadoListo) mcIndicador(_mcMigrando ? 'sincronizando' : 'sin-sesion');
+  else if(_mcSync)            mcIndicador('sincronizando');
+  else if(!navigator.onLine)  mcIndicador(n ? 'pendiente' : 'sin-conexion', n);
+  else if(forzado==='error')  mcIndicador(n ? 'pendiente-error' : 'error', n);
+  else if(n)                  mcIndicador('pendiente', n);
+  else                        mcIndicador('guardado');
+  mcActualizarCuenta(n);
+}
+function mcActualizarCuenta(n){
+  const p = document.getElementById('sync-cuenta');
+  const conectado = _mcSesion && _mcEstadoListo;
+  if(p) p.textContent = conectado ? 'Datos guardados en la nube.' : 'Sin sesión: datos solo en este dispositivo.';
+  const info = document.getElementById('mc-cuenta-info');
+  const btn  = document.getElementById('mc-btn-sesion');
+  if(btn) btn.textContent = conectado ? 'Cerrar sesión' : 'Iniciar sesión';
+  if(!info) return;
+  if(!conectado){
+    info.innerHTML = 'No has iniciado sesión. Los cambios se guardan solo en este dispositivo y se subirán a la nube cuando inicies sesión.';
+    return;
+  }
+  const correo = (_mcSesion.user && _mcSesion.user.email) || '';
+  const hora = _mcUltimoOk ? _mcUltimoOk.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}) : '—';
+  info.innerHTML = 'Conectado como <strong></strong>.<br>Última sincronización: ' + hora +
+    '<br>Cambios pendientes de subir: <strong>' + (n||0) + '</strong>';
+  info.querySelector('strong').textContent = correo;
+}
+
+// Vuelve a dibujar la pantalla activa con los datos nuevos. Si estás escribiendo en
+// un campo o en un formulario, espera a que termines para no borrar lo que escribes.
+function mcEditando(){
+  const a = document.activeElement;
+  return a && a.closest && a.closest('.main') && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName);
+}
+function mcRefrescarUI(tocadas){
+  if(tocadas && tocadas.has('config')) aplicarConfigInicial();
+  if(tocadas && [...tocadas].some(c=>c!=='config')) limpiarConsistencia();
+  const activa = (document.querySelector('.page.active')||{}).id || '';
+  const pagina = activa.replace('page-','');
+  if(MC_FORMULARIOS.includes(pagina) || mcEditando()){ _mcRefrescar = true; return; }
+  _mcRefrescar = false;
+  if(pagina) go(pagina);
+}
+document.addEventListener('focusout', ()=>{
+  if(!_mcRefrescar) return;
+  setTimeout(()=>{ if(_mcRefrescar && !mcEditando()){
+    const pagina = ((document.querySelector('.page.active')||{}).id||'').replace('page-','');
+    if(!MC_FORMULARIOS.includes(pagina)){ _mcRefrescar = false; go(pagina); }
+  }}, 400);
+});
+
+// ── Ventana de pregunta (Sí / No) ─────────────────────────────────────────────
+function mcPreguntar({titulo, texto, si, no}){
+  return new Promise(res=>{
+    const ov = document.getElementById('mc-pregunta');
+    document.getElementById('mc-pregunta-titulo').textContent = titulo;
+    document.getElementById('mc-pregunta-texto').textContent  = texto;
+    const bSi = document.getElementById('mc-pregunta-si'), bNo = document.getElementById('mc-pregunta-no');
+    bSi.textContent = si || 'Aceptar';
+    bNo.textContent = no || 'Cancelar';
+    bNo.style.display = no===null ? 'none' : '';
+    const cerrar = v=>{ ov.classList.add('modal-hidden'); ov.style.display=''; res(v); };
+    bSi.onclick = ()=>cerrar(true);
+    bNo.onclick = ()=>cerrar(false);
+    ov.classList.remove('modal-hidden'); ov.style.display='flex';
+  });
+}
+
+// ── Inicio de sesión ──────────────────────────────────────────────────────────
+let _mcModoLogin = 'login';
+function mcMostrarLogin(modo){
+  _mcModoLogin = modo || 'login';
+  const ov = document.getElementById('mc-login');
+  const nueva = _mcModoLogin==='nueva', cargando = _mcModoLogin==='cargando';
+  document.getElementById('mc-login-titulo').textContent =
+    nueva ? 'Nueva contraseña' : cargando ? 'Sincronizando tus datos…' : 'Inicia sesión';
+  document.getElementById('mc-login-sub').textContent =
+    nueva ? 'Escribe tu nueva contraseña.' :
+    cargando ? 'Estamos uniendo los datos de este dispositivo con la nube. No cierres la página.' :
+    'Tus datos se guardan en la nube y los verás en cualquier dispositivo.';
+  document.getElementById('mc-login-form').style.display  = cargando ? 'none' : '';
+  document.getElementById('mc-login-email-g').style.display = nueva ? 'none' : '';
+  document.getElementById('mc-login-extra').style.display = (nueva||cargando) ? 'none' : 'flex';
+  const pass = document.getElementById('mc-login-pass');
+  pass.value = ''; pass.autocomplete = nueva ? 'new-password' : 'current-password';
+  document.getElementById('mc-login-email').required = !nueva;
+  document.getElementById('mc-login-btn').textContent = nueva ? 'Guardar contraseña' : 'Iniciar sesión';
+  mcLoginMensaje('');
+  ov.classList.remove('modal-hidden'); ov.style.display = 'flex';
+}
+function mcOcultarLogin(){
+  const ov = document.getElementById('mc-login');
+  ov.classList.add('modal-hidden'); ov.style.display = '';
+}
+function mcLoginMensaje(txt, error){
+  const m = document.getElementById('mc-login-msg');
+  m.textContent = txt; m.style.display = txt ? 'block' : 'none';
+  m.style.color = error ? 'var(--red)' : 'var(--text2)';
+}
+async function mcLoginEnviar(){
+  if(!_supa){ mcLoginMensaje('No hay conexión con la nube. Revisa tu internet y recarga la página.', true); return; }
+  const btn = document.getElementById('mc-login-btn');
+  const email = document.getElementById('mc-login-email').value.trim();
+  const pass  = document.getElementById('mc-login-pass').value;
+  btn.disabled = true;
+  try {
+    if(_mcModoLogin==='nueva'){
+      if(pass.length < 8){ mcLoginMensaje('La contraseña debe tener al menos 8 caracteres.', true); return; }
+      const {error} = await _supa.auth.updateUser({password: pass});
+      if(error){ mcLoginMensaje('No se pudo cambiar la contraseña: ' + error.message, true); return; }
+      _mcRecuperacion = false;
+      toast('Contraseña actualizada');
+      mcOcultarLogin();
+      const {data} = await _supa.auth.getSession();
+      if(data && data.session && !_mcEstadoListo) await mcConSesion(data.session);
+      return;
+    }
+    mcLoginMensaje('Entrando…');
+    const {data, error} = await _supa.auth.signInWithPassword({email, password: pass});
+    if(error){
+      mcLoginMensaje(/invalid/i.test(error.message) ? 'Correo o contraseña incorrectos.' :
+        (!navigator.onLine || /fetch|network/i.test(error.message)) ? 'No se pudo conectar con la nube. Revisa tu internet e inténtalo de nuevo.' :
+        'No se pudo iniciar sesión: ' + error.message, true);
+      return;
+    }
+    await mcConSesion(data.session);
+  } catch(e){
+    mcLoginMensaje('No se pudo conectar. Revisa tu internet e inténtalo de nuevo.', true);
+  } finally { btn.disabled = false; }
+}
+async function mcLoginOlvide(){
+  const email = document.getElementById('mc-login-email').value.trim();
+  if(!email){ mcLoginMensaje('Escribe tu correo y vuelve a pulsar "¿Olvidaste tu contraseña?".', true); return; }
+  if(!_supa){ mcLoginMensaje('No hay conexión con la nube.', true); return; }
+  const {error} = await _supa.auth.resetPasswordForEmail(email, {redirectTo: location.origin + location.pathname});
+  mcLoginMensaje(error ? 'No se pudo enviar el correo: ' + error.message
+    : 'Si el correo está registrado, te llegará un enlace para crear una nueva contraseña. Revisa también la carpeta de spam.', !!error);
+}
+function mcLoginSinSesion(){
+  mcOcultarLogin();
+  mcActualizarIndicador();
+  toast('Sin sesión: los cambios quedan solo en este dispositivo hasta que inicies sesión', 'err');
+}
+function mcBotonSesion(){
+  if(_mcSesion && _mcEstadoListo) mcCerrarSesion(); else mcMostrarLogin('login');
+}
+async function mcCerrarSesion(){
+  if(_mcSesion && navigator.onLine) await mcSincronizar('cerrar-sesion');
+  const n = _mcEstado ? mcCalcularPendientes().length : 0;
+  if(n){
+    await mcPreguntar({titulo:'Hay cambios sin subir',
+      texto:`Tienes ${n} cambio${n>1?'s':''} que todavía no llegan a la nube. Conéctate a internet y espera a que el indicador diga "Guardado ✓" antes de cerrar sesión.`,
+      si:'Entendido', no:null});
+    return;
+  }
+  const ok = await mcPreguntar({titulo:'Cerrar sesión',
+    texto:'Tus datos están guardados en la nube. Para volver a verlos en este dispositivo tendrás que iniciar sesión otra vez.',
+    si:'Cerrar sesión', no:'Cancelar'});
+  if(!ok) return;
+  if(_mcCanal){ try{ _supa.removeChannel(_mcCanal); }catch(e){} _mcCanal = null; }
+  await _supa.auth.signOut();
+  _mcSesion = null; _mcEstadoListo = false;
+  mcActualizarIndicador();
+  mcMostrarLogin('login');
+}
+
+// Borra la copia local de otra cuenta (solo pasa si inicia sesión una cuenta distinta;
+// cerrar sesión exige que no haya cambios pendientes, así que esos datos ya están en su nube).
+function mcLimpiarCacheLocal(){
+  Object.values(MC_COLS).forEach(c=>{ c.set([]); try{ localStorage.removeItem(c.key); }catch(e){} });
+  cfgData = {}; try{ localStorage.removeItem(KEY_CFG); }catch(e){}
+  try{ localStorage.removeItem(MC_SYNC_KEY); }catch(e){}
+  _mcEstado = null;
+}
+
+// ── Migración del dispositivo ─────────────────────────────────────────────────
+// Primera vez que esta cuenta entra en este navegador: se sube lo que solo existe aquí
+// y lo que difiere de la nube se guarda en mc_historial (la nube queda como principal).
+async function mcTraerTodo(){
+  const filas = []; let cursor = 0;
+  while(true){
+    const {data, error} = await _supa.rpc('mc_pull', {p_desde:cursor, p_limite:1000});
+    if(error) throw error;
+    (data||[]).forEach(f=>{ filas.push(f); if(f.seq>cursor) cursor=f.seq; });
+    if(!data || data.length < 1000) break;
+  }
+  return {filas, cursor};
+}
+async function mcMigrarDispositivo(uid){
+  _mcMigrando = true;
+  mcMostrarLogin('cargando');
+  try {
+    const {filas} = await mcTraerTodo();
+    const nube = new Map(filas.map(f=>[f.coleccion+'|'+f.id, f]));
+    const cambios = [];
+    MC_COLECCIONES.forEach(col=>{
+      let lista;
+      if(col==='config') lista = (cfgData && Object.keys(cfgData).length) ? [{...cfgData, id:'config'}] : [];
+      else lista = (MC_COLS[col].get()||[]).slice();
+      // Se envían de más viejo a más nuevo para que la nube conserve el orden
+      if(col!=='config' && MC_COLS[col].nuevosAlInicio) lista.reverse();
+      lista.forEach(item=>{
+        if(!item || typeof item!=='object') return;
+        let id = item.id, data = item;
+        if(col==='config'){ const {id:_, ...resto} = item; data = resto; id = 'config'; }
+        if(id==null || id===''){
+          // Registro antiguo sin id: si ya está en la nube (copiado por 04_migracion.sql) no se duplica
+          const h = mcHash(item);
+          const yaEsta = filas.some(f=>f.coleccion===col && !f.eliminado && (()=>{ const {id:_, ...r} = f.data; return mcHash(r)===h; })());
+          if(yaEsta) return;
+          id = 'loc_' + h.replace(/[^a-z0-9]/g,'');
+          data = {...item, id};
+        }
+        id = String(id);
+        const f = nube.get(col+'|'+id);
+        if(f && !f.eliminado && mcHash(f.data)===mcHash(data)) return;
+        cambios.push({coleccion:col, id, data, modo:'migracion'});
       });
-      const ind=document.getElementById('sync-indicator');
-      if(ind){ind.textContent='☁️ Guardado';ind.style.color='var(--green)';
-        setTimeout(()=>{ind.textContent='☁️ Nube';ind.style.color='var(--text3)';},2000);}
-    } catch(e){}
-  }, 2000);
+    });
+    let subidos = 0, historial = 0;
+    for(const lote of mcLotes(cambios)){
+      const {data, error} = await _supa.rpc('mc_push', {p_cambios:lote, p_device:mcDeviceId});
+      if(error) throw error;
+      subidos   += (data.aplicados||[]).filter(a=>a.resultado==='creado').length;
+      historial += (data.conflictos||[]).length;
+    }
+    // La copia local queda exactamente igual a la nube
+    const final = await mcTraerTodo();
+    const sombra = {};
+    Object.keys(MC_COLS).forEach(col=>{
+      const dir = MC_COLS[col].nuevosAlInicio ? -1 : 1;
+      const filasCol = final.filas.filter(f=>f.coleccion===col && !f.eliminado)
+        .sort((a,b)=>{ const fa=Date.parse(a.created_at), fb=Date.parse(b.created_at); return fa===fb?0:(fa<fb?-dir:dir); });
+      MC_COLS[col].set(filasCol.map(f=>f.data));
+    });
+    const cfg = final.filas.find(f=>f.coleccion==='config' && f.id==='config' && !f.eliminado);
+    cfgData = cfg ? cfg.data : {};
+    final.filas.forEach(f=>{
+      sombra[f.coleccion+'|'+f.id] = f.eliminado ? {v:f.version, d:1, c:Date.parse(f.created_at)}
+                                                 : {v:f.version, h:mcHash(f.data), c:Date.parse(f.created_at)};
+    });
+    MC_COLECCIONES.forEach(col=>mcPersistirLocal(col));
+    _mcEstado = {userId: uid, cursor: final.cursor, sombra};
+    mcGuardarEstado();
+    _mcUltimoOk = new Date();
+    _mcMigrando = false;
+    mcOcultarLogin();
+    aplicarConfigInicial();
+    mcRefrescarUI(new Set(MC_COLECCIONES));
+    if(subidos || historial){
+      await mcPreguntar({titulo:'✅ Datos unidos con la nube',
+        texto:`Subidos desde este dispositivo: ${subidos}\nGuardados en el historial (la nube tenía otra versión): ${historial}\n\nDesde ahora todo lo que guardes se sincroniza con tus otros dispositivos.`,
+        si:'Entendido', no:null});
+    } else toast('Datos sincronizados con la nube');
+    return true;
+  } catch(e){
+    _mcMigrando = false;
+    console.log('Error en la migración del dispositivo:', e);
+    mcMostrarLogin('login');
+    mcLoginMensaje('No se pudieron sincronizar tus datos (' + (e.message||'error de conexión') + '). Tus datos locales siguen intactos. Inténtalo de nuevo.', true);
+    return false;
+  }
+}
+
+// ── Arranque ──────────────────────────────────────────────────────────────────
+async function mcConSesion(session){
+  _mcSesion = session;
+  const uid = session.user.id;
+  mcCargarEstado();
+  if(!_mcEstado || _mcEstado.userId !== uid){
+    if(_mcEstado && _mcEstado.userId !== uid) mcLimpiarCacheLocal();
+    if(!await mcMigrarDispositivo(uid)) return;
+  } else {
+    mcOcultarLogin();
+  }
+  _mcEstadoListo = true;
+  mcActualizarIndicador();
+  mcSuscribirTiempoReal(uid);
+  mcRegistrarEventos();
+  if(_mcRecuperacion) mcMostrarLogin('nueva');
+  await mcSincronizar('inicio', {reconciliar:true});
+}
+function mcSuscribirTiempoReal(uid){
+  if(_mcCanal || !_supa.channel) return;
+  try {
+    _mcCanal = _supa.channel('mc-registros-' + mcDeviceId)
+      .on('postgres_changes', {event:'*', schema:'public', table:'mc_registros', filter:'user_id=eq.'+uid},
+          ()=>{ clearTimeout(_mcTimer); _mcTimer = setTimeout(()=>mcSincronizar('tiempo-real'), 400); })
+      .subscribe();
+  } catch(e){ console.log('Tiempo real no disponible:', e); }
+}
+function mcRegistrarEventos(){
+  if(_mcEventosListos) return;
+  _mcEventosListos = true;
+  window.addEventListener('online',  ()=>mcSincronizar('online'));
+  window.addEventListener('offline', ()=>mcActualizarIndicador());
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState==='hidden') mcSincronizar('oculta');
+    else mcSincronizar('visible');
+  });
+  window.addEventListener('pagehide', mcEnvioDeEmergencia);
+  window.addEventListener('pageshow', e=>{ if(e.persisted) mcSincronizar('pageshow'); });
+  setInterval(()=>{ if(document.visibilityState==='visible') mcSincronizar('periodico'); }, 60000);
+}
+async function mcIniciar(){
+  try { if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
+  mcCargarEstado();
+  if(!_supa){ mcActualizarIndicador(); return; }
+  mcIndicador('cargando');
+  _supa.auth.onAuthStateChange((evento, session)=>{
+    if(session) _mcSesion = session;
+    if(evento==='PASSWORD_RECOVERY'){ _mcRecuperacion = true; setTimeout(()=>{ if(!_mcMigrando) mcMostrarLogin('nueva'); }, 0); }
+    if(evento==='SIGNED_OUT' && _mcSesion){
+      _mcSesion = null; _mcEstadoListo = false;
+      setTimeout(()=>{ mcActualizarIndicador(); mcMostrarLogin('login'); }, 0);
+    }
+  });
+  let session = null;
+  try { session = (await _supa.auth.getSession()).data.session; } catch(e){}
+  if(!session){
+    mcActualizarIndicador();
+    mcMostrarLogin('login');
+    if(_mcErrorEnlace) mcLoginMensaje('El enlace del correo no es válido o ya venció. Pide uno nuevo con "¿Olvidaste tu contraseña?".', true);
+    return;
+  }
+  await mcConSesion(session);
+}
+
+async function sincronizarAhora(){
+  if(!_supa){ toast('Sin conexión con la nube','err'); return; }
+  if(!_mcSesion){ mcMostrarLogin('login'); return; }
+  const ok = await mcSincronizar('manual');
+  if(ok) toast('✅ Datos sincronizados con la nube');
+  else if(!navigator.onLine) toast('Sin conexión: los cambios se enviarán al volver internet','err');
+  else toast('No se pudo sincronizar. Se reintentará automáticamente','err');
 }
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
@@ -1143,10 +1914,10 @@ let movimientos = JSON.parse(localStorage.getItem(KEY_MOVS)   || '[]');
 let ventas      = JSON.parse(localStorage.getItem(KEY_VENTAS) || '[]');
 let carros      = JSON.parse(localStorage.getItem(KEY_CARROS) || '[]');
 
-const saveMotos  = () => { localStorage.setItem(KEY_MOTOS,  JSON.stringify(motos));  guardarEnSupabase(); };
-const saveMovs   = () => { localStorage.setItem(KEY_MOVS,   JSON.stringify(movimientos)); guardarEnSupabase(); };
-const saveVentas = () => { localStorage.setItem(KEY_VENTAS, JSON.stringify(ventas)); guardarEnSupabase(); };
-const saveCarros = () => { localStorage.setItem(KEY_CARROS, JSON.stringify(carros)); guardarEnSupabase(); };
+const saveMotos  = () => { localStorage.setItem(KEY_MOTOS,  JSON.stringify(motos));  mcMarcarCambios('motos'); };
+const saveMovs   = () => { localStorage.setItem(KEY_MOVS,   JSON.stringify(movimientos)); mcMarcarCambios('movimientos'); };
+const saveVentas = () => { localStorage.setItem(KEY_VENTAS, JSON.stringify(ventas)); mcMarcarCambios('ventas'); };
+const saveCarros = () => { localStorage.setItem(KEY_CARROS, JSON.stringify(carros)); mcMarcarCambios('carros'); };
 
 // ── HELPERS TIPO VEHÍCULO ─────────────────────────────────────────────────────
 function nomVeh(tipo, forma='singular'){
@@ -2916,6 +3687,7 @@ function exportarDatos(){
     contactos:  JSON.parse(localStorage.getItem('mc_contactos_v1')||'[]'),
     metas:      JSON.parse(localStorage.getItem('mc_metas_v1')  ||'[]'),
     config:     JSON.parse(localStorage.getItem('mc_config')    ||'{}'),
+    configApp:  JSON.parse(localStorage.getItem(KEY_CFG)        ||'{}'),
   };
 
   const json = JSON.stringify(backup, null, 2);
@@ -2939,7 +3711,7 @@ function importarDatos(input){
   const status = document.getElementById('import-status');
 
   const reader = new FileReader();
-  reader.onload = function(e){
+  reader.onload = async function(e){
     try {
       const data = JSON.parse(e.target.result);
 
@@ -2948,7 +3720,19 @@ function importarDatos(input){
         return;
       }
 
-      // Restaurar todos los datos directamente sin confirm2
+      const cant = k => Array.isArray(data[k]) ? data[k].length : 0;
+      const fechaBk = data.fecha ? new Date(data.fecha).toLocaleString('es-CO') : 'fecha desconocida';
+      const ok = await mcPreguntar({
+        titulo: '📥 ¿Restaurar este backup?',
+        texto:  `Backup del ${fechaBk}:\n• ${cant('motos')} motos · ${cant('carros')} carros\n• ${cant('ventas')} ventas · ${cant('movimientos')} movimientos\n• ${cant('contactos')} contactos · ${cant('metas')} metas\n\nEsto REEMPLAZA los datos actuales en este dispositivo y en la nube (todos tus dispositivos). Lo que se reemplace o elimine quedará guardado en el historial de Supabase.`,
+        si: 'Sí, restaurar', no: 'Cancelar'
+      });
+      if(!ok){
+        if(status){ status.style.display='block'; status.style.color='var(--text3)'; status.textContent='Restauración cancelada. No se cambió nada.'; }
+        return;
+      }
+
+      // Restaurar todos los datos
       if(data.motos)       localStorage.setItem('mc_motos_v3',       JSON.stringify(data.motos));
       if(data.movimientos) localStorage.setItem('mc_movs_v3',        JSON.stringify(data.movimientos));
       if(data.ventas)      localStorage.setItem('mc_ventas_v3',      JSON.stringify(data.ventas));
@@ -2956,10 +3740,9 @@ function importarDatos(input){
       if(data.contactos)   localStorage.setItem('mc_contactos_v1',   JSON.stringify(data.contactos));
       if(data.metas)       localStorage.setItem('mc_metas_v1',       JSON.stringify(data.metas));
       if(data.config)      localStorage.setItem('mc_config',         JSON.stringify(data.config));
+      if(data.configApp)   localStorage.setItem(KEY_CFG,             JSON.stringify(data.configApp));
 
-      // Subir a Supabase
-      guardarEnSupabase();
-
+      // Al recargar, la sincronización sube a la nube las diferencias con este backup
       if(status){ status.style.display='block'; status.style.color='var(--green)'; status.textContent='✅ Datos restaurados. Recargando...'; }
 
       setTimeout(()=>window.location.reload(), 1500);
@@ -3228,7 +4011,7 @@ const PANEL_DEFAULTS=[
 
 let cfgData = JSON.parse(localStorage.getItem(KEY_CFG)||'{}');
 
-function saveCfg(){ localStorage.setItem(KEY_CFG, JSON.stringify(cfgData)); }
+function saveCfg(){ localStorage.setItem(KEY_CFG, JSON.stringify(cfgData)); mcMarcarCambios('config'); }
 
 function aplicarConfigInicial(){
   if(cfgData.appName){
@@ -3702,86 +4485,6 @@ function limpiarConsistencia(){
   if(carros.length !== carrosAntes) saveCarros();
 }
 
-// ── SINCRONIZACIÓN CON SUPABASE ───────────────────────────────────────────────
-async function sincronizarAhora(){
-  const ind = document.getElementById('sync-indicator');
-  if(ind){ ind.textContent='☁️ Subiendo...'; ind.style.color='var(--accent)'; }
-  try {
-    if(!_supa) throw new Error('Sin conexión');
-    const payload = {
-      id:          'principal',
-      motos:       JSON.parse(localStorage.getItem(KEY_MOTOS)          ||'[]'),
-      movimientos: JSON.parse(localStorage.getItem(KEY_MOVS)           ||'[]'),
-      ventas:      JSON.parse(localStorage.getItem(KEY_VENTAS)         ||'[]'),
-      carros:      JSON.parse(localStorage.getItem(KEY_CARROS)         ||'[]'),
-      contactos:   JSON.parse(localStorage.getItem('mc_contactos_v1') ||'[]'),
-      metas:       JSON.parse(localStorage.getItem('mc_metas_v1')     ||'[]'),
-      config:      JSON.parse(localStorage.getItem('mc_config')        ||'{}'),
-      updated_at:  new Date().toISOString()
-    };
-    const {error} = await _supa.from('mc_datos').upsert(payload);
-    if(error) throw error;
-    if(ind){ ind.textContent='☁️ Guardado ✓'; ind.style.color='var(--green)';
-      setTimeout(()=>{ if(ind){ind.textContent='☁️ Nube';ind.style.color='var(--text3)';} },3000); }
-    toast('✅ Datos sincronizados con la nube');
-  } catch(e){
-    if(ind){ ind.textContent='☁️ Error'; ind.style.color='var(--red)'; }
-    console.log('Sync error:', e);
-  }
-}
-
-async function cargarYRenderizar(){
-  const ind = document.getElementById('sync-indicator');
-  if(ind){ ind.textContent='☁️ Cargando...'; ind.style.color='var(--accent)'; }
-  try {
-    if(!_supa) throw new Error('Sin Supabase');
-    const {data, error} = await _supa.from('mc_datos').select('*').eq('id','principal').single();
-    if(error || !data) throw new Error('Sin datos en nube');
-
-    // Solo cargar si Supabase tiene datos
-    const motosNube = data.motos || [];
-    const ventasNube = data.ventas || [];
-    const totalNube = motosNube.length + ventasNube.length + (data.carros||[]).length;
-    const totalLocal = motos.length + ventas.length + carros.length;
-
-    // Cargar desde Supabase si tiene más datos O si local está vacío
-    if(totalNube > 0 && totalNube >= totalLocal){
-      localStorage.setItem(KEY_MOTOS,  JSON.stringify(data.motos       ||[]));
-      localStorage.setItem(KEY_MOVS,   JSON.stringify(data.movimientos ||[]));
-      localStorage.setItem(KEY_VENTAS, JSON.stringify(data.ventas      ||[]));
-      localStorage.setItem(KEY_CARROS, JSON.stringify(data.carros      ||[]));
-      localStorage.setItem('mc_contactos_v1', JSON.stringify(data.contactos||[]));
-      localStorage.setItem('mc_metas_v1',     JSON.stringify(data.metas    ||[]));
-      if(data.config) localStorage.setItem('mc_config', JSON.stringify(data.config));
-
-      // Recargar variables en memoria
-      motos       = JSON.parse(localStorage.getItem(KEY_MOTOS)  ||'[]');
-      movimientos = JSON.parse(localStorage.getItem(KEY_MOVS)   ||'[]');
-      ventas      = JSON.parse(localStorage.getItem(KEY_VENTAS) ||'[]');
-      carros      = JSON.parse(localStorage.getItem(KEY_CARROS) ||'[]');
-      try{ contactos=JSON.parse(localStorage.getItem('mc_contactos_v1')||'[]'); }catch(e){}
-      try{ metas   =JSON.parse(localStorage.getItem('mc_metas_v1')    ||'[]'); }catch(e){}
-
-      limpiarConsistencia();
-      renderResumen();
-    } else if(totalLocal > 0){
-      // Local tiene más datos — subir a Supabase
-      sincronizarAhora();
-      return;
-    }
-
-    if(ind){ ind.textContent='☁️ Sincronizado ✓'; ind.style.color='var(--green)';
-      setTimeout(()=>{ if(ind){ind.textContent='☁️ Nube';ind.style.color='var(--text3)';} },3000); }
-  } catch(e){
-    // Sin nube — usar datos locales y subir
-    if(motos.length>0 || ventas.length>0) sincronizarAhora();
-    if(ind){ ind.textContent='☁️ Local'; ind.style.color='var(--text3)'; }
-    console.log('Load error:', e);
-  }
-}
-
-// Al iniciar — cargar desde Supabase
-cargarYRenderizar();
 document.querySelectorAll('.nav-item').forEach((el,i)=>{
   el.addEventListener('click',()=>{ if(i===5) document.getElementById('nm-edit-id').value=''; });
 });
@@ -4057,7 +4760,7 @@ setTimeout(mostrarBannerNotif, 2000);
 const MC_CONTACTOS_KEY = 'mc_contactos_v1';
 let contactos = [];
 try{ contactos = JSON.parse(localStorage.getItem(MC_CONTACTOS_KEY)||'[]'); }catch(e){ contactos=[]; }
-function saveContactos(){ localStorage.setItem(MC_CONTACTOS_KEY, JSON.stringify(contactos)); }
+function saveContactos(){ localStorage.setItem(MC_CONTACTOS_KEY, JSON.stringify(contactos)); mcMarcarCambios('contactos'); }
 
 let _tabContacto='vendedor', _buscarTipo='vendedor', _buscarForm='moto';
 
@@ -4248,7 +4951,7 @@ function seleccionarContacto(id){
 const MC_METAS_KEY = 'mc_metas_v1';
 let metas = [];
 try{ metas = JSON.parse(localStorage.getItem(MC_METAS_KEY)||'[]'); }catch(e){ metas=[]; }
-function saveMetas(){ localStorage.setItem(MC_METAS_KEY, JSON.stringify(metas)); guardarEnSupabase(); }
+function saveMetas(){ localStorage.setItem(MC_METAS_KEY, JSON.stringify(metas)); mcMarcarCambios('metas'); }
 
 function setTipoMeta(tipo){
   document.getElementById('m-tipo-val').value = tipo;
@@ -4544,6 +5247,10 @@ function celebrarMeta(metaId){
     setTimeout(()=>el.remove(),1700);
   }
 }
+
+
+// ── ARRANQUE DE LA SINCRONIZACIÓN ─────────────────────────────────────────────
+mcIniciar();
 
 </script>
 
