@@ -23,7 +23,7 @@ revoke all on table public.mc_datos_respaldo_pre_migracion from public, anon, au
 -- ── PARTE B: copiar a mc_registros ────────────────────────────────────────────
 do $$
 declare
-  v_email  text := 'samuelmonsalve256@gmail.com';   -- ← CAMBIA ESTO
+  v_email  text := 'PON_AQUI_TU_CORREO';   -- ← CAMBIA ESTO
   v_uid    uuid;
   v_fila   jsonb;
   v_col    text;
