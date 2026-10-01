@@ -874,6 +874,17 @@
         </div>
       </div>
       <div class="form-card" style="margin-top:1rem">
+        <div class="form-section-title">Sonidos</div>
+        <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px">Suenan al agregar, confirmar, guardar cambios y eliminar trámites. En el iPhone no se oyen si está en silencio.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" id="tv-btn-sonidos" onclick="tvAlternarSonidos()">🔊 Sonidos activados</button>
+          <button class="btn btn-sm btn-ghost" onclick="sonido('agregar')">Agregar</button>
+          <button class="btn btn-sm btn-ghost" onclick="sonido('confirmar')">Confirmar</button>
+          <button class="btn btn-sm btn-ghost" onclick="sonido('guardar')">Guardar</button>
+          <button class="btn btn-sm btn-ghost" onclick="sonido('borrar')">Eliminar</button>
+        </div>
+      </div>
+      <div class="form-card" style="margin-top:1rem">
         <div class="form-section-title">Respaldo en archivo</div>
         <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px">Descarga todos tus trámites en un archivo, o importa un respaldo. Importar <strong>agrega</strong> lo que falte: nunca borra ni reemplaza lo que ya tienes.</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -1315,6 +1326,7 @@ async function saveRecord() {
   renderTodos();
   renderHistoryAnual();
   toast('✓ Trámite guardado correctamente');
+  sonido('agregar');
 }
 
 function deleteRecord(id) {
@@ -1328,6 +1340,7 @@ function deleteRecord(id) {
   renderHistory();
   renderHistoryAnual();
   toast('Trámite eliminado');
+  sonido('borrar');
 }
 
 function toggleStatus(id) {
@@ -1399,6 +1412,7 @@ async function saveEdit() {
   renderHistory();
   renderHistoryAnual();
   toast('✓ Trámite actualizado');
+  sonido('guardar');
 }
 
 // Pide confirmación cuando la fecha de registro cambia. Con "Cancelar" vuelve a la fecha
@@ -2210,6 +2224,7 @@ function confirmarBorrador(id) {
   updateBadge();
   updateBadgeMC();
   toast('✓ Trámite creado — completa el costo y la fecha de envío');
+  sonido('confirmar');
   renderMC();
 }
 
@@ -2222,6 +2237,7 @@ function descartarBorrador(id) {
   updateBadgeMC();
   renderMC();
   toast('Descartado');
+  sonido('borrar');
 }
 
 // ── INIT ──
@@ -2232,6 +2248,62 @@ document.getElementById('f-fecha-registro-display').value = fmtDate(t0);
 load();
 updateBadge();
 updateBadgeMC();
+// ── SONIDOS ──────────────────────────────────────────────────────────────────
+// Tonos cortos generados con Web Audio (sin archivos). Se pueden desactivar en
+// «Respaldo y nube»; la preferencia se guarda en este dispositivo.
+const TV_SONIDOS_KEY = 'tv_sonidos';
+let _tvAudio = null;
+function tvSonidosActivos(){ try { return localStorage.getItem(TV_SONIDOS_KEY) !== '0'; } catch(e){ return true; } }
+function tvAudio(){
+  try {
+    if(!_tvAudio){
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if(!Ctx) return null;
+      _tvAudio = new Ctx();
+    }
+    if(_tvAudio.state === 'suspended') _tvAudio.resume();
+    return _tvAudio;
+  } catch(e){ return null; }
+}
+// Safari solo permite sonido después de que el usuario toca la pantalla: se prepara ahí
+['pointerdown','touchend','keydown'].forEach(ev =>
+  document.addEventListener(ev, () => { if(tvSonidosActivos()) tvAudio(); }, {once:true, passive:true}));
+function tvTono(ctx, frec, inicio, dur, vol, forma){
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = forma;
+  o.frequency.setValueAtTime(frec, inicio);
+  g.gain.setValueAtTime(0.0001, inicio);
+  g.gain.exponentialRampToValueAtTime(vol, inicio + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, inicio + dur);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(inicio); o.stop(inicio + dur + 0.02);
+}
+function sonido(tipo){
+  if(!tvSonidosActivos()) return;
+  const ctx = tvAudio();
+  if(!ctx) return;
+  // [frecuencia (Hz), retraso (s), duración (s)]
+  const notas = {
+    agregar:   [[784,0,0.18],[1175,0.09,0.32]],                // sube: G5 → D6
+    confirmar: [[659,0,0.14],[880,0.08,0.16],[1319,0.16,0.36]], // sube: E5 → A5 → E6
+    guardar:   [[988,0,0.12],[1319,0.06,0.22]],                // corto: B5 → E6
+    borrar:    [[523,0,0.16],[392,0.10,0.30]],                 // baja: C5 → G4
+  }[tipo];
+  if(!notas) return;
+  const t = ctx.currentTime + 0.01;
+  notas.forEach(([f, d, dur]) => tvTono(ctx, f, t + d, dur, 0.12, tipo === 'borrar' ? 'triangle' : 'sine'));
+}
+function tvActualizarBotonSonidos(){
+  const b = document.getElementById('tv-btn-sonidos');
+  if(b) b.textContent = tvSonidosActivos() ? '🔊 Sonidos activados' : '🔇 Sonidos desactivados';
+}
+function tvAlternarSonidos(){
+  try { localStorage.setItem(TV_SONIDOS_KEY, tvSonidosActivos() ? '0' : '1'); } catch(e){}
+  tvActualizarBotonSonidos();
+  if(tvSonidosActivos()) sonido('guardar');
+}
+tvActualizarBotonSonidos();
+
 // ════════════════════════════════════════════════════════════════════════════
 // ── NUBE (Supabase) ──────────────────────────────────────────────────────────
 // Traspasos se guarda en la misma cuenta y la misma tabla que MotoContable
