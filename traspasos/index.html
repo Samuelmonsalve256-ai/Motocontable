@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traspasos Vehiculares</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080810; --bg2:#0e0e1a; --bg3:#13131f; --bg4:#1a1a28;
+  --border:rgba(255,255,255,0.08); --text:#eeeef5; --text2:#8888a8;
+  --accent:#2a7fff; --green:#00d68f; --yellow:#ffb020; --red:#ff4d6a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:14px;min-height:100vh}
+header{padding:16px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+h1{font-size:18px;font-weight:700}
+h2{font-size:15px;font-weight:600;margin:20px 0 10px}
+main{max-width:960px;margin:0 auto;padding:0 16px 40px}
+.btn{background:var(--bg4);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font:inherit;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn-primary{background:var(--accent);border-color:var(--accent)}
+.btn-sm{padding:4px 8px;font-size:12px}
+.btn-danger{color:var(--red)}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.muted{color:var(--text2);font-size:12px}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.b-pendiente{background:rgba(255,176,32,.15);color:var(--yellow)}
+.b-en_proceso{background:rgba(42,127,255,.15);color:var(--accent)}
+.b-radicado{background:rgba(160,120,255,.15);color:#a078ff}
+.b-terminado{background:rgba(0,214,143,.15);color:var(--green)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+input,select,textarea{background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px;font:inherit;width:100%}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px}
+dialog{background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:16px;width:min(640px,calc(100vw - 32px));margin:auto}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+.empty{color:var(--text2);text-align:center;padding:24px}
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--border);padding:10px 16px;border-radius:8px;display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>📋 Traspasos Vehiculares</h1>
+  <div class="row">
+    <button class="btn btn-primary" onclick="abrirForm()">+ Nuevo traspaso</button>
+    <button class="btn" onclick="exportarBackup()">Descargar backup</button>
+    <label class="btn" style="margin:0;color:var(--text)">Restaurar
+      <input type="file" accept=".json" hidden onchange="importarBackup(this)">
+    </label>
+  </div>
+</header>
+
+<main>
+  <section id="secBorradores"></section>
+
+  <div class="filters">
+    <input id="buscar" placeholder="Buscar por placa, vehículo o persona" oninput="render()" style="flex:1;min-width:200px">
+    <select id="filtroEstado" onchange="render()" style="width:auto">
+      <option value="">Todos los estados</option>
+    </select>
+  </div>
+
+  <section id="lista"></section>
+</main>
+
+<dialog id="dlg">
+  <form id="form" onsubmit="guardarForm(event)">
+    <h2 id="dlgTitulo" style="margin-top:0">Traspaso</h2>
+    <input type="hidden" name="id">
+    <div class="grid">
+      <div><label>Tipo</label><select name="tipo"><option>Moto</option><option>Carro</option></select></div>
+      <div><label>Vehículo</label><input name="nombre" required></div>
+      <div><label>Modelo</label><input name="modelo"></div>
+      <div><label>Placa</label><input name="placa"></div>
+      <div><label>Color</label><input name="color"></div>
+      <div><label>Estado</label><select name="estado"></select></div>
+    </div>
+    <h2>Vendedor</h2>
+    <div class="grid">
+      <div><label>Nombre</label><input name="vendedor"></div>
+      <div><label>Cédula</label><input name="cedula"></div>
+      <div><label>Teléfono</label><input name="telefono"></div>
+    </div>
+    <h2>Comprador</h2>
+    <div class="grid">
+      <div><label>Nombre</label><input name="comprador"></div>
+      <div><label>Cédula</label><input name="compradorCedula"></div>
+      <div><label>Teléfono</label><input name="compradorTel"></div>
+    </div>
+    <h2>Trámite</h2>
+    <div class="grid">
+      <div><label>Tránsito / organismo</label><input name="transito"></div>
+      <div><label>Fecha de radicación</label><input type="date" name="fechaRadicacion"></div>
+      <div><label>Costo del trámite</label><input type="number" name="costo" min="0" step="1"></div>
+    </div>
+    <div style="margin-top:10px"><label>Notas</label><textarea name="notas" rows="3"></textarea></div>
+    <div class="row" style="margin-top:16px;justify-content:flex-end">
+      <button type="button" class="btn" onclick="dlg.close()">Cancelar</button>
+      <button class="btn btn-primary">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast"></div>
+
+<script>
+// Clave donde MotoContable deja los vehículos exportados (ver exportarATrapasos en ../index.html)
+const MC_KEY = 'traspasos_borradores_mc';
+const KEY = 'traspasos_tramites';
+const ESTADOS = {pendiente:'Pendiente', en_proceso:'En proceso', radicado:'Radicado', terminado:'Terminado'};
+
+const dlg = document.getElementById('dlg');
+const form = document.getElementById('form');
+
+function leer(k){ try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch(e){ return []; } }
+function escribir(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){ toast('No se pudo guardar'); } }
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.style.display='none', 2500);
+}
+
+let tramites = leer(KEY);
+function guardar(){ escribir(KEY, tramites); render(); }
+
+// ── Borradores que llegan de MotoContable ─────────────────────────────────────
+function renderBorradores(){
+  const cola = leer(MC_KEY);
+  const sec = document.getElementById('secBorradores');
+  if(!cola.length){ sec.innerHTML = ''; return; }
+  sec.innerHTML = `<h2>Recibidos de MotoContable (${cola.length})</h2>` + cola.map(b=>`
+    <div class="card row">
+      <div>
+        <strong>${esc(b.nombre)}</strong> ${esc(b.modelo)} · ${esc(b.placa||'sin placa')}
+        <div class="muted">${esc(b.tipo)} · Vendedor: ${esc(b.vendedor||'—')} · ${esc(b.fechaOrigen)}</div>
+      </div>
+      <div class="row">
+        <button class="btn btn-sm btn-primary" onclick="aceptarBorrador('${esc(b.id)}')">Aceptar trámite</button>
+        <button class="btn btn-sm btn-danger" onclick="descartarBorrador('${esc(b.id)}')">Descartar</button>
+      </div>
+    </div>`).join('');
+}
+
+function aceptarBorrador(id){
+  const cola = leer(MC_KEY);
+  const b = cola.find(x=>x.id===id);
+  if(!b) return;
+  const existente = tramites.findIndex(t=>t.id===id);
+  const t = {...(existente>=0 ? tramites[existente] : {}), ...b, estado: existente>=0 ? tramites[existente].estado : 'pendiente'};
+  if(existente>=0) tramites[existente] = t; else tramites.unshift(t);
+  escribir(MC_KEY, cola.filter(x=>x.id!==id));
+  guardar();
+  toast('✓ Trámite creado');
+}
+
+function descartarBorrador(id){
+  if(!confirm('¿Descartar este vehículo recibido?')) return;
+  escribir(MC_KEY, leer(MC_KEY).filter(x=>x.id!==id));
+  render();
+}
+
+// ── Lista de trámites ─────────────────────────────────────────────────────────
+function render(){
+  renderBorradores();
+  const q = document.getElementById('buscar').value.toLowerCase().trim();
+  const est = document.getElementById('filtroEstado').value;
+  const lista = tramites.filter(t=>{
+    if(est && t.estado!==est) return false;
+    if(!q) return true;
+    return [t.placa,t.nombre,t.modelo,t.vendedor,t.comprador,t.cedula,t.compradorCedula]
+      .some(v=>String(v||'').toLowerCase().includes(q));
+  });
+  const el = document.getElementById('lista');
+  if(!lista.length){
+    el.innerHTML = `<div class="empty">${tramites.length ? 'No hay trámites con ese filtro.' : 'Aún no hay trámites. Crea uno o envíalo desde MotoContable.'}</div>`;
+    return;
+  }
+  el.innerHTML = lista.map(t=>`
+    <div class="card">
+      <div class="row">
+        <div>
+          <strong>${esc(t.nombre)}</strong> ${esc(t.modelo)} · ${esc(t.placa||'sin placa')}
+          <span class="badge b-${esc(t.estado)}">${esc(ESTADOS[t.estado]||t.estado)}</span>
+          <div class="muted">${esc(t.tipo)} · De: ${esc(t.vendedor||'—')} → A: ${esc(t.comprador||'—')}${t.origen?' · '+esc(t.origen):''}</div>
+        </div>
+        <div class="row">
+          <select class="btn-sm" style="width:auto" onchange="cambiarEstado('${esc(t.id)}',this.value)">
+            ${Object.entries(ESTADOS).map(([k,v])=>`<option value="${k}" ${k===t.estado?'selected':''}>${v}</option>`).join('')}
+          </select>
+          <button class="btn btn-sm" onclick="abrirForm('${esc(t.id)}')">Editar</button>
+          <button class="btn btn-sm btn-danger" onclick="eliminar('${esc(t.id)}')">Eliminar</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function cambiarEstado(id, estado){
+  const t = tramites.find(x=>x.id===id);
+  if(t){ t.estado = estado; guardar(); }
+}
+
+function eliminar(id){
+  if(!confirm('¿Eliminar este trámite?')) return;
+  tramites = tramites.filter(t=>t.id!==id);
+  guardar();
+}
+
+// ── Formulario ────────────────────────────────────────────────────────────────
+function abrirForm(id){
+  form.reset();
+  const t = id ? tramites.find(x=>x.id===id) : null;
+  document.getElementById('dlgTitulo').textContent = t ? 'Editar traspaso' : 'Nuevo traspaso';
+  for(const el of form.elements){
+    if(!el.name) continue;
+    el.value = t ? (t[el.name] ?? '') : (el.name==='estado' ? 'pendiente' : el.tagName==='SELECT' ? el.options[0].value : '');
+  }
+  dlg.showModal();
+}
+
+function guardarForm(e){
+  e.preventDefault();
+  const datos = Object.fromEntries(new FormData(form));
+  if(datos.id){
+    const i = tramites.findIndex(t=>t.id===datos.id);
+    tramites[i] = {...tramites[i], ...datos};
+  } else {
+    datos.id = 'tv_' + Date.now().toString(36);
+    datos.fechaOrigen = new Date().toISOString().slice(0,10);
+    tramites.unshift(datos);
+  }
+  dlg.close();
+  guardar();
+  toast('✓ Guardado');
+}
+
+// ── Backup ────────────────────────────────────────────────────────────────────
+function exportarBackup(){
+  const blob = new Blob([JSON.stringify({tramites}, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Traspasos_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importarBackup(input){
+  const f = input.files[0];
+  if(!f) return;
+  f.text().then(txt=>{
+    const d = JSON.parse(txt);
+    if(!Array.isArray(d.tramites)) throw new Error();
+    if(!confirm(`Esto reemplaza tus trámites actuales por ${d.tramites.length} del backup. ¿Continuar?`)) return;
+    tramites = d.tramites;
+    guardar();
+    toast('✓ Backup restaurado');
+  }).catch(()=>toast('Archivo de backup no válido'))
+    .finally(()=>input.value='');
+}
+
+// ── Inicio ────────────────────────────────────────────────────────────────────
+const opts = Object.entries(ESTADOS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+document.getElementById('filtroEstado').insertAdjacentHTML('beforeend', opts);
+form.elements.estado.innerHTML = opts;
+window.addEventListener('storage', e=>{ if(e.key===MC_KEY || e.key===KEY){ tramites = leer(KEY); render(); } });
+render();
+</script>
+</body>
+</html>
