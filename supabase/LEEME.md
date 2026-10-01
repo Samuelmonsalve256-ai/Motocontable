@@ -19,6 +19,7 @@ Esta guía te lleva paso a paso para configurar tu proyecto de Supabase.
 | `03_funciones.sql` | Crea funciones | Sincronización con control de versiones y tiempo real |
 | `04_migracion.sql` | Copia datos | Pasa tus datos de `mc_datos` a `mc_registros`, y antes guarda un respaldo |
 | `05_cerrar_tabla_antigua.sql` | Quita el acceso público a `mc_datos` | **Solo al final.** No borra datos |
+| `06_traspasos.sql` | Permite la colección `traspasos` | Conecta MotoContable con Traspasos Vehiculares. No borra datos |
 
 Ningún archivo borra la tabla `mc_datos` ni tus datos. Los archivos 01 a 05 se pueden volver a ejecutar sin problema: no duplican ni pisan nada.
 
@@ -238,6 +239,31 @@ Tus dispositivos lo recibirán en la próxima sincronización.
 - El historial guarda una copia por cada edición, fotos incluidas.
 - El plan gratuito de Supabase tiene 500 MB de base de datos. Revisa el uso en **Project Settings → Usage**.
 - Si algún día se acerca al límite, se puede limpiar el historial más antiguo (por ejemplo, de más de un año). Pídelo antes de hacerlo.
+
+---
+
+## Traspasos Vehiculares (`06_traspasos.sql`)
+
+La app de trámites está en `traspasos/index.html`. Guarda los trámites en la misma
+tabla `mc_registros` (colección `traspasos`), con tu misma cuenta, versiones e historial.
+
+1. **SQL Editor → pegar `06_traspasos.sql` → Run.** Al final debe aparecer una fila
+   cuya lista incluye `'traspasos'`. Solo hay que hacerlo una vez.
+2. En MotoContable, en una venta, pulsa **📋**. El vehículo, el vendedor y el comprador
+   se envían a la nube con estado *Recibido*.
+3. Abre Traspasos (`.../traspasos/`) con la misma
+   cuenta. El vehículo aparece en **Recibidos de MotoContable**; pulsa **Aceptar trámite**.
+
+Cómo se evitan errores entre las dos apps:
+- **Mismo formato de datos** (`formato: 1`): los dos lados usan los mismos campos y la
+  placa se guarda siempre en mayúsculas y sin espacios.
+- **Volver a enviar** una venta solo actualiza el vehículo y las personas: el estado del
+  trámite, el tránsito, las fechas y las notas que llenaste en Traspasos se conservan.
+- **Control de versiones**: si dos dispositivos cambian el mismo trámite a la vez, gana la
+  nube y el otro cambio queda en `mc_historial`. La app avisa y recarga.
+- **Sin conexión o sin sesión**: MotoContable lo guarda en el dispositivo y Traspasos lo
+  sube la próxima vez que se abra con sesión en ese mismo navegador.
+- **Si falta este SQL**, las dos apps lo dicen con un mensaje claro en vez de fallar.
 
 ---
 

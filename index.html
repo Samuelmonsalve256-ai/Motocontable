@@ -1474,6 +1474,7 @@ async function mcReconciliar(){
   const enNube = new Set();
   let difiere = false;
   (data||[]).forEach(r=>{
+    if(!MC_COLECCIONES.includes(r.coleccion)) return;   // p. ej. 'traspasos', que maneja otra app
     const key = r.coleccion+'|'+r.id; enNube.add(key);
     const sh = sombra[key];
     if(!sh || sh.v!==r.version || !!sh.d!==!!r.eliminado) difiere = true;
@@ -3817,51 +3818,105 @@ function liberarEspacioFotos(){
 }
 
 // ── EXPORTAR A TRASPASOS VEHICULARES ─────────────────────────────────────────
-function exportarATrapasos(ventaId){
-  const v = ventas.find(v=>v.id===ventaId);
-  if(!v){ toast('Venta no encontrada','err'); return; }
+// Contrato compartido con traspasos/index.html (formato 1). Los trámites viven en
+// mc_registros, colección 'traspasos' (ver supabase/06_traspasos.sql). Sin sesión
+// o sin conexión se dejan en la cola local TRASPASOS_COLA; Traspasos la sube a la
+// nube la próxima vez que se abra con sesión en este mismo navegador.
+const TRASPASOS_COLA = 'traspasos_borradores_mc';
+const TRASPASOS_URL  = 'traspasos/index.html';
 
-  const traspaso = {
-    id:          'mc_'+v.id,
-    // Campos que lee Traspasos Vehiculares
-    tipo:        v.tipoVehiculo==='carro' ? 'Carro' : 'Moto',
-    nombre:      v.motoNombre||'',
-    modelo:      v.motoModelo||'',
-    placa:       v.motoPlaca||'',
-    color:       '',           // MotoContable no siempre tiene color en venta
-    // Datos del vendedor (quien le vendió a Samuel)
-    vendedor:    v.vendedorNombre||'',
-    cedula:      v.vendedorCC||'',
-    telefono:    v.vendedorTel||'',
-    // Meta
-    fechaOrigen: new Date().toISOString().slice(0,10),
-    estado:      'pendiente',
-    origen:      'MotoContable',
+function traspasoDesdeVenta(v){
+  return {
+    id:              'mc_'+v.id,
+    formato:         1,
+    ventaId:         String(v.id),
+    origen:          'MotoContable',
+    tipo:            v.tipoVehiculo==='carro' ? 'Carro' : 'Moto',
+    nombre:          v.motoNombre||'',
+    modelo:          v.motoModelo||'',
+    placa:           String(v.motoPlaca||'').toUpperCase().replace(/[\s-]/g,''),
+    // Propietario actual (quien le vendió a Samuel)
+    vendedor:        v.vendedorNombre||'',
+    cedula:          v.vendedorCC||'',
+    telefono:        v.vendedorTel||'',
+    // Nuevo propietario
+    comprador:       v.comprador||'',
+    compradorCedula: v.compradorCC||'',
+    compradorTel:    v.compradorCel||'',
+    fechaVenta:      v.fecha||'',
   };
+}
 
-  // Clave que usa Traspasos Vehiculares
-  const MC_KEY = 'traspasos_borradores_mc';
+function traspasoEnCola(t){
   let cola = [];
-  try { cola = JSON.parse(localStorage.getItem(MC_KEY)||'[]'); } catch(e){}
+  try { cola = JSON.parse(localStorage.getItem(TRASPASOS_COLA)||'[]'); } catch(e){}
+  if(!Array.isArray(cola)) cola = [];
+  cola = cola.filter(x=>x && x.id!==t.id);
+  cola.push({...t, estado:'recibido', fechaOrigen:new Date().toISOString().slice(0,10)});
+  try { localStorage.setItem(TRASPASOS_COLA, JSON.stringify(cola)); return true; } catch(e){ return false; }
+}
 
-  const yaExiste = cola.some(t=>t.id===traspaso.id);
-  if(yaExiste){
-    confirm2(
-      '¿Exportar de nuevo?',
-      `"${v.motoNombre}" (${v.motoPlaca||'sin placa'}) ya fue enviado a Traspasos. ¿Quieres reemplazarlo con los datos actuales?`,
-      ()=>{
-        cola = cola.filter(t=>t.id!==traspaso.id);
-        cola.push(traspaso);
-        localStorage.setItem(MC_KEY, JSON.stringify(cola));
-        toast('✓ Actualizado en Traspasos Vehiculares');
-      }
-    );
+async function exportarATrapasos(ventaId){
+  const v = ventas.find(v=>String(v.id)===String(ventaId));
+  if(!v){ toast('Venta no encontrada','err'); return; }
+  const t = traspasoDesdeVenta(v);
+
+  if(!_supa || !_mcSesion || !navigator.onLine){
+    if(traspasoEnCola(t)) toast('Guardado en este dispositivo: se subirá al abrir Traspasos con sesión');
+    else toast('No se pudo guardar el envío a Traspasos','err');
     return;
   }
 
-  cola.push(traspaso);
-  localStorage.setItem(MC_KEY, JSON.stringify(cola));
-  toast('✓ Enviado a Traspasos — ábrelo y acepta el trámite');
+  let fila;
+  try {
+    const {data, error} = await _supa.from('mc_registros')
+      .select('version,data,deleted_at')
+      .eq('coleccion','traspasos').eq('id',t.id).maybeSingle();
+    if(error) throw error;
+    fila = data;
+  } catch(e){
+    console.log('Traspasos: no se pudo consultar la nube', e);
+    if(traspasoEnCola(t)) toast('Sin conexión con la nube: guardado en este dispositivo');
+    else toast('No se pudo enviar a Traspasos','err');
+    return;
+  }
+
+  const enviar = async (data, base)=>{
+    try {
+      const {data:r, error} = await _supa.rpc('mc_push', {
+        p_cambios: [{coleccion:'traspasos', id:t.id, data, base_version:base}],
+        p_device:  mcDeviceId
+      });
+      if(error) throw error;
+      if(r && r.conflictos && r.conflictos.length){
+        toast('Ese trámite cambió en otro dispositivo. Intenta de nuevo','err');
+        return;
+      }
+      toast(fila && !fila.deleted_at ? 'Actualizado en Traspasos Vehiculares' : 'Enviado a Traspasos Vehiculares');
+    } catch(e){
+      console.log('Traspasos: error al enviar', e);
+      if(e && e.code==='23514'){
+        toast('Falta ejecutar supabase/06_traspasos.sql en Supabase','err');
+      } else if(traspasoEnCola(t)){
+        toast('No se pudo subir: guardado en este dispositivo');
+      } else {
+        toast('No se pudo enviar a Traspasos','err');
+      }
+    }
+  };
+
+  const ahora = new Date().toISOString();
+  if(!fila || fila.deleted_at){
+    enviar({...t, estado:'recibido', fechaOrigen:ahora.slice(0,10), actualizado:ahora}, fila ? fila.version : null);
+    return;
+  }
+  // Ya existe: solo se actualizan los datos del vehículo y las personas.
+  // El estado y los datos del trámite que se llenaron en Traspasos se conservan.
+  confirm2(
+    '¿Exportar de nuevo?',
+    `"${v.motoNombre}" (${v.motoPlaca||'sin placa'}) ya está en Traspasos. ¿Actualizar el vehículo, el vendedor y el comprador con los datos actuales? El estado del trámite no cambia.`,
+    ()=>enviar({...fila.data, ...t, actualizado:ahora}, fila.version)
+  );
 }
 
 // ── CELEBRACIÓN ───────────────────────────────────────────────────────────────

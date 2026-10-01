@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Traspasos Vehiculares</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <style>
 :root{
   --bg:#080810; --bg2:#0e0e1a; --bg3:#13131f; --bg4:#1a1a28;
@@ -26,6 +27,7 @@ main{max-width:960px;margin:0 auto;padding:0 16px 40px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
 .muted{color:var(--text2);font-size:12px}
 .badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.b-recibido{background:rgba(255,255,255,.08);color:var(--text2)}
 .b-pendiente{background:rgba(255,176,32,.15);color:var(--yellow)}
 .b-en_proceso{background:rgba(42,127,255,.15);color:var(--accent)}
 .b-radicado{background:rgba(160,120,255,.15);color:#a078ff}
@@ -37,22 +39,34 @@ label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px}
 dialog{background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:16px;width:min(640px,calc(100vw - 32px));margin:auto}
 dialog::backdrop{background:rgba(0,0,0,.6)}
 .empty{color:var(--text2);text-align:center;padding:24px}
+.estado-nube{font-size:12px;color:var(--text2)}
+#login{max-width:360px;margin:40px auto}
+#login input{margin-bottom:10px}
+.hidden{display:none!important}
 #toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--border);padding:10px 16px;border-radius:8px;display:none}
 </style>
 </head>
 <body>
 <header>
   <h1>📋 Traspasos Vehiculares</h1>
-  <div class="row">
+  <div class="row" id="acciones">
+    <span class="estado-nube" id="estadoNube"></span>
+    <a class="btn" href="../index.html" style="text-decoration:none">MotoContable</a>
     <button class="btn btn-primary" onclick="abrirForm()">+ Nuevo traspaso</button>
     <button class="btn" onclick="exportarBackup()">Descargar backup</button>
-    <label class="btn" style="margin:0;color:var(--text)">Restaurar
-      <input type="file" accept=".json" hidden onchange="importarBackup(this)">
-    </label>
+    <button class="btn" onclick="cerrarSesion()">Salir</button>
   </div>
 </header>
 
-<main>
+<form id="login" class="card hidden" onsubmit="iniciarSesion(event)">
+  <h2 style="margin-top:0">Inicia sesión</h2>
+  <p class="muted" style="margin-bottom:12px">Usa la misma cuenta de MotoContable para ver lo que envías desde allá.</p>
+  <input name="email" type="email" placeholder="Correo" required autocomplete="username">
+  <input name="pass" type="password" placeholder="Contraseña" required autocomplete="current-password">
+  <button class="btn btn-primary" style="width:100%">Entrar</button>
+</form>
+
+<main id="app" class="hidden">
   <section id="secBorradores"></section>
 
   <div class="filters">
@@ -106,84 +120,203 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 <div id="toast"></div>
 
 <script>
-// Clave donde MotoContable deja los vehículos exportados (ver exportarATrapasos en ../index.html)
-const MC_KEY = 'traspasos_borradores_mc';
-const KEY = 'traspasos_tramites';
+// ════════════════════════════════════════════════════════════════════════════
+// Los trámites viven en Supabase (tabla mc_registros, colección 'traspasos'), con la
+// misma cuenta de MotoContable. MotoContable los crea con estado 'recibido'.
+// Contrato de datos (formato 1): ver traspasoDesdeVenta en ../index.html.
+// Requiere ejecutar supabase/06_traspasos.sql una vez.
+// ════════════════════════════════════════════════════════════════════════════
+const SUPA_URL = 'https://llyovzgwdqoeunvyczcy.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxseW92emd3ZHFvZXVudnljemN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MzUzNjcsImV4cCI6MjEwNjAxMTM2N30.g1DgUdTGPHDz8HEI1Kgv4SOJ13zyOwOfcAp8Ak2BRGQ';
+const COL = 'traspasos';
+const COLA_MC   = 'traspasos_borradores_mc';   // envíos de MotoContable sin conexión
+const LOCAL_V0  = 'traspasos_tramites';        // trámites de la primera versión (solo local)
+const CACHE_KEY = 'traspasos_cache_v1';
 const ESTADOS = {pendiente:'Pendiente', en_proceso:'En proceso', radicado:'Radicado', terminado:'Terminado'};
+const ETIQUETAS = {recibido:'Recibido', ...ESTADOS};
 
-const dlg = document.getElementById('dlg');
+const dlg  = document.getElementById('dlg');
 const form = document.getElementById('form');
 
-function leer(k){ try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch(e){ return []; } }
-function escribir(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){ toast('No se pudo guardar'); } }
+function leer(k, def){ try { const v = JSON.parse(localStorage.getItem(k)); return v ?? def; } catch(e){ return def; } }
+function escribir(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
 function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function toast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg; t.style.display = 'block';
-  clearTimeout(toast._t); toast._t = setTimeout(()=>t.style.display='none', 2500);
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.style.display='none', 3500);
+}
+function nubeEstado(txt){ document.getElementById('estadoNube').textContent = txt; }
+
+const deviceId = (()=>{
+  let id = leer('traspasos_device_id', null);
+  if(!id){ id = 'tv_' + Math.random().toString(36).slice(2,10); escribir('traspasos_device_id', id); }
+  return id;
+})();
+
+// Deja cualquier registro con el formato del contrato, venga de donde venga
+function normalizar(t){
+  const d = {...t};
+  d.formato = 1;
+  d.tipo    = d.tipo==='Carro' ? 'Carro' : 'Moto';
+  d.placa   = String(d.placa||'').toUpperCase().replace(/[\s-]/g,'');
+  if(!(d.estado in ETIQUETAS)) d.estado = 'pendiente';
+  for(const k of ['nombre','modelo','color','vendedor','cedula','telefono','comprador','compradorCedula','compradorTel','transito','fechaRadicacion','notas'])
+    d[k] = d[k]==null ? '' : String(d[k]);
+  return d;
 }
 
-let tramites = leer(KEY);
-function guardar(){ escribir(KEY, tramites); render(); }
+// ── Supabase ──────────────────────────────────────────────────────────────────
+let supa = null, sesion = null;
+try {
+  supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
+    auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'implicit',
+            storageKey:'mc-auth' }   // la misma sesión que MotoContable si están en el mismo sitio
+  });
+} catch(e){ console.log('Supabase no disponible', e); }
 
-// ── Borradores que llegan de MotoContable ─────────────────────────────────────
-function renderBorradores(){
-  const cola = leer(MC_KEY);
-  const sec = document.getElementById('secBorradores');
-  if(!cola.length){ sec.innerHTML = ''; return; }
-  sec.innerHTML = `<h2>Recibidos de MotoContable (${cola.length})</h2>` + cola.map(b=>`
-    <div class="card row">
-      <div>
-        <strong>${esc(b.nombre)}</strong> ${esc(b.modelo)} · ${esc(b.placa||'sin placa')}
-        <div class="muted">${esc(b.tipo)} · Vendedor: ${esc(b.vendedor||'—')} · ${esc(b.fechaOrigen)}</div>
-      </div>
-      <div class="row">
-        <button class="btn btn-sm btn-primary" onclick="aceptarBorrador('${esc(b.id)}')">Aceptar trámite</button>
-        <button class="btn btn-sm btn-danger" onclick="descartarBorrador('${esc(b.id)}')">Descartar</button>
-      </div>
-    </div>`).join('');
+// registros: id → {version, data}
+let registros = {};
+const cache = leer(CACHE_KEY, null);
+
+function errorTexto(e){
+  if(!navigator.onLine) return 'Sin conexión a internet';
+  if(e && e.code==='23514') return 'Falta ejecutar supabase/06_traspasos.sql en Supabase';
+  return 'Error de la nube: ' + ((e && e.message) || 'desconocido');
 }
 
-function aceptarBorrador(id){
-  const cola = leer(MC_KEY);
-  const b = cola.find(x=>x.id===id);
-  if(!b) return;
-  const existente = tramites.findIndex(t=>t.id===id);
-  const t = {...(existente>=0 ? tramites[existente] : {}), ...b, estado: existente>=0 ? tramites[existente].estado : 'pendiente'};
-  if(existente>=0) tramites[existente] = t; else tramites.unshift(t);
-  escribir(MC_KEY, cola.filter(x=>x.id!==id));
-  guardar();
-  toast('✓ Trámite creado');
-}
-
-function descartarBorrador(id){
-  if(!confirm('¿Descartar este vehículo recibido?')) return;
-  escribir(MC_KEY, leer(MC_KEY).filter(x=>x.id!==id));
+async function cargar(){
+  if(!supa || !sesion) return;
+  nubeEstado('Sincronizando…');
+  const {data, error} = await supa.from('mc_registros')
+    .select('id,version,data').eq('coleccion', COL).is('deleted_at', null);
+  if(error){ nubeEstado('⚠️ ' + errorTexto(error)); return; }
+  registros = {};
+  (data||[]).forEach(r=>{ registros[r.id] = {version:r.version, data:normalizar({...r.data, id:r.id})}; });
+  escribir(CACHE_KEY, {userId: sesion.user.id, registros});
+  nubeEstado('✓ Al día');
   render();
 }
 
-// ── Lista de trámites ─────────────────────────────────────────────────────────
+// Envía un cambio. Devuelve true si quedó guardado en la nube.
+async function enviar(id, data, eliminar){
+  const r = registros[id];
+  const cambio = {coleccion:COL, id, base_version: r ? r.version : null};
+  if(eliminar) cambio.eliminar = true; else cambio.data = normalizar({...data, id, actualizado:new Date().toISOString()});
+  const {data:res, error} = await supa.rpc('mc_push', {p_cambios:[cambio], p_device:deviceId});
+  if(error){ toast('No se guardó. ' + errorTexto(error)); return false; }
+  if(res.conflictos && res.conflictos.length){
+    toast('Otro dispositivo cambió este trámite. Se cargó la versión más reciente (tu cambio quedó en el historial)');
+    await cargar();
+    return false;
+  }
+  const a = res.aplicados[0];
+  if(eliminar) delete registros[id];
+  else registros[id] = {version:a.version, data:cambio.data};
+  escribir(CACHE_KEY, {userId: sesion.user.id, registros});
+  render();
+  return true;
+}
+
+// Sube lo que quedó guardado solo en este navegador (envíos de MotoContable sin
+// conexión y trámites de la primera versión). Lo que ya existe en la nube no se pisa.
+async function subirPendientesLocales(){
+  const cola = leer(COLA_MC, []), v0 = leer(LOCAL_V0, []);
+  const items = [
+    ...(Array.isArray(cola) ? cola.map(t=>({...t, estado:t.estado==='pendiente' ? 'recibido' : t.estado})) : []),
+    ...(Array.isArray(v0) ? v0 : []),
+  ].filter(t=>t && t.id);
+  if(!items.length) return;
+  const cambios = items.map(t=>({coleccion:COL, id:String(t.id), data:normalizar(t), base_version:null, modo:'migracion'}));
+  const {error} = await supa.rpc('mc_push', {p_cambios:cambios, p_device:deviceId});
+  if(error){ nubeEstado('⚠️ ' + errorTexto(error)); return; }
+  localStorage.removeItem(COLA_MC);
+  localStorage.removeItem(LOCAL_V0);
+  toast(`✓ ${items.length} trámite(s) de este dispositivo subidos a la nube`);
+}
+
+let canal = null, recargaTimer = null;
+function recargarPronto(){ clearTimeout(recargaTimer); recargaTimer = setTimeout(cargar, 400); }
+function escucharCambios(){
+  if(canal) return;
+  canal = supa.channel('traspasos')
+    .on('postgres_changes', {event:'*', schema:'public', table:'mc_registros', filter:'coleccion=eq.'+COL}, recargarPronto)
+    .subscribe();
+}
+
+async function alEntrar(s){
+  const nuevo = !sesion || sesion.user.id !== s.user.id;
+  sesion = s;
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('acciones').classList.remove('hidden');
+  if(!nuevo) return;
+  if(cache && cache.userId===s.user.id){ registros = cache.registros || {}; render(); }
+  await subirPendientesLocales();
+  await cargar();
+  escucharCambios();
+}
+function mostrarLogin(){
+  sesion = null; registros = {};
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('acciones').classList.add('hidden');
+  document.getElementById('login').classList.remove('hidden');
+}
+
+async function iniciarSesion(e){
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const {data, error} = await supa.auth.signInWithPassword({email:f.get('email'), password:f.get('pass')});
+  if(error){ toast(error.message==='Invalid login credentials' ? 'Correo o contraseña incorrectos' : errorTexto(error)); return; }
+  alEntrar(data.session);
+}
+async function cerrarSesion(){
+  if(canal){ supa.removeChannel(canal); canal = null; }
+  await supa.auth.signOut();
+  localStorage.removeItem(CACHE_KEY);
+  mostrarLogin();
+}
+
+// ── Interfaz ──────────────────────────────────────────────────────────────────
+const lista = ()=>Object.values(registros).map(r=>r.data)
+  .sort((a,b)=>String(b.actualizado||b.fechaOrigen||'').localeCompare(String(a.actualizado||a.fechaOrigen||'')));
+
 function render(){
-  renderBorradores();
+  const todos = lista();
+  const recibidos = todos.filter(t=>t.estado==='recibido');
+  document.getElementById('secBorradores').innerHTML = !recibidos.length ? '' :
+    `<h2>Recibidos de MotoContable (${recibidos.length})</h2>` + recibidos.map(b=>`
+    <div class="card row">
+      <div>
+        <strong>${esc(b.nombre)}</strong> ${esc(b.modelo)} · ${esc(b.placa||'sin placa')}
+        <div class="muted">${esc(b.tipo)} · De: ${esc(b.vendedor||'—')} → A: ${esc(b.comprador||'—')}</div>
+      </div>
+      <div class="row">
+        <button class="btn btn-sm btn-primary" onclick="cambiarEstado('${esc(b.id)}','pendiente')">Aceptar trámite</button>
+        <button class="btn btn-sm btn-danger" onclick="eliminar('${esc(b.id)}')">Descartar</button>
+      </div>
+    </div>`).join('');
+
   const q = document.getElementById('buscar').value.toLowerCase().trim();
   const est = document.getElementById('filtroEstado').value;
-  const lista = tramites.filter(t=>{
+  const filtrados = todos.filter(t=>{
+    if(t.estado==='recibido') return false;
     if(est && t.estado!==est) return false;
     if(!q) return true;
     return [t.placa,t.nombre,t.modelo,t.vendedor,t.comprador,t.cedula,t.compradorCedula]
       .some(v=>String(v||'').toLowerCase().includes(q));
   });
   const el = document.getElementById('lista');
-  if(!lista.length){
-    el.innerHTML = `<div class="empty">${tramites.length ? 'No hay trámites con ese filtro.' : 'Aún no hay trámites. Crea uno o envíalo desde MotoContable.'}</div>`;
+  if(!filtrados.length){
+    el.innerHTML = `<div class="empty">${todos.length > recibidos.length ? 'No hay trámites con ese filtro.' : 'Aún no hay trámites. Crea uno o envíalo desde MotoContable con el botón 📋 de una venta.'}</div>`;
     return;
   }
-  el.innerHTML = lista.map(t=>`
+  el.innerHTML = filtrados.map(t=>`
     <div class="card">
       <div class="row">
         <div>
           <strong>${esc(t.nombre)}</strong> ${esc(t.modelo)} · ${esc(t.placa||'sin placa')}
-          <span class="badge b-${esc(t.estado)}">${esc(ESTADOS[t.estado]||t.estado)}</span>
+          <span class="badge b-${esc(t.estado)}">${esc(ETIQUETAS[t.estado])}</span>
           <div class="muted">${esc(t.tipo)} · De: ${esc(t.vendedor||'—')} → A: ${esc(t.comprador||'—')}${t.origen?' · '+esc(t.origen):''}</div>
         </div>
         <div class="row">
@@ -197,48 +330,51 @@ function render(){
     </div>`).join('');
 }
 
-function cambiarEstado(id, estado){
-  const t = tramites.find(x=>x.id===id);
-  if(t){ t.estado = estado; guardar(); }
+async function cambiarEstado(id, estado){
+  const r = registros[id];
+  if(!r) return;
+  if(!await enviar(id, {...r.data, estado})) render();
+  else if(r.data.estado==='recibido') toast('✓ Trámite aceptado');
 }
 
-function eliminar(id){
-  if(!confirm('¿Eliminar este trámite?')) return;
-  tramites = tramites.filter(t=>t.id!==id);
-  guardar();
+async function eliminar(id){
+  if(!confirm('¿Eliminar este trámite? Quedará guardado en el historial de Supabase.')) return;
+  if(await enviar(id, null, true)) toast('Trámite eliminado');
 }
 
 // ── Formulario ────────────────────────────────────────────────────────────────
 function abrirForm(id){
   form.reset();
-  const t = id ? tramites.find(x=>x.id===id) : null;
+  const t = id && registros[id] ? registros[id].data : null;
   document.getElementById('dlgTitulo').textContent = t ? 'Editar traspaso' : 'Nuevo traspaso';
   for(const el of form.elements){
     if(!el.name) continue;
     el.value = t ? (t[el.name] ?? '') : (el.name==='estado' ? 'pendiente' : el.tagName==='SELECT' ? el.options[0].value : '');
   }
+  if(t && t.estado==='recibido') form.elements.estado.value = 'pendiente';
   dlg.showModal();
 }
 
-function guardarForm(e){
+async function guardarForm(e){
   e.preventDefault();
   const datos = Object.fromEntries(new FormData(form));
-  if(datos.id){
-    const i = tramites.findIndex(t=>t.id===datos.id);
-    tramites[i] = {...tramites[i], ...datos};
-  } else {
-    datos.id = 'tv_' + Date.now().toString(36);
-    datos.fechaOrigen = new Date().toISOString().slice(0,10);
-    tramites.unshift(datos);
-  }
-  dlg.close();
-  guardar();
-  toast('✓ Guardado');
+  const boton = form.querySelector('button.btn-primary');
+  boton.disabled = true;
+  try {
+    let ok;
+    if(datos.id && registros[datos.id]){
+      ok = await enviar(datos.id, {...registros[datos.id].data, ...datos});
+    } else {
+      const id = 'tv_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+      ok = await enviar(id, {...datos, id, origen:'Traspasos', fechaOrigen:new Date().toISOString().slice(0,10)});
+    }
+    if(ok){ dlg.close(); toast('✓ Guardado'); }
+  } finally { boton.disabled = false; }
 }
 
 // ── Backup ────────────────────────────────────────────────────────────────────
 function exportarBackup(){
-  const blob = new Blob([JSON.stringify({tramites}, null, 2)], {type:'application/json'});
+  const blob = new Blob([JSON.stringify({formato:1, tramites:lista()}, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `Traspasos_backup_${new Date().toISOString().slice(0,10)}.json`;
@@ -246,26 +382,24 @@ function exportarBackup(){
   URL.revokeObjectURL(a.href);
 }
 
-function importarBackup(input){
-  const f = input.files[0];
-  if(!f) return;
-  f.text().then(txt=>{
-    const d = JSON.parse(txt);
-    if(!Array.isArray(d.tramites)) throw new Error();
-    if(!confirm(`Esto reemplaza tus trámites actuales por ${d.tramites.length} del backup. ¿Continuar?`)) return;
-    tramites = d.tramites;
-    guardar();
-    toast('✓ Backup restaurado');
-  }).catch(()=>toast('Archivo de backup no válido'))
-    .finally(()=>input.value='');
-}
-
 // ── Inicio ────────────────────────────────────────────────────────────────────
 const opts = Object.entries(ESTADOS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
 document.getElementById('filtroEstado').insertAdjacentHTML('beforeend', opts);
 form.elements.estado.innerHTML = opts;
-window.addEventListener('storage', e=>{ if(e.key===MC_KEY || e.key===KEY){ tramites = leer(KEY); render(); } });
-render();
+window.addEventListener('online', ()=>{ if(sesion){ subirPendientesLocales().then(cargar); } });
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && sesion) cargar(); });
+window.addEventListener('storage', e=>{ if(e.key===COLA_MC && sesion) subirPendientesLocales().then(cargar); });
+
+(async ()=>{
+  if(!supa){ document.body.innerHTML = '<p class="empty">No se pudo cargar Supabase. Revisa tu conexión y recarga.</p>'; return; }
+  // Dentro de este aviso no se llama a Supabase directamente (puede bloquearse): se difiere.
+  supa.auth.onAuthStateChange((evento, s)=>setTimeout(()=>{
+    if(evento==='SIGNED_OUT') mostrarLogin();
+    else if(s && (evento==='SIGNED_IN' || evento==='TOKEN_REFRESHED')){ if(sesion) sesion = s; else alEntrar(s); }
+  }, 0));
+  const {data} = await supa.auth.getSession();
+  if(data.session) alEntrar(data.session); else mostrarLogin();
+})();
 </script>
 </body>
 </html>
