@@ -1,0 +1,2930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traspasos de Vehículos</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0eeea;
+    --border: #e2dfd8;
+    --border2: #ccc9c0;
+    --text: #1a1915;
+    --text2: #6b6860;
+    --text3: #9b9890;
+    --accent: #1d3a5f;
+    --accent-light: #e8eef5;
+    --pending-bg: #fff8ec;
+    --pending-border: #e8a020;
+    --pending-text: #7a4800;
+    --done-bg: #edf7ed;
+    --done-border: #4caf50;
+    --done-text: #1a5c1a;
+    --moto-bg: #edf2fb;
+    --moto-text: #1a3a8f;
+    --carro-bg: #f3eefb;
+    --carro-text: #4a1a8f;
+    --danger: #c0392b;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 58px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header svg { flex-shrink: 0; opacity: .9; }
+  header h1 { font-size: 17px; font-weight: 600; letter-spacing: .2px; }
+  header span { font-size: 12px; opacity: .6; margin-left: 4px; }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 58px);
+  }
+
+  /* ── SIDEBAR ── */
+  nav {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+  }
+  .nav-section { padding: 0 1rem; margin-bottom: 1.5rem; }
+  .nav-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 0 .5rem;
+    margin-bottom: 6px;
+  }
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    font-size: 13.5px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-align: left;
+    transition: background .15s, color .15s;
+  }
+  .nav-btn:hover { background: var(--bg); color: var(--text); }
+  .nav-btn.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+  .nav-btn svg { flex-shrink: 0; }
+  .nav-badge {
+    margin-left: auto;
+    background: var(--pending-bg);
+    color: var(--pending-text);
+    border: 1px solid var(--pending-border);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 20px;
+    min-width: 22px;
+    text-align: center;
+    display: none;
+  }
+  .nav-badge-done {
+    margin-left: auto;
+    background: var(--done-bg);
+    color: var(--done-text);
+    border: 1px solid var(--done-border);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 20px;
+    min-width: 22px;
+    text-align: center;
+    display: none;
+  }
+  .alert-done {
+    background: var(--done-bg);
+    border: 1px solid var(--done-border);
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    margin-bottom: 1.25rem;
+    font-size: 13px;
+    color: var(--done-text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── MAIN ── */
+  main {
+    padding: 2rem;
+    overflow-y: auto;
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .page-title svg { color: var(--accent); }
+
+  /* ── FORM ── */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--text3);
+    margin-bottom: 1rem;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-grid.full { grid-template-columns: 1fr; }
+  .form-field { display: flex; flex-direction: column; gap: 5px; }
+  label { font-size: 12px; font-weight: 600; color: var(--text2); }
+  input, select, textarea {
+    width: 100%;
+    padding: 8px 11px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    transition: border .15s, box-shadow .15s;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(29,58,95,.1);
+  }
+  textarea { resize: vertical; min-height: 72px; }
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 8px 18px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    background: var(--surface);
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background .15s, border .15s, transform .1s;
+  }
+  .btn:hover { background: var(--bg); }
+  .btn:active { transform: scale(.98); }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #163050; }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+  .btn-ghost { border-color: transparent; background: transparent; color: var(--text2); }
+  .btn-ghost:hover { background: var(--bg); color: var(--text); }
+  .btn-danger { color: var(--danger); border-color: #f5c6c3; }
+  .btn-danger:hover { background: #fdf0ef; }
+  .btn-success { color: var(--done-text); border-color: var(--done-border); }
+  .btn-success:hover { background: var(--done-bg); }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .badge-pending { background: var(--pending-bg); color: var(--pending-text); border: 1px solid #f0c060; }
+  .badge-done { background: var(--done-bg); color: var(--done-text); border: 1px solid #a8d8a8; }
+  .badge-moto { background: var(--moto-bg); color: var(--moto-text); }
+  .badge-carro { background: var(--carro-bg); color: var(--carro-text); }
+  .badge-age-ok { background: var(--pending-bg); color: var(--pending-text); border: 1px solid #f0c060; }
+  .badge-age-warn { background: #fdeee0; color: #b75a1a; border: 1px solid #f0a060; }
+  .badge-age-urgent { background: #fdeceb; color: var(--danger); border: 1px solid #f3b8b3; }
+
+  /* ── RECORD CARDS ── */
+  .record-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 10px;
+    transition: border .15s;
+  }
+  .record-card:hover { border-color: var(--border2); }
+  .record-card.is-pending { border-left: 3px solid var(--pending-border); }
+  .record-card.is-done { border-left: 3px solid var(--done-border); }
+  .record-card.is-urgent { border-left: 3px solid var(--danger); background: #fffaf9; }
+  .rc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .rc-badges { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
+  .rc-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .rc-meta { font-size: 12px; color: var(--text2); line-height: 1.7; }
+  .rc-meta strong { color: var(--text); font-weight: 600; }
+  .rc-price { font-size: 18px; font-weight: 700; color: var(--accent); white-space: nowrap; margin-left: 1rem; }
+  .reason-box {
+    background: var(--pending-bg);
+    border-left: 3px solid var(--pending-border);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    color: var(--pending-text);
+    margin: 8px 0;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .reason-box svg { flex-shrink: 0; margin-top: 1px; }
+  .rc-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-bar select { width: auto; font-size: 12px; padding: 6px 10px; }
+  .filter-bar input[type="text"] { width: 200px; font-size: 12px; padding: 6px 10px; }
+  .filter-count { font-size: 12px; color: var(--text3); margin-left: auto; }
+
+  /* ── ALERT ── */
+  .alert-pending {
+    background: var(--pending-bg);
+    border: 1px solid var(--pending-border);
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    margin-bottom: 1.25rem;
+    font-size: 13px;
+    color: var(--pending-text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── MONTH GROUP ── */
+  .month-block { margin-bottom: 1rem; }
+  .month-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0;
+    transition: background .15s;
+  }
+  .month-toggle:hover { background: #e8e5df; }
+  .month-toggle .month-stats {
+    display: flex;
+    gap: 18px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text2);
+    align-items: center;
+  }
+  .month-stats .stat { display: flex; align-items: center; gap: 5px; }
+  .month-stats .stat strong { font-weight: 700; color: var(--text); font-size: 13px; }
+  .month-stats .stat.pend strong { color: var(--pending-text); }
+  .month-stats .stat.done strong { color: var(--done-text); }
+  .month-stats .stat.price strong { color: var(--accent); }
+  .month-body { display: none; padding-top: 10px; }
+  .month-body.open { display: block; }
+  .month-total {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0 4px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+  .month-total span { font-size: 12px; color: var(--text2); }
+  .month-total strong { font-size: 16px; font-weight: 700; color: var(--accent); }
+
+  /* ── YEAR SUB-GROUPS (Historial Anual) ── */
+  .year-month-group {
+    margin: 10px 0 16px 0;
+    padding-left: 14px;
+    border-left: 2px solid var(--border);
+  }
+  .year-month-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    padding: 4px 0 8px;
+  }
+  .year-month-header .month-stats { font-size: 11px; gap: 12px; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text3);
+  }
+  .empty-state svg { display: block; margin: 0 auto 12px; opacity: .35; }
+  .empty-state p { font-size: 14px; }
+
+  /* ── STATS SUMMARY ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+  }
+  .stat-card .sc-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--text3); margin-bottom: 6px; }
+  .stat-card .sc-value { font-size: 24px; font-weight: 700; color: var(--text); }
+  .stat-card .sc-value.blue { color: var(--accent); }
+  .stat-card .sc-value.orange { color: var(--pending-text); }
+  .stat-card .sc-value.green { color: var(--done-text); }
+
+  /* ── EDIT MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.4);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-box {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text2);
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+  }
+  .modal-close:hover { background: var(--bg); color: var(--text); }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--text);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .25s, transform .25s;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── TODOS ── */
+  .todos-table-wrap { overflow-x: auto; }
+  .todos-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    table-layout: fixed;
+  }
+  .todos-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--text3);
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .todos-table th:hover { color: var(--text2); }
+  .todos-table th .sort-arrow { margin-left: 4px; opacity: .4; font-style: normal; }
+  .todos-table th.sorted .sort-arrow { opacity: 1; color: var(--accent); }
+  .todos-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .todos-table tr:hover td { background: var(--bg); }
+  .todos-table tr:last-child td { border-bottom: none; }
+  .todos-table .col-n    { width: 38px; }
+  .todos-table .col-fecha { width: 90px; }
+  .todos-table .col-tipo  { width: 80px; }
+  .todos-table .col-placa { width: 90px; }
+  .todos-table .col-modelo{ width: 150px; }
+  .todos-table .col-vendor{ width: 160px; }
+  .todos-table .col-costo { width: 110px; text-align: right; }
+  .todos-table .col-estado{ width: 110px; }
+  .todos-table .col-acc   { width: 90px; text-align: center; }
+  .td-placa { font-family: monospace; letter-spacing: .5px; font-size: 12px; }
+  .td-costo { font-weight: 700; color: var(--accent); }
+  .td-n { color: var(--text3); font-size: 12px; }
+  .todos-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0 0;
+    font-size: 12px;
+    color: var(--text2);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .todos-footer strong { color: var(--accent); font-size: 15px; }
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /* ── ANÁLISIS ── */
+  .analisis-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+  }
+  .analisis-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    margin-bottom: 1rem;
+  }
+  .analisis-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .analisis-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--text3);
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  .analisis-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .analisis-table tr:last-child td { border-bottom: none; }
+  .analisis-table tr:hover td { background: var(--bg); }
+  .progress-bar-wrap {
+    background: var(--bg);
+    border-radius: 20px;
+    height: 8px;
+    width: 100px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #2e7d32, #4caf50);
+    transition: width .4s;
+  }
+  .trend-up   { color: #2e7d32; font-weight: 700; }
+  .trend-down { color: var(--danger); font-weight: 700; }
+  .trend-eq   { color: var(--text3); font-weight: 700; }
+
+  /* Timeline */
+  .timeline-month { margin-bottom: 1.5rem; }
+  .timeline-month-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--text3);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .timeline-month-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .timeline-events {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 16px;
+    border-left: 2px solid var(--border);
+  }
+  .timeline-event {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    font-size: 12.5px;
+    padding: 5px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .timeline-event::before {
+    content: '';
+    position: absolute;
+    left: -21px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+  }
+  .timeline-event.ev-done::before  { background: #4caf50; box-shadow: 0 0 0 2px #4caf50; }
+  .timeline-event.ev-pend::before  { background: #e8a020; box-shadow: 0 0 0 2px #e8a020; }
+  .timeline-event.ev-urgent::before { background: var(--danger); box-shadow: 0 0 0 2px var(--danger); }
+  .ev-date {
+    font-size: 11px;
+    color: var(--text3);
+    min-width: 70px;
+    font-family: monospace;
+  }
+  .ev-info { flex: 1; }
+  .ev-info strong { font-weight: 600; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 680px) {
+    .layout { grid-template-columns: 1fr; }
+    nav { display: flex; border-right: none; border-bottom: 1px solid var(--border); padding: .5rem; overflow-x: auto; }
+    .nav-section { display: flex; gap: 4px; margin: 0; padding: 0; white-space: nowrap; }
+    .nav-label { display: none; }
+    main { padding: 1rem; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid.cols-3 { grid-template-columns: 1fr; }
+    .month-toggle .month-stats { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11l5 5v5a2 2 0 0 1-2 2z"/><circle cx="7" cy="17" r="1"/><circle cx="17" cy="17" r="1"/>
+  </svg>
+  <h1>Traspasos de Vehículos <span>— Samuel</span></h1>
+  <div id="tv-sync" onclick="tvSincronizarAhora()" title="Toca para sincronizar con la nube"
+       style="margin-left:auto;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:48vw">☁️ Nube</div>
+</header>
+
+<div class="layout">
+  <nav>
+    <div class="nav-section">
+      <div class="nav-label">Menú</div>
+      <button class="nav-btn active" onclick="showPanel('nuevo', this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Nuevo trámite
+      </button>
+      <button class="nav-btn" onclick="showPanel('motocontable', this)" id="nav-motocontable">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        Desde MotoContable
+        <span class="nav-badge" id="badge-mc" style="background:#e8eef5;color:#1d3a5f;border-color:#b8d0e8;display:none">0</span>
+      </button>
+      <button class="nav-btn" onclick="showPanel('pendientes', this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Pendientes
+        <span class="nav-badge" id="badge-pending">0</span>
+      </button>
+      <button class="nav-btn" onclick="showPanel('completados', this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Completados
+        <span class="nav-badge-done" id="badge-done">0</span>
+      </button>
+      <button class="nav-btn" onclick="showPanel('todos', this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Todos los trámites
+      </button>
+      <button class="nav-btn" onclick="showPanel('historial', this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Historial mensual
+      </button>
+      <button class="nav-btn" onclick="showPanel('historial-anual', this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="16" x2="21" y2="16"/></svg>
+        Historial anual
+      </button>
+      <button class="nav-btn" onclick="showPanel('analisis', this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Análisis
+      </button>
+      <button class="nav-btn" onclick="showPanel('nube', this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        Respaldo y nube
+      </button>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ── NUEVO ── -->
+    <div id="panel-nuevo" class="panel active">
+      <div class="page-title">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Registrar trámite de traspaso
+      </div>
+
+      <div class="form-card">
+        <div class="form-section-title">Datos del vendedor</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="f-vendedor">Nombre completo del vendedor</label>
+            <input id="f-vendedor" type="text" placeholder="Ej: Carlos Andrés Gómez">
+          </div>
+          <div class="form-field">
+            <label for="f-cedula">Cédula del vendedor</label>
+            <input id="f-cedula" type="text" placeholder="Ej: 1023456789">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="f-telefono">Teléfono del vendedor</label>
+            <input id="f-telefono" type="tel" placeholder="Ej: 3001234567">
+          </div>
+          <div style="display:flex;align-items:flex-end;padding-bottom:2px">
+            <span style="font-size:12px;color:var(--text3)">Para contactar en caso de dificultades con el trámite</span>
+          </div>
+        </div>
+
+        <div class="form-section-title" style="margin-top:1rem">Datos del vehículo</div>
+        <div class="form-grid cols-3">
+          <div class="form-field">
+            <label for="f-tipo">Tipo de vehículo</label>
+            <select id="f-tipo">
+              <option value="">Seleccionar...</option>
+              <option value="Moto">Moto</option>
+              <option value="Carro">Carro</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="f-nombre">Nombre del vehículo</label>
+            <input id="f-nombre" type="text" placeholder="Ej: Honda CB 125">
+          </div>
+          <div class="form-field">
+            <label for="f-color">Color</label>
+            <input id="f-color" type="text" placeholder="Ej: Rojo">
+          </div>
+        </div>
+        <div class="form-grid cols-3">
+          <div class="form-field">
+            <label for="f-modelo">Año del modelo</label>
+            <input id="f-modelo" type="text" placeholder="Ej: 2022">
+          </div>
+          <div class="form-field">
+            <label for="f-placa">Placa</label>
+            <input id="f-placa" type="text" placeholder="Ej: ABC123" style="text-transform:uppercase">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <label style="opacity:0">‎</label>
+            <div style="font-size:12px;color:var(--text3);padding:8px 0">Placa en mayúsculas automático</div>
+          </div>
+        </div>
+
+        <div class="form-section-title" style="margin-top:1rem">Trámite</div>
+        <div class="form-grid cols-3">
+          <div class="form-field">
+            <label>Fecha de registro</label>
+            <input type="text" id="f-fecha-registro-display" readonly style="background:var(--surface2);color:var(--text2);cursor:default">
+            <input type="hidden" id="f-fecha-registro">
+          </div>
+          <div class="form-field">
+            <label for="f-fecha-envio">Fecha de envío <span style="font-weight:400;color:var(--text3)">(cuando lo mandes)</span></label>
+            <input id="f-fecha-envio" type="date">
+          </div>
+          <div class="form-field">
+            <label for="f-costo">Costo del trámite ($)</label>
+            <input id="f-costo" type="number" placeholder="0" min="0" step="1000">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="f-estado">Estado</label>
+            <select id="f-estado">
+              <option value="Pendiente">Pendiente</option>
+              <option value="Completado">Completado</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="f-motivo">Motivo de pendiente (si aplica)</label>
+            <input id="f-motivo" type="text" placeholder="Ej: Falta poder de autenticación...">
+          </div>
+        </div>
+        <div class="form-grid full">
+          <div class="form-field">
+            <label for="f-nota">Nota</label>
+            <textarea id="f-nota" placeholder="Ej: Le pagué a la tramitadora el 15/07/2026, quedó de entregarlo el viernes..."></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-ghost" onclick="clearForm()">Limpiar</button>
+          <button class="btn btn-primary" onclick="saveRecord()">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Guardar trámite
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MOTOCONTABLE ── -->
+    <div id="panel-motocontable" class="panel">
+      <div class="page-title">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        Recibidos desde MotoContable
+      </div>
+      <div id="mc-alert"></div>
+      <div id="mc-list"></div>
+    </div>
+
+    <!-- ── RESPALDO Y NUBE ── -->
+    <div id="panel-nube" class="panel">
+      <div class="page-title">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        Respaldo y nube
+      </div>
+      <div class="form-card">
+        <div class="form-section-title">Cuenta y sincronización</div>
+        <p id="tv-cuenta-info" style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px"></p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="tvSincronizarAhora()">Sincronizar ahora</button>
+          <button class="btn" id="tv-btn-sesion" onclick="tvBotonSesion()">Iniciar sesión</button>
+        </div>
+      </div>
+      <div class="form-card" style="margin-top:1rem">
+        <div class="form-section-title">Respaldo en archivo</div>
+        <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px">Descarga todos tus trámites en un archivo, o importa un respaldo. Importar <strong>agrega</strong> lo que falte: nunca borra ni reemplaza lo que ya tienes.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="tvExportarRespaldo()">Descargar respaldo</button>
+          <button class="btn" onclick="document.getElementById('tv-import-file').click()">Importar respaldo</button>
+          <input type="file" id="tv-import-file" accept=".json,application/json" style="display:none" onchange="tvImportarRespaldo(this)">
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PENDIENTES ── -->
+    <div id="panel-pendientes" class="panel">
+      <div class="page-title">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Trámites pendientes
+      </div>
+      <div id="pending-alert"></div>
+      <div class="filter-bar">
+        <select id="fp-tipo" onchange="renderPending()">
+          <option value="">Todos los tipos</option>
+          <option value="Moto">Moto</option>
+          <option value="Carro">Carro</option>
+        </select>
+        <input type="text" id="fp-search" placeholder="Buscar placa o vendedor..." oninput="renderPending()">
+        <span class="filter-count" id="fp-count"></span>
+      </div>
+      <div id="pending-list"></div>
+    </div>
+
+    <!-- ── COMPLETADOS ── -->
+    <div id="panel-completados" class="panel">
+      <div class="page-title">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Trámites completados
+      </div>
+      <div id="done-alert"></div>
+      <div class="filter-bar">
+        <select id="fc-tipo" onchange="renderDone()">
+          <option value="">Todos los tipos</option>
+          <option value="Moto">Moto</option>
+          <option value="Carro">Carro</option>
+        </select>
+        <input type="text" id="fc-search" placeholder="Buscar placa o vendedor..." oninput="renderDone()">
+        <span class="filter-count" id="fc-count"></span>
+      </div>
+      <div id="done-list"></div>
+    </div>
+
+    <!-- ── TODOS ── -->
+    <div id="panel-todos" class="panel">
+      <div class="page-title">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Todos los trámites
+      </div>
+      <div class="stats-grid" id="todos-stats"></div>
+      <div class="filter-bar" style="margin-bottom:1rem">
+        <input type="text" id="ft-search" placeholder="Buscar placa, vendedor o modelo..." oninput="renderTodos()" style="width:240px">
+        <select id="ft-tipo" onchange="renderTodos()">
+          <option value="">Todos los tipos</option>
+          <option value="Moto">Moto</option>
+          <option value="Carro">Carro</option>
+        </select>
+        <select id="ft-estado" onchange="renderTodos()">
+          <option value="">Todos los estados</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Completado">Completado</option>
+        </select>
+        <select id="ft-anio" onchange="renderTodos()">
+          <option value="">Todos los años</option>
+        </select>
+        <select id="ft-mes" onchange="renderTodos()">
+          <option value="">Todos los meses</option>
+        </select>
+        <span class="filter-count" id="ft-count"></span>
+      </div>
+      <div class="table-card">
+        <div class="todos-table-wrap">
+          <table class="todos-table" id="todos-table">
+            <thead>
+              <tr>
+                <th class="col-n">#</th>
+                <th class="col-fecha" onclick="sortTodos('fecha')"># Fecha <i class="sort-arrow" id="sa-fecha">↕</i></th>
+                <th class="col-tipo">Tipo</th>
+                <th class="col-placa" onclick="sortTodos('placa')">Placa <i class="sort-arrow" id="sa-placa">↕</i></th>
+                <th class="col-modelo" onclick="sortTodos('modelo')">Modelo <i class="sort-arrow" id="sa-modelo">↕</i></th>
+                <th class="col-vendor" onclick="sortTodos('vendedor')">Vendedor <i class="sort-arrow" id="sa-vendedor">↕</i></th>
+                <th class="col-costo" onclick="sortTodos('costo')">Costo <i class="sort-arrow" id="sa-costo">↕</i></th>
+                <th class="col-estado">Estado</th>
+                <th class="col-acc">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="todos-tbody"></tbody>
+          </table>
+        </div>
+        <div style="padding:10px 16px;border-top:1px solid var(--border)">
+          <div class="todos-footer" id="todos-footer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HISTORIAL ── -->
+    <div id="panel-historial" class="panel">
+      <div class="page-title">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Historial mensual
+      </div>
+      <div class="stats-grid" id="summary-stats"></div>
+      <div class="filter-bar">
+        <select id="fh-anio" onchange="renderHistory()">
+          <option value="">Todos los años</option>
+        </select>
+        <select id="fh-tipo" onchange="renderHistory()">
+          <option value="">Todos los tipos</option>
+          <option value="Moto">Moto</option>
+          <option value="Carro">Carro</option>
+        </select>
+        <select id="fh-estado" onchange="renderHistory()">
+          <option value="">Todos los estados</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Completado">Completado</option>
+        </select>
+      </div>
+      <div id="history-list"></div>
+    </div>
+
+    <!-- ── HISTORIAL ANUAL ── -->
+    <div id="panel-historial-anual" class="panel">
+      <div class="page-title">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="16" x2="21" y2="16"/></svg>
+        Historial anual
+      </div>
+      <div class="stats-grid" id="summary-stats-anual"></div>
+      <div class="filter-bar">
+        <select id="fa-tipo" onchange="renderHistoryAnual()">
+          <option value="">Todos los tipos</option>
+          <option value="Moto">Moto</option>
+          <option value="Carro">Carro</option>
+        </select>
+        <select id="fa-estado" onchange="renderHistoryAnual()">
+          <option value="">Todos los estados</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Completado">Completado</option>
+        </select>
+      </div>
+      <div id="history-anual-list"></div>
+    </div>
+
+    <!-- ── ANÁLISIS ── -->
+    <div id="panel-analisis" class="panel">
+      <div class="page-title">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Análisis mensual de progreso
+      </div>
+
+      <!-- KPIs -->
+      <div class="stats-grid" id="analisis-kpis"></div>
+
+      <!-- Filtro año -->
+      <div class="filter-bar" style="margin-bottom:1.25rem">
+        <select id="fan-anio" onchange="renderAnalisis()">
+          <option value="">Todos los años</option>
+        </select>
+        <select id="fan-tipo" onchange="renderAnalisis()">
+          <option value="">Todos los tipos</option>
+          <option value="Moto">Moto</option>
+          <option value="Carro">Carro</option>
+        </select>
+      </div>
+
+      <!-- Gráfico barras apiladas -->
+      <div class="analisis-card" style="margin-bottom:1.25rem">
+        <div class="analisis-card-title">Trámites por mes — Completados vs Pendientes</div>
+        <div style="position:relative;height:260px">
+          <canvas id="chart-barras"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráfico tendencia línea -->
+      <div class="analisis-card" style="margin-bottom:1.25rem">
+        <div class="analisis-card-title">Tendencia de trámites totales por mes</div>
+        <div style="position:relative;height:200px">
+          <canvas id="chart-linea"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráfico costo mensual -->
+      <div class="analisis-card" style="margin-bottom:1.25rem">
+        <div class="analisis-card-title">Inversión en trámites por mes ($)</div>
+        <div style="position:relative;height:200px">
+          <canvas id="chart-costo"></canvas>
+        </div>
+      </div>
+
+      <!-- Tabla detalle por mes -->
+      <div class="analisis-card">
+        <div class="analisis-card-title">Detalle mensual</div>
+        <div style="overflow-x:auto">
+          <table class="analisis-table" id="analisis-tabla">
+            <thead>
+              <tr>
+                <th>Mes</th>
+                <th>Total</th>
+                <th>Completados</th>
+                <th>Pendientes</th>
+                <th>% Completado</th>
+                <th>Inversión</th>
+                <th>Tendencia</th>
+              </tr>
+            </thead>
+            <tbody id="analisis-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Timeline de fechas -->
+      <div class="analisis-card" style="margin-top:1.25rem">
+        <div class="analisis-card-title">Línea de tiempo — fechas de trámites</div>
+        <div id="analisis-timeline"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal" style="display:none" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-title">
+      Editar trámite
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <input type="hidden" id="edit-id">
+    <div class="form-grid">
+      <div class="form-field"><label>Nombre del vendedor</label><input id="e-vendedor" type="text"></div>
+      <div class="form-field"><label>Cédula</label><input id="e-cedula" type="text"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-field"><label>Teléfono del vendedor</label><input id="e-telefono" type="tel" placeholder="Ej: 3001234567"></div>
+      <div></div>
+    </div>
+    <div class="form-grid cols-3">
+      <div class="form-field">
+        <label>Tipo</label>
+        <select id="e-tipo"><option value="Moto">Moto</option><option value="Carro">Carro</option></select>
+      </div>
+      <div class="form-field"><label>Nombre del vehículo</label><input id="e-nombre" type="text" placeholder="Ej: Honda CB 125"></div>
+      <div class="form-field"><label>Color</label><input id="e-color" type="text" placeholder="Ej: Rojo"></div>
+    </div>
+    <div class="form-grid cols-3">
+      <div class="form-field"><label>Año del modelo</label><input id="e-modelo" type="text" placeholder="Ej: 2022"></div>
+      <div class="form-field"><label>Placa</label><input id="e-placa" type="text" style="text-transform:uppercase"></div>
+      <div class="form-field"><label>Costo ($)</label><input id="e-costo" type="number" min="0" step="1000"></div>
+    </div>
+    <div class="form-grid cols-3">
+      <div class="form-field">
+        <label>Fecha de registro</label>
+        <input id="e-fecha-registro-display" type="text" readonly style="background:var(--surface2);color:var(--text2);cursor:default">
+        <input type="hidden" id="e-fecha-registro">
+      </div>
+      <div class="form-field"><label>Fecha de envío <span style="font-weight:400;color:var(--text3)">(cuando lo mandes)</span></label><input id="e-fecha-envio" type="date"></div>
+      <div class="form-field">
+        <label>Estado</label>
+        <select id="e-estado"><option value="Pendiente">Pendiente</option><option value="Completado">Completado</option></select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-field"><label>Motivo de pendiente</label><input id="e-motivo" type="text" placeholder="Ej: Falta firma del vendedor..."></div>
+      <div class="form-field"></div>
+    </div>
+    <div class="form-grid full">
+      <div class="form-field"><label>Nota</label><textarea id="e-nota" placeholder="Ej: Le pagué a la tramitadora el 15/07/2026, quedó de entregarlo el viernes..."></textarea></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveEdit()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Guardar cambios
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- INICIO DE SESIÓN (misma cuenta de MotoContable) -->
+<div class="modal-overlay" id="tv-login" style="display:none;z-index:2000;background:var(--bg)">
+  <div class="modal-box" style="max-width:380px">
+    <div class="modal-title" id="tv-login-titulo" style="justify-content:center">Inicia sesión</div>
+    <p id="tv-login-sub" style="font-size:13px;color:var(--text2);text-align:center;line-height:1.55;margin-bottom:1rem"></p>
+    <form id="tv-login-form" onsubmit="event.preventDefault();tvLoginEnviar()">
+      <div class="form-field" id="tv-login-email-g" style="margin-bottom:10px">
+        <label for="tv-login-email">Correo</label>
+        <input type="email" id="tv-login-email" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+      </div>
+      <div class="form-field" style="margin-bottom:14px">
+        <label for="tv-login-pass">Contraseña</label>
+        <input type="password" id="tv-login-pass" autocomplete="current-password" required>
+      </div>
+      <div id="tv-login-msg" style="font-size:12px;margin-bottom:10px;display:none;line-height:1.5"></div>
+      <button type="submit" class="btn btn-primary" id="tv-login-btn" style="width:100%;justify-content:center">Iniciar sesión</button>
+    </form>
+    <div id="tv-login-extra" style="display:flex;justify-content:space-between;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button type="button" class="btn btn-sm btn-ghost" onclick="tvLoginOlvide()">¿Olvidaste tu contraseña?</button>
+      <button type="button" class="btn btn-sm btn-ghost" onclick="tvLoginSinSesion()">Continuar sin iniciar sesión</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="tv-pregunta" style="display:none;z-index:2100">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-title" id="tv-pregunta-titulo"></div>
+    <p id="tv-pregunta-texto" style="font-size:13px;color:var(--text2);line-height:1.6;white-space:pre-line;margin-bottom:1.25rem"></p>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn" id="tv-pregunta-no">Cancelar</button>
+      <button class="btn btn-primary" id="tv-pregunta-si">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const STORE = 'traspasos_v2';
+let records = [];
+
+function load() {
+  try { records = JSON.parse(localStorage.getItem(STORE)) || []; } catch(e) { records = []; }
+}
+function persist() { localStorage.setItem(STORE, JSON.stringify(records)); tvMarcarCambios(); }
+
+function showPanel(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+  if(name === 'pendientes') renderPending();
+  if(name === 'completados') renderDone();
+  if(name === 'todos') renderTodos();
+  if(name === 'historial') renderHistory();
+  if(name === 'historial-anual') renderHistoryAnual();
+  if(name === 'analisis') renderAnalisis();
+  if(name === 'motocontable') renderMC();
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function fmtPrice(n) { return '$' + Number(n).toLocaleString('es-CO'); }
+function fmtDate(d) {
+  if(!d) return '';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+function monthKey(f) { return f ? f.slice(0,7) : '0000-00'; }
+function monthLabel(k) {
+  const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const [y,m] = k.split('-');
+  return months[parseInt(m)-1] + ' ' + y;
+}
+
+function updateBadge() {
+  const n = records.filter(r => r.estado === 'Pendiente').length;
+  const d = records.filter(r => r.estado === 'Completado').length;
+  const urgentes = records.filter(r => r.estado === 'Pendiente' && daysPending(r.fecha) >= 30).length;
+  const badge = document.getElementById('badge-pending');
+  badge.textContent = n;
+  badge.style.display = n > 0 ? 'inline-block' : 'none';
+  if(urgentes > 0) {
+    badge.style.background = '#fdeceb';
+    badge.style.color = 'var(--danger)';
+    badge.style.borderColor = '#f3b8b3';
+    badge.title = urgentes + ' con más de 30 días pendientes';
+  } else {
+    badge.style.background = '';
+    badge.style.color = '';
+    badge.style.borderColor = '';
+    badge.title = '';
+  }
+  const badgeDone = document.getElementById('badge-done');
+  badgeDone.textContent = d;
+  badgeDone.style.display = d > 0 ? 'inline-block' : 'none';
+}
+
+function clearForm() {
+  ['f-vendedor','f-cedula','f-telefono','f-nombre','f-color','f-modelo','f-placa','f-costo','f-motivo','f-nota','f-fecha-envio'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  document.getElementById('f-tipo').value = '';
+  document.getElementById('f-estado').value = 'Pendiente';
+  const t = today();
+  document.getElementById('f-fecha-registro').value = t;
+  document.getElementById('f-fecha-registro-display').value = fmtDate(t);
+}
+
+function today() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function saveRecord() {
+  const vendedor      = document.getElementById('f-vendedor').value.trim();
+  const cedula        = document.getElementById('f-cedula').value.trim();
+  const telefono      = document.getElementById('f-telefono').value.trim();
+  const tipo          = document.getElementById('f-tipo').value;
+  const nombre        = document.getElementById('f-nombre').value.trim();
+  const color         = document.getElementById('f-color').value.trim();
+  const modelo        = document.getElementById('f-modelo').value.trim();
+  const placa         = document.getElementById('f-placa').value.trim().toUpperCase();
+  const fechaRegistro = document.getElementById('f-fecha-registro').value || today();
+  const fechaEnvio    = document.getElementById('f-fecha-envio').value || '';
+  const costo         = parseFloat(document.getElementById('f-costo').value) || 0;
+  const estado        = document.getElementById('f-estado').value;
+  const motivo        = document.getElementById('f-motivo').value.trim();
+  const nota          = document.getElementById('f-nota').value.trim();
+
+  if(!vendedor || !tipo || !nombre || !placa) {
+    alert('Por favor completa: vendedor, tipo de vehículo, nombre del vehículo y placa.');
+    return;
+  }
+  records.push({
+    id: Date.now(), vendedor, cedula, telefono, tipo, nombre, color, modelo, placa,
+    fecha: fechaRegistro,
+    fechaEnvio,
+    costo, estado, motivo, nota
+  });
+  persist();
+  updateBadge();
+  clearForm();
+  renderTodos();
+  renderHistoryAnual();
+  toast('✓ Trámite guardado correctamente');
+}
+
+function deleteRecord(id) {
+  if(!confirm('¿Eliminar este trámite? Esta acción no se puede deshacer.')) return;
+  records = records.filter(r => r.id !== id);
+  persist();
+  updateBadge();
+  renderPending();
+  renderDone();
+  renderTodos();
+  renderHistory();
+  renderHistoryAnual();
+  toast('Trámite eliminado');
+}
+
+function toggleStatus(id) {
+  const r = records.find(r => r.id === id);
+  if(!r) return;
+  r.estado = r.estado === 'Pendiente' ? 'Completado' : 'Pendiente';
+  if(r.estado === 'Completado') r.motivo = '';
+  persist();
+  updateBadge();
+  renderPending();
+  renderDone();
+  renderTodos();
+  renderHistory();
+  renderHistoryAnual();
+  toast(r.estado === 'Completado' ? '✓ Marcado como completado' : 'Marcado como pendiente');
+}
+
+function openEdit(id) {
+  const r = records.find(r => r.id === id);
+  if(!r) return;
+  document.getElementById('edit-id').value = id;
+  document.getElementById('e-vendedor').value = r.vendedor;
+  document.getElementById('e-cedula').value = r.cedula;
+  document.getElementById('e-telefono').value = r.telefono || '';
+  document.getElementById('e-tipo').value = r.tipo;
+  document.getElementById('e-nombre').value = r.nombre || '';
+  document.getElementById('e-color').value = r.color || '';
+  document.getElementById('e-modelo').value = r.modelo || '';
+  document.getElementById('e-placa').value = r.placa;
+  document.getElementById('e-costo').value = r.costo;
+  // Fechas
+  const fr = r.fecha || today();
+  document.getElementById('e-fecha-registro').value = fr;
+  document.getElementById('e-fecha-registro-display').value = fmtDate(fr);
+  document.getElementById('e-fecha-envio').value = r.fechaEnvio || '';
+  document.getElementById('e-estado').value = r.estado;
+  document.getElementById('e-motivo').value = r.motivo || '';
+  document.getElementById('e-nota').value = r.nota || '';
+  document.getElementById('edit-modal').style.display = 'flex';
+}
+
+function saveEdit() {
+  const id = parseInt(document.getElementById('edit-id').value);
+  const r = records.find(r => r.id === id);
+  if(!r) return;
+  r.vendedor   = document.getElementById('e-vendedor').value.trim();
+  r.cedula     = document.getElementById('e-cedula').value.trim();
+  r.telefono   = document.getElementById('e-telefono').value.trim();
+  r.tipo       = document.getElementById('e-tipo').value;
+  r.nombre     = document.getElementById('e-nombre').value.trim();
+  r.color      = document.getElementById('e-color').value.trim();
+  r.modelo     = document.getElementById('e-modelo').value.trim();
+  r.placa      = document.getElementById('e-placa').value.trim().toUpperCase();
+  r.costo      = parseFloat(document.getElementById('e-costo').value) || 0;
+  r.fecha      = document.getElementById('e-fecha-registro').value || today();
+  r.fechaEnvio = document.getElementById('e-fecha-envio').value || '';
+  r.estado     = document.getElementById('e-estado').value;
+  r.motivo     = document.getElementById('e-motivo').value.trim();
+  r.nota       = document.getElementById('e-nota').value.trim();
+  persist();
+  updateBadge();
+  closeModal();
+  renderPending();
+  renderDone();
+  renderTodos();
+  renderHistory();
+  renderHistoryAnual();
+  toast('✓ Trámite actualizado');
+}
+
+function closeModal() { document.getElementById('edit-modal').style.display = 'none'; }
+function closeModalOutside(e) { if(e.target.id === 'edit-modal') closeModal(); }
+
+function daysPending(fecha) {
+  if(!fecha) return 0;
+  const start = new Date(fecha + 'T00:00:00');
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  const diff = Math.floor((now - start) / (1000*60*60*24));
+  return diff;
+}
+
+function ageBadge(r) {
+  if(r.estado !== 'Pendiente') return '';
+  const d = daysPending(r.fecha);
+  let cls = 'badge-age-ok', label = d + ' día' + (d===1?'':'s');
+  if(d >= 30) cls = 'badge-age-urgent';
+  else if(d >= 15) cls = 'badge-age-warn';
+  if(d >= 15) {
+    return `<span class="badge ${cls}">
+      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      ${label} pendiente
+    </span>`;
+  }
+  return `<span class="badge ${cls}">${label} pendiente</span>`;
+}
+
+function vehiculoLabel(r) {
+  // Compatibilidad con registros viejos (solo tenían r.modelo como nombre completo)
+  const nombre = r.nombre || r.modelo || '';
+  const color  = r.color  ? ' · ' + r.color : '';
+  const anio   = r.modelo && r.nombre ? ' · ' + r.modelo : '';
+  return nombre + color + anio;
+}
+
+function cardHTML(r) {
+  const tipoBadge = r.tipo === 'Moto' ? 'badge-moto' : 'badge-carro';
+  const estadoBadge = r.estado === 'Pendiente' ? 'badge-pending' : 'badge-done';
+  let estadoClass = r.estado === 'Pendiente' ? 'is-pending' : 'is-done';
+  if(r.estado === 'Pendiente' && daysPending(r.fecha) >= 30) estadoClass += ' is-urgent';
+  const toggleLabel = r.estado === 'Pendiente'
+    ? '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Marcar completado'
+    : '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.57"/></svg> Marcar pendiente';
+  return `
+  <div class="record-card ${estadoClass}" id="rc-${r.id}">
+    <div class="rc-top">
+      <div style="flex:1">
+        <div class="rc-badges">
+          <span class="badge ${tipoBadge}">${r.tipo}</span>
+          <span class="badge ${estadoBadge}">${r.estado}</span>
+          ${ageBadge(r)}
+        </div>
+        <div class="rc-title">${vehiculoLabel(r)} &mdash; <span style="font-family:monospace;letter-spacing:.5px">${r.placa}</span></div>
+        <div class="rc-meta">
+          Vendedor: <strong>${r.vendedor}</strong>${r.cedula ? ' &bull; C.C. ' + r.cedula : ''}${r.telefono ? ` &bull; <a href="https://wa.me/57${r.telefono.replace(/\D/g,'')}" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:600">📱 ${r.telefono}</a>` : ''}<br>
+          Registrado: ${fmtDate(r.fecha)}
+          ${r.fechaEnvio
+            ? ` &bull; <span style="color:var(--done-text);font-weight:600">Enviado: ${fmtDate(r.fechaEnvio)}</span>`
+            : ` &bull; <span style="color:var(--pending-text);font-weight:600">Sin fecha de envío aún</span>`}
+        </div>
+      </div>
+      <div class="rc-price">${fmtPrice(r.costo)}</div>
+    </div>
+    ${r.motivo ? `<div class="reason-box"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>${r.motivo}</span></div>` : ''}
+    ${r.nota ? `<div style="background:var(--accent-light);border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:8px 12px;font-size:12.5px;color:var(--accent);margin-top:6px;display:flex;gap:8px;align-items:flex-start"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span>${r.nota}</span></div>` : ''}
+    <div class="rc-actions">
+      <button class="btn btn-sm btn-success" onclick="toggleStatus(${r.id})">${toggleLabel}</button>
+      <button class="btn btn-sm" onclick="openEdit(${r.id})">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Editar
+      </button>
+      <button class="btn btn-sm btn-danger" onclick="deleteRecord(${r.id})">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        Eliminar
+      </button>
+    </div>
+  </div>`;
+}
+
+let todosSort = { col: 'fecha', dir: -1 };
+
+function populateAnioFilter(selectId) {
+  const sel = document.getElementById(selectId);
+  if(!sel) return;
+  const current = sel.value;
+  const years = [...new Set(records.map(r => r.fecha ? r.fecha.slice(0,4) : null).filter(Boolean))].sort().reverse();
+  sel.innerHTML = '<option value="">Todos los años</option>' +
+    years.map(y => `<option value="${y}" ${current===y?'selected':''}>${y}</option>`).join('');
+}
+
+function populateMesFilter() {
+  const sel = document.getElementById('ft-mes');
+  if(!sel) return;
+  const current = sel.value;
+  const anio = document.getElementById('ft-anio')?.value || '';
+  let keys = [...new Set(records.map(r => monthKey(r.fecha)))];
+  if(anio) keys = keys.filter(k => k.startsWith(anio));
+  keys = keys.sort().reverse();
+  sel.innerHTML = '<option value="">Todos los meses</option>' +
+    keys.map(k => `<option value="${k}" ${current===k?'selected':''}>${monthLabel(k)}</option>`).join('');
+}
+
+function sortTodos(col) {
+  if(todosSort.col === col) todosSort.dir *= -1;
+  else { todosSort.col = col; todosSort.dir = -1; }
+  renderTodos();
+}
+
+function renderTodos() {
+  populateAnioFilter('ft-anio');
+  populateMesFilter();
+  const search = (document.getElementById('ft-search')?.value || '').toLowerCase();
+  const tipo   = document.getElementById('ft-tipo')?.value || '';
+  const estado = document.getElementById('ft-estado')?.value || '';
+  const anio   = document.getElementById('ft-anio')?.value || '';
+  const mes    = document.getElementById('ft-mes')?.value || '';
+
+  let rows = [...records];
+  if(tipo)   rows = rows.filter(r => r.tipo === tipo);
+  if(estado) rows = rows.filter(r => r.estado === estado);
+  if(anio)   rows = rows.filter(r => r.fecha && r.fecha.slice(0,4) === anio);
+  if(mes)    rows = rows.filter(r => monthKey(r.fecha) === mes);
+  if(search) rows = rows.filter(r =>
+    r.placa.toLowerCase().includes(search) ||
+    r.vendedor.toLowerCase().includes(search) ||
+    r.modelo.toLowerCase().includes(search)
+  );
+
+  const col = todosSort.col;
+  const dir = todosSort.dir;
+  rows.sort((a,b) => {
+    let va = a[col], vb = b[col];
+    if(col === 'costo') { va = Number(va); vb = Number(vb); }
+    if(va < vb) return dir;
+    if(va > vb) return -dir;
+    return 0;
+  });
+
+  // Update sort arrows
+  ['fecha','placa','modelo','vendedor','costo'].forEach(c => {
+    const el = document.getElementById('sa-' + c);
+    if(!el) return;
+    const th = el.closest('th');
+    if(c === col) {
+      el.textContent = dir === -1 ? '↓' : '↑';
+      th.classList.add('sorted');
+    } else {
+      el.textContent = '↕';
+      th.classList.remove('sorted');
+    }
+  });
+
+  // Stats
+  const totalAll   = records.length;
+  const pendAll    = records.filter(r => r.estado === 'Pendiente').length;
+  const doneAll    = records.filter(r => r.estado === 'Completado').length;
+  const costoAll   = records.reduce((s,r) => s + r.costo, 0);
+  document.getElementById('todos-stats').innerHTML = `
+    <div class="stat-card"><div class="sc-label">Total trámites</div><div class="sc-value">${totalAll}</div></div>
+    <div class="stat-card"><div class="sc-label">Pendientes</div><div class="sc-value orange">${pendAll}</div></div>
+    <div class="stat-card"><div class="sc-label">Completados</div><div class="sc-value green">${doneAll}</div></div>
+    <div class="stat-card"><div class="sc-label">Total invertido</div><div class="sc-value blue">${fmtPrice(costoAll)}</div></div>`;
+
+  const tbody = document.getElementById('todos-tbody');
+  document.getElementById('ft-count').textContent = rows.length + ' resultado(s)';
+
+  if(rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2.5rem;color:var(--text3)">Sin resultados con los filtros actuales.</td></tr>`;
+    document.getElementById('todos-footer').innerHTML = '';
+    return;
+  }
+
+  const costoFiltrado = rows.reduce((s,r) => s + r.costo, 0);
+  tbody.innerHTML = rows.map((r, i) => {
+    const tipoBadge  = r.tipo === 'Moto' ? 'badge-moto' : 'badge-carro';
+    const estadoBadge = r.estado === 'Pendiente' ? 'badge-pending' : 'badge-done';
+    return `<tr>
+      <td class="col-n td-n">${i+1}</td>
+      <td class="col-fecha">${fmtDate(r.fecha)}</td>
+      <td class="col-tipo"><span class="badge ${tipoBadge}" style="font-size:10px;padding:2px 7px">${r.tipo}</span></td>
+      <td class="col-placa td-placa">${r.placa}</td>
+      <td class="col-modelo" title="${vehiculoLabel(r)}">${vehiculoLabel(r)}</td>
+      <td class="col-vendor" title="${r.vendedor}${r.cedula?' · '+r.cedula:''}">${r.vendedor}${r.cedula ? '<br><span style="font-size:11px;color:var(--text3)">C.C. '+r.cedula+'</span>' : ''}</td>
+      <td class="col-costo td-costo">${fmtPrice(r.costo)}</td>
+      <td class="col-estado"><span class="badge ${estadoBadge}" style="font-size:10px;padding:2px 7px">${r.estado}</span></td>
+      <td class="col-acc">
+        <button class="btn btn-sm btn-ghost" style="padding:3px 8px" onclick="openEdit(${r.id})" title="Editar">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="btn btn-sm btn-ghost btn-danger" style="padding:3px 8px" onclick="deleteRecord(${r.id})" title="Eliminar">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('todos-footer').innerHTML =
+    `<span>${rows.length} de ${records.length} trámites mostrados</span>
+     <span>Total filtrado: <strong>${fmtPrice(costoFiltrado)}</strong></span>`;
+}
+
+function renderPending() {
+  const tipo   = document.getElementById('fp-tipo').value;
+  const search = document.getElementById('fp-search').value.toLowerCase();
+  let pending  = records.filter(r => r.estado === 'Pendiente');
+  if(tipo)   pending = pending.filter(r => r.tipo === tipo);
+  if(search) pending = pending.filter(r => r.placa.toLowerCase().includes(search) || r.vendedor.toLowerCase().includes(search));
+  // Más recientes primero
+  pending.sort((a,b) => b.fecha < a.fecha ? -1 : 1);
+
+  const allPending = records.filter(r => r.estado === 'Pendiente');
+  const totalPending = allPending.length;
+  const urgentes = allPending.filter(r => daysPending(r.fecha) >= 30).length;
+  const enAlerta = allPending.filter(r => daysPending(r.fecha) >= 15 && daysPending(r.fecha) < 30).length;
+
+  const alertEl = document.getElementById('pending-alert');
+  let alerts = '';
+  if(totalPending > 0) {
+    alerts += `<div class="alert-pending"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${totalPending} trámite(s) pendiente(s) en total</div>`;
+  }
+  if(urgentes > 0) {
+    alerts += `<div class="alert-pending" style="background:#fdeceb;border-color:#f3b8b3;color:var(--danger)"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><strong>${urgentes} trámite(s) llevan 30 días o más pendientes</strong> — revisa estos primero</div>`;
+  }
+  if(enAlerta > 0) {
+    alerts += `<div class="alert-pending" style="background:#fdeee0;border-color:#f0a060;color:#b75a1a"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${enAlerta} trámite(s) llevan entre 15 y 29 días pendientes</div>`;
+  }
+  alertEl.innerHTML = alerts;
+
+  document.getElementById('fp-count').textContent = pending.length + ' resultado(s)';
+  const list = document.getElementById('pending-list');
+  if(pending.length === 0) {
+    list.innerHTML = `<div class="empty-state"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>${totalPending === 0 ? 'Sin trámites pendientes — todo al día.' : 'Ningún resultado con los filtros actuales.'}</p></div>`;
+    return;
+  }
+  list.innerHTML = pending.map(cardHTML).join('');
+}
+
+function renderDone() {
+  const tipo   = document.getElementById('fc-tipo').value;
+  const search = document.getElementById('fc-search').value.toLowerCase();
+  let done     = records.filter(r => r.estado === 'Completado');
+  if(tipo)   done = done.filter(r => r.tipo === tipo);
+  if(search) done = done.filter(r => r.placa.toLowerCase().includes(search) || r.vendedor.toLowerCase().includes(search));
+  done.sort((a,b) => b.fecha < a.fecha ? -1 : 1);
+
+  const totalDone  = records.filter(r => r.estado === 'Completado').length;
+  const totalCosto = records.filter(r => r.estado === 'Completado').reduce((s,r) => s + r.costo, 0);
+
+  const alertEl = document.getElementById('done-alert');
+  alertEl.innerHTML = totalDone > 0
+    ? `<div class="alert-done">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        ${totalDone} trámite(s) completado(s) &nbsp;&bull;&nbsp; Total invertido: ${fmtPrice(totalCosto)}
+       </div>`
+    : '';
+
+  document.getElementById('fc-count').textContent = done.length + ' resultado(s)';
+  const list = document.getElementById('done-list');
+  if(done.length === 0) {
+    list.innerHTML = `<div class="empty-state">
+      <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <p>${totalDone === 0 ? 'Aún no hay trámites completados.' : 'Ningún resultado con los filtros actuales.'}</p>
+    </div>`;
+    return;
+  }
+  list.innerHTML = done.map(cardHTML).join('');
+}
+
+function renderHistory() {
+  populateAnioFilter('fh-anio');
+  const anio   = document.getElementById('fh-anio').value;
+  const tipo   = document.getElementById('fh-tipo').value;
+  const estado = document.getElementById('fh-estado').value;
+  let filtered = [...records];
+  if(anio)   filtered = filtered.filter(r => r.fecha && r.fecha.slice(0,4) === anio);
+  if(tipo)   filtered = filtered.filter(r => r.tipo === tipo);
+  if(estado) filtered = filtered.filter(r => r.estado === estado);
+  filtered.sort((a,b) => b.fecha < a.fecha ? -1 : 1);
+
+  // Summary stats (respect year filter, but not tipo/estado, for an overall year view)
+  const baseForStats = anio ? records.filter(r => r.fecha && r.fecha.slice(0,4) === anio) : records;
+  const total      = baseForStats.length;
+  const pendingAll = baseForStats.filter(r => r.estado === 'Pendiente').length;
+  const doneAll    = baseForStats.filter(r => r.estado === 'Completado').length;
+  const costoTotal = baseForStats.reduce((s,r) => s + r.costo, 0);
+  document.getElementById('summary-stats').innerHTML = `
+    <div class="stat-card"><div class="sc-label">Total trámites${anio ? ' ' + anio : ''}</div><div class="sc-value">${total}</div></div>
+    <div class="stat-card"><div class="sc-label">Pendientes</div><div class="sc-value orange">${pendingAll}</div></div>
+    <div class="stat-card"><div class="sc-label">Completados</div><div class="sc-value green">${doneAll}</div></div>
+    <div class="stat-card"><div class="sc-label">Total invertido</div><div class="sc-value blue">${fmtPrice(costoTotal)}</div></div>`;
+
+  const byMonth = {};
+  filtered.forEach(r => {
+    const mk = monthKey(r.fecha);
+    if(!byMonth[mk]) byMonth[mk] = [];
+    byMonth[mk].push(r);
+  });
+
+  const keys = Object.keys(byMonth).sort().reverse();
+  const list = document.getElementById('history-list');
+
+  if(keys.length === 0) {
+    list.innerHTML = `<div class="empty-state"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>Sin registros aún. Agrega tu primer trámite.</p></div>`;
+    return;
+  }
+
+  const currentMonth = today().slice(0,7);
+  let html = '';
+  keys.forEach((mk, idx) => {
+    const group = byMonth[mk];
+    const total = group.reduce((s,r) => s + r.costo, 0);
+    const pend  = group.filter(r => r.estado === 'Pendiente').length;
+    const done  = group.filter(r => r.estado === 'Completado').length;
+    const isOpen = idx === 0;
+    const isCurrent = mk === currentMonth;
+    html += `
+    <div class="month-block">
+      <button class="month-toggle" onclick="toggleMonth('mb-${mk.replace('-','_')}', this)">
+        <span>${isCurrent ? '📍 ' : ''}${monthLabel(mk)}</span>
+        <div class="month-stats">
+          <span class="stat"><strong>${group.length}</strong> trámites</span>
+          <span class="stat pend"><strong>${pend}</strong> pendientes</span>
+          <span class="stat done"><strong>${done}</strong> completados</span>
+          <span class="stat price"><strong>${fmtPrice(total)}</strong></span>
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="chevron-icon"><polyline points="${isOpen ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}"/></svg>
+        </div>
+      </button>
+      <div id="mb-${mk.replace('-','_')}" class="month-body ${isOpen ? 'open' : ''}">
+        ${group.map(cardHTML).join('')}
+        <div class="month-total"><span>Total invertido en trámites del mes</span><strong>${fmtPrice(total)}</strong></div>
+      </div>
+    </div>`;
+  });
+
+  list.innerHTML = html;
+}
+
+function toggleMonth(id, btn) {
+  const el = document.getElementById(id);
+  const icon = btn.querySelector('.chevron-icon');
+  const isOpen = el.classList.contains('open');
+  el.classList.toggle('open');
+  if(icon) icon.innerHTML = isOpen ? '<polyline points="6 9 12 15 18 9"/>' : '<polyline points="18 15 12 9 6 15"/>';
+}
+
+function renderHistoryAnual() {
+  const tipo   = document.getElementById('fa-tipo').value;
+  const estado = document.getElementById('fa-estado').value;
+  let filtered = [...records];
+  if(tipo)   filtered = filtered.filter(r => r.tipo === tipo);
+  if(estado) filtered = filtered.filter(r => r.estado === estado);
+  filtered.sort((a,b) => b.fecha < a.fecha ? -1 : 1);
+
+  // Resumen general (todos los registros, sin filtro)
+  const total      = records.length;
+  const pendingAll = records.filter(r => r.estado === 'Pendiente').length;
+  const doneAll    = records.filter(r => r.estado === 'Completado').length;
+  const costoTotal = records.reduce((s,r) => s + r.costo, 0);
+  document.getElementById('summary-stats-anual').innerHTML = `
+    <div class="stat-card"><div class="sc-label">Total trámites</div><div class="sc-value">${total}</div></div>
+    <div class="stat-card"><div class="sc-label">Pendientes</div><div class="sc-value orange">${pendingAll}</div></div>
+    <div class="stat-card"><div class="sc-label">Completados</div><div class="sc-value green">${doneAll}</div></div>
+    <div class="stat-card"><div class="sc-label">Total invertido</div><div class="sc-value blue">${fmtPrice(costoTotal)}</div></div>`;
+
+  const byYear = {};
+  filtered.forEach(r => {
+    const yk = r.fecha ? r.fecha.slice(0,4) : '0000';
+    if(!byYear[yk]) byYear[yk] = [];
+    byYear[yk].push(r);
+  });
+
+  const years = Object.keys(byYear).sort().reverse();
+  const list = document.getElementById('history-anual-list');
+
+  if(years.length === 0) {
+    list.innerHTML = `<div class="empty-state"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>Sin registros aún. Agrega tu primer trámite.</p></div>`;
+    return;
+  }
+
+  const currentYear = String(today().slice(0,4));
+  let html = '';
+  years.forEach((yk, idx) => {
+    const group = byYear[yk];
+    const totalY = group.reduce((s,r) => s + r.costo, 0);
+    const pend   = group.filter(r => r.estado === 'Pendiente').length;
+    const done   = group.filter(r => r.estado === 'Completado').length;
+    const isOpen = idx === 0;
+    const isCurrent = yk === currentYear;
+
+    // Sub-agrupar por mes dentro del año
+    const byMonth = {};
+    group.forEach(r => {
+      const mk = monthKey(r.fecha);
+      if(!byMonth[mk]) byMonth[mk] = [];
+      byMonth[mk].push(r);
+    });
+    const monthKeys = Object.keys(byMonth).sort().reverse();
+
+    let monthsHTML = '';
+    monthKeys.forEach(mk => {
+      const mGroup = byMonth[mk];
+      const mTotal = mGroup.reduce((s,r) => s + r.costo, 0);
+      const mPend  = mGroup.filter(r => r.estado === 'Pendiente').length;
+      const mDone  = mGroup.filter(r => r.estado === 'Completado').length;
+      monthsHTML += `
+      <div class="year-month-group">
+        <div class="year-month-header">
+          <span>${monthLabel(mk)}</span>
+          <div class="month-stats">
+            <span class="stat"><strong>${mGroup.length}</strong> trámites</span>
+            <span class="stat pend"><strong>${mPend}</strong> pendientes</span>
+            <span class="stat done"><strong>${mDone}</strong> completados</span>
+            <span class="stat price"><strong>${fmtPrice(mTotal)}</strong></span>
+          </div>
+        </div>
+        ${mGroup.map(cardHTML).join('')}
+      </div>`;
+    });
+
+    html += `
+    <div class="month-block">
+      <button class="month-toggle" onclick="toggleMonth('yb-${yk}', this)">
+        <span>${isCurrent ? '📍 ' : ''}Año ${yk}</span>
+        <div class="month-stats">
+          <span class="stat"><strong>${group.length}</strong> trámites</span>
+          <span class="stat pend"><strong>${pend}</strong> pendientes</span>
+          <span class="stat done"><strong>${done}</strong> completados</span>
+          <span class="stat price"><strong>${fmtPrice(totalY)}</strong></span>
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="chevron-icon"><polyline points="${isOpen ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}"/></svg>
+        </div>
+      </button>
+      <div id="yb-${yk}" class="month-body ${isOpen ? 'open' : ''}">
+        ${monthsHTML}
+        <div class="month-total"><span>Total invertido en el año ${yk}</span><strong>${fmtPrice(totalY)}</strong></div>
+      </div>
+    </div>`;
+  });
+
+  list.innerHTML = html;
+}
+
+// ── ANÁLISIS ──
+let chartBarras = null;
+let chartLinea  = null;
+let chartCosto  = null;
+
+function renderAnalisis() {
+  populateAnioFilter('fan-anio');
+  const anio = document.getElementById('fan-anio')?.value || '';
+  const tipo = document.getElementById('fan-tipo')?.value || '';
+
+  let data = [...records];
+  if(anio) data = data.filter(r => r.fecha && r.fecha.slice(0,4) === anio);
+  if(tipo) data = data.filter(r => r.tipo === tipo);
+
+  // ── KPIs ──
+  const total      = data.length;
+  const completados = data.filter(r => r.estado === 'Completado').length;
+  const pendientes  = data.filter(r => r.estado === 'Pendiente').length;
+  const inversion   = data.reduce((s,r) => s + r.costo, 0);
+  const pct = total > 0 ? Math.round((completados/total)*100) : 0;
+
+  // Mes con más trámites
+  const byM = {};
+  data.forEach(r => {
+    const mk = monthKey(r.fecha);
+    byM[mk] = (byM[mk] || 0) + 1;
+  });
+  const topMes = Object.keys(byM).sort((a,b) => byM[b]-byM[a])[0];
+
+  document.getElementById('analisis-kpis').innerHTML = `
+    <div class="stat-card"><div class="sc-label">Total trámites</div><div class="sc-value">${total}</div></div>
+    <div class="stat-card"><div class="sc-label">Completados</div><div class="sc-value green">${completados} <span style="font-size:13px;font-weight:400">(${pct}%)</span></div></div>
+    <div class="stat-card"><div class="sc-label">Pendientes</div><div class="sc-value orange">${pendientes}</div></div>
+    <div class="stat-card"><div class="sc-label">Inversión total</div><div class="sc-value blue">${fmtPrice(inversion)}</div></div>`;
+
+  // ── DATOS POR MES ──
+  const allMks = [...new Set(data.map(r => monthKey(r.fecha)))].sort();
+  const labels  = allMks.map(mk => monthLabel(mk).replace(' ', '\n'));
+  const labelsShort = allMks.map(mk => {
+    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const [y,m] = mk.split('-');
+    return months[parseInt(m)-1] + ' ' + y.slice(2);
+  });
+
+  const doneByM    = allMks.map(mk => data.filter(r => monthKey(r.fecha)===mk && r.estado==='Completado').length);
+  const pendByM    = allMks.map(mk => data.filter(r => monthKey(r.fecha)===mk && r.estado==='Pendiente').length);
+  const totalByM   = allMks.map(mk => data.filter(r => monthKey(r.fecha)===mk).length);
+  const costoByM   = allMks.map(mk => data.filter(r => monthKey(r.fecha)===mk).reduce((s,r)=>s+r.costo,0));
+
+  const chartDefaults = {
+    plugins: { legend: { labels: { font: { family: "'Segoe UI', system-ui", size: 12 }, color: '#6b6860' } } },
+    scales: {
+      x: { ticks: { color: '#6b6860', font: { size: 11 } }, grid: { color: '#f0eeea' } },
+      y: { ticks: { color: '#6b6860', font: { size: 11 } }, grid: { color: '#f0eeea' } }
+    }
+  };
+
+  // ── GRÁFICO BARRAS APILADAS ──
+  if(chartBarras) chartBarras.destroy();
+  chartBarras = new Chart(document.getElementById('chart-barras'), {
+    type: 'bar',
+    data: {
+      labels: labelsShort,
+      datasets: [
+        {
+          label: 'Completados',
+          data: doneByM,
+          backgroundColor: '#4caf5088',
+          borderColor: '#4caf50',
+          borderWidth: 1.5,
+          borderRadius: 4,
+        },
+        {
+          label: 'Pendientes',
+          data: pendByM,
+          backgroundColor: '#e8a02088',
+          borderColor: '#e8a020',
+          borderWidth: 1.5,
+          borderRadius: 4,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        ...chartDefaults.plugins,
+        tooltip: {
+          callbacks: {
+            afterBody: (items) => {
+              const idx = items[0].dataIndex;
+              return `Total: ${totalByM[idx]} trámites`;
+            }
+          }
+        }
+      },
+      scales: {
+        ...chartDefaults.scales,
+        x: { ...chartDefaults.scales.x, stacked: true },
+        y: { ...chartDefaults.scales.y, stacked: true, beginAtZero: true, ticks: { ...chartDefaults.scales.y.ticks, stepSize: 1 } }
+      }
+    }
+  });
+
+  // ── GRÁFICO LÍNEA TENDENCIA ──
+  if(chartLinea) chartLinea.destroy();
+  chartLinea = new Chart(document.getElementById('chart-linea'), {
+    type: 'line',
+    data: {
+      labels: labelsShort,
+      datasets: [{
+        label: 'Total trámites',
+        data: totalByM,
+        borderColor: '#1d3a5f',
+        backgroundColor: '#1d3a5f18',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#1d3a5f',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        fill: true,
+        tension: 0.35
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: chartDefaults.plugins,
+      scales: {
+        ...chartDefaults.scales,
+        y: { ...chartDefaults.scales.y, beginAtZero: true, ticks: { ...chartDefaults.scales.y.ticks, stepSize: 1 } }
+      }
+    }
+  });
+
+  // ── GRÁFICO COSTO ──
+  if(chartCosto) chartCosto.destroy();
+  chartCosto = new Chart(document.getElementById('chart-costo'), {
+    type: 'bar',
+    data: {
+      labels: labelsShort,
+      datasets: [{
+        label: 'Inversión ($)',
+        data: costoByM,
+        backgroundColor: '#1d3a5f55',
+        borderColor: '#1d3a5f',
+        borderWidth: 1.5,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        ...chartDefaults.plugins,
+        tooltip: {
+          callbacks: { label: (ctx) => ' ' + fmtPrice(ctx.raw) }
+        }
+      },
+      scales: {
+        ...chartDefaults.scales,
+        y: {
+          ...chartDefaults.scales.y,
+          beginAtZero: true,
+          ticks: {
+            ...chartDefaults.scales.y.ticks,
+            callback: v => '$' + (v/1000).toFixed(0) + 'K'
+          }
+        }
+      }
+    }
+  });
+
+  // ── TABLA DETALLE ──
+  if(allMks.length === 0) {
+    document.getElementById('analisis-tbody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3)">Sin datos para mostrar.</td></tr>`;
+  } else {
+    document.getElementById('analisis-tbody').innerHTML = allMks.slice().reverse().map((mk, i, arr) => {
+      const tot  = totalByM[allMks.indexOf(mk)];
+      const don  = doneByM[allMks.indexOf(mk)];
+      const pen  = pendByM[allMks.indexOf(mk)];
+      const cos  = costoByM[allMks.indexOf(mk)];
+      const pctM = tot > 0 ? Math.round((don/tot)*100) : 0;
+      const prevIdx = allMks.indexOf(mk) - 1;
+      let tendencia = '<span class="trend-eq">—</span>';
+      if(prevIdx >= 0) {
+        const prev = totalByM[prevIdx];
+        if(tot > prev) tendencia = `<span class="trend-up">↑ +${tot-prev}</span>`;
+        else if(tot < prev) tendencia = `<span class="trend-down">↓ ${tot-prev}</span>`;
+      }
+      return `<tr>
+        <td><strong>${monthLabel(mk)}</strong></td>
+        <td>${tot}</td>
+        <td style="color:var(--done-text);font-weight:600">${don}</td>
+        <td style="color:var(--pending-text);font-weight:600">${pen}</td>
+        <td>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pctM}%"></div></div>
+          ${pctM}%
+        </td>
+        <td style="color:var(--accent);font-weight:700">${fmtPrice(cos)}</td>
+        <td>${tendencia}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── TIMELINE ──
+  const timelineEl = document.getElementById('analisis-timeline');
+  if(allMks.length === 0) {
+    timelineEl.innerHTML = '<div class="empty-state" style="padding:1.5rem 0"><p>Sin datos aún.</p></div>';
+    return;
+  }
+
+  let tlHTML = '';
+  allMks.slice().reverse().forEach(mk => {
+    const events = data.filter(r => monthKey(r.fecha) === mk).sort((a,b) => b.fecha < a.fecha ? -1 : 1);
+    if(!events.length) return;
+    tlHTML += `<div class="timeline-month">
+      <div class="timeline-month-title">${monthLabel(mk)}</div>
+      <div class="timeline-events">`;
+    events.forEach(r => {
+      const dias = daysPending(r.fecha);
+      let evClass = r.estado === 'Completado' ? 'ev-done' : (dias >= 30 ? 'ev-urgent' : 'ev-pend');
+      const estadoLabel = r.estado === 'Completado'
+        ? `<span style="color:var(--done-text);font-weight:600">✓ Completado</span>`
+        : dias >= 30
+          ? `<span style="color:var(--danger);font-weight:600">⚠ Pendiente (${dias} días)</span>`
+          : `<span style="color:var(--pending-text);font-weight:600">⏳ Pendiente (${dias} días)</span>`;
+      tlHTML += `<div class="timeline-event ${evClass}">
+        <span class="ev-date">${fmtDate(r.fecha)}</span>
+        <div class="ev-info">
+          <strong>${r.modelo}</strong> — <span style="font-family:monospace">${r.placa}</span>
+          <span class="badge ${r.tipo==='Moto'?'badge-moto':'badge-carro'}" style="font-size:10px;padding:1px 6px;margin-left:4px">${r.tipo}</span>
+        </div>
+        ${estadoLabel}
+        <span style="font-size:12px;font-weight:700;color:var(--accent)">${fmtPrice(r.costo)}</span>
+      </div>`;
+    });
+    tlHTML += `</div></div>`;
+  });
+  timelineEl.innerHTML = tlHTML;
+}
+
+// ── INTEGRACIÓN MOTOCONTABLE ──────────────────────────────────────────────────
+const MC_KEY = 'traspasos_borradores_mc';
+
+function getBorradores() {
+  try { return JSON.parse(localStorage.getItem(MC_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function updateBadgeMC() {
+  const n = getBorradores().length;
+  const badge = document.getElementById('badge-mc');
+  if(!badge) return;
+  badge.textContent = n;
+  badge.style.display = n > 0 ? 'inline-block' : 'none';
+  // Resaltar el botón del nav si hay borradores nuevos
+  const navBtn = document.getElementById('nav-motocontable');
+  if(navBtn) navBtn.style.borderLeft = n > 0 ? '3px solid var(--accent)' : '';
+}
+
+function renderMC() {
+  const borradores = getBorradores();
+  const alertEl = document.getElementById('mc-alert');
+  const listEl  = document.getElementById('mc-list');
+
+  if(borradores.length === 0) {
+    alertEl.innerHTML = '';
+    listEl.innerHTML = `
+      <div class="empty-state">
+        <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        <p>Sin datos recibidos de MotoContable.<br>Cuando registres una venta allá y uses "Enviar a Traspasos", aparecerán aquí.</p>
+      </div>`;
+    return;
+  }
+
+  alertEl.innerHTML = `
+    <div class="alert-pending" style="background:#e8eef5;border-color:#a8c4df;color:#1d3a5f">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      ${borradores.length} vehículo(s) recibido(s) desde MotoContable — confirma para crear el trámite
+    </div>`;
+
+  listEl.innerHTML = borradores.map((b, i) => `
+    <div class="record-card" style="border-left:3px solid var(--accent)" id="mc-card-${b.id}">
+      <div class="rc-top">
+        <div style="flex:1">
+          <div class="rc-badges">
+            <span class="badge ${b.tipo === 'Moto' ? 'badge-moto' : 'badge-carro'}">${b.tipo}</span>
+            <span class="badge" style="background:#e8eef5;color:#1d3a5f;border:1px solid #a8c4df">Desde MotoContable</span>
+          </div>
+          <div class="rc-title">${b.nombre}${b.color ? ' · ' + b.color : ''}${b.modelo ? ' · ' + b.modelo : ''} — <span style="font-family:monospace">${b.placa || 'Sin placa'}</span></div>
+          <div class="rc-meta">
+            Vendedor: <strong>${b.vendedor || '—'}</strong>${b.cedula ? ' · C.C. ' + b.cedula : ''}${b.telefono ? ` · <a href="https://wa.me/57${b.telefono.replace(/\D/g,'')}" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:600">📱 ${b.telefono}</a>` : ''}<br>
+            Recibido el: ${b.fechaOrigen}
+          </div>
+        </div>
+      </div>
+      <div class="rc-actions">
+        <button class="btn btn-sm btn-primary" onclick="confirmarBorrador('${b.id}')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Confirmar y crear trámite
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="descartarBorrador('${b.id}')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          Descartar
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+function confirmarBorrador(id) {
+  let borradores = getBorradores();
+  const b = borradores.find(x => x.id === id);
+  if(!b) return;
+
+  // Crear el trámite en el sistema de traspasos
+  const fechaHoy = today();
+  records.push({
+    id:           Date.now(),
+    vendedor:     b.vendedor  || '',
+    cedula:       b.cedula    || '',
+    telefono:     b.telefono  || '',
+    tipo:         b.tipo,
+    nombre:       b.nombre    || '',
+    color:        b.color     || '',
+    modelo:       b.modelo    || '',
+    placa:        b.placa     || '',
+    fecha:        fechaHoy,
+    fechaEnvio:   '',
+    costo:        0,
+    estado:       'Pendiente',
+    motivo:       '',
+    nota:         'Recibido desde MotoContable el ' + b.fechaOrigen,
+  });
+  persist();
+
+  // Eliminar el borrador
+  borradores = borradores.filter(x => x.id !== id);
+  localStorage.setItem(MC_KEY, JSON.stringify(borradores));
+  tvMarcarCambios();
+
+  updateBadge();
+  updateBadgeMC();
+  toast('✓ Trámite creado — completa el costo y la fecha de envío');
+  renderMC();
+}
+
+function descartarBorrador(id) {
+  if(!confirm('¿Descartar este vehículo recibido de MotoContable?')) return;
+  let borradores = getBorradores();
+  borradores = borradores.filter(x => x.id !== id);
+  localStorage.setItem(MC_KEY, JSON.stringify(borradores));
+  tvMarcarCambios();
+  updateBadgeMC();
+  renderMC();
+  toast('Descartado');
+}
+
+// ── INIT ──
+const t0 = today();
+document.getElementById('f-fecha-registro').value = t0;
+document.getElementById('f-fecha-registro-display').value = fmtDate(t0);
+load();
+updateBadge();
+updateBadgeMC();
+// ════════════════════════════════════════════════════════════════════════════
+// ── NUBE (Supabase) ──────────────────────────────────────────────────────────
+// Traspasos se guarda en la misma cuenta y la misma tabla que MotoContable
+// (mc_registros, colecciones 'traspasos' y 'traspasos_borradores'). localStorage es
+// la copia local. La "sombra" guarda, por registro, la última versión confirmada por la
+// nube; lo que difiere de ella es un cambio pendiente y se envía con mc_push, que no deja
+// que una versión vieja pise una nueva (la perdedora queda en mc_historial).
+// Ver supabase/LEEME.md.
+// ════════════════════════════════════════════════════════════════════════════
+const SUPA_URL = 'https://llyovzgwdqoeunvyczcy.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxseW92emd3ZHFvZXVudnljemN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MzUzNjcsImV4cCI6MjEwNjAxMTM2N30.g1DgUdTGPHDz8HEI1Kgv4SOJ13zyOwOfcAp8Ak2BRGQ';
+// Dirección publicada (se usa para el enlace de "olvidé mi contraseña" si abres el archivo local)
+const TV_URL_PUBLICA = 'https://samuelmonsalve256-ai.github.io/Motocontable/traspasos.html';
+let _supa = null;
+try {
+  _supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
+    auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'implicit',
+            storageKey:'mc-auth' }   // misma sesión que MotoContable
+  });
+} catch(e){ console.log('Supabase no disponible:', e); }
+
+const TV_SYNC_KEY = 'tv_sync_v1';
+const TV_COLS = {
+  traspasos:            {key: STORE,  get: ()=>records,          set: v=>{ records = v; }},
+  traspasos_borradores: {key: MC_KEY, get: ()=>getBorradores(),  set: v=>{ localStorage.setItem(MC_KEY, JSON.stringify(v)); }},
+};
+const TV_COLECCIONES = Object.keys(TV_COLS);
+const TV_ESPERA_GUARDADO = 1200;   // agrupa cambios seguidos
+const TV_ESPERA_MAXIMA   = 5000;   // pero nunca espera más de esto
+
+let _tvSesion = null, _tvEstado = null, _tvSync = null, _tvRepetir = false;
+let _tvTimer = null, _tvPrimerCambio = 0, _tvTimerRemoto = null, _tvReintento = null;
+let _tvFallos = 0, _tvCanal = null, _tvUltimoOk = null, _tvRefrescar = false;
+let _tvEventosListos = false, _tvMigrando = false, _tvEstadoListo = false;
+let _tvRecuperacion = /type=recovery/.test(location.hash);
+
+const tvDeviceId = (()=>{
+  try {
+    let d = localStorage.getItem('mc_device_id');
+    if(!d){
+      const ua = navigator.userAgent;
+      const tipo = /iPhone/.test(ua)?'iphone':/iPad/.test(ua)?'ipad':/Android/.test(ua)?'android':/Mac/.test(ua)?'mac':/Windows/.test(ua)?'windows':'web';
+      d = tipo + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+      localStorage.setItem('mc_device_id', d);
+    }
+    return d;
+  } catch(e){ return 'web_' + Math.random().toString(36).slice(2,8); }
+})();
+
+// JSON con claves ordenadas: el mismo contenido da el mismo texto
+function tvCanon(v){
+  return JSON.stringify(v, (k,val)=>{
+    if(val && typeof val==='object' && !Array.isArray(val)){
+      const o={}; Object.keys(val).sort().forEach(key=>{ o[key]=val[key]; }); return o;
+    }
+    return val;
+  });
+}
+function tvHash(v){
+  const s = tvCanon(v);
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for(let i=0;i<s.length;i++){
+    const ch = s.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909);
+  return (h2>>>0).toString(36) + (h1>>>0).toString(36) + ':' + s.length;
+}
+
+function tvCargarEstado(){
+  try { _tvEstado = JSON.parse(localStorage.getItem(TV_SYNC_KEY) || 'null'); } catch(e){ _tvEstado = null; }
+  return _tvEstado;
+}
+function tvGuardarEstado(){
+  try { localStorage.setItem(TV_SYNC_KEY, JSON.stringify(_tvEstado)); return true; }
+  catch(e){ console.log('No se pudo guardar el estado de sincronización:', e); return false; }
+}
+function tvMapaLocal(col){
+  const m = new Map();
+  (TV_COLS[col].get() || []).forEach(o=>{ if(o && o.id!=null && o.id!=='') m.set(String(o.id), o); });
+  return m;
+}
+// Escribe una colección en localStorage sin disparar otra sincronización
+function tvPersistirLocal(col){
+  try { localStorage.setItem(TV_COLS[col].key, JSON.stringify(TV_COLS[col].get())); return true; }
+  catch(e){ console.log('localStorage lleno al guardar '+col+':', e); return false; }
+}
+
+// Cambios pendientes = diferencias entre los datos locales y la sombra
+function tvCalcularPendientes(){
+  const cambios = [];
+  if(!_tvEstado) return cambios;
+  const sombra = _tvEstado.sombra;
+  TV_COLECCIONES.forEach(col=>{
+    const mapa = tvMapaLocal(col);
+    mapa.forEach((obj,id)=>{
+      const sh = sombra[col+'|'+id];
+      const h  = tvHash(obj);
+      if(!sh || sh.d || sh.h!==h) cambios.push({coleccion:col, id, data:obj, base_version: sh ? sh.v : null, _h:h});
+    });
+    Object.keys(sombra).forEach(k=>{
+      if(!k.startsWith(col+'|')) return;
+      const id = k.slice(col.length+1), sh = sombra[k];
+      if(!sh.d && !mapa.has(id)) cambios.push({coleccion:col, id, eliminar:true, base_version:sh.v});
+    });
+  });
+  return cambios;
+}
+
+// Si de golpe desaparece más de la mitad de una colección, se pregunta antes de eliminar
+function tvBorradosMasivos(cambios){
+  const vivos = {}, borrados = {};
+  Object.entries(_tvEstado.sombra).forEach(([k,sh])=>{ if(!sh.d){ const c=k.slice(0,k.indexOf('|')); vivos[c]=(vivos[c]||0)+1; } });
+  cambios.forEach(c=>{ if(c.eliminar) borrados[c.coleccion]=(borrados[c.coleccion]||0)+1; });
+  return Object.keys(borrados).filter(c=>borrados[c]>=5 && borrados[c] > (vivos[c]||0)/2)
+    .map(c=>({coleccion:c, cantidad:borrados[c], total:vivos[c]||0}));
+}
+
+// Orden de creación en la nube; lo aún no confirmado va al final (es lo más nuevo)
+function tvOrdenar(col){
+  const sombra = _tvEstado.sombra;
+  const fecha = o=>{ const sh = sombra[col+'|'+o.id]; return sh && sh.c!=null ? sh.c : Infinity; };
+  const arr = TV_COLS[col].get().slice();
+  arr.sort((a,b)=>{ const fa=fecha(a), fb=fecha(b); return fa===fb ? 0 : (fa<fb ? -1 : 1); });
+  TV_COLS[col].set(arr);
+}
+
+// Aplica un registro que viene de la nube. Si tiene un cambio local pendiente no se toca:
+// ese cambio se enviará y mc_push resolverá el conflicto. Devuelve true si cambió algo local.
+function tvAplicarRemota(fila, forzar){
+  const col = fila.coleccion, id = String(fila.id), key = col+'|'+id;
+  if(!TV_COLECCIONES.includes(col)) return false;
+  const sombra = _tvEstado.sombra, sh = sombra[key];
+  const local  = tvMapaLocal(col).get(id);
+  const c      = fila.created_at ? Date.parse(fila.created_at) : (sh && sh.c);
+  const hRemoto = fila.eliminado ? null : tvHash(fila.data);
+  const nuevaSombra = fila.eliminado ? {v:fila.version, d:1, c} : {v:fila.version, h:hRemoto, c};
+
+  if(fila.eliminado ? !local : (local && tvHash(local)===hRemoto)){ sombra[key] = nuevaSombra; return false; }
+  const pendiente = sh ? (sh.d ? !!local : (!local || tvHash(local)!==sh.h)) : !!local;
+  if(pendiente && !forzar) return false;
+
+  const arr = TV_COLS[col].get().slice();
+  const idx = arr.findIndex(o=>o && String(o.id)===id);
+  if(fila.eliminado){ if(idx>=0) arr.splice(idx,1); }
+  else if(idx>=0)   arr[idx] = fila.data;
+  else              arr.push(fila.data);
+  TV_COLS[col].set(arr);
+  sombra[key] = nuevaSombra;
+  return true;
+}
+
+// Trae de la nube todo lo que cambió después del cursor
+async function tvTraerCambios(desde, forzar){
+  let cursor = desde;
+  const tocadas = new Set(), insertadas = new Set();
+  while(true){
+    const {data, error} = await _supa.rpc('mc_pull', {p_desde:cursor, p_limite:500});
+    if(error) throw error;
+    const filas = data || [];
+    filas.forEach(f=>{
+      if(TV_COLECCIONES.includes(f.coleccion)){
+        const existia = tvMapaLocal(f.coleccion).has(String(f.id));
+        if(tvAplicarRemota(f, !!(forzar && forzar(f)))){
+          tocadas.add(f.coleccion);
+          if(!existia && !f.eliminado) insertadas.add(f.coleccion);
+        }
+      }
+      if(f.seq > cursor) cursor = f.seq;
+    });
+    if(filas.length < 500) break;
+  }
+  insertadas.forEach(tvOrdenar);
+  tocadas.forEach(tvPersistirLocal);
+  _tvEstado.cursor = cursor;
+  tvGuardarEstado();
+  if(tocadas.size) tvRefrescarUI();
+  return tocadas.size;
+}
+
+function tvLotes(cambios){
+  const lotes = []; let actual = [], tam = 0;
+  cambios.forEach(c=>{
+    const t = c.data ? JSON.stringify(c.data).length : 100;
+    if(actual.length && (actual.length>=100 || tam+t > 1500000)){ lotes.push(actual); actual=[]; tam=0; }
+    actual.push(c); tam += t;
+  });
+  if(actual.length) lotes.push(actual);
+  return lotes;
+}
+const tvSinHash = c=>{ const {_h, ...resto} = c; return resto; };
+
+// Envía los cambios pendientes
+async function tvEnviarPendientes(){
+  let cambios = tvCalcularPendientes();
+  if(!cambios.length) return;
+
+  const masivos = tvBorradosMasivos(cambios);
+  if(masivos.length){
+    const nombres = {traspasos:'trámites', traspasos_borradores:'vehículos recibidos de MotoContable'};
+    const detalle = masivos.map(m=>`• ${m.cantidad} de ${m.total} ${nombres[m.coleccion]||m.coleccion}`).join('\n');
+    const ok = await tvPreguntar({
+      titulo: '⚠️ Confirmar eliminación',
+      texto:  `Se van a eliminar de la nube, y por lo tanto de todos tus dispositivos:\n${detalle}\n\nSi esto no es lo que querías, pulsa "Recuperar" y se volverán a descargar de la nube. Aunque confirmes, quedarán guardados en el historial de Supabase.`,
+      si: 'Sí, eliminar', no: 'Recuperar'
+    });
+    if(!ok){
+      const recuperar = new Set(cambios.filter(c=>c.eliminar && masivos.some(m=>m.coleccion===c.coleccion)).map(c=>c.coleccion+'|'+c.id));
+      await tvTraerCambios(0, f=>recuperar.has(f.coleccion+'|'+f.id));
+      cambios = tvCalcularPendientes().filter(c=>!(c.eliminar && recuperar.has(c.coleccion+'|'+c.id)));
+      if(!cambios.length) return;
+    }
+  }
+
+  const sombra = _tvEstado.sombra;
+  const tocadas = new Set();
+  let conflictos = 0;
+  for(const lote of tvLotes(cambios)){
+    const enviado = {};
+    lote.forEach(c=>{ enviado[c.coleccion+'|'+c.id] = c; });
+    const {data, error} = await _supa.rpc('mc_push', {p_cambios: lote.map(tvSinHash), p_device: tvDeviceId});
+    if(error) throw error;
+    (data.aplicados||[]).forEach(a=>{
+      const key = a.coleccion+'|'+a.id, c = enviado[key], prev = sombra[key] || {};
+      if(a.resultado==='inexistente') delete sombra[key];
+      else if(a.eliminado) sombra[key] = {v:a.version, d:1, c:prev.c};
+      // Hash de lo ENVIADO: si se editó otra vez mientras tanto, sigue pendiente
+      else sombra[key] = {v:a.version, h:c._h, c: prev.c!=null ? prev.c : Date.now()};
+    });
+    const aHistorial = [];
+    (data.conflictos||[]).forEach(f=>{
+      conflictos++;
+      const c = enviado[f.coleccion+'|'+f.id];
+      const actual = tvMapaLocal(f.coleccion).get(String(f.id));
+      if(actual && c && !c.eliminar && tvHash(actual)!==c._h) aHistorial.push({coleccion:f.coleccion, id:String(f.id), data:actual, base_version:null});
+      if(tvAplicarRemota(f, true)) tocadas.add(f.coleccion);
+    });
+    if(aHistorial.length){
+      const r = await _supa.rpc('mc_push', {p_cambios: aHistorial, p_device: tvDeviceId});
+      if(r.error) throw r.error;
+    }
+    tvGuardarEstado();
+  }
+  tocadas.forEach(col=>{ tvOrdenar(col); tvPersistirLocal(col); });
+  tvGuardarEstado();
+  if(tocadas.size) tvRefrescarUI();
+  if(conflictos) toast(`${conflictos} cambio(s) en conflicto: se conservó la versión más reciente de la nube y la tuya quedó en el historial`);
+}
+
+// Compara la lista de la nube (sin datos) con la sombra; si algo no coincide se pide todo
+async function tvReconciliar(){
+  const {data, error} = await _supa.rpc('mc_indice');
+  if(error) throw error;
+  const sombra = _tvEstado.sombra, enNube = new Set();
+  let difiere = false;
+  (data||[]).forEach(r=>{
+    if(!TV_COLECCIONES.includes(r.coleccion)) return;
+    const key = r.coleccion+'|'+r.id; enNube.add(key);
+    const sh = sombra[key];
+    if(!sh || sh.v!==r.version || !!sh.d!==!!r.eliminado) difiere = true;
+  });
+  Object.keys(sombra).forEach(k=>{ if(!enNube.has(k)) delete sombra[k]; });
+  return difiere;
+}
+
+// Ciclo completo: traer de la nube → enviar lo pendiente. Nunca corren dos a la vez.
+function tvSincronizar(motivo, opciones){
+  if(!_supa || !_tvSesion || !_tvEstadoListo || !_tvEstado || _tvMigrando){ tvActualizarIndicador(); return Promise.resolve(false); }
+  if(_tvSync){ _tvRepetir = true; return _tvSync; }
+  if(!navigator.onLine){ tvActualizarIndicador(); return Promise.resolve(false); }
+  _tvSync = (async ()=>{
+    let ok = false;
+    try {
+      tvActualizarIndicador();
+      if(opciones && opciones.reconciliar && await tvReconciliar()) await tvTraerCambios(0);
+      else await tvTraerCambios(_tvEstado.cursor || 0);
+      await tvEnviarPendientes();
+      _tvFallos = 0; _tvUltimoOk = new Date(); ok = true;
+      clearTimeout(_tvReintento); _tvReintento = null;
+    } catch(e){
+      console.log('Error de sincronización ('+motivo+'):', e);
+      _tvFallos++;
+      if(_tvFallos===1 && tvCalcularPendientes().length)
+        toast('No se pudo guardar en la nube. Tus cambios están a salvo en este dispositivo y se reintentará automáticamente');
+      if(e && (e.code==='42501' || e.status===401 || /JWT|sesi/i.test(e.message||''))){
+        const {data} = await _supa.auth.getSession();
+        if(!data || !data.session){ _tvSesion = null; _tvEstadoListo = false; tvMostrarLogin('login'); }
+      }
+      clearTimeout(_tvReintento);
+      _tvReintento = setTimeout(()=>tvSincronizar('reintento'), Math.min(60000, 5000 * Math.pow(2, _tvFallos-1)));
+    } finally {
+      _tvSync = null;
+      tvActualizarIndicador();
+      if(_tvRepetir){ _tvRepetir = false; setTimeout(()=>tvSincronizar('repetir'), 0); }
+    }
+    return ok;
+  })();
+  return _tvSync;
+}
+
+// Lo llama persist() y cada cambio de los vehículos recibidos. Agrupa cambios seguidos.
+function tvMarcarCambios(){
+  const ahora = Date.now();
+  if(!_tvPrimerCambio) _tvPrimerCambio = ahora;
+  clearTimeout(_tvTimer);
+  _tvTimer = setTimeout(()=>tvGuardarAhora('guardado'),
+    Math.max(0, Math.min(TV_ESPERA_GUARDADO, _tvPrimerCambio + TV_ESPERA_MAXIMA - ahora)));
+  tvActualizarIndicador();
+}
+function tvGuardarAhora(motivo){
+  clearTimeout(_tvTimer); _tvTimer = null; _tvPrimerCambio = 0;
+  if(_tvSesion && _tvEstadoListo) return tvSincronizar(motivo || 'guardado');
+  tvActualizarIndicador();
+  return Promise.resolve(false);
+}
+
+// Último intento al cerrar la página (el navegador lo termina aunque la pestaña se cierre)
+function tvEnvioDeEmergencia(){
+  try {
+    if(!_tvSesion || !_tvEstadoListo || !_tvEstado || _tvMigrando) return;
+    let cambios = tvCalcularPendientes();
+    if(!cambios.length) return;
+    if(tvBorradosMasivos(cambios).length) cambios = cambios.filter(c=>!c.eliminar);
+    const lote = []; let tam = 200;
+    for(const c of cambios){
+      const t = JSON.stringify(tvSinHash(c)).length;
+      if(tam + t > 60000) continue;
+      lote.push(tvSinHash(c)); tam += t;
+    }
+    if(!lote.length) return;
+    fetch(SUPA_URL + '/rest/v1/rpc/mc_push', {
+      method:'POST', keepalive:true,
+      headers:{'Content-Type':'application/json', apikey:SUPA_KEY, Authorization:'Bearer '+_tvSesion.access_token},
+      body: JSON.stringify({p_cambios:lote, p_device:tvDeviceId})
+    }).catch(()=>{});
+  } catch(e){}
+}
+
+// ── Estado visible ──────────────────────────────────────────────────────────
+function tvIndicador(estado, n){
+  const ind = document.getElementById('tv-sync');
+  if(!ind) return;
+  const cambios = n===1 ? '1 cambio' : n+' cambios';
+  const e = {
+    'guardando':    ['☁️ Guardando…', '#ffffff'],
+    'guardado':     ['☁️ Guardado en la nube', '#b9f6ca'],
+    'error':        ['☁️ Error al guardar — toca para reintentar', '#ffcdd2'],
+    'sin-nube':     ['☁️ Sin conexión con la nube — toca para reintentar', '#ffe0b2'],
+    'sin-conexion': [n ? '☁️ Sin conexión — '+cambios+' en este dispositivo' : '☁️ Sin conexión', '#ffe0b2'],
+    'sin-sesion':   ['☁️ Sin sesión — toca para iniciar', '#ffe0b2'],
+    'cargando':     ['☁️ Cargando…', '#ffffff'],
+  }[estado] || ['☁️ Nube', '#ffffff'];
+  ind.textContent = e[0]; ind.style.color = e[1];
+}
+function tvActualizarIndicador(){
+  let n = 0;
+  try { n = _tvEstado ? tvCalcularPendientes().length : 0; } catch(e){}
+  if(!_supa)                              tvIndicador('sin-conexion', n);
+  else if(!_tvSesion || !_tvEstadoListo)  tvIndicador(_tvMigrando ? 'cargando' : 'sin-sesion');
+  else if(!navigator.onLine)              tvIndicador('sin-conexion', n);
+  else if(_tvFallos && !_tvSync)          tvIndicador(n ? 'error' : 'sin-nube', n);
+  else if(n)                              tvIndicador('guardando', n);
+  else                                    tvIndicador('guardado');
+  tvActualizarCuenta(n);
+}
+function tvActualizarCuenta(n){
+  const info = document.getElementById('tv-cuenta-info');
+  const btn  = document.getElementById('tv-btn-sesion');
+  const conectado = _tvSesion && _tvEstadoListo;
+  if(btn) btn.textContent = conectado ? 'Cerrar sesión' : 'Iniciar sesión';
+  if(!info) return;
+  if(!conectado){
+    info.textContent = 'No has iniciado sesión. Los trámites se guardan solo en este dispositivo y se subirán a la nube cuando inicies sesión.';
+    return;
+  }
+  const hora = _tvUltimoOk ? _tvUltimoOk.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}) : '—';
+  info.innerHTML = 'Conectado como <strong></strong> (la misma cuenta de MotoContable).<br>Última sincronización: ' + hora +
+    '<br>Cambios pendientes de subir: <strong>' + (n||0) + '</strong>';
+  info.querySelector('strong').textContent = (_tvSesion.user && _tvSesion.user.email) || '';
+}
+
+// Vuelve a dibujar con los datos nuevos (si estás escribiendo, espera a que termines)
+function tvEditando(){
+  const a = document.activeElement;
+  return a && a.closest && a.closest('main') && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName);
+}
+function tvRefrescarUI(){
+  updateBadge(); updateBadgeMC();
+  const panel = ((document.querySelector('.panel.active')||{}).id||'').replace('panel-','');
+  if(panel==='nuevo' || panel==='nube') return;
+  if(tvEditando()){ _tvRefrescar = true; return; }
+  _tvRefrescar = false;
+  const render = {pendientes:renderPending, completados:renderDone, todos:renderTodos, historial:renderHistory,
+                  'historial-anual':renderHistoryAnual, analisis:renderAnalisis, motocontable:renderMC}[panel];
+  if(render) render();
+}
+document.addEventListener('focusout', ()=>{
+  if(!_tvRefrescar) return;
+  setTimeout(()=>{ if(_tvRefrescar && !tvEditando()) tvRefrescarUI(); }, 400);
+});
+
+// ── Ventana de pregunta ─────────────────────────────────────────────────────
+function tvPreguntar({titulo, texto, si, no}){
+  return new Promise(res=>{
+    const ov = document.getElementById('tv-pregunta');
+    document.getElementById('tv-pregunta-titulo').textContent = titulo;
+    document.getElementById('tv-pregunta-texto').textContent  = texto;
+    const bSi = document.getElementById('tv-pregunta-si'), bNo = document.getElementById('tv-pregunta-no');
+    bSi.textContent = si || 'Aceptar';
+    bNo.textContent = no || 'Cancelar';
+    bNo.style.display = no===null ? 'none' : '';
+    const cerrar = v=>{ ov.style.display='none'; res(v); };
+    bSi.onclick = ()=>cerrar(true);
+    bNo.onclick = ()=>cerrar(false);
+    ov.style.display='flex';
+  });
+}
+
+// ── Inicio de sesión (la misma cuenta de MotoContable) ──────────────────────
+let _tvModoLogin = 'login';
+function tvMostrarLogin(modo){
+  _tvModoLogin = modo || 'login';
+  const nueva = _tvModoLogin==='nueva', cargando = _tvModoLogin==='cargando';
+  document.getElementById('tv-login-titulo').textContent =
+    nueva ? 'Nueva contraseña' : cargando ? 'Sincronizando tus trámites…' : 'Inicia sesión';
+  document.getElementById('tv-login-sub').textContent =
+    nueva ? 'Escribe tu nueva contraseña.' :
+    cargando ? 'Estamos uniendo los trámites de este dispositivo con la nube. No cierres la página.' :
+    'Usa la misma cuenta de MotoContable. Tus trámites se guardarán en la nube y los verás en cualquier dispositivo.';
+  document.getElementById('tv-login-form').style.display    = cargando ? 'none' : '';
+  document.getElementById('tv-login-email-g').style.display = nueva ? 'none' : '';
+  document.getElementById('tv-login-extra').style.display   = (nueva||cargando) ? 'none' : 'flex';
+  const pass = document.getElementById('tv-login-pass');
+  pass.value = ''; pass.autocomplete = nueva ? 'new-password' : 'current-password';
+  document.getElementById('tv-login-email').required = !nueva;
+  document.getElementById('tv-login-btn').textContent = nueva ? 'Guardar contraseña' : 'Iniciar sesión';
+  tvLoginMensaje('');
+  document.getElementById('tv-login').style.display = 'flex';
+}
+function tvOcultarLogin(){ document.getElementById('tv-login').style.display = 'none'; }
+function tvLoginMensaje(txt, error){
+  const m = document.getElementById('tv-login-msg');
+  m.textContent = txt; m.style.display = txt ? 'block' : 'none';
+  m.style.color = error ? 'var(--danger)' : 'var(--text2)';
+}
+async function tvLoginEnviar(){
+  if(!_supa){ tvLoginMensaje('No hay conexión con la nube. Revisa tu internet y recarga la página.', true); return; }
+  const btn = document.getElementById('tv-login-btn');
+  const email = document.getElementById('tv-login-email').value.trim();
+  const pass  = document.getElementById('tv-login-pass').value;
+  btn.disabled = true;
+  try {
+    if(_tvModoLogin==='nueva'){
+      if(pass.length < 8){ tvLoginMensaje('La contraseña debe tener al menos 8 caracteres.', true); return; }
+      const {error} = await _supa.auth.updateUser({password: pass});
+      if(error){ tvLoginMensaje('No se pudo cambiar la contraseña: ' + error.message, true); return; }
+      _tvRecuperacion = false;
+      toast('Contraseña actualizada');
+      tvOcultarLogin();
+      const {data} = await _supa.auth.getSession();
+      if(data && data.session && !_tvEstadoListo) await tvConSesion(data.session);
+      return;
+    }
+    tvLoginMensaje('Entrando…');
+    const {data, error} = await _supa.auth.signInWithPassword({email, password: pass});
+    if(error){
+      tvLoginMensaje(/invalid/i.test(error.message) ? 'Correo o contraseña incorrectos.' :
+        (!navigator.onLine || /fetch|network/i.test(error.message)) ? 'No se pudo conectar con la nube. Revisa tu internet e inténtalo de nuevo.' :
+        'No se pudo iniciar sesión: ' + error.message, true);
+      return;
+    }
+    await tvConSesion(data.session);
+  } catch(e){
+    tvLoginMensaje('No se pudo conectar. Revisa tu internet e inténtalo de nuevo.', true);
+  } finally { btn.disabled = false; }
+}
+async function tvLoginOlvide(){
+  const email = document.getElementById('tv-login-email').value.trim();
+  if(!email){ tvLoginMensaje('Escribe tu correo y vuelve a pulsar "¿Olvidaste tu contraseña?".', true); return; }
+  if(!_supa){ tvLoginMensaje('No hay conexión con la nube.', true); return; }
+  const destino = location.protocol==='file:' ? TV_URL_PUBLICA : location.origin + location.pathname;
+  const {error} = await _supa.auth.resetPasswordForEmail(email, {redirectTo: destino});
+  tvLoginMensaje(error ? 'No se pudo enviar el correo: ' + error.message
+    : 'Si el correo está registrado, te llegará un enlace para crear una nueva contraseña. Revisa también la carpeta de spam.', !!error);
+}
+function tvLoginSinSesion(){
+  tvOcultarLogin();
+  tvActualizarIndicador();
+  toast('Sin sesión: los trámites quedan solo en este dispositivo hasta que inicies sesión');
+}
+function tvBotonSesion(){
+  if(_tvSesion && _tvEstadoListo) tvCerrarSesion(); else tvMostrarLogin('login');
+}
+async function tvCerrarSesion(){
+  if(navigator.onLine) await tvGuardarAhora('cerrar-sesion');
+  const n = _tvEstado ? tvCalcularPendientes().length : 0;
+  if(n){
+    await tvPreguntar({titulo:'Hay cambios sin subir',
+      texto:`Tienes ${n} cambio(s) que todavía no llegan a la nube. Conéctate a internet y espera a que diga "Guardado en la nube" antes de cerrar sesión.`,
+      si:'Entendido', no:null});
+    return;
+  }
+  const ok = await tvPreguntar({titulo:'Cerrar sesión',
+    texto:'Tus trámites están guardados en la nube. Se cerrará la sesión también en MotoContable en este navegador.',
+    si:'Cerrar sesión', no:'Cancelar'});
+  if(!ok) return;
+  if(_tvCanal){ try{ _supa.removeChannel(_tvCanal); }catch(e){} _tvCanal = null; }
+  await _supa.auth.signOut();
+  _tvSesion = null; _tvEstadoListo = false;
+  tvActualizarIndicador();
+  tvMostrarLogin('login');
+}
+
+// ── Migración del dispositivo ───────────────────────────────────────────────
+// Primera vez que esta cuenta entra en este navegador: se sube lo que solo existe aquí y
+// lo que difiere de la nube se guarda en mc_historial (la nube queda como principal).
+async function tvTraerTodo(){
+  const filas = []; let cursor = 0;
+  while(true){
+    const {data, error} = await _supa.rpc('mc_pull', {p_desde:cursor, p_limite:1000});
+    if(error) throw error;
+    (data||[]).forEach(f=>{ if(TV_COLECCIONES.includes(f.coleccion)) filas.push(f); if(f.seq>cursor) cursor=f.seq; });
+    if(!data || data.length < 1000) break;
+  }
+  return {filas, cursor};
+}
+function tvMensajeError(e){
+  const m = (e && e.message) || 'error de conexión';
+  return /coleccion_check/.test(m) ? 'Falta ejecutar supabase/06_traspasos.sql en Supabase (ver LEEME, FASE 8)' : m;
+}
+async function tvMigrarDispositivo(uid){
+  _tvMigrando = true;
+  tvMostrarLogin('cargando');
+  try {
+    const {filas} = await tvTraerTodo();
+    const nube = new Map(filas.map(f=>[f.coleccion+'|'+f.id, f]));
+    const cambios = [];
+    TV_COLECCIONES.forEach(col=>{
+      (TV_COLS[col].get()||[]).forEach(item=>{
+        if(!item || typeof item!=='object' || item.id==null || item.id==='') return;
+        const id = String(item.id), f = nube.get(col+'|'+id);
+        if(f && !f.eliminado && tvHash(f.data)===tvHash(item)) return;
+        // Un vehículo recibido que otro dispositivo ya confirmó o descartó no se vuelve a subir
+        if(f && f.eliminado && col==='traspasos_borradores') return;
+        cambios.push({coleccion:col, id, data:item, modo:'migracion'});
+      });
+    });
+    let subidos = 0, historial = 0;
+    for(const lote of tvLotes(cambios)){
+      const {data, error} = await _supa.rpc('mc_push', {p_cambios:lote, p_device:tvDeviceId});
+      if(error) throw error;
+      subidos   += (data.aplicados||[]).filter(a=>a.resultado==='creado').length;
+      historial += (data.conflictos||[]).length;
+    }
+    // La copia local queda exactamente igual a la nube
+    const final = await tvTraerTodo();
+    const sombra = {};
+    TV_COLECCIONES.forEach(col=>{
+      const filasCol = final.filas.filter(f=>f.coleccion===col && !f.eliminado)
+        .sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at));
+      TV_COLS[col].set(filasCol.map(f=>f.data));
+      tvPersistirLocal(col);
+    });
+    final.filas.forEach(f=>{
+      sombra[f.coleccion+'|'+f.id] = f.eliminado ? {v:f.version, d:1, c:Date.parse(f.created_at)}
+                                                 : {v:f.version, h:tvHash(f.data), c:Date.parse(f.created_at)};
+    });
+    _tvEstado = {userId: uid, cursor: final.cursor, sombra};
+    tvGuardarEstado();
+    _tvUltimoOk = new Date();
+    _tvMigrando = false;
+    tvOcultarLogin();
+    tvRefrescarUI();
+    if(subidos || historial){
+      await tvPreguntar({titulo:'✅ Trámites unidos con la nube',
+        texto:`Subidos desde este dispositivo: ${subidos}\nGuardados en el historial (la nube tenía otra versión): ${historial}\n\nDesde ahora todo se guarda solo en la nube y lo verás en tus otros dispositivos.`,
+        si:'Entendido', no:null});
+    } else toast('Trámites sincronizados con la nube');
+    return true;
+  } catch(e){
+    _tvMigrando = false;
+    console.log('Error en la migración del dispositivo:', e);
+    tvMostrarLogin('login');
+    tvLoginMensaje('No se pudieron sincronizar tus trámites (' + tvMensajeError(e) + '). Tus datos de este dispositivo siguen intactos. Puedes continuar sin sesión e intentarlo más tarde.', true);
+    return false;
+  }
+}
+
+// ── Arranque ────────────────────────────────────────────────────────────────
+async function tvConSesion(session){
+  _tvSesion = session;
+  const uid = session.user.id;
+  tvCargarEstado();
+  if(!_tvEstado || _tvEstado.userId !== uid){
+    if(!await tvMigrarDispositivo(uid)) return;
+  } else {
+    tvOcultarLogin();
+  }
+  _tvEstadoListo = true;
+  tvActualizarIndicador();
+  tvSuscribirTiempoReal(uid);
+  tvRegistrarEventos();
+  if(_tvRecuperacion) tvMostrarLogin('nueva');
+  await tvSincronizar('inicio', {reconciliar:true});
+}
+function tvSuscribirTiempoReal(uid){
+  if(_tvCanal || !_supa.channel) return;
+  try {
+    _tvCanal = _supa.channel('tv-registros-' + tvDeviceId)
+      .on('postgres_changes', {event:'*', schema:'public', table:'mc_registros', filter:'user_id=eq.'+uid},
+          ()=>{ clearTimeout(_tvTimerRemoto); _tvTimerRemoto = setTimeout(()=>tvSincronizar('tiempo-real'), 400); })
+      .subscribe();
+  } catch(e){ console.log('Tiempo real no disponible:', e); }
+}
+function tvRegistrarEventos(){
+  if(_tvEventosListos) return;
+  _tvEventosListos = true;
+  window.addEventListener('online',  ()=>{ _tvFallos = 0; tvGuardarAhora('online'); });
+  window.addEventListener('offline', ()=>tvActualizarIndicador());
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState==='hidden') tvGuardarAhora('oculta');
+    else tvSincronizar('visible');
+  });
+  window.addEventListener('pagehide', tvEnvioDeEmergencia);
+  window.addEventListener('pageshow', e=>{ if(e.persisted) tvSincronizar('pageshow'); });
+  setInterval(()=>{ if(document.visibilityState==='visible') tvSincronizar('periodico'); }, 60000);
+}
+async function tvIniciar(){
+  try { if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
+  tvCargarEstado();
+  if(!_supa){ tvActualizarIndicador(); return; }
+  tvIndicador('cargando');
+  _supa.auth.onAuthStateChange((evento, session)=>{
+    if(session) _tvSesion = session;
+    if(evento==='PASSWORD_RECOVERY'){ _tvRecuperacion = true; setTimeout(()=>{ if(!_tvMigrando) tvMostrarLogin('nueva'); }, 0); }
+    if(evento==='SIGNED_OUT' && _tvSesion){
+      _tvSesion = null; _tvEstadoListo = false;
+      setTimeout(()=>{ tvActualizarIndicador(); tvMostrarLogin('login'); }, 0);
+    }
+  });
+  let session = null;
+  try { session = (await _supa.auth.getSession()).data.session; } catch(e){}
+  if(!session){ tvActualizarIndicador(); tvMostrarLogin('login'); return; }
+  await tvConSesion(session);
+}
+async function tvSincronizarAhora(){
+  if(!_supa){ toast('Sin conexión con la nube'); return; }
+  if(!_tvSesion || !_tvEstadoListo){ tvMostrarLogin('login'); return; }
+  const ok = await tvGuardarAhora('manual');
+  toast(ok ? '✓ Trámites sincronizados con la nube' :
+        !navigator.onLine ? 'Sin conexión: los cambios se enviarán al volver internet' :
+        'No se pudo sincronizar. Se reintentará automáticamente');
+}
+
+// MotoContable escribe los vehículos enviados en este mismo navegador: si está abierto en
+// otra pestaña, se muestran al instante y se suben a la nube.
+window.addEventListener('storage', e=>{
+  if(e.key===MC_KEY){
+    updateBadgeMC();
+    if(document.getElementById('panel-motocontable').classList.contains('active')) renderMC();
+    tvMarcarCambios();
+  }
+});
+
+// ── Respaldo (exportar / importar) ──────────────────────────────────────────
+function tvExportarRespaldo(){
+  const backup = {app:'TraspasosVehiculos', version:1, fecha:new Date().toISOString(),
+                  records: records, borradores: getBorradores()};
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'Traspasos_respaldo_' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('✓ Respaldo descargado (' + records.length + ' trámites)');
+}
+// Importar SUMA al contenido actual: nunca borra nada. Un trámite con el mismo número
+// pero distinto contenido se agrega como copia, para no pisar el actual.
+function tvImportarRespaldo(input){
+  const file = input.files[0];
+  input.value = '';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async e=>{
+    let data;
+    try { data = JSON.parse(e.target.result); } catch(err){ toast('El archivo no es un respaldo válido'); return; }
+    if(!data || data.app!=='TraspasosVehiculos' || !Array.isArray(data.records)){ toast('El archivo no es un respaldo de Traspasos'); return; }
+    const actuales = new Map(records.map(r=>[String(r.id), r]));
+    const nuevos = [], copias = [];
+    let iguales = 0;
+    data.records.forEach(r=>{
+      if(!r || r.id==null) return;
+      const act = actuales.get(String(r.id));
+      if(!act) nuevos.push(r);
+      else if(tvHash(act)===tvHash(r)) iguales++;
+      else copias.push(r);
+    });
+    const borrActuales = new Set(getBorradores().map(b=>String(b.id)));
+    const borrNuevos = (Array.isArray(data.borradores) ? data.borradores : []).filter(b=>b && b.id!=null && !borrActuales.has(String(b.id)));
+    if(!nuevos.length && !copias.length && !borrNuevos.length){
+      toast('Ese respaldo no tiene nada nuevo: ' + iguales + ' trámite(s) ya estaban'); return;
+    }
+    const fechaBk = data.fecha ? new Date(data.fecha).toLocaleString('es-CO') : 'fecha desconocida';
+    const ok = await tvPreguntar({
+      titulo: '📥 ¿Importar este respaldo?',
+      texto: `Respaldo del ${fechaBk}:\n• ${nuevos.length} trámite(s) nuevos se agregarán\n• ${copias.length} con el mismo número pero distinto contenido se agregarán como copia\n• ${iguales} ya estaban iguales y no se tocan\n• ${borrNuevos.length} vehículo(s) recibidos de MotoContable se agregarán\n\nNo se borra ni se reemplaza nada de lo que ya tienes.`,
+      si: 'Sí, importar', no: 'Cancelar'
+    });
+    if(!ok) return;
+    let base = Date.now();
+    nuevos.forEach(r=>records.push(r));
+    copias.forEach(r=>records.push({...r, id: base++, nota: ((r.nota||'') + ' (copia importada de respaldo)').trim()}));
+    persist();
+    if(borrNuevos.length) TV_COLS.traspasos_borradores.set([...getBorradores(), ...borrNuevos]);
+    tvMarcarCambios();
+    updateBadge(); updateBadgeMC(); tvRefrescarUI();
+    toast('✓ Importados ' + (nuevos.length + copias.length) + ' trámite(s)');
+  };
+  reader.readAsText(file);
+}
+
+tvIniciar();
+</script>
+</body>
+</html>

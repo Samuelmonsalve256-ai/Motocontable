@@ -19,6 +19,7 @@ Esta guía te lleva paso a paso para configurar tu proyecto de Supabase.
 | `03_funciones.sql` | Crea funciones | Sincronización con control de versiones y tiempo real |
 | `04_migracion.sql` | Copia datos | Pasa tus datos de `mc_datos` a `mc_registros`, y antes guarda un respaldo |
 | `05_cerrar_tabla_antigua.sql` | Quita el acceso público a `mc_datos` | **Solo al final.** No borra datos |
+| `06_traspasos.sql` | Amplía la lista de colecciones permitidas | Permite guardar Traspasos de Vehículos en la nube (FASE 8). No borra datos |
 
 Ningún archivo borra la tabla `mc_datos` ni tus datos. Los archivos 01 a 05 se pueden volver a ejecutar sin problema: no duplican ni pisan nada.
 
@@ -193,6 +194,39 @@ GitHub Pages publica solo la rama `main`, y los cambios están en la rama `claud
 - Cuando todos tus dispositivos ya usen la versión nueva y verifiques que todo está bien:
   **SQL Editor → pegar `05_cerrar_tabla_antigua.sql` → Run**.
 - Esto quita el acceso público a `mc_datos`. **No borra** la tabla ni sus datos.
+
+---
+
+## FASE 8: Traspasos de Vehículos en la nube
+
+Traspasos de Vehículos queda publicado junto a MotoContable, en
+`https://samuelmonsalve256-ai.github.io/Motocontable/traspasos.html`. Usa la misma cuenta y guarda sus trámites en la nube.
+
+**Por qué se había perdido la conexión:**
+- Antes abrías MotoContable y Traspasos como archivos en Safari del Mac, y los dos compartían el almacenamiento del navegador.
+- Al pasar MotoContable a GitHub Pages quedaron en sitios distintos, y Safari no deja que un sitio lea lo que guardó otro.
+- Ahora los dos están en el mismo sitio y, además, se comunican por la nube.
+
+**Paso 1: ejecutar el SQL (una sola vez)**
+1. En Supabase abre **SQL Editor → New query**.
+2. Pega `06_traspasos.sql` y pulsa **Run**.
+3. Al final debe mostrar la regla con 9 colecciones.
+
+**Paso 2: rescatar los trámites que tenías en el Mac**
+- Tus trámites antiguos siguen guardados en Safari del Mac, en el mismo archivo que abrías antes.
+- **No borres el historial ni los datos de Safari** hasta terminar este paso.
+1. Reemplaza el archivo `traspasos_vehiculos.html` que abrías en el Mac por la versión nueva (`traspasos.html` de este repositorio). Usa el **mismo nombre y la misma carpeta** de antes.
+2. Ábrelo en Safari como siempre. Deberían aparecer tus trámites antiguos.
+3. **Antes que nada**, ve a **Respaldo y nube → Descargar respaldo** y guarda el archivo.
+4. Inicia sesión con tu cuenta de MotoContable. La app sube tus trámites a la nube y te muestra un resumen.
+5. Desde ese momento usa la dirección publicada en todos tus dispositivos. Los trámites estarán ahí.
+6. Si el archivo nuevo no muestra tus trámites, abre la versión publicada, inicia sesión y usa **Respaldo y nube → Importar respaldo** con el archivo del punto 3. Importar **suma**: nunca borra ni reemplaza.
+
+**Cómo funciona desde ahora:**
+- El botón 📋 de una venta en MotoContable envía el vehículo a la nube. Aparece en **Desde MotoContable** de Traspasos en cualquier dispositivo.
+- Al confirmar o descartar un vehículo, se actualiza en todos tus dispositivos.
+- Los trámites se guardan solos en la nube. El indicador de la cabecera muestra «Guardando…», «Guardado en la nube», «Error al guardar» o «Sin conexión».
+- Si ya iniciaste sesión en MotoContable en ese navegador, Traspasos entra solo.
 
 ---
 

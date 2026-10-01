@@ -1474,6 +1474,7 @@ async function mcReconciliar(){
   const enNube = new Set();
   let difiere = false;
   (data||[]).forEach(r=>{
+    if(!MC_COLECCIONES.includes(r.coleccion)) return;   // p. ej. los trámites de Traspasos
     const key = r.coleccion+'|'+r.id; enNube.add(key);
     const sh = sombra[key];
     if(!sh || sh.v!==r.version || !!sh.d!==!!r.eliminado) difiere = true;
@@ -1820,7 +1821,7 @@ async function mcMigrarDispositivo(uid){
     });
     const cfg = final.filas.find(f=>f.coleccion==='config' && f.id==='config' && !f.eliminado);
     cfgData = cfg ? cfg.data : {};
-    final.filas.forEach(f=>{
+    final.filas.filter(f=>MC_COLECCIONES.includes(f.coleccion)).forEach(f=>{
       sombra[f.coleccion+'|'+f.id] = f.eliminado ? {v:f.version, d:1, c:Date.parse(f.created_at)}
                                                  : {v:f.version, h:mcHash(f.data), c:Date.parse(f.created_at)};
     });
@@ -3854,6 +3855,7 @@ function exportarATrapasos(ventaId){
         cola.push(traspaso);
         localStorage.setItem(MC_KEY, JSON.stringify(cola));
         toast('✓ Actualizado en Traspasos Vehiculares');
+        mcEnviarATraspasosNube(traspaso);
       }
     );
     return;
@@ -3862,6 +3864,29 @@ function exportarATrapasos(ventaId){
   cola.push(traspaso);
   localStorage.setItem(MC_KEY, JSON.stringify(cola));
   toast('✓ Enviado a Traspasos — ábrelo y acepta el trámite');
+  mcEnviarATraspasosNube(traspaso);
+}
+
+// Sube el vehículo enviado a la nube (colección traspasos_borradores) para que llegue a
+// Traspasos en cualquier dispositivo. Si no se puede (sin sesión o sin internet), queda en
+// este navegador y Traspasos lo sube al abrirse aquí.
+async function mcEnviarATraspasosNube(traspaso){
+  if(!_supa || !_mcSesion || !_mcEstadoListo || !navigator.onLine) return;
+  try {
+    const {data:indice, error:e1} = await _supa.rpc('mc_indice');
+    if(e1) throw e1;
+    const actual = (indice||[]).find(r=>r.coleccion==='traspasos_borradores' && r.id===traspaso.id);
+    const {data, error} = await _supa.rpc('mc_push', {
+      p_cambios: [{coleccion:'traspasos_borradores', id:traspaso.id, data:traspaso, base_version: actual ? actual.version : null}],
+      p_device: mcDeviceId });
+    if(error) throw error;
+    if(!(data.conflictos||[]).length) toast('✓ Enviado a Traspasos en la nube: llegará a todos tus dispositivos');
+  } catch(e){
+    console.log('No se pudo enviar a Traspasos por la nube:', e);
+    toast(/coleccion_check/.test((e&&e.message)||'')
+      ? 'Enviado solo en este dispositivo: falta ejecutar 06_traspasos.sql en Supabase'
+      : 'Enviado a Traspasos en este dispositivo; no se pudo subir a la nube ahora', 'err');
+  }
 }
 
 // ── CELEBRACIÓN ───────────────────────────────────────────────────────────────
