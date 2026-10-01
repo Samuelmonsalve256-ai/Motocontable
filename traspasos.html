@@ -1329,8 +1329,14 @@ async function saveRecord() {
   sonido('agregar');
 }
 
-function deleteRecord(id) {
-  if(!confirm('¿Eliminar este trámite? Esta acción no se puede deshacer.')) return;
+async function deleteRecord(id) {
+  const r = records.find(x => x.id === id);
+  const ok = await tvPreguntar({
+    titulo: '🗑 Eliminar trámite',
+    texto: (r ? `${r.nombre || 'Vehículo'} — ${r.placa || 'sin placa'}\n\n` : '') + '¿Eliminar este trámite? Esta acción no se puede deshacer.',
+    si: 'Sí, eliminar', no: 'Cancelar', peligro: true
+  });
+  if(!ok) return;
   records = records.filter(r => r.id !== id);
   persist();
   updateBadge();
@@ -2228,8 +2234,14 @@ function confirmarBorrador(id) {
   renderMC();
 }
 
-function descartarBorrador(id) {
-  if(!confirm('¿Descartar este vehículo recibido de MotoContable?')) return;
+async function descartarBorrador(id) {
+  const b = getBorradores().find(x => x.id === id);
+  const ok = await tvPreguntar({
+    titulo: 'Descartar vehículo',
+    texto: (b ? `${b.nombre || 'Vehículo'} — ${b.placa || 'sin placa'}\n\n` : '') + '¿Descartar este vehículo recibido de MotoContable?',
+    si: 'Sí, descartar', no: 'Cancelar', peligro: true
+  });
+  if(!ok) return;
   let borradores = getBorradores();
   borradores = borradores.filter(x => x.id !== id);
   localStorage.setItem(MC_KEY, JSON.stringify(borradores));
@@ -2261,7 +2273,7 @@ function tvAudio(){
       if(!Ctx) return null;
       _tvAudio = new Ctx();
     }
-    if(_tvAudio.state === 'suspended') _tvAudio.resume();
+    if(_tvAudio.state !== 'running') _tvAudio.resume().catch(()=>{});
     return _tvAudio;
   } catch(e){ return null; }
 }
@@ -2287,11 +2299,16 @@ function sonido(tipo){
     agregar:   [[784,0,0.18],[1175,0.09,0.32]],                // sube: G5 → D6
     confirmar: [[659,0,0.14],[880,0.08,0.16],[1319,0.16,0.36]], // sube: E5 → A5 → E6
     guardar:   [[988,0,0.12],[1319,0.06,0.22]],                // corto: B5 → E6
-    borrar:    [[523,0,0.16],[392,0.10,0.30]],                 // baja: C5 → G4
+    borrar:    [[659,0,0.16],[440,0.11,0.34]],                 // baja: E5 → A4
   }[tipo];
   if(!notas) return;
-  const t = ctx.currentTime + 0.01;
-  notas.forEach(([f, d, dur]) => tvTono(ctx, f, t + d, dur, 0.12, tipo === 'borrar' ? 'triangle' : 'sine'));
+  const tocar = () => {
+    const t = ctx.currentTime + 0.01;
+    notas.forEach(([f, d, dur]) => tvTono(ctx, f, t + d, dur, tipo === 'borrar' ? 0.16 : 0.12, 'sine'));
+  };
+  // Si Safari pausó el audio (por ejemplo, tras una ventana), se espera a reanudarlo
+  if(ctx.state !== 'running') ctx.resume().then(tocar).catch(()=>{});
+  else tocar();
 }
 function tvActualizarBotonSonidos(){
   const b = document.getElementById('tv-btn-sonidos');
@@ -2708,13 +2725,14 @@ document.addEventListener('focusout', ()=>{
 });
 
 // ── Ventana de pregunta ─────────────────────────────────────────────────────
-function tvPreguntar({titulo, texto, si, no}){
+function tvPreguntar({titulo, texto, si, no, peligro}){
   return new Promise(res=>{
     const ov = document.getElementById('tv-pregunta');
     document.getElementById('tv-pregunta-titulo').textContent = titulo;
     document.getElementById('tv-pregunta-texto').textContent  = texto;
     const bSi = document.getElementById('tv-pregunta-si'), bNo = document.getElementById('tv-pregunta-no');
     bSi.textContent = si || 'Aceptar';
+    bSi.className = peligro ? 'btn btn-danger' : 'btn btn-primary';
     bNo.textContent = no || 'Cancelar';
     bNo.style.display = no===null ? 'none' : '';
     const cerrar = v=>{ ov.style.display='none'; res(v); };
