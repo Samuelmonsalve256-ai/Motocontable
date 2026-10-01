@@ -1368,10 +1368,13 @@ async function mcTraerCambios(desde, forzar){
     if(error) throw error;
     const filas = data || [];
     filas.forEach(f=>{
-      const existia = mcMapaLocal(f.coleccion).has(String(f.id));
-      if(mcAplicarRemota(f, !!(forzar && forzar(f)))){
-        tocadas.add(f.coleccion);
-        if(!existia && !f.eliminado) insertadas.add(f.coleccion);
+      // Los trámites de Traspasos comparten la tabla: MotoContable solo procesa lo suyo
+      if(MC_COLECCIONES.includes(f.coleccion)){
+        const existia = mcMapaLocal(f.coleccion).has(String(f.id));
+        if(mcAplicarRemota(f, !!(forzar && forzar(f)))){
+          tocadas.add(f.coleccion);
+          if(!existia && !f.eliminado) insertadas.add(f.coleccion);
+        }
       }
       if(f.seq > cursor) cursor = f.seq;
     });
@@ -2592,6 +2595,7 @@ function guardarVenta(){
     motoNombre: vehiculo?vehiculo.nombre:'',
     motoModelo: vehiculo?vehiculo.modelo||'':'',
     motoPlaca:  vehiculo?vehiculo.placa||'':'',
+    motoColor:  vehiculo?vehiculo.color||'':'',
     fecha, precioVenta:precio,
     inversionCompra: compraBase,
     fechaCompra: vehiculo?vehiculo.fechaCompra||'':'',
@@ -2894,7 +2898,7 @@ function devolverAlInventario(id){
     nombre: v.motoNombre || (esCarro?'Carro recuperado':'Moto recuperada'),
     modelo: v.motoModelo || '',
     placa:  v.motoPlaca  || '',
-    color:  '',
+    color:  v.motoColor  || '',
     precioCompra: v.inversionCompra || 0,
     fechaCompra:  v.fechaCompra || '',
     vendedorCC:     v.vendedorCC || '',
@@ -3818,9 +3822,16 @@ function liberarEspacioFotos(){
 }
 
 // ── EXPORTAR A TRASPASOS VEHICULARES ─────────────────────────────────────────
-function exportarATrapasos(ventaId){
+async function exportarATrapasos(ventaId){
   const v = ventas.find(v=>v.id===ventaId);
   if(!v){ toast('Venta no encontrada','err'); return; }
+
+  // Ventas registradas antes de guardar el color: se busca en la última versión del
+  // vehículo que quedó en el historial de la nube, y se guarda en la venta.
+  if(!v.motoColor){
+    const color = await mcColorDesdeHistorial(v);
+    if(color){ v.motoColor = color; saveVentas(); }
+  }
 
   const traspaso = {
     id:          'mc_'+v.id,
@@ -3829,7 +3840,7 @@ function exportarATrapasos(ventaId){
     nombre:      v.motoNombre||'',
     modelo:      v.motoModelo||'',
     placa:       v.motoPlaca||'',
-    color:       '',           // MotoContable no siempre tiene color en venta
+    color:       v.motoColor||'',
     // Datos del vendedor (quien le vendió a Samuel)
     vendedor:    v.vendedorNombre||'',
     cedula:      v.vendedorCC||'',
@@ -3865,6 +3876,20 @@ function exportarATrapasos(ventaId){
   localStorage.setItem(MC_KEY, JSON.stringify(cola));
   toast('✓ Enviado a Traspasos — ábrelo y acepta el trámite');
   mcEnviarATraspasosNube(traspaso);
+}
+
+// Color de un vehículo ya vendido, según su última versión en mc_historial
+async function mcColorDesdeHistorial(v){
+  if(!_supa || !_mcSesion || !_mcEstadoListo || !navigator.onLine || !v.vehiculoId) return '';
+  try {
+    const {data, error} = await _supa.from('mc_historial').select('data')
+      .eq('coleccion', v.tipoVehiculo==='carro' ? 'carros' : 'motos')
+      .eq('id', String(v.vehiculoId))
+      .order('guardado_en', {ascending:false}).limit(5);
+    if(error) throw error;
+    const f = (data||[]).find(r=>r.data && r.data.color);
+    return f ? String(f.data.color) : '';
+  } catch(e){ console.log('No se pudo buscar el color en la nube:', e); return ''; }
 }
 
 // Sube el vehículo enviado a la nube (colección traspasos_borradores) para que llegue a
