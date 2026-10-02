@@ -3,11 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#1e1b4b">
+<meta name="theme-color" content="#f3f5fb">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>Traspasos de Vehículos</title>
+<script>
+// Colores del tema: se aplican antes de dibujar la página para que no parpadee.
+const TV_COLORES = [
+  {id:'indigo',    nombre:'Índigo',    a:'#4f46e5', b:'#7c3aed'},
+  {id:'oceano',    nombre:'Océano',    a:'#2563eb', b:'#0891b2'},
+  {id:'turquesa',  nombre:'Turquesa',  a:'#0d9488', b:'#0284c7'},
+  {id:'bosque',    nombre:'Bosque',    a:'#15803d', b:'#0d9488'},
+  {id:'rosa',      nombre:'Rosa',      a:'#db2777', b:'#9333ea'},
+  {id:'atardecer', nombre:'Atardecer', a:'#ea580c', b:'#e11d48'},
+  {id:'lavanda',   nombre:'Lavanda',   a:'#8b5cf6', b:'#d946ef'},
+  {id:'grafito',   nombre:'Grafito',   a:'#27272a', b:'#52525b'},
+];
+function tvHexRgb(h){ const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+function tvMezcla(h, con, t){ const a = tvHexRgb(h); return '#' + a.map(c => Math.round(c + (con - c) * t).toString(16).padStart(2, '0')).join(''); }
+function tvAplicarColor(id){
+  const c = TV_COLORES.find(x => x.id === id) || TV_COLORES[0];
+  const st = document.documentElement.style;
+  st.setProperty('--accent', c.a);
+  st.setProperty('--accent-2', c.b);
+  st.setProperty('--accent-rgb', tvHexRgb(c.a).join(','));
+  st.setProperty('--accent-2-rgb', tvHexRgb(c.b).join(','));
+  st.setProperty('--accent-light', tvMezcla(c.a, 255, .9));
+  st.setProperty('--accent-ink', tvMezcla(c.a, 0, .35));
+  st.setProperty('--grad', 'linear-gradient(135deg, ' + c.a + ' 0%, ' + c.b + ' 100%)');
+  document.documentElement.dataset.color = c.id;
+  return c;
+}
+(function(){ let id = 'indigo'; try { id = localStorage.getItem('tv_color') || 'indigo'; } catch(e){} tvAplicarColor(id); })();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <style>
@@ -913,19 +942,22 @@
     --sh-1: 0 1px 2px rgba(15,23,42,.04), 0 4px 14px -6px rgba(15,23,42,.08);
     --sh-2: 0 2px 4px rgba(15,23,42,.04), 0 18px 36px -14px rgba(30,27,75,.25);
     --grad: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    --accent-rgb: 79,70,229;
+    --accent-2-rgb: 124,58,237;
+    --accent-ink: #33308f;
   }
 
   body {
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
     background:
-      radial-gradient(900px 420px at 100% -10%, rgba(124,58,237,.07), transparent 60%),
-      radial-gradient(700px 380px at -10% 0%, rgba(79,70,229,.06), transparent 60%),
+      radial-gradient(900px 420px at 100% -10%, rgba(var(--accent-2-rgb),.07), transparent 60%),
+      radial-gradient(700px 380px at -10% 0%, rgba(var(--accent-rgb),.06), transparent 60%),
       var(--bg);
     background-attachment: fixed;
     letter-spacing: -.005em;
     -webkit-font-smoothing: antialiased;
   }
-  ::selection { background: rgba(79,70,229,.18); }
+  ::selection { background: rgba(var(--accent-rgb),.18); }
   * { scrollbar-width: thin; scrollbar-color: #cdd3e1 transparent; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-thumb { background: #cdd3e1; border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
@@ -984,7 +1016,7 @@
   .page-title { font-size: 25px; font-weight: 800; letter-spacing: -.03em; margin-bottom: 1.4rem; gap: 12px; }
   .page-title svg {
     width: 40px; height: 40px; padding: 9px; border-radius: 13px; color: #fff;
-    background: var(--grad); box-shadow: 0 8px 18px -8px rgba(79,70,229,.7);
+    background: var(--grad); box-shadow: 0 8px 18px -8px rgba(var(--accent-rgb),.7);
     flex-shrink: 0;
   }
 
@@ -1001,7 +1033,7 @@
     color: var(--accent); font-size: 11.5px; letter-spacing: 1.1px; font-weight: 800;
     display: flex; align-items: center; gap: 8px;
   }
-  .form-section-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--grad); box-shadow: 0 0 0 3px rgba(79,70,229,.15); }
+  .form-section-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--grad); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.15); }
   .form-section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
 
   /* ── Campos ── */
@@ -1011,7 +1043,7 @@
     padding: 10px 12px; font-size: 13.5px; transition: border .15s, box-shadow .15s, background .15s;
   }
   input:hover, select:hover, textarea:hover { border-color: #c9d1e2; }
-  input:focus, select:focus, textarea:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px rgba(79,70,229,.13); }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px rgba(var(--accent-rgb),.13); }
   select {
     -webkit-appearance: none; appearance: none; padding-right: 34px;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23526079' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
@@ -1021,8 +1053,8 @@
   /* ── Botones ── */
   .btn { border-radius: 11px; padding: 9px 18px; font-weight: 700; border-color: #dfe4ee; transition: background .15s, border .15s, transform .1s, box-shadow .15s, filter .15s; }
   .btn:hover { background: #f4f6fb; border-color: #cfd6e4; }
-  .btn-primary { background: var(--grad); border-color: transparent; color: #fff; box-shadow: 0 8px 18px -8px rgba(79,70,229,.75); }
-  .btn-primary:hover { background: var(--grad); filter: brightness(1.08); box-shadow: 0 10px 22px -8px rgba(79,70,229,.85); }
+  .btn-primary { background: var(--grad); border-color: transparent; color: #fff; box-shadow: 0 8px 18px -8px rgba(var(--accent-rgb),.75); }
+  .btn-primary:hover { background: var(--grad); filter: brightness(1.08); box-shadow: 0 10px 22px -8px rgba(var(--accent-rgb),.85); }
   .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 10px; }
   .btn-ghost { border-color: transparent; }
   .btn-danger { color: var(--danger); border-color: #fbcdd6; background: #fff; }
@@ -1059,7 +1091,7 @@
   .rc-actions { border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 12px; }
   .reason-box { border-radius: 10px; border-left-width: 3px; }
   .ruta-lado { border-radius: 12px; }
-  .ruta-flecha { background: var(--grad); box-shadow: 0 6px 14px -6px rgba(79,70,229,.8); }
+  .ruta-flecha { background: var(--grad); box-shadow: 0 6px 14px -6px rgba(var(--accent-rgb),.8); }
   .ruta-panel { border-radius: 14px; }
 
   /* ── Alertas ── */
@@ -1077,7 +1109,7 @@
   .stat-card { position: relative; overflow: hidden; padding: 1.1rem 1.2rem; }
   .stat-card::after {
     content: ''; position: absolute; right: -28px; top: -28px; width: 90px; height: 90px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(124,58,237,.12), transparent 70%);
+    background: none;
   }
   .stat-card .sc-label { font-size: 10.5px; letter-spacing: 1px; color: var(--text3); }
   .stat-card .sc-value { font-size: 27px; font-weight: 800; letter-spacing: -.03em; }
@@ -1142,9 +1174,9 @@
   .modal-close { border-radius: 10px; padding: 6px; }
   #tv-login {
     background:
-      radial-gradient(700px 400px at 15% 10%, rgba(124,58,237,.35), transparent 60%),
-      radial-gradient(600px 400px at 90% 90%, rgba(79,70,229,.35), transparent 60%),
-      linear-gradient(135deg, #0b1430, #1e1b4b) !important;
+      radial-gradient(700px 400px at 15% 10%, rgba(var(--accent-2-rgb),.35), transparent 60%),
+      radial-gradient(600px 400px at 90% 90%, rgba(var(--accent-rgb),.35), transparent 60%),
+      linear-gradient(135deg, #0b1020, var(--accent-ink)) !important;
   }
   #tv-login .modal-box { box-shadow: 0 30px 80px -20px rgba(0,0,0,.6); }
 
@@ -1164,14 +1196,234 @@
   .todos-table .col-tipo   { width: 76px; }
   .todos-table .col-placa  { width: 100px; }
   .todos-table .col-modelo { width: auto; }
-  .todos-table .col-vendor { width: 176px; }
+  .todos-table .col-vendor { width: 168px; }
   .todos-table .col-costo  { width: 96px; }
-  .todos-table .col-estado { width: 106px; }
+  .todos-table .col-estado { width: 118px; }
   .todos-table .col-acc    { width: 84px; }
   #edit-modal .modal-box { max-width: 740px; }
   .todos-table td.col-acc  { overflow: visible; }
   #pending-alert, #done-alert { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1.1rem; }
   #pending-alert .alert-pending, #done-alert .alert-done, #done-alert .alert-pending { margin: 0; flex: 1 1 250px; font-size: 12.5px; }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     TEMA v2 · color elegible y patrones más actuales
+     ════════════════════════════════════════════════════════════════════════ */
+  .ico { display: inline-block; vertical-align: -2px; flex-shrink: 0; }
+  .k-num, .sc-value, .rc-price, .td-costo, .month-total, .placa-chip { font-variant-numeric: tabular-nums; }
+
+  /* Cabecera clara, tipo vidrio */
+  header {
+    background: rgba(255,255,255,.78);
+    backdrop-filter: saturate(1.6) blur(14px); -webkit-backdrop-filter: saturate(1.6) blur(14px);
+    color: var(--text); border-bottom: 1px solid var(--border); box-shadow: none;
+  }
+  header > svg { background: var(--grad); color: #fff; box-shadow: 0 6px 16px -6px rgba(var(--accent-rgb),.7); }
+  header h1 { color: var(--text); }
+  header h1 span { background: var(--accent-light); border-color: transparent; color: var(--accent); }
+  header h1 span.h1-resto { background: none; border: none; padding: 0; margin: 0; font: inherit; color: inherit; vertical-align: baseline; }
+  .buscador-global input { background: #eff2f7; border: 1px solid transparent; color: var(--text); }
+  .buscador-global input::placeholder { color: var(--text3); }
+  .buscador-global input:hover { background: #e9edf4; }
+  .buscador-global input:focus { background: #fff; border-color: var(--accent); color: var(--text); box-shadow: 0 0 0 4px rgba(var(--accent-rgb),.13); }
+  .buscador-global .lupa { color: var(--text3); opacity: 1; display: flex; }
+  #tv-sync {
+    background: var(--surface); border: 1px solid var(--border); color: var(--text2) !important;
+    display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(15,23,42,.04);
+  }
+  #tv-sync::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    background: var(--sync, #94a3b8); box-shadow: 0 0 0 3px var(--sync-halo, rgba(148,163,184,.25));
+  }
+  #tv-sync[data-estado="guardado"]  { --sync: #10b981; --sync-halo: rgba(16,185,129,.2); }
+  #tv-sync[data-estado="guardando"], #tv-sync[data-estado="cargando"] { --sync: var(--accent); --sync-halo: rgba(var(--accent-rgb),.2); }
+  #tv-sync[data-estado="guardando"]::before, #tv-sync[data-estado="cargando"]::before { animation: tvLatido 1s ease-in-out infinite; }
+  #tv-sync[data-estado="error"] { --sync: var(--danger); --sync-halo: rgba(225,29,72,.2); color: var(--danger) !important; }
+  #tv-sync[data-estado^="sin-"] { --sync: #f59e0b; --sync-halo: rgba(245,158,11,.22); }
+  @keyframes tvLatido { 50% { transform: scale(.6); opacity: .6; } }
+  .hdr-btn {
+    width: 36px; height: 36px; border-radius: 11px; border: 1px solid var(--border); background: var(--surface);
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    box-shadow: 0 1px 2px rgba(15,23,42,.04); transition: border-color .15s, transform .1s;
+  }
+  .hdr-btn:hover { border-color: rgba(var(--accent-rgb),.4); }
+  .hdr-btn:active { transform: scale(.94); }
+  .hdr-btn .bolita { width: 18px; height: 18px; border-radius: 50%; background: var(--grad); box-shadow: inset 0 0 0 2px rgba(255,255,255,.45); }
+
+  /* Selector de color */
+  #tv-colores {
+    position: fixed; top: 72px; right: 16px; z-index: 1200; width: 292px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 16px;
+    box-shadow: 0 28px 60px -18px rgba(15,23,42,.35); display: none;
+  }
+  #tv-colores.show { display: block; animation: tvModal .18s cubic-bezier(.2,.7,.2,1); }
+  .pop-titulo { font-size: 13px; font-weight: 800; margin-bottom: 12px; color: var(--text); }
+  .tv-swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .tv-swatches.grande { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; max-width: 760px; }
+  .tv-swatch {
+    border: none; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 7px;
+    font: 600 11.5px/1.2 inherit; color: var(--text2); padding: 8px 2px; border-radius: 14px; transition: background .15s;
+  }
+  .tv-swatch:hover { background: var(--surface2); }
+  .tv-swatch i {
+    width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--a), var(--b));
+    display: flex; align-items: center; justify-content: center; color: #fff; transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 6px 14px -6px var(--a);
+  }
+  .tv-swatches.grande .tv-swatch i { width: 48px; height: 48px; }
+  .tv-swatch:hover i { transform: scale(1.07); }
+  .tv-swatch.activo { color: var(--text); font-weight: 800; }
+  .tv-swatch.activo i { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--a); }
+
+  /* Menú lateral agrupado, activo como píldora suave */
+  .nav-label { text-transform: none; letter-spacing: 0; font-size: 11.5px; font-weight: 700; color: #9aa3b8; padding: 0 .75rem; margin: 18px 0 6px; }
+  .nav-section > .nav-label:first-child { margin-top: 0; }
+  .nav-btn.active { background: var(--accent-light); box-shadow: none; color: var(--accent); }
+  .nav-btn.active svg { color: var(--accent); }
+
+  /* Títulos */
+  .page-title svg {
+    background: linear-gradient(135deg, rgba(var(--accent-rgb),.14), rgba(var(--accent-2-rgb),.10));
+    color: var(--accent); box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb),.12);
+  }
+  .form-section-title { color: var(--text); font-size: 14.5px; letter-spacing: -.01em; text-transform: none; font-weight: 800; gap: 10px; }
+  .form-section-title::before { width: 4px; height: 16px; border-radius: 4px; background: var(--grad); box-shadow: none; }
+  label { font-weight: 600; color: #4b5671; }
+
+  /* Botones: neutros con ícono de color y una acción principal clara */
+  .btn { background: var(--surface); color: var(--text); display: inline-flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 1px 2px rgba(15,23,42,.05); }
+  .btn .ico { color: var(--text3); }
+  .btn-primary .ico, .btn-success .ico, .btn-wa-fuerte .ico { color: currentColor; }
+  .btn.btn-primary { background: var(--grad); color: #fff; border-color: transparent; }
+  .btn.btn-primary:hover { background: var(--grad); }
+  .btn.btn-wa-fuerte { background: #25d366; border-color: #25d366; color: #fff; }
+  .btn.btn-wa-fuerte:hover { background: #1fb457; }
+  .btn.btn-danger { color: var(--danger); border-color: #fbcdd6; }
+  .btn.btn-danger:hover { background: #fff1f3; }
+  .btn-ghost { background: transparent; box-shadow: none; }
+  .btn-ghost:hover { background: var(--surface2); }
+  .btn-envio, .btn-wa, .btn-reabrir { background: var(--surface); color: var(--text); border-color: var(--border); }
+  .btn-envio:hover, .btn-wa:hover, .btn-reabrir:hover { background: var(--surface2); border-color: var(--border2); }
+  .btn-envio .ico { color: #2563eb; }
+  .btn-wa .ico { color: #16a34a; }
+  .btn-success { background: #059669; color: #fff; border-color: transparent; box-shadow: 0 6px 14px -8px rgba(5,150,105,.9); }
+  .btn-success:hover { background: #047857; border-color: transparent; }
+  .btn-ico { padding: 6px; width: 32px; height: 32px; }
+  .btn-ico .ico { color: var(--text2); }
+  .btn-wa.btn-ico .ico { color: #16a34a; }
+  .rc-actions .btn-danger { margin-left: auto; background: transparent; border-color: transparent; box-shadow: none; color: var(--text3); }
+  .rc-actions .btn-danger:hover { background: #fff1f3; color: var(--danger); }
+  .btn-danger .ico, .btn-danger svg { color: currentColor; }
+
+  /* Etiquetas suaves, con punto de estado */
+  .badge { border: none !important; display: inline-flex; align-items: center; gap: 5px; }
+  .badge-pending::before, .badge-done::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .badge-age-ok { background: #f4f6fa; color: #526079; }
+
+  /* Tarjetas de trámite: sin franja lateral */
+  .record-card.is-pending, .record-card.is-done, .record-card.is-urgent { box-shadow: var(--sh-1); }
+  .record-card.is-pending:hover, .record-card.is-done:hover, .record-card.is-urgent:hover { box-shadow: var(--sh-2); }
+  .record-card.is-urgent { background: var(--surface); border-color: #fbd5dc; }
+  .rc-price { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--text); }
+  .rc-actions { border-top: 1px solid #f0f2f7; }
+  .rc-fechas span { display: inline-flex; align-items: center; gap: 5px; }
+  .rc-fechas .ico { color: var(--text3); }
+  .rc-fechas .f-ok .ico, .rc-fechas .f-pend .ico { color: currentColor; }
+  .reason-box { border-left: none; border-radius: 10px; background: #fff7ed; color: #9a3412; }
+  .nota-box {
+    background: var(--accent-light); border-radius: 10px; padding: 8px 12px; font-size: 12.5px; color: var(--accent-ink);
+    margin-top: 6px; display: flex; gap: 8px; align-items: flex-start;
+  }
+  .nota-box svg { flex-shrink: 0; margin-top: 1px; color: var(--accent); }
+
+  /* Ruta vendedor → comprador con avatares */
+  .ruta-lado.ruta-de, .ruta-lado.ruta-para {
+    display: flex; align-items: center; gap: 10px; background: #f8fafd; border: 1px solid var(--border); padding: 8px 12px;
+  }
+  .ruta-av {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; letter-spacing: .02em;
+  }
+  .ruta-de .ruta-av   { background: #fef3c7; color: #b45309; }
+  .ruta-para .ruta-av { background: #d1fae5; color: #047857; }
+  .ruta-txt { min-width: 0; flex: 1; }
+  .ruta-etq { text-transform: none; letter-spacing: 0; font-size: 11px; font-weight: 600; }
+  .ruta-de .ruta-etq, .ruta-para .ruta-etq { color: var(--text3); }
+  .ruta-datos a { display: inline-flex; align-items: center; gap: 4px; }
+  .ruta-flecha { background: var(--surface); color: var(--accent); border: 1px solid var(--border); box-shadow: var(--sh-1); }
+  .ruta-vacia { background: transparent; border: 1.5px dashed var(--border2); color: var(--accent); }
+  .ruta-vacia:hover { background: var(--accent-light); border-color: rgba(var(--accent-rgb),.45); }
+  .ruta-panel.de, .ruta-panel.para { background: #fafbfe; border: 1px solid var(--border); }
+  .ruta-panel h4 { text-transform: none; letter-spacing: -.01em; font-size: 14px; color: var(--text) !important; }
+  .ruta-panel .ruta-num { width: 24px; height: 24px; font-size: 11.5px; }
+  .ruta-panel.de .ruta-num   { background: #fef3c7; color: #b45309; }
+  .ruta-panel.para .ruta-num { background: #d1fae5; color: #047857; }
+  .wa-tel { display: inline-flex; align-items: center; gap: 5px; }
+
+  /* Avisos suaves (sin bordes de colores) */
+  .aviso {
+    display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; flex: 1 1 250px;
+    background: var(--surface); border: 1px solid var(--border); box-shadow: var(--sh-1); font-size: 13px; color: var(--text);
+  }
+  .aviso strong { display: block; font-weight: 700; }
+  .aviso small { display: block; color: var(--text2); font-size: 12px; margin-top: 1px; }
+  .aviso-ico { width: 36px; height: 36px; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .a-ambar   .aviso-ico { background: #fef3c7; color: #b45309; }
+  .a-rojo    .aviso-ico { background: #ffe4e6; color: #e11d48; }
+  .a-naranja .aviso-ico { background: #ffedd5; color: #c2410c; }
+  .a-verde   .aviso-ico { background: #d1fae5; color: #047857; }
+  .a-celeste .aviso-ico { background: #e0f2fe; color: #0369a1; }
+  #mc-alert .aviso, .aviso:only-child { margin-bottom: 1rem; }
+  .recordatorio { background: #fff1f2; border: 1px solid #ffe4e6; color: #9f1239; }
+  .recordatorio .rec-ico { width: 36px; height: 36px; border-radius: 11px; background: #fff; color: #e11d48; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(225,29,72,.15); }
+
+  /* Indicadores con punto de color, sin manchas decorativas */
+  .stat-card::after { display: none; }
+  .stat-card .sc-label { text-transform: none; letter-spacing: 0; font-size: 12.5px; font-weight: 600; color: var(--text2); display: flex; align-items: center; gap: 8px; }
+  .stat-card .sc-label::before { content: ''; width: 8px; height: 8px; border-radius: 3px; background: var(--text3); }
+  .stat-card:has(.sc-value.orange) .sc-label::before { background: #f59e0b; }
+  .stat-card:has(.sc-value.green) .sc-label::before { background: #10b981; }
+  .stat-card:has(.sc-value.blue) .sc-label::before { background: var(--accent); }
+  .stat-card .sc-value.blue { color: var(--text); }
+
+  /* Hoy: indicadores con ícono */
+  .hoy-kpi::before, .hoy-kpi::after { display: none; }
+  .hoy-kpi { display: flex; flex-direction: column; align-items: flex-start; }
+  .k-ico { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--kb); color: var(--kc); margin-bottom: 10px; }
+  .k-rojo    { --kc: #e11d48; --kb: #ffe4e6; }
+  .k-naranja { --kc: #ea580c; --kb: #ffedd5; }
+  .k-azul    { --kc: #2563eb; --kb: #dbeafe; }
+  .k-morado  { --kc: #7c3aed; --kb: #ede9fe; }
+  .k-celeste { --kc: #0284c7; --kb: #e0f2fe; }
+  .k-verde   { --kc: #059669; --kb: #d1fae5; }
+  .hoy-kpi .k-num { color: var(--text) !important; }
+  .hoy-kpi:not(.cero) .k-num { color: var(--kc) !important; }
+  .hoy-kpi.cero .k-ico { background: #f1f4f9; color: #a3acbf; }
+  .hoy-kpi.activo { box-shadow: 0 0 0 2px var(--kc), var(--sh-2); }
+  .hoy-kpi .k-lbl { font-size: 12px; }
+  .hoy-fila, .hoy-fila.urg, .hoy-fila.warn, .hoy-fila.recibido { box-shadow: var(--sh-1); background: var(--surface); border-left: 1px solid var(--border); }
+  .hoy-fila.urg { border-color: #fbd5dc; }
+  .hoy-seccion h3 { text-transform: none; letter-spacing: -.01em; font-size: 15px; color: var(--text); gap: 10px; }
+  .h3-ico { width: 26px; height: 26px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
+  .t-rojo { background: #ffe4e6; color: #e11d48; }   .t-naranja { background: #ffedd5; color: #ea580c; }
+  .t-azul { background: #dbeafe; color: #2563eb; }   .t-morado  { background: #ede9fe; color: #7c3aed; }
+  .t-celeste { background: #e0f2fe; color: #0284c7; } .t-verde  { background: #d1fae5; color: #059669; }
+  .hoy-sub .flechita { display: inline-flex; vertical-align: -1px; }
+  .hoy-enviado { display: inline-flex; align-items: center; gap: 5px; }
+  .hoy-top .btn .ico { color: var(--accent); }
+  .hoy-pie { border-top: 1px solid var(--border); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .hoy-pie > .ico { color: #10b981; }
+  .hoy-vacio .grande { display: inline-flex; width: 56px; height: 56px; border-radius: 18px; align-items: center; justify-content: center; background: var(--accent-light); color: var(--accent); }
+
+  /* Tabla */
+  .todos-table th { text-transform: none; letter-spacing: 0; font-size: 12px; font-weight: 600; color: var(--text3); }
+  .td-costo { color: var(--text); font-weight: 700; }
+  .actual-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: 2px; box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.18); }
+
+  /* Placa: más limpia */
+  .placa-chip { background: #fde047; border: 1.5px solid #1f2937; border-radius: 6px; box-shadow: none; font-size: 12px; padding: 1px 7px; }
+
+  /* Avisos flotantes */
+  #toast { background: #111827; }
 
   /* ── iPhone: menú inferior tipo app ── */
   @media (max-width: 680px) {
@@ -1205,6 +1457,19 @@
     #tv-deshacer { bottom: calc(150px + env(safe-area-inset-bottom)); }
     .record-card:hover, .hoy-kpi:hover, .hoy-fila:hover { transform: none; }
   }
+  @media (max-width: 680px) {
+    header { padding: 10px 14px 8px; gap: 10px; }
+    header h1 { font-size: 16px; }
+    header h1 span.h1-resto { display: none; }
+    #tv-sync { font-size: 11px !important; padding: 5px 10px; max-width: 58vw !important; }
+    .hdr-btn { width: 34px; height: 34px; }
+    #tv-colores { top: auto; bottom: calc(96px + env(safe-area-inset-bottom)); left: 12px; right: 12px; width: auto; }
+    .tv-swatches { grid-template-columns: repeat(4, 1fr); }
+    .nav-label { display: none; }
+    .nav-btn.active { background: var(--accent-light); }
+    .rc-actions .btn-danger { margin-left: 0; }
+    .ruta-lado.ruta-de, .ruta-lado.ruta-para { padding: 8px 10px; }
+  }
 </style>
 </head>
 <body>
@@ -1213,20 +1478,26 @@
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M19 17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11l5 5v5a2 2 0 0 1-2 2z"/><circle cx="7" cy="17" r="1"/><circle cx="17" cy="17" r="1"/>
   </svg>
-  <h1>Traspasos de Vehículos <span>Samuel</span></h1>
+  <h1>Traspasos <span class="h1-resto">de Vehículos</span> <span>Samuel</span></h1>
   <div class="buscador-global">
-    <span class="lupa">🔍</span>
+    <span class="lupa"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
     <input id="tv-buscar" type="search" placeholder="Buscar placa, nombre, cédula, teléfono…" autocomplete="off"
            oninput="tvBuscarGlobal()" onkeydown="if(event.key==='Escape'){tvLimpiarBusqueda();this.blur();}">
   </div>
   <div id="tv-sync" onclick="tvSincronizarAhora()" title="Toca para sincronizar con la nube"
-       style="margin-left:auto;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:48vw">☁️ Nube</div>
+       style="margin-left:auto;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:48vw">Nube</div>
+  <button class="hdr-btn" id="tv-btn-color" onclick="tvAbrirColores(event)" title="Cambiar el color" aria-label="Cambiar el color"><span class="bolita"></span></button>
 </header>
+
+<div id="tv-colores" role="dialog" aria-label="Color del tema">
+  <div class="pop-titulo">Color del tema</div>
+  <div class="tv-swatches" id="tv-swatches-pop"></div>
+</div>
 
 <div class="layout">
   <nav>
     <div class="nav-section">
-      <div class="nav-label">Menú</div>
+      <div class="nav-label">Día a día</div>
       <button class="nav-btn active" onclick="showPanel('hoy', this)" id="nav-hoy">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
         Hoy
@@ -1241,6 +1512,7 @@
         Desde MotoContable
         <span class="nav-badge" id="badge-mc" style="background:#e0f2fe;color:#0369a1;border-color:#9bd3f3;display:none">0</span>
       </button>
+      <div class="nav-label">Trámites</div>
       <button class="nav-btn" onclick="showPanel('pendientes', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Pendientes
@@ -1255,6 +1527,7 @@
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         Todos los trámites
       </button>
+      <div class="nav-label">Reportes</div>
       <button class="nav-btn" onclick="showPanel('historial', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         Historial mensual
@@ -1267,9 +1540,10 @@
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         Análisis
       </button>
+      <div class="nav-label">Cuenta</div>
       <button class="nav-btn" onclick="showPanel('nube', this)">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
-        Respaldo y nube
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Ajustes
       </button>
     </div>
   </nav>
@@ -1288,7 +1562,7 @@
 
     <!-- ── RESULTADOS DE BÚSQUEDA ── -->
     <div id="panel-buscar" class="panel">
-      <div class="page-title">🔍 Resultados de búsqueda</div>
+      <div class="page-title"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Resultados de búsqueda</div>
       <div id="buscar-resumen"></div>
       <div id="buscar-lista"></div>
     </div>
@@ -1319,7 +1593,7 @@
               </div>
             </div>
           </div>
-          <div class="ruta-flecha">➜</div>
+          <div class="ruta-flecha"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
           <div class="ruta-panel para">
             <h4><span class="ruta-num">2</span> Comprador <small>· para quién (opcional)</small></h4>
             <div class="form-field">
@@ -1432,10 +1706,15 @@
     <!-- ── RESPALDO Y NUBE ── -->
     <div id="panel-nube" class="panel">
       <div class="page-title">
-        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
-        Respaldo y nube
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Ajustes, respaldo y nube
       </div>
       <div class="form-card">
+        <div class="form-section-title">Color del tema</div>
+        <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px">Elige el color principal de la aplicación. Se guarda en este dispositivo.</p>
+        <div class="tv-swatches grande" id="tv-swatches-ajustes"></div>
+      </div>
+      <div class="form-card" style="margin-top:1rem">
         <div class="form-section-title">Cuenta y sincronización</div>
         <p id="tv-cuenta-info" style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px"></p>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -1447,7 +1726,7 @@
         <div class="form-section-title">Sonidos</div>
         <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px">Suenan al agregar, confirmar, guardar cambios y eliminar trámites. En el iPhone no se oyen si está en silencio.</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn" id="tv-btn-sonidos" onclick="tvAlternarSonidos()">🔊 Sonidos activados</button>
+          <button class="btn" id="tv-btn-sonidos" onclick="tvAlternarSonidos()">Sonidos activados</button>
           <button class="btn btn-sm btn-ghost" onclick="sonido('agregar')">Agregar</button>
           <button class="btn btn-sm btn-ghost" onclick="sonido('confirmar')">Confirmar</button>
           <button class="btn btn-sm btn-ghost" onclick="sonido('guardar')">Guardar</button>
@@ -1698,7 +1977,7 @@
           <div class="form-field"><label for="e-telefono">Teléfono</label><input id="e-telefono" type="tel" inputmode="tel" placeholder="Ej: 3001234567"></div>
         </div>
       </div>
-      <div class="ruta-flecha">➜</div>
+      <div class="ruta-flecha"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
       <div class="ruta-panel para">
         <h4><span class="ruta-num">2</span> Comprador <small>· opcional</small></h4>
         <div class="form-field"><label for="e-comprador">Nombre completo</label><input id="e-comprador" type="text" placeholder="A quién se traspasa"></div>
@@ -1790,7 +2069,7 @@
 <div class="modal-overlay" id="tv-wa" style="display:none;z-index:2050" onclick="if(event.target.id==='tv-wa') tvCerrarWA()">
   <div class="modal-box" style="max-width:500px">
     <div class="modal-title">
-      💬 Enviar WhatsApp
+      Enviar WhatsApp
       <button class="modal-close" onclick="tvCerrarWA()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="wa-veh" id="tv-wa-veh"></div>
@@ -1930,7 +2209,7 @@ async function saveRecord() {
 async function deleteRecord(id) {
   const r = records.find(x => x.id === id);
   const ok = await tvPreguntar({
-    titulo: '🗑 Eliminar trámite',
+    titulo: 'Eliminar trámite',
     texto: (r ? `${r.nombre || 'Vehículo'} — ${r.placa || 'sin placa'}\n\n` : '') + '¿Eliminar este trámite? Esta acción no se puede deshacer.',
     si: 'Sí, eliminar', no: 'Cancelar', peligro: true
   });
@@ -2044,7 +2323,7 @@ async function confirmarFechaRegistro(campoId, fechaAnterior, fechaNueva, modo) 
     return false;
   }
   const ok = await tvPreguntar({
-    titulo: '📅 ¿Cambiar la fecha de registro?',
+    titulo: '¿Cambiar la fecha de registro?',
     texto: (modo === 'nuevo'
       ? `Este trámite se registrará con fecha ${fmtDate(fechaNueva)} en lugar de hoy (${fmtDate(fechaAnterior)}).`
       : `Fecha actual: ${fmtDate(fechaAnterior)}\nNueva fecha: ${fmtDate(fechaNueva)}`) +
@@ -2102,9 +2381,9 @@ function cardHTML(r) {
   if(pend && daysPending(r.fecha) >= 30) estadoClass += ' is-urgent';
   const tieneTel = soloDigitos(r.telefono) || soloDigitos(r.compradorTelefono);
   const fechas = [
-    `<span>📅 Registrado ${fmtDate(r.fecha)}</span>`,
-    r.fechaEnvio ? `<span class="f-ok">📤 Enviado ${fmtDate(r.fechaEnvio)}</span>` : (pend ? `<span class="f-pend">📤 Sin enviar</span>` : ''),
-    !pend ? `<span class="f-ok">✅ Completado${r.fechaCompletado ? ' ' + fmtDate(r.fechaCompletado) : ''}</span>` : '',
+    `<span>${ico('calendario', 13)}Registrado ${fmtDate(r.fecha)}</span>`,
+    r.fechaEnvio ? `<span class="f-ok">${ico('enviar', 13)}Enviado ${fmtDate(r.fechaEnvio)}</span>` : (pend ? `<span class="f-pend">${ico('enviar', 13)}Sin enviar</span>` : ''),
+    !pend ? `<span class="f-ok">${ico('listo', 13)}Completado${r.fechaCompletado ? ' ' + fmtDate(r.fechaCompletado) : ''}</span>` : '',
   ].join('');
   const icoEditar = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
   const icoBorrar = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>';
@@ -2124,13 +2403,13 @@ function cardHTML(r) {
     ${rutaHTML(r)}
     <div class="rc-fechas">${fechas}</div>
     ${r.motivo ? `<div class="reason-box"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>${escHTML(r.motivo)}</span></div>` : ''}
-    ${r.nota ? `<div style="background:var(--accent-light);border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:8px 12px;font-size:12.5px;color:var(--accent);margin-top:6px;display:flex;gap:8px;align-items:flex-start"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>${escHTML(r.nota)}</span></div>` : ''}
+    ${r.nota ? `<div class="nota-box"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>${escHTML(r.nota)}</span></div>` : ''}
     <div class="rc-actions">
-      ${pend && !r.fechaEnvio ? `<button class="btn btn-sm btn-envio" onclick="marcarEnviadoHoy(${r.id})">📤 Enviado hoy</button>` : ''}
+      ${pend && !r.fechaEnvio ? `<button class="btn btn-sm btn-envio" onclick="marcarEnviadoHoy(${r.id})">${ico('enviar', 14)}Enviado hoy</button>` : ''}
       ${pend
-        ? `<button class="btn btn-sm btn-success" onclick="marcarCompletadoHoy(${r.id})">✅ Completado hoy</button>`
-        : `<button class="btn btn-sm btn-success" onclick="toggleStatus(${r.id})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.57"/></svg> Marcar pendiente</button>`}
-      ${tieneTel ? `<button class="btn btn-sm btn-wa" onclick="tvAbrirWhatsApp(${r.id})">💬 WhatsApp</button>` : ''}
+        ? `<button class="btn btn-sm btn-success" onclick="marcarCompletadoHoy(${r.id})">${ico('listo', 14)}Completado hoy</button>`
+        : `<button class="btn btn-sm btn-reabrir" onclick="toggleStatus(${r.id})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.57"/></svg> Marcar pendiente</button>`}
+      ${tieneTel ? `<button class="btn btn-sm btn-wa" onclick="tvAbrirWhatsApp(${r.id})">${ico('chat', 14)}WhatsApp</button>` : ''}
       <button class="btn btn-sm" onclick="openEdit(${r.id})">${icoEditar} Editar</button>
       <button class="btn btn-sm btn-danger" onclick="deleteRecord(${r.id})">${icoBorrar} Eliminar</button>
     </div>
@@ -2219,7 +2498,7 @@ function renderTodos() {
     <div class="stat-card"><div class="sc-label">Total invertido</div><div class="sc-value blue">${fmtPrice(costoAll)}</div></div>`;
 
   const tbody = document.getElementById('todos-tbody');
-  document.getElementById('ft-count').textContent = rows.length + ' resultado(s)';
+  document.getElementById('ft-count').textContent = plural(rows.length, 'resultado', 'resultados');
 
   if(rows.length === 0) {
     tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2.5rem;color:var(--text3)">Sin resultados con los filtros actuales.</td></tr>`;
@@ -2276,17 +2555,17 @@ function renderPending() {
   const alertEl = document.getElementById('pending-alert');
   let alerts = '';
   if(totalPending > 0) {
-    alerts += `<div class="alert-pending"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${totalPending} trámite(s) pendiente(s) en total</div>`;
+    alerts += `<div class="aviso a-ambar"><span class="aviso-ico">${ico('reloj', 16)}</span><div><strong>${plural(totalPending, 'trámite pendiente', 'trámites pendientes')}</strong><small>en total</small></div></div>`;
   }
   if(urgentes > 0) {
-    alerts += `<div class="alert-pending" style="background:#fdeceb;border-color:#f3b8b3;color:var(--danger)"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><strong>${urgentes} trámite(s) llevan 30 días o más pendientes</strong> — revisa estos primero</div>`;
+    alerts += `<div class="aviso a-rojo"><span class="aviso-ico">${ico('fuego', 16)}</span><div><strong>${plural(urgentes, 'trámite lleva', 'trámites llevan')} 30 días o más</strong><small>Revisa estos primero</small></div></div>`;
   }
   if(enAlerta > 0) {
-    alerts += `<div class="alert-pending" style="background:#fdeee0;border-color:#f0a060;color:#b75a1a"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${enAlerta} trámite(s) llevan entre 15 y 29 días pendientes</div>`;
+    alerts += `<div class="aviso a-naranja"><span class="aviso-ico">${ico('alerta', 16)}</span><div><strong>${plural(enAlerta, 'trámite lleva', 'trámites llevan')} entre 15 y 29 días</strong><small>Pendientes de terminar</small></div></div>`;
   }
   alertEl.innerHTML = alerts;
 
-  document.getElementById('fp-count').textContent = pending.length + ' resultado(s)';
+  document.getElementById('fp-count').textContent = plural(pending.length, 'resultado', 'resultados');
   const list = document.getElementById('pending-list');
   if(pending.length === 0) {
     list.innerHTML = `<div class="empty-state"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>${totalPending === 0 ? 'Sin trámites pendientes — todo al día.' : 'Ningún resultado con los filtros actuales.'}</p></div>`;
@@ -2308,13 +2587,10 @@ function renderDone() {
 
   const alertEl = document.getElementById('done-alert');
   alertEl.innerHTML = totalDone > 0
-    ? `<div class="alert-done">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        ${totalDone} trámite(s) completado(s) &nbsp;&bull;&nbsp; Total invertido: ${fmtPrice(totalCosto)}
-       </div>`
+    ? `<div class="aviso a-verde"><span class="aviso-ico">${ico('listo', 16)}</span><div><strong>${plural(totalDone, 'trámite completado', 'trámites completados')}</strong><small>Total invertido: ${fmtPrice(totalCosto)}</small></div></div>`
     : '';
 
-  document.getElementById('fc-count').textContent = done.length + ' resultado(s)';
+  document.getElementById('fc-count').textContent = plural(done.length, 'resultado', 'resultados');
   const list = document.getElementById('done-list');
   if(done.length === 0) {
     list.innerHTML = `<div class="empty-state">
@@ -2376,7 +2652,7 @@ function renderHistory() {
     html += `
     <div class="month-block">
       <button class="month-toggle" onclick="toggleMonth('mb-${mk.replace('-','_')}', this)">
-        <span>${isCurrent ? '📍 ' : ''}${monthLabel(mk)}</span>
+        <span>${isCurrent ? '<i class="actual-dot" title="Mes actual"></i>' : ''}${monthLabel(mk)}</span>
         <div class="month-stats">
           <span class="stat"><strong>${group.length}</strong> trámites</span>
           <span class="stat pend"><strong>${pend}</strong> pendientes</span>
@@ -2480,7 +2756,7 @@ function renderHistoryAnual() {
     html += `
     <div class="month-block">
       <button class="month-toggle" onclick="toggleMonth('yb-${yk}', this)">
-        <span>${isCurrent ? '📍 ' : ''}Año ${yk}</span>
+        <span>${isCurrent ? '<i class="actual-dot" title="Año actual"></i>' : ''}Año ${yk}</span>
         <div class="month-stats">
           <span class="stat"><strong>${group.length}</strong> trámites</span>
           <span class="stat pend"><strong>${pend}</strong> pendientes</span>
@@ -2612,10 +2888,10 @@ function renderAnalisis() {
       datasets: [{
         label: 'Total trámites',
         data: totalByM,
-        borderColor: '#4f46e5',
-        backgroundColor: 'rgba(79,70,229,.10)',
+        borderColor: tvColorCSS('--accent'),
+        backgroundColor: 'rgba(' + tvColorCSS('--accent-rgb') + ',.10)',
         borderWidth: 2.5,
-        pointBackgroundColor: '#4f46e5',
+        pointBackgroundColor: tvColorCSS('--accent'),
         pointRadius: 5,
         pointHoverRadius: 7,
         fill: true,
@@ -2642,8 +2918,8 @@ function renderAnalisis() {
       datasets: [{
         label: 'Inversión ($)',
         data: costoByM,
-        backgroundColor: 'rgba(124,58,237,.55)',
-        borderColor: '#4f46e5',
+        backgroundColor: 'rgba(' + tvColorCSS('--accent-2-rgb') + ',.55)',
+        borderColor: tvColorCSS('--accent'),
         borderWidth: 1.5,
         borderRadius: 4
       }]
@@ -2723,7 +2999,7 @@ function renderAnalisis() {
       const estadoLabel = r.estado === 'Completado'
         ? `<span style="color:var(--done-text);font-weight:600">✓ Completado</span>`
         : dias >= 30
-          ? `<span style="color:var(--danger);font-weight:600">⚠ Pendiente (${dias} días)</span>`
+          ? `<span style="color:var(--danger);font-weight:600">Pendiente (${dias} días)</span>`
           : `<span style="color:var(--pending-text);font-weight:600">⏳ Pendiente (${dias} días)</span>`;
       tlHTML += `<div class="timeline-event ${evClass}">
         <span class="ev-date">${fmtDate(r.fecha)}</span>
@@ -2774,10 +3050,7 @@ function renderMC() {
   }
 
   alertEl.innerHTML = `
-    <div class="alert-pending" style="background:#e0f2fe;border-color:#9bd3f3;color:#075985">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-      ${borradores.length} vehículo(s) recibido(s) desde MotoContable — confirma para crear el trámite
-    </div>`;
+    <div class="aviso a-celeste"><span class="aviso-ico">${ico('bandeja', 16)}</span><div><strong>${plural(borradores.length, 'vehículo recibido', 'vehículos recibidos')} desde MotoContable</strong><small>Confírmalo para crear el trámite</small></div></div>`;
 
   listEl.innerHTML = borradores.map(b => {
     const p = normPlaca(b.placa);
@@ -2786,7 +3059,7 @@ function renderMC() {
     const aviso = yaConfirmado
       ? `<div class="reason-box">Este vehículo ya se confirmó antes (trámite del ${fmtDate(yaConfirmado.fecha)}, ${escHTML(yaConfirmado.estado)}).</div>`
       : pendienteIgual
-        ? `<div class="reason-box">⚠️ Ya tienes un trámite pendiente con la placa ${escHTML(p)} (registrado el ${fmtDate(pendienteIgual.fecha)}).</div>`
+        ? `<div class="reason-box">${ico('alerta', 14)}<span>Ya tienes un trámite pendiente con la placa ${escHTML(p)} (registrado el ${fmtDate(pendienteIgual.fecha)}).</span></div>`
         : '';
     return `
     <div class="record-card" style="border-left:3px solid #38bdf8" id="mc-card-${escHTML(b.id)}">
@@ -2800,7 +3073,7 @@ function renderMC() {
         </div>
       </div>
       ${rutaHTML(b, {sinBoton:true})}
-      <div class="rc-fechas"><span>📥 Recibido el ${escHTML(fechaLegible(b.fechaOrigen))}</span></div>
+      <div class="rc-fechas"><span>${ico('bandeja', 13)}Recibido el ${escHTML(fechaLegible(b.fechaOrigen))}</span></div>
       ${aviso}
       <div class="rc-actions">
         <button class="btn btn-sm btn-primary" onclick="confirmarBorrador('${escHTML(b.id)}')">
@@ -2901,6 +3174,44 @@ updateBadgeMC();
 
 // ── Utilidades ───────────────────────────────────────────────────────────────
 function txt(v){ return v == null ? '' : String(v); }
+// ── Íconos (trazos finos, en lugar de emojis) ────────────────────────────────
+const TV_ICO = {
+  enviar:   '<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>',
+  listo:    '<circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/>',
+  chat:     '<path d="M21 11.5a8.4 8.4 0 0 1-12.2 7.5L3 21l2-5.6A8.4 8.4 0 1 1 21 11.5z"/>',
+  editar:   '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  borrar:   '<path d="M3 6h18"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>',
+  calendario:'<rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  telefono: '<rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/>',
+  alerta:   '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  campana:  '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+  reloj:    '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  fuego:    '<path d="M12 2s5 4.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 1.5-4S9 11 11 11c0-4 1-9 1-9z"/>',
+  dinero:   '<rect x="2" y="6" width="20" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
+  bandeja:  '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>',
+  aqui:     '<circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9"/>',
+  cerrar:   '<path d="M18 6 6 18M6 6l12 12"/>',
+  fiesta:   '<path d="M5.8 11.3 2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01"/><path d="m22 2-2.2.8a2.9 2.9 0 0 0-1.9 3.2c.1.9-.6 1.6-1.4 1.6h-.4c-.9 0-1.6.7-1.8 1.5L14 10"/><path d="M11 13a4 4 0 0 0-5.7 0"/><path d="M8.6 9.4a4 4 0 0 1 6 6"/>',
+  flecha:   '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  volumen:  '<path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/>',
+  mudo:     '<path d="M11 5 6 9H2v6h4l5 4z"/><path d="m23 9-6 6M17 9l6 6"/>',
+  documento:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/>',
+  repetir:  '<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+  lapiz:    '<path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+  check:    '<path d="M20 6 9 17l-5-5"/>',
+  deshacer: '<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/>',
+};
+function ico(nombre, tam){
+  const t = tam || 14;
+  return `<svg class="ico" width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${TV_ICO[nombre] || ''}</svg>`;
+}
+function iniciales(nombre){
+  const p = txt(nombre).replace(/[()]/g, '').trim().split(/\s+/).filter(x => x && x !== '—');
+  if(!p.length) return '?';
+  return ((p[0][0] || '') + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase();
+}
+function plural(n, uno, varios){ return n + ' ' + (n === 1 ? uno : varios); }
+
 function escHTML(s){
   return txt(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -2921,7 +3232,7 @@ function fechaLegible(f){ return /^\d{4}-\d{2}-\d{2}$/.test(txt(f)) ? fmtDate(f)
 function placaChip(p){ return `<span class="placa-chip">${escHTML(normPlaca(p) || txt(p) || 'SIN PLACA')}</span>`; }
 function telLink(tel){
   if(!soloDigitos(tel)) return '';
-  return `<a href="https://wa.me/${waNumero(tel)}" target="_blank" rel="noopener" title="Abrir WhatsApp">📱 ${escHTML(tel)}</a>`;
+  return `<a href="https://wa.me/${waNumero(tel)}" target="_blank" rel="noopener" title="Abrir WhatsApp">${ico('telefono', 12)}${escHTML(tel)}</a>`;
 }
 function panelActivo(){ return ((document.querySelector('.panel.active') || {}).id || '').replace('panel-', ''); }
 function irAPanel(nombre){
@@ -3039,7 +3350,7 @@ function avisosPlacaDuplicada(placa, idExcluir, borradorExcluir){
   const avisos = [];
   records.filter(r => r.id !== idExcluir && normPlaca(r.placa) === p).forEach(r => {
     if(r.estado === 'Pendiente')
-      avisos.push(`⚠️ Ya tienes un trámite PENDIENTE con la placa ${p}: ${vehiculoLabel(r) || r.tipo} · vendedor ${r.vendedor || '—'} · registrado el ${fmtDate(r.fecha)}.`);
+      avisos.push(`Ya tienes un trámite PENDIENTE con la placa ${p}: ${vehiculoLabel(r) || r.tipo} · vendedor ${r.vendedor || '—'} · registrado el ${fmtDate(r.fecha)}.`);
     else
       avisos.push(`La placa ${p} ya tuvo un traspaso COMPLETADO${r.fechaCompletado ? ' el ' + fmtDate(r.fechaCompletado) : ''} (${vehiculoLabel(r) || r.tipo}). Puede ser normal si es otra venta del mismo vehículo.`);
   });
@@ -3062,7 +3373,7 @@ document.addEventListener('input', e => { if(e.target.classList && e.target.clas
 async function confirmarAvisos(avisos, accion){
   if(!avisos.length) return true;
   return tvPreguntar({
-    titulo: '🔎 Revisa antes de ' + accion,
+    titulo: 'Revisa antes de ' + accion,
     texto: avisos.map(a => '• ' + a).join('\n\n') + '\n\n¿Quieres continuar de todos modos?',
     si: 'Sí, continuar', no: 'Corregir'
   });
@@ -3073,9 +3384,12 @@ function rutaHTML(r, opciones){
   const o = opciones || {};
   const lado = (cls, etq, nombre, cc, tel) => `
     <div class="ruta-lado ${cls}">
-      <div class="ruta-etq">${etq}</div>
-      <div class="ruta-nombre" title="${escHTML(nombre)}">${escHTML(nombre)}</div>
-      <div class="ruta-datos">${cc ? `<span>C.C. ${escHTML(cc)}</span>` : ''}${telLink(tel)}</div>
+      <span class="ruta-av" aria-hidden="true">${escHTML(iniciales(nombre))}</span>
+      <div class="ruta-txt">
+        <div class="ruta-etq">${etq}</div>
+        <div class="ruta-nombre" title="${escHTML(nombre)}">${escHTML(nombre)}</div>
+        <div class="ruta-datos">${cc ? `<span>C.C. ${escHTML(cc)}</span>` : ''}${telLink(tel)}</div>
+      </div>
     </div>`;
   const de = lado('ruta-de', 'De · vendedor', r.vendedor || '—', r.cedula, r.telefono);
   const hayComprador = r.compradorNombre || r.compradorCedula || r.compradorTelefono;
@@ -3084,7 +3398,7 @@ function rutaHTML(r, opciones){
     : o.sinBoton
       ? `<div class="ruta-lado ruta-sin">Sin comprador aún</div>`
       : `<button class="ruta-lado ruta-vacia" onclick="openEdit(${r.id}, 'comprador')">＋ Agregar comprador</button>`;
-  return `<div class="ruta">${de}<div class="ruta-flecha">➜</div>${para}</div>`;
+  return `<div class="ruta">${de}<div class="ruta-flecha">${ico('flecha', 14)}</div>${para}</div>`;
 }
 
 // ── Botones rápidos con "Deshacer" ───────────────────────────────────────────
@@ -3110,7 +3424,7 @@ function marcarEnviadoHoy(id){
   const antes = r.fechaEnvio || '';
   r.fechaEnvio = today();
   persist(); tvRefrescarPantalla(); sonido('guardar');
-  tvToastDeshacer(`📤 ${normPlaca(r.placa) || 'Trámite'} marcado como enviado hoy`, () => {
+  tvToastDeshacer(`${normPlaca(r.placa) || 'Trámite'} marcado como enviado hoy`, () => {
     const x = records.find(y => y.id === id); if(!x) return;
     x.fechaEnvio = antes; persist(); tvRefrescarPantalla();
   });
@@ -3123,7 +3437,7 @@ function marcarCompletadoHoy(id){
   r.fechaCompletado = today();
   r.motivo = '';
   persist(); tvRefrescarPantalla(); sonido('confirmar');
-  tvToastDeshacer(`✅ ${normPlaca(r.placa) || 'Trámite'} completado hoy`, () => {
+  tvToastDeshacer(`${normPlaca(r.placa) || 'Trámite'} completado hoy`, () => {
     const x = records.find(y => y.id === id); if(!x) return;
     Object.assign(x, antes); persist(); tvRefrescarPantalla();
   });
@@ -3132,6 +3446,38 @@ function tvMostrarCampoCompletado(){
   const c = document.getElementById('e-completado-campo');
   if(c) c.style.display = document.getElementById('e-estado').value === 'Completado' ? '' : 'none';
 }
+
+// ── Color del tema ───────────────────────────────────────────────────────────
+function tvColorCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function tvColorActual(){ return document.documentElement.dataset.color || 'indigo'; }
+function tvPintarSwatches(){
+  const actual = tvColorActual();
+  const html = TV_COLORES.map(c => `
+    <button class="tv-swatch ${c.id === actual ? 'activo' : ''}" style="--a:${c.a};--b:${c.b}" onclick="tvElegirColor('${c.id}')" aria-pressed="${c.id === actual}">
+      <i>${c.id === actual ? ico('check', 16) : ''}</i><span>${c.nombre}</span>
+    </button>`).join('');
+  ['tv-swatches-pop', 'tv-swatches-ajustes'].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = html; });
+}
+function tvElegirColor(id){
+  const c = tvAplicarColor(id);
+  try { localStorage.setItem('tv_color', c.id); } catch(e){}
+  tvPintarSwatches();
+  if(panelActivo() === 'analisis' && typeof renderAnalisis === 'function') renderAnalisis();
+}
+function tvAbrirColores(ev){
+  if(ev) ev.stopPropagation();
+  const p = document.getElementById('tv-colores');
+  tvPintarSwatches();
+  p.classList.toggle('show');
+}
+document.addEventListener('click', e => {
+  const p = document.getElementById('tv-colores');
+  if(p && p.classList.contains('show') && !p.contains(e.target)) p.classList.remove('show');
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ const p = document.getElementById('tv-colores'); if(p) p.classList.remove('show'); }
+});
+tvPintarSwatches();
 
 // ── Pantalla "Hoy" ───────────────────────────────────────────────────────────
 let _hoyFiltro = null;
@@ -3167,16 +3513,16 @@ function hoyFilaHTML(r){
     ${placaChip(r.placa)}
     <div class="hoy-info">
       <div class="hoy-veh">${escHTML(vehiculoLabel(r) || r.tipo)}</div>
-      <div class="hoy-sub"><span class="dot de"></span>${escHTML(r.vendedor || '—')}<span class="flechita">➜</span><span class="dot para"></span>${r.compradorNombre ? escHTML(r.compradorNombre) : '<em>sin comprador</em>'}${Number(r.costo) > 0 ? ' · ' + fmtPrice(r.costo) : ' · <em>sin costo</em>'}</div>
+      <div class="hoy-sub"><span class="dot de"></span>${escHTML(r.vendedor || '—')}<span class="flechita">${ico('flecha', 11)}</span><span class="dot para"></span>${r.compradorNombre ? escHTML(r.compradorNombre) : '<em>sin comprador</em>'}${Number(r.costo) > 0 ? ' · ' + fmtPrice(r.costo) : ' · <em>sin costo</em>'}</div>
     </div>
     <span class="badge ${badge}">${d} día${d === 1 ? '' : 's'}</span>
     <div class="hoy-acciones">
       ${r.fechaEnvio
-        ? `<span class="hoy-enviado">📤 ${fmtDate(r.fechaEnvio)}</span>`
-        : `<button class="btn btn-sm btn-envio" onclick="marcarEnviadoHoy(${r.id})">📤 Enviado hoy</button>`}
-      <button class="btn btn-sm btn-success" onclick="marcarCompletadoHoy(${r.id})">✅ Completado</button>
-      ${tieneTel ? `<button class="btn btn-sm btn-wa" onclick="tvAbrirWhatsApp(${r.id})" title="Enviar WhatsApp">💬</button>` : ''}
-      <button class="btn btn-sm" onclick="openEdit(${r.id})" title="Editar">✏️</button>
+        ? `<span class="hoy-enviado">${ico('enviar', 13)}${fmtDate(r.fechaEnvio)}</span>`
+        : `<button class="btn btn-sm btn-envio" onclick="marcarEnviadoHoy(${r.id})">${ico('enviar', 14)}Enviado hoy</button>`}
+      <button class="btn btn-sm btn-success" onclick="marcarCompletadoHoy(${r.id})">${ico('listo', 14)}Completado</button>
+      ${tieneTel ? `<button class="btn btn-sm btn-wa btn-ico" onclick="tvAbrirWhatsApp(${r.id})" title="Enviar WhatsApp" aria-label="Enviar WhatsApp">${ico('chat', 15)}</button>` : ''}
+      <button class="btn btn-sm btn-ico" onclick="openEdit(${r.id})" title="Editar" aria-label="Editar">${ico('editar', 15)}</button>
     </div>
   </div>`;
 }
@@ -3186,12 +3532,15 @@ function hoyRecibidoHTML(b){
     ${placaChip(b.placa)}
     <div class="hoy-info">
       <div class="hoy-veh">${escHTML([b.nombre, b.color, b.modelo].filter(Boolean).join(' · ') || b.tipo)}</div>
-      <div class="hoy-sub"><span class="dot de"></span>${escHTML(b.vendedor || '—')}<span class="flechita">➜</span><span class="dot para"></span>${b.compradorNombre ? escHTML(b.compradorNombre) : '<em>sin comprador</em>'} · recibido el ${escHTML(fechaLegible(b.fechaOrigen))}</div>
+      <div class="hoy-sub"><span class="dot de"></span>${escHTML(b.vendedor || '—')}<span class="flechita">${ico('flecha', 11)}</span><span class="dot para"></span>${b.compradorNombre ? escHTML(b.compradorNombre) : '<em>sin comprador</em>'} · recibido el ${escHTML(fechaLegible(b.fechaOrigen))}</div>
     </div>
     <div class="hoy-acciones">
       <button class="btn btn-sm btn-primary" onclick="confirmarBorrador('${escHTML(b.id)}')">Confirmar y crear trámite</button>
     </div>
   </div>`;
+}
+function tituloSeccion(icono, color, texto){
+  return `<span class="h3-ico t-${color}">${ico(icono, 14)}</span>${texto}`;
 }
 function hoyFiltrar(clave){
   if(clave === 'recibidos'){ irAPanel('motocontable'); return; }
@@ -3209,49 +3558,49 @@ function renderHoy(){
   const notifOn = ('Notification' in window) && Notification.permission === 'granted' && localStorage.getItem('tv_notif') === '1';
 
   const kpis = [
-    ['urgentes',  'k-rojo',    L.urgentes.length,  '🔴 30 días o más'],
-    ['alerta',    'k-naranja', L.alerta.length,    '🟠 15 a 29 días'],
-    ['porEnviar', 'k-azul',    L.porEnviar.length, '📤 Por enviar'],
-    ['sinCosto',  'k-morado',  L.sinCosto.length,  '💲 Sin costo'],
-    ['recibidos', 'k-celeste', L.recibidos.length, '📥 De MotoContable'],
-    ['completadosMes', 'k-verde', L.completadosMes.length, '✅ Completados este mes'],
+    ['urgentes',  'k-rojo',    L.urgentes.length,  '30 días o más',  'fuego'],
+    ['alerta',    'k-naranja', L.alerta.length,    '15 a 29 días',   'reloj'],
+    ['porEnviar', 'k-azul',    L.porEnviar.length, 'Por enviar',     'enviar'],
+    ['sinCosto',  'k-morado',  L.sinCosto.length,  'Sin costo',      'dinero'],
+    ['recibidos', 'k-celeste', L.recibidos.length, 'De MotoContable','bandeja'],
+    ['completadosMes', 'k-verde', L.completadosMes.length, 'Completados este mes', 'listo'],
   ];
   let html = `
     <div class="hoy-top">
       <div class="hoy-saludo">${saludo}, <strong>Samuel</strong> · ${fechaLarga}</div>
-      <button class="btn btn-sm btn-ghost" onclick="tvActivarRecordatorios()">${notifOn ? '🔔 Recordatorios activados' : '🔔 Activar recordatorios'}</button>
+      <button class="btn btn-sm btn-ghost" onclick="tvActivarRecordatorios()">${ico('campana', 14)}${notifOn ? 'Recordatorios activados' : 'Activar recordatorios'}</button>
     </div>`;
   if(L.urgentes.length || L.alerta.length){
     const partes = [];
     if(L.urgentes.length) partes.push(`<strong>${L.urgentes.length} trámite${L.urgentes.length === 1 ? '' : 's'} con 30 días o más</strong>`);
     if(L.alerta.length)   partes.push(`${L.alerta.length} entre 15 y 29 días`);
-    html += `<div class="recordatorio"><span class="rec-ico">🔔</span><div>Recordatorio: tienes ${partes.join(' y ')} pendientes. Revísalos primero.</div></div>`;
+    html += `<div class="recordatorio"><span class="rec-ico">${ico('campana', 18)}</span><div>Recordatorio: tienes ${partes.join(' y ')} pendientes. Revísalos primero.</div></div>`;
   }
-  html += `<div class="hoy-kpis">${kpis.map(([k, cls, n, lbl]) =>
-    `<button class="hoy-kpi ${cls} ${_hoyFiltro === k ? 'activo' : ''}" onclick="hoyFiltrar('${k}')"><div class="k-num">${n}</div><div class="k-lbl">${lbl}</div></button>`).join('')}</div>`;
+  html += `<div class="hoy-kpis">${kpis.map(([k, cls, n, lbl, ic]) =>
+    `<button class="hoy-kpi ${cls} ${_hoyFiltro === k ? 'activo' : ''} ${n ? '' : 'cero'}" onclick="hoyFiltrar('${k}')"><span class="k-ico">${ico(ic, 16)}</span><div class="k-num">${n}</div><div class="k-lbl">${lbl}</div></button>`).join('')}</div>`;
 
   if(_hoyFiltro){
     // Vista filtrada: la lista completa del indicador elegido
-    const titulos = {urgentes:'🔴 30 días o más', alerta:'🟠 15 a 29 días', porEnviar:'📤 Por enviar', sinCosto:'💲 Sin costo registrado', completadosMes:'✅ Completados este mes'};
+    const titulos = {urgentes:tituloSeccion('fuego', 'rojo', '30 días o más'), alerta:tituloSeccion('reloj', 'naranja', '15 a 29 días'), porEnviar:tituloSeccion('enviar', 'azul', 'Por enviar'), sinCosto:tituloSeccion('dinero', 'morado', 'Sin costo registrado'), completadosMes:tituloSeccion('listo', 'verde', 'Completados este mes')};
     const lista = L[_hoyFiltro] || [];
     html += `<div class="hoy-seccion"><h3>${titulos[_hoyFiltro]} <span class="cuenta">${lista.length}</span>
       <button class="hoy-mas" onclick="hoyFiltrar(null)" style="margin-left:auto">← Volver al resumen</button></h3>
-      ${lista.length ? lista.map(r => _hoyFiltro === 'completadosMes' ? cardHTML(r) : hoyFilaHTML(r)).join('') : '<div class="hoy-vacio">Nada por aquí 👍</div>'}</div>`;
+      ${lista.length ? lista.map(r => _hoyFiltro === 'completadosMes' ? cardHTML(r) : hoyFilaHTML(r)).join('') : '<div class="hoy-vacio">Nada por aquí.</div>'}</div>`;
   } else {
     // Agenda: cada trámite aparece una sola vez, en su sección más importante
     const usados = new Set();
     const tomar = lista => lista.filter(r => !usados.has(r.id) && usados.add(r.id));
     const secciones = [
-      ['urgentes',  '🔴 Urgentes · 30 días o más', tomar(L.urgentes)],
-      ['alerta',    '🟠 En alerta · 15 a 29 días',  tomar(L.alerta)],
-      ['porEnviar', '📤 Por enviar',               tomar(L.porEnviar)],
-      ['sinCosto',  '💲 Falta registrar el costo', tomar(L.sinCosto)],
+      ['urgentes',  tituloSeccion('fuego', 'rojo', 'Urgentes · 30 días o más'), tomar(L.urgentes)],
+      ['alerta',    tituloSeccion('reloj', 'naranja', 'En alerta · 15 a 29 días'), tomar(L.alerta)],
+      ['porEnviar', tituloSeccion('enviar', 'azul', 'Por enviar'),                 tomar(L.porEnviar)],
+      ['sinCosto',  tituloSeccion('dinero', 'morado', 'Falta registrar el costo'), tomar(L.sinCosto)],
     ];
     const MAX = 6;
     let algo = false;
     if(L.recibidos.length){
       algo = true;
-      html += `<div class="hoy-seccion"><h3>📥 Recibidos de MotoContable <span class="cuenta">${L.recibidos.length}</span></h3>
+      html += `<div class="hoy-seccion"><h3>${tituloSeccion('bandeja', 'celeste', 'Recibidos de MotoContable')} <span class="cuenta">${L.recibidos.length}</span></h3>
         ${L.recibidos.slice(0, MAX).map(hoyRecibidoHTML).join('')}
         ${L.recibidos.length > MAX ? `<button class="hoy-mas" onclick="irAPanel('motocontable')">Ver los ${L.recibidos.length}</button>` : ''}</div>`;
     }
@@ -3263,10 +3612,10 @@ function renderHoy(){
         ${lista.length > MAX ? `<button class="hoy-mas" onclick="hoyFiltrar('${k}')">Ver ${lista.length - MAX} más</button>` : ''}</div>`;
     });
     if(!algo){
-      html += `<div class="hoy-vacio"><div class="grande">🎉</div><strong>Todo al día.</strong><br>${L.pend.length ? 'Tus trámites pendientes ya están enviados, con costo y a tiempo.' : 'No tienes trámites pendientes.'}</div>`;
+      html += `<div class="hoy-vacio"><div class="grande">${ico('fiesta', 26)}</div><strong>Todo al día.</strong><br>${L.pend.length ? 'Tus trámites pendientes ya están enviados, con costo y a tiempo.' : 'No tienes trámites pendientes.'}</div>`;
     }
     const invertido = L.completadosMes.reduce((s, r) => s + (Number(r.costo) || 0), 0);
-    html += `<div class="hoy-pie">✅ Este mes completaste <strong>${L.completadosMes.length}</strong> trámite${L.completadosMes.length === 1 ? '' : 's'}${invertido ? ` · invertiste <strong>${fmtPrice(invertido)}</strong>` : ''} · Pendientes en total: <strong>${L.pend.length}</strong></div>`;
+    html += `<div class="hoy-pie">${ico('listo', 14)}Este mes completaste <strong>${L.completadosMes.length}</strong> trámite${L.completadosMes.length === 1 ? '' : 's'}${invertido ? ` · invertiste <strong>${fmtPrice(invertido)}</strong>` : ''} · Pendientes en total: <strong>${L.pend.length}</strong></div>`;
   }
   cont.innerHTML = html;
 }
@@ -3274,11 +3623,11 @@ function renderHoy(){
 // ── WhatsApp con mensajes listos ─────────────────────────────────────────────
 let _waId = null, _waPara = 'vendedor', _waPlantilla = 'seguimiento';
 const WA_PLANTILLAS = [
-  {id:'listo',       etq:'✅ Traspaso listo',  txt:p => `Hola ${p.nombre}, te saluda Samuel. Te cuento que el traspaso de ${p.veh} placa ${p.placa} ya quedó listo ✅. ¡Gracias por tu paciencia!`},
-  {id:'enviado',     etq:'📤 Ya se radicó',    txt:p => `Hola ${p.nombre}, te saluda Samuel. El traspaso de ${p.veh} placa ${p.placa} ya fue radicado${p.envio ? ' el ' + p.envio : ''}. Te aviso apenas esté listo.`},
-  {id:'falta',       etq:'📄 Falta algo',      txt:p => `Hola ${p.nombre}, te saluda Samuel. Para continuar con el traspaso de ${p.veh} placa ${p.placa} necesitamos: ${p.motivo || '______'}. ¿Me colaboras, por favor?`},
-  {id:'seguimiento', etq:'🔄 Seguimiento',     txt:p => `Hola ${p.nombre}, te saluda Samuel. Te escribo para contarte que el traspaso de ${p.veh} placa ${p.placa} sigue en proceso. Cualquier novedad te aviso.`},
-  {id:'libre',       etq:'✍️ Mensaje libre',   txt:p => `Hola ${p.nombre}, `},
+  {id:'listo',       etq:'Traspaso listo',    txt:p => `Hola ${p.nombre}, te saluda Samuel. Te cuento que el traspaso de ${p.veh} placa ${p.placa} ya quedó listo ✅. ¡Gracias por tu paciencia!`},
+  {id:'enviado',     etq:'Ya se radicó',      txt:p => `Hola ${p.nombre}, te saluda Samuel. El traspaso de ${p.veh} placa ${p.placa} ya fue radicado${p.envio ? ' el ' + p.envio : ''}. Te aviso apenas esté listo.`},
+  {id:'falta',       etq:'Falta algo',        txt:p => `Hola ${p.nombre}, te saluda Samuel. Para continuar con el traspaso de ${p.veh} placa ${p.placa} necesitamos: ${p.motivo || '______'}. ¿Me colaboras, por favor?`},
+  {id:'seguimiento', etq:'Seguimiento',       txt:p => `Hola ${p.nombre}, te saluda Samuel. Te escribo para contarte que el traspaso de ${p.veh} placa ${p.placa} sigue en proceso. Cualquier novedad te aviso.`},
+  {id:'libre',       etq:'Mensaje libre',     txt:p => `Hola ${p.nombre}, `},
 ];
 function tvAbrirWhatsApp(id){
   const r = records.find(x => x.id === id);
@@ -3303,7 +3652,7 @@ function tvRenderWA(){
     <button class="wa-dest ${cls} ${_waPara === clave ? 'activo' : ''}" ${soloDigitos(tel) ? '' : 'disabled'} onclick="tvElegirWA('para','${clave}')">
       <div class="ruta-etq" style="color:${cls === 'de' ? '#b45309' : '#15803d'}">${etq}</div>
       <div class="ruta-nombre">${escHTML(nombre || '—')}</div>
-      <div class="wa-tel">${soloDigitos(tel) ? '📱 ' + escHTML(tel) : 'Sin teléfono'}</div>
+      <div class="wa-tel">${soloDigitos(tel) ? ico('telefono', 12) + escHTML(tel) : 'Sin teléfono'}</div>
     </button>`;
   document.getElementById('tv-wa-para').innerHTML =
     dest('vendedor', 'de', 'Vendedor', r.vendedor, r.telefono) +
@@ -3353,9 +3702,9 @@ function renderBusqueda(){
   const LIMITE = 60;
   document.getElementById('buscar-resumen').innerHTML =
     `<div class="filter-bar"><span style="font-size:13px;color:var(--text2)">Buscando <strong>"${escHTML(q.trim())}"</strong>: ${tramites.length} trámite${tramites.length === 1 ? '' : 's'}${recibidos.length ? ` · ${recibidos.length} recibido${recibidos.length === 1 ? '' : 's'} de MotoContable` : ''}</span>
-     <button class="btn btn-sm btn-ghost" onclick="tvLimpiarBusqueda()" style="margin-left:auto">✕ Limpiar búsqueda</button></div>`;
+     <button class="btn btn-sm btn-ghost" onclick="tvLimpiarBusqueda()" style="margin-left:auto">${ico('cerrar', 13)}Limpiar búsqueda</button></div>`;
   let html = '';
-  if(recibidos.length) html += `<div class="hoy-seccion"><h3>📥 Recibidos de MotoContable</h3>${recibidos.map(hoyRecibidoHTML).join('')}</div>`;
+  if(recibidos.length) html += `<div class="hoy-seccion"><h3>${tituloSeccion('bandeja', 'celeste', 'Recibidos de MotoContable')}</h3>${recibidos.map(hoyRecibidoHTML).join('')}</div>`;
   if(tramites.length) html += tramites.slice(0, LIMITE).map(cardHTML).join('') +
     (tramites.length > LIMITE ? `<p style="font-size:12px;color:var(--text3);text-align:center">Se muestran los primeros ${LIMITE}. Escribe más para afinar.</p>` : '');
   if(!html) html = `<div class="empty-state"><p>No hay resultados. Prueba con la placa, un nombre, una cédula o un teléfono.</p></div>`;
@@ -3373,7 +3722,7 @@ function tvRecordatorioDiario(){
   const {urg, al, texto} = tvResumenPendientes();
   if(!urg && !al) return;
   try { if(localStorage.getItem('tv_recordatorio_dia') === today()) return; localStorage.setItem('tv_recordatorio_dia', today()); } catch(e){}
-  toast('🔔 Trámites pendientes: ' + texto);
+  toast('Trámites pendientes: ' + texto);
   if(('Notification' in window) && Notification.permission === 'granted' && localStorage.getItem('tv_notif') === '1'){
     try { new Notification('Traspasos de Vehículos', {body: `Tienes trámites pendientes: ${texto}. Revisa la pantalla Hoy.`}); } catch(e){}
   }
@@ -3392,7 +3741,7 @@ async function tvActivarRecordatorios(){
     localStorage.setItem('tv_notif', '1');
     const {texto} = tvResumenPendientes();
     try { new Notification('Traspasos de Vehículos', {body: texto ? `Recordatorios activados. Hoy tienes: ${texto}.` : 'Recordatorios activados. Te avisaremos de los trámites atrasados.'}); } catch(e){}
-    toast('🔔 Recordatorios activados');
+    toast('✓ Recordatorios activados');
   } else {
     toast('El navegador no dio permiso para avisos. Los verás en la pantalla Hoy.');
   }
@@ -3457,7 +3806,7 @@ function sonido(tipo){
 }
 function tvActualizarBotonSonidos(){
   const b = document.getElementById('tv-btn-sonidos');
-  if(b) b.textContent = tvSonidosActivos() ? '🔊 Sonidos activados' : '🔇 Sonidos desactivados';
+  if(b) b.innerHTML = tvSonidosActivos() ? ico('volumen', 15) + 'Sonidos activados' : ico('mudo', 15) + 'Sonidos desactivados';
 }
 function tvAlternarSonidos(){
   try { localStorage.setItem(TV_SONIDOS_KEY, tvSonidosActivos() ? '0' : '1'); } catch(e){}
@@ -3670,7 +4019,7 @@ async function tvEnviarPendientes(){
     const nombres = {traspasos:'trámites', traspasos_borradores:'vehículos recibidos de MotoContable'};
     const detalle = masivos.map(m=>`• ${m.cantidad} de ${m.total} ${nombres[m.coleccion]||m.coleccion}`).join('\n');
     const ok = await tvPreguntar({
-      titulo: '⚠️ Confirmar eliminación',
+      titulo: 'Confirmar eliminación',
       texto:  `Se van a eliminar de la nube, y por lo tanto de todos tus dispositivos:\n${detalle}\n\nSi esto no es lo que querías, pulsa "Recuperar" y se volverán a descargar de la nube. Aunque confirmes, quedarán guardados en el historial de Supabase.`,
       si: 'Sí, eliminar', no: 'Recuperar'
     });
@@ -3812,15 +4161,15 @@ function tvIndicador(estado, n){
   if(!ind) return;
   const cambios = n===1 ? '1 cambio' : n+' cambios';
   const e = {
-    'guardando':    ['☁️ Guardando…', '#ffffff'],
-    'guardado':     ['☁️ Guardado en la nube', '#b9f6ca'],
-    'error':        ['☁️ Error al guardar — toca para reintentar', '#ffcdd2'],
-    'sin-nube':     ['☁️ Sin conexión con la nube — toca para reintentar', '#ffe0b2'],
-    'sin-conexion': [n ? '☁️ Sin conexión — '+cambios+' en este dispositivo' : '☁️ Sin conexión', '#ffe0b2'],
-    'sin-sesion':   ['☁️ Sin sesión — toca para iniciar', '#ffe0b2'],
-    'cargando':     ['☁️ Cargando…', '#ffffff'],
-  }[estado] || ['☁️ Nube', '#ffffff'];
-  ind.textContent = e[0]; ind.style.color = e[1];
+    'guardando':    ['Guardando…'],
+    'guardado':     ['Guardado en la nube'],
+    'error':        ['Error al guardar — toca para reintentar'],
+    'sin-nube':     ['Sin conexión con la nube — toca para reintentar'],
+    'sin-conexion': [n ? 'Sin conexión — '+cambios+' en este dispositivo' : 'Sin conexión'],
+    'sin-sesion':   ['Sin sesión — toca para iniciar'],
+    'cargando':     ['Cargando…'],
+  }[estado] || ['Nube'];
+  ind.textContent = e[0]; ind.dataset.estado = estado;
 }
 function tvActualizarIndicador(){
   let n = 0;
@@ -4043,7 +4392,7 @@ async function tvMigrarDispositivo(uid){
     tvOcultarLogin();
     tvRefrescarUI();
     if(subidos || historial){
-      await tvPreguntar({titulo:'✅ Trámites unidos con la nube',
+      await tvPreguntar({titulo:'Trámites unidos con la nube',
         texto:`Subidos desde este dispositivo: ${subidos}\nGuardados en el historial (la nube tenía otra versión): ${historial}\n\nDesde ahora todo se guarda solo en la nube y lo verás en tus otros dispositivos.`,
         si:'Entendido', no:null});
     } else toast('Trámites sincronizados con la nube');
@@ -4174,7 +4523,7 @@ function tvImportarRespaldo(input){
     }
     const fechaBk = data.fecha ? new Date(data.fecha).toLocaleString('es-CO') : 'fecha desconocida';
     const ok = await tvPreguntar({
-      titulo: '📥 ¿Importar este respaldo?',
+      titulo: '¿Importar este respaldo?',
       texto: `Respaldo del ${fechaBk}:\n• ${nuevos.length} trámite(s) nuevos se agregarán\n• ${copias.length} con el mismo número pero distinto contenido se agregarán como copia\n• ${iguales} ya estaban iguales y no se tocan\n• ${borrNuevos.length} vehículo(s) recibidos de MotoContable se agregarán\n\nNo se borra ni se reemplaza nada de lo que ya tienes.`,
       si: 'Sí, importar', no: 'Cancelar'
     });
@@ -4186,7 +4535,7 @@ function tvImportarRespaldo(input){
     if(borrNuevos.length) TV_COLS.traspasos_borradores.set([...getBorradores(), ...borrNuevos]);
     tvMarcarCambios();
     updateBadge(); updateBadgeMC(); tvRefrescarUI();
-    toast('✓ Importados ' + (nuevos.length + copias.length) + ' trámite(s)');
+    toast('✓ Importados ' + (nuevos.length + copias.length) + ' trámites');
   };
   reader.readAsText(file);
 }
