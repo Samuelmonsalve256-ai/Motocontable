@@ -288,6 +288,13 @@ tr:hover td{background:rgba(42,127,255,.03)}
 }
 .gasto-item:last-child{border-bottom:none}
 .gasto-nombre{font-size:12px;color:var(--text2)}
+.mc-tras{display:inline-block;margin-top:6px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid}
+.mc-tras-ok{color:var(--green);background:rgba(0,214,143,.1);border-color:rgba(0,214,143,.3)}
+.mc-tras-enviado{color:var(--blue);background:rgba(42,127,255,.1);border-color:rgba(42,127,255,.3)}
+.mc-tras-pend{color:var(--amber);background:rgba(255,181,71,.1);border-color:rgba(255,181,71,.3)}
+.mc-tras-alerta{color:#ff9f43;background:rgba(255,159,67,.12);border-color:rgba(255,159,67,.35)}
+.mc-tras-urgente{color:var(--red);background:rgba(255,61,107,.1);border-color:rgba(255,61,107,.3)}
+.mc-tras-recibido{color:#38bdf8;background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.3)}
 .gasto-monto{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--amber)}
 .gasto-del{
   cursor:pointer;color:var(--red);font-size:10px;
@@ -1361,7 +1368,7 @@ function mcAplicarRemota(fila, forzar){
 
 // Trae de la nube todo lo que cambió después del cursor
 async function mcTraerCambios(desde, forzar){
-  let cursor = desde;
+  let cursor = desde, trasCambio = false;
   const tocadas = new Set(), insertadas = new Set();
   while(true){
     const {data, error} = await _supa.rpc('mc_pull', {p_desde:cursor, p_limite:500});
@@ -1375,7 +1382,7 @@ async function mcTraerCambios(desde, forzar){
           tocadas.add(f.coleccion);
           if(!existia && !f.eliminado) insertadas.add(f.coleccion);
         }
-      }
+      } else if(mcAplicarFilaTraspaso(f)) trasCambio = true;
       if(f.seq > cursor) cursor = f.seq;
     });
     if(filas.length < 500) break;
@@ -1385,6 +1392,7 @@ async function mcTraerCambios(desde, forzar){
   _mcEstado.cursor = cursor;
   mcGuardarEstado();
   if(tocadas.size) mcRefrescarUI(tocadas);
+  if(trasCambio){ mcGuardarTraspasosCache(); setTimeout(mcTrasCambioTraspasos, 0); }
   return tocadas.size;
 }
 
@@ -1868,6 +1876,7 @@ async function mcConSesion(session){
   mcRegistrarEventos();
   if(_mcRecuperacion) mcMostrarLogin('nueva');
   await mcSincronizar('inicio', {reconciliar:true});
+  mcCargarTraspasos();
 }
 function mcSuscribirTiempoReal(uid){
   if(_mcCanal || !_supa.channel) return;
@@ -2693,7 +2702,12 @@ function renderVentas(){
       const totGV  = gList.reduce((a,g)=>a+g.monto,0) + (v.gastos||0);
       const ganReal= v.precioVenta - v.inversionCompra - totGV;
       const gHtml  = gList.length
-        ? gList.map((g,i)=>`<div class="gasto-item">
+        ? gList.map((g,i)=> g.origen==='traspasos'
+          ? `<div class="gasto-item" title="Se actualiza solo con el costo del trámite en Traspasos">
+            <span class="gasto-nombre">🚦 ${g.nombre} <span style="font-size:10px;color:var(--text3)">(automático · Traspasos)</span></span>
+            <span><span class="gasto-monto">${fmt(g.monto)}</span></span>
+          </div>`
+          : `<div class="gasto-item">
             <span class="gasto-nombre">📌 ${g.nombre}</span>
             <span><span class="gasto-monto">${fmt(g.monto)}</span><button class="gasto-del" onclick="elimGastoVenta('${v.id}',${i})">✕</button></span>
           </div>`).join('')
@@ -2730,6 +2744,7 @@ function renderVentas(){
               <div style="font-weight:700;font-size:14px;margin-bottom:2px">${nomVeh(v.tipoVehiculo,'ico')} ${v.motoNombre}</div>
               <div style="font-size:11px;color:var(--text3)">${v.motoModelo} ${v.motoPlaca?'· '+v.motoPlaca:''}</div>
               <div style="margin-top:4px;font-size:11px;color:var(--text2)">📅 Vendido el ${new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO')}</div>
+              ${mcEtiquetaTraspaso(v)}
               ${v.fechaCompra?`<div style="font-size:11px;color:var(--text3)">🛒 Comprado el ${new Date(v.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</div>`:''}
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -2958,11 +2973,11 @@ function renderEvGastos(){
     return;
   }
   cont.innerHTML = _evGastos.map((g,i)=>`
-    <div class="gasto-item">
-      <span class="gasto-nombre">📌 ${g.nombre}</span>
+    <div class="gasto-item"${g.origen==='traspasos' ? ' title="Se actualiza solo con el costo del trámite en Traspasos"' : ''}>
+      <span class="gasto-nombre">${g.origen==='traspasos' ? '🚦' : '📌'} ${g.nombre}${g.origen==='traspasos' ? ' <span style="font-size:10px;color:var(--text3)">(automático · Traspasos)</span>' : ''}</span>
       <span>
         <span class="gasto-monto">${fmt(g.monto)}</span>
-        <button class="gasto-del" onclick="elimEvGasto(${i})">✕</button>
+        ${g.origen==='traspasos' ? '' : `<button class="gasto-del" onclick="elimEvGasto(${i})">✕</button>`}
       </span>
     </div>`).join('');
 }
@@ -3826,6 +3841,13 @@ async function exportarATrapasos(ventaId){
   const v = ventas.find(v=>v.id===ventaId);
   if(!v){ toast('Venta no encontrada','err'); return; }
 
+  // Si ya hay un trámite de este vehículo en Traspasos, se pregunta antes de enviarlo otra vez
+  const tramiteExistente = mcTramiteDeVenta(v);
+  if(tramiteExistente && !(await mcPreguntar({
+      titulo: 'Ya está en Traspasos',
+      texto: `"${v.motoNombre}" (${v.motoPlaca||'sin placa'}) ya tiene un trámite en Traspasos: ${tramiteExistente.estado === 'Completado' ? 'completado' : 'pendiente'}, registrado el ${String(tramiteExistente.fecha||'').split('-').reverse().join('/')}.\n\n¿Enviarlo de nuevo de todos modos?`,
+      si: 'Enviar de nuevo', no: 'Cancelar'}))) return;
+
   // Ventas registradas antes de guardar el color: se busca en la última versión del
   // vehículo que quedó en el historial de la nube, y se guarda en la venta.
   if(!v.motoColor){
@@ -3845,6 +3867,11 @@ async function exportarATrapasos(ventaId){
     vendedor:    v.vendedorNombre||'',
     cedula:      v.vendedorCC||'',
     telefono:    v.vendedorTel||'',
+    // Comprador: a quién se traspasa
+    compradorNombre:   v.comprador||'',
+    compradorCedula:   v.compradorCC||'',
+    compradorTelefono: v.compradorCel||'',
+    ventaId:     v.id,
     // Meta
     fechaOrigen: new Date().toISOString().slice(0,10),
     estado:      'pendiente',
@@ -3878,6 +3905,99 @@ async function exportarATrapasos(ventaId){
   mcEnviarATraspasosNube(traspaso);
 }
 
+// ── ESTADO DE LOS TRASPASOS (desde Traspasos de Vehículos) ────────────────────
+// Copia de solo lectura de los trámites y de los vehículos enviados, para mostrar en
+// cada venta cómo va su traspaso y sumar el costo del trámite como gasto de la venta.
+const MC_TRASPASOS_KEY = 'mc_traspasos_cache';
+let mcTraspasos = (()=>{
+  try { const c = JSON.parse(localStorage.getItem(MC_TRASPASOS_KEY)||'null'); if(c && c.t && c.b) return c; } catch(e){}
+  return {t:{}, b:{}};
+})();
+let _mcTraspasosListos = false;   // ya se cargaron de la nube en esta sesión
+function mcGuardarTraspasosCache(){ try { localStorage.setItem(MC_TRASPASOS_KEY, JSON.stringify(mcTraspasos)); } catch(e){} }
+function mcAplicarFilaTraspaso(f){
+  const mapa = f.coleccion==='traspasos' ? mcTraspasos.t : f.coleccion==='traspasos_borradores' ? mcTraspasos.b : null;
+  if(!mapa) return false;
+  const id = String(f.id);
+  if(f.eliminado || !f.data){ if(mapa[id]){ delete mapa[id]; return true; } return false; }
+  mapa[id] = f.data;
+  return true;
+}
+async function mcCargarTraspasos(){
+  if(!_supa || !_mcSesion || !navigator.onLine) return;
+  try {
+    const {data, error} = await _supa.from('mc_registros').select('coleccion,id,data,deleted_at')
+      .in('coleccion', ['traspasos','traspasos_borradores']);
+    if(error) throw error;
+    const nuevo = {t:{}, b:{}};
+    (data||[]).forEach(f=>{ if(!f.deleted_at && f.data) (f.coleccion==='traspasos' ? nuevo.t : nuevo.b)[String(f.id)] = f.data; });
+    mcTraspasos = nuevo;
+    _mcTraspasosListos = true;
+    mcGuardarTraspasosCache();
+    mcTrasCambioTraspasos();
+  } catch(e){ console.log('No se pudieron cargar los traspasos:', e); }
+}
+const mcNormPlaca = p => String(p||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+const mcFechaCorta = f => String(f||'').split('-').reverse().join('/');
+// Trámite de una venta: el que se creó desde su envío (📋), o uno con la misma placa
+// si esta es la venta más reciente de ese vehículo
+function mcTramiteDeVenta(v){
+  const tramites = Object.values(mcTraspasos.t).filter(Boolean);
+  let t = tramites.find(x => x.origenMC === 'mc_'+v.id);
+  if(!t && v.motoPlaca){
+    const p = mcNormPlaca(v.motoPlaca);
+    const ultima = ventas.filter(x => mcNormPlaca(x.motoPlaca) === p)
+      .sort((a,b)=> String(b.fecha||'').localeCompare(String(a.fecha||'')))[0];
+    if(ultima && ultima.id === v.id)
+      t = tramites.filter(x => !x.origenMC && mcNormPlaca(x.placa) === p)
+        .sort((a,b)=> String(b.fecha||'').localeCompare(String(a.fecha||'')))[0];
+  }
+  return t || null;
+}
+function mcEtiquetaTraspaso(v){
+  const t = mcTramiteDeVenta(v);
+  let cls, texto;
+  if(t){
+    const dias = t.fecha ? Math.max(0, Math.floor((new Date().setHours(0,0,0,0) - new Date(t.fecha+'T00:00:00')) / 86400000)) : 0;
+    if(t.estado === 'Completado'){ cls='ok'; texto = '✅ Traspaso completado' + (t.fechaCompletado ? ' el '+mcFechaCorta(t.fechaCompletado) : ''); }
+    else if(t.fechaEnvio){ cls='enviado'; texto = `📤 Traspaso enviado el ${mcFechaCorta(t.fechaEnvio)} · ${dias} día${dias===1?'':'s'}`; }
+    else { cls = dias>=30 ? 'urgente' : dias>=15 ? 'alerta' : 'pend'; texto = `🚦 Traspaso pendiente · ${dias} día${dias===1?'':'s'}`; }
+    if(Number(t.costo) > 0) texto += ' · ' + fmt(Number(t.costo));
+  } else if(mcTraspasos.b['mc_'+v.id]){ cls='recibido'; texto='📥 En Traspasos · falta confirmarlo'; }
+  else return '';
+  return `<div class="mc-tras mc-tras-${cls}" title="Estado en Traspasos de Vehículos">${texto}</div>`;
+}
+// El costo del trámite se suma (y se actualiza) como gasto "Traspaso" de la venta
+function mcSincronizarGastosTraspaso(){
+  if(!_mcTraspasosListos) return false;
+  let cambio = false;
+  ventas.forEach(v=>{
+    const t = mcTramiteDeVenta(v);
+    const costo = t ? (Number(t.costo)||0) : 0;
+    const lista = v.gastosList || [];
+    const idx = lista.findIndex(g => g && g.origen === 'traspasos');
+    if(costo > 0){
+      const g = {nombre:'Traspaso', monto:costo, fecha: t.fechaEnvio || t.fecha || new Date().toISOString().slice(0,10),
+                 origen:'traspasos', tramiteId:String(t.id)};
+      if(idx < 0) v.gastosList = [...lista, g];
+      else if(lista[idx].monto !== costo || lista[idx].tramiteId !== g.tramiteId) v.gastosList = lista.map((x,i)=> i===idx ? g : x);
+      else return;
+    } else if(idx >= 0) v.gastosList = lista.filter((x,i)=> i!==idx);
+    else return;
+    const totGExtra = v.gastosList.reduce((a,g)=>a+(Number(g.monto)||0),0);
+    v.gananciaNeta = (Number(v.precioVenta)||0) - (Number(v.inversionCompra)||0) - (Number(v.gastos)||0) - totGExtra;
+    cambio = true;
+  });
+  if(cambio) saveVentas();
+  return cambio;
+}
+function mcTrasCambioTraspasos(){
+  const cambio = mcSincronizarGastosTraspaso();
+  const pagina = ((document.querySelector('.page.active')||{}).id||'').replace('page-','');
+  if(['ventas','resumen','analisis'].includes(pagina) && !mcEditando()) go(pagina);
+  return cambio;
+}
+
 // Color de un vehículo ya vendido, según su última versión en mc_historial
 async function mcColorDesdeHistorial(v){
   if(!_supa || !_mcSesion || !_mcEstadoListo || !navigator.onLine || !v.vehiculoId) return '';
@@ -3905,6 +4025,10 @@ async function mcEnviarATraspasosNube(traspaso){
       p_cambios: [{coleccion:'traspasos_borradores', id:traspaso.id, data:traspaso, base_version: actual ? actual.version : null}],
       p_device: mcDeviceId });
     if(error) throw error;
+    // Se refleja de inmediato en la venta ("En Traspasos · falta confirmarlo")
+    mcTraspasos.b[traspaso.id] = traspaso;
+    mcGuardarTraspasosCache();
+    if(((document.querySelector('.page.active')||{}).id||'') === 'page-ventas') renderVentas();
     if(!(data.conflictos||[]).length) toast('✓ Enviado a Traspasos en la nube: llegará a todos tus dispositivos');
   } catch(e){
     console.log('No se pudo enviar a Traspasos por la nube:', e);

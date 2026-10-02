@@ -680,6 +680,202 @@
     .form-grid.cols-3 { grid-template-columns: 1fr; }
     .month-toggle .month-stats { display: none; }
   }
+
+  /* ════════════════ MEJORAS: comprador, Hoy, buscador, WhatsApp ════════════════ */
+
+  /* Placa con aspecto de placa colombiana (amarilla, letras negras) */
+  .placa-chip {
+    display: inline-block;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-weight: 800;
+    letter-spacing: .8px;
+    font-size: 12.5px;
+    color: #111;
+    background: linear-gradient(#ffe45c, #f7d21c);
+    border: 1.5px solid #222;
+    border-radius: 5px;
+    padding: 1px 8px;
+    line-height: 1.5;
+    vertical-align: middle;
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.55);
+    white-space: nowrap;
+  }
+
+  /* Ruta del traspaso: vendedor (naranja) → comprador (verde) */
+  .ruta { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: stretch; margin: 8px 0 2px; }
+  .ruta-lado { border-radius: var(--radius-sm); padding: 7px 11px; min-width: 0; text-align: left; font-family: inherit; }
+  .ruta-de   { background: #fff6e9; border: 1px solid #f6d9a8; }
+  .ruta-para { background: #eaf7f0; border: 1px solid #b7e2c8; }
+  .ruta-vacia {
+    background: transparent; border: 1.5px dashed #9fd4b4; color: #1f7a4d;
+    font-weight: 700; font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .ruta-vacia:hover { background: #f3fbf6; }
+  .ruta-sin { background: #f6f6f4; border: 1px dashed var(--border2); color: var(--text3); font-size: 12px; display: flex; align-items: center; justify-content: center; }
+  .ruta-etq { font-size: 9.5px; font-weight: 800; letter-spacing: .9px; text-transform: uppercase; margin-bottom: 1px; }
+  .ruta-de .ruta-etq   { color: #b45309; }
+  .ruta-para .ruta-etq { color: #15803d; }
+  .ruta-nombre { font-size: 13.5px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ruta-datos { font-size: 11.5px; color: var(--text2); display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1px; }
+  .ruta-datos a { color: inherit; text-decoration: none; font-weight: 600; }
+  .ruta-datos a:hover { text-decoration: underline; }
+  .ruta-flecha {
+    align-self: center; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-size: 14px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(29,58,95,.25); flex-shrink: 0;
+  }
+
+  /* Ruta en los formularios */
+  .ruta-form { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: center; margin-bottom: 1.25rem; }
+  .ruta-panel { border-radius: var(--radius); padding: 14px 14px 6px; align-self: stretch; }
+  .ruta-panel.de   { background: #fffaf2; border: 1px solid #f6d9a8; border-top: 4px solid #f59e0b; }
+  .ruta-panel.para { background: #f3fbf6; border: 1px solid #b7e2c8; border-top: 4px solid #22a05b; }
+  .ruta-panel h4 { font-size: 12px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .ruta-panel.de h4   { color: #b45309; }
+  .ruta-panel.para h4 { color: #15803d; }
+  .ruta-panel h4 small { font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--text3); font-size: 11px; }
+  .ruta-num { width: 20px; height: 20px; border-radius: 50%; color: #fff; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; }
+  .ruta-panel.de .ruta-num   { background: #f59e0b; }
+  .ruta-panel.para .ruta-num { background: #22a05b; }
+  .ruta-panel .form-field { margin-bottom: 9px; }
+  .ruta-panel .form-grid { gap: 9px; }
+  .ruta-panel input { background: #fff; }
+
+  /* Errores de validación */
+  .campo-error { border-color: var(--danger) !important; box-shadow: 0 0 0 3px rgba(192,57,43,.13) !important; }
+  .errores-box {
+    display: none; background: #fdeceb; border: 1px solid #f3b8b3; color: var(--danger);
+    border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12.5px; margin: 6px 0 12px; line-height: 1.55;
+  }
+  .errores-box ul { margin: 4px 0 0 18px; }
+
+  /* Fechas y botones rápidos en las tarjetas */
+  .rc-fechas { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; color: var(--text2); margin-top: 6px; }
+  .rc-fechas .f-ok   { color: var(--done-text); font-weight: 600; }
+  .rc-fechas .f-pend { color: var(--pending-text); font-weight: 600; }
+  .btn-envio { color: #1d4f91; border-color: #b9cfee; background: #f2f7fd; }
+  .btn-envio:hover { background: #e3eefb; }
+  .btn-wa { color: #128c4b; border-color: #a7e3c0; background: #effbf4; }
+  .btn-wa:hover { background: #dff6e8; }
+  .btn-wa-fuerte { background: #25d366; border-color: #25d366; color: #fff; }
+  .btn-wa-fuerte:hover { background: #1fb457; }
+
+  /* Mini indicadores vendedor/comprador (tabla y Hoy) */
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+  .dot.de { background: #f59e0b; }
+  .dot.para { background: #22a05b; }
+  .tv-mini { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+  .tv-mini.vacio { color: var(--text3); }
+
+  /* Pantalla Hoy */
+  .hoy-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin: -1rem 0 1.25rem; }
+  .hoy-saludo { font-size: 13.5px; color: var(--text2); }
+  .hoy-saludo strong { color: var(--text); }
+  .recordatorio {
+    display: flex; gap: 12px; align-items: center; border-radius: var(--radius);
+    padding: 12px 16px; margin-bottom: 1.25rem; font-size: 13px; line-height: 1.5;
+    background: linear-gradient(90deg, #fdeceb, #fff4e8); border: 1px solid #f3c3b8; color: #8f2a1d;
+  }
+  .recordatorio .rec-ico { font-size: 22px; }
+  .hoy-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .hoy-kpi {
+    background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--border2);
+    border-radius: var(--radius); padding: 11px 14px; cursor: pointer; text-align: left; font-family: inherit;
+    transition: transform .1s, box-shadow .15s;
+  }
+  .hoy-kpi:hover { box-shadow: 0 4px 14px rgba(0,0,0,.07); transform: translateY(-1px); }
+  .hoy-kpi.activo { box-shadow: 0 0 0 2px var(--accent); }
+  .hoy-kpi .k-num { font-size: 26px; font-weight: 800; line-height: 1.15; }
+  .hoy-kpi .k-lbl { font-size: 11.5px; color: var(--text2); font-weight: 600; margin-top: 2px; }
+  .k-rojo    { border-left-color: var(--danger); }  .k-rojo .k-num    { color: var(--danger); }
+  .k-naranja { border-left-color: #f0a060; }        .k-naranja .k-num { color: #b75a1a; }
+  .k-azul    { border-left-color: #5b8fd1; }        .k-azul .k-num    { color: #1d4f91; }
+  .k-morado  { border-left-color: #8b5cf6; }        .k-morado .k-num  { color: #6d28d9; }
+  .k-celeste { border-left-color: #38bdf8; }        .k-celeste .k-num { color: #0369a1; }
+  .k-verde   { border-left-color: var(--done-border); } .k-verde .k-num { color: var(--done-text); }
+  .hoy-seccion { margin-bottom: 1.4rem; }
+  .hoy-seccion h3 {
+    font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px;
+    color: var(--text2); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .hoy-seccion h3 .cuenta { background: var(--surface2); color: var(--text2); border-radius: 20px; padding: 0 8px; font-size: 11px; }
+  .hoy-fila {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--pending-border);
+    border-radius: var(--radius-sm); padding: 9px 12px; margin-bottom: 6px;
+  }
+  .hoy-fila.urg  { border-left-color: var(--danger); background: #fffaf9; }
+  .hoy-fila.warn { border-left-color: #f0a060; }
+  .hoy-fila.recibido { border-left-color: #38bdf8; }
+  .hoy-info { flex: 1; min-width: 170px; }
+  .hoy-veh { font-weight: 700; font-size: 13px; }
+  .hoy-sub { font-size: 11.5px; color: var(--text2); margin-top: 1px; }
+  .hoy-sub .flechita { color: var(--text3); margin: 0 4px; }
+  .hoy-acciones { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .hoy-enviado { font-size: 11.5px; color: var(--done-text); font-weight: 600; }
+  .hoy-mas { background: none; border: none; color: var(--accent); font-weight: 700; font-size: 12px; cursor: pointer; padding: 4px 0; font-family: inherit; }
+  .hoy-vacio { text-align: center; padding: 2.5rem 1rem; color: var(--text2); background: var(--surface); border: 1px dashed var(--border2); border-radius: var(--radius); }
+  .hoy-vacio .grande { font-size: 34px; margin-bottom: 6px; }
+  .hoy-pie { font-size: 12.5px; color: var(--text2); margin-top: .5rem; padding-top: 10px; border-top: 1px solid var(--border); }
+
+  /* Buscador general en la cabecera */
+  .buscador-global { flex: 1; max-width: 430px; margin: 0 1.25rem; position: relative; }
+  .buscador-global input {
+    width: 100%; background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.22); color: #fff;
+    padding: 7px 12px 7px 32px; border-radius: 20px; font-size: 13px;
+  }
+  .buscador-global input::placeholder { color: rgba(255,255,255,.7); }
+  .buscador-global input:focus { background: #fff; color: var(--text); border-color: #fff; box-shadow: none; }
+  .buscador-global .lupa { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 13px; opacity: .8; pointer-events: none; }
+
+  /* Ventana de WhatsApp */
+  .wa-veh { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--text2); margin: -6px 0 14px; }
+  .wa-label { font-size: 11px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; color: var(--text3); margin: 10px 0 6px; }
+  .wa-para { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .wa-dest {
+    text-align: left; font-family: inherit; cursor: pointer; border-radius: var(--radius-sm); padding: 8px 11px;
+    border: 1.5px solid var(--border2); background: var(--surface);
+  }
+  .wa-dest .ruta-etq { margin-bottom: 1px; }
+  .wa-dest.de.activo   { border-color: #f59e0b; background: #fff6e9; }
+  .wa-dest.para.activo { border-color: #22a05b; background: #eaf7f0; }
+  .wa-dest:disabled { opacity: .45; cursor: not-allowed; }
+  .wa-dest .wa-tel { font-size: 11.5px; color: var(--text2); }
+  .wa-plantillas { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .wa-chip {
+    font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--border2); background: var(--surface); color: var(--text2);
+    border-radius: 20px; padding: 4px 11px;
+  }
+  .wa-chip.activo { background: #effbf4; border-color: #25d366; color: #0f7a40; }
+
+  /* Barra de "Deshacer" */
+  #tv-deshacer {
+    position: fixed; bottom: 4.6rem; left: 50%; transform: translateX(-50%) translateY(14px);
+    background: #1a1915; color: #fff; padding: 9px 10px 9px 18px; border-radius: 24px;
+    display: flex; gap: 12px; align-items: center; font-size: 13px; z-index: 1600;
+    opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+    box-shadow: 0 8px 24px rgba(0,0,0,.25); max-width: calc(100vw - 32px);
+  }
+  #tv-deshacer.show { opacity: 1; transform: translateX(-50%); pointer-events: auto; }
+  #tv-deshacer button { background: rgba(255,255,255,.12); border: none; color: #7dd3fc; font-weight: 800; cursor: pointer; font-size: 12.5px; border-radius: 16px; padding: 5px 12px; font-family: inherit; }
+
+  @media (max-width: 680px) {
+    header { flex-wrap: wrap; height: auto; min-height: 58px; padding: 8px 1rem; row-gap: 6px; }
+    header h1 { font-size: 15px; }
+    header h1 span { display: none; }
+    .buscador-global { order: 3; flex-basis: 100%; max-width: none; margin: 0 0 4px; }
+    .ruta-form { grid-template-columns: 1fr; gap: 8px; }
+    .ruta-form .ruta-flecha { justify-self: center; transform: rotate(90deg); }
+    .wa-para { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .ruta { grid-template-columns: 1fr; gap: 5px; }
+    .ruta .ruta-flecha { justify-self: center; transform: rotate(90deg); width: 22px; height: 22px; font-size: 12px; }
+    .rc-price { font-size: 16px; }
+  }
 </style>
 </head>
 <body>
@@ -689,6 +885,11 @@
     <path d="M19 17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11l5 5v5a2 2 0 0 1-2 2z"/><circle cx="7" cy="17" r="1"/><circle cx="17" cy="17" r="1"/>
   </svg>
   <h1>Traspasos de Vehículos <span>— Samuel</span></h1>
+  <div class="buscador-global">
+    <span class="lupa">🔍</span>
+    <input id="tv-buscar" type="search" placeholder="Buscar placa, nombre, cédula, teléfono…" autocomplete="off"
+           oninput="tvBuscarGlobal()" onkeydown="if(event.key==='Escape'){tvLimpiarBusqueda();this.blur();}">
+  </div>
   <div id="tv-sync" onclick="tvSincronizarAhora()" title="Toca para sincronizar con la nube"
        style="margin-left:auto;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:48vw">☁️ Nube</div>
 </header>
@@ -697,7 +898,12 @@
   <nav>
     <div class="nav-section">
       <div class="nav-label">Menú</div>
-      <button class="nav-btn active" onclick="showPanel('nuevo', this)">
+      <button class="nav-btn active" onclick="showPanel('hoy', this)" id="nav-hoy">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        Hoy
+        <span class="nav-badge" id="badge-hoy" style="background:#fdeceb;color:var(--danger);border-color:#f3b8b3">0</span>
+      </button>
+      <button class="nav-btn" onclick="showPanel('nuevo', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         Nuevo trámite
       </button>
@@ -742,31 +948,65 @@
   <main>
 
     <!-- ── NUEVO ── -->
-    <div id="panel-nuevo" class="panel active">
+    <!-- ── HOY ── -->
+    <div id="panel-hoy" class="panel active">
+      <div class="page-title">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        Hoy
+      </div>
+      <div id="hoy-contenido"></div>
+    </div>
+
+    <!-- ── RESULTADOS DE BÚSQUEDA ── -->
+    <div id="panel-buscar" class="panel">
+      <div class="page-title">🔍 Resultados de búsqueda</div>
+      <div id="buscar-resumen"></div>
+      <div id="buscar-lista"></div>
+    </div>
+
+    <div id="panel-nuevo" class="panel">
       <div class="page-title">
         <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         Registrar trámite de traspaso
       </div>
 
       <div class="form-card">
-        <div class="form-section-title">Datos del vendedor</div>
-        <div class="form-grid">
-          <div class="form-field">
-            <label for="f-vendedor">Nombre completo del vendedor</label>
-            <input id="f-vendedor" type="text" placeholder="Ej: Carlos Andrés Gómez">
+        <div class="form-section-title">Ruta del traspaso</div>
+        <div class="ruta-form">
+          <div class="ruta-panel de">
+            <h4><span class="ruta-num">1</span> Vendedor <small>· de quién</small></h4>
+            <div class="form-field">
+              <label for="f-vendedor">Nombre completo</label>
+              <input id="f-vendedor" type="text" placeholder="Ej: Carlos Andrés Gómez">
+            </div>
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="f-cedula">Cédula</label>
+                <input id="f-cedula" type="text" inputmode="numeric" placeholder="Ej: 1023456789">
+              </div>
+              <div class="form-field">
+                <label for="f-telefono">Teléfono</label>
+                <input id="f-telefono" type="tel" inputmode="tel" placeholder="Ej: 3001234567">
+              </div>
+            </div>
           </div>
-          <div class="form-field">
-            <label for="f-cedula">Cédula del vendedor</label>
-            <input id="f-cedula" type="text" placeholder="Ej: 1023456789">
-          </div>
-        </div>
-        <div class="form-grid">
-          <div class="form-field">
-            <label for="f-telefono">Teléfono del vendedor</label>
-            <input id="f-telefono" type="tel" placeholder="Ej: 3001234567">
-          </div>
-          <div style="display:flex;align-items:flex-end;padding-bottom:2px">
-            <span style="font-size:12px;color:var(--text3)">Para contactar en caso de dificultades con el trámite</span>
+          <div class="ruta-flecha">➜</div>
+          <div class="ruta-panel para">
+            <h4><span class="ruta-num">2</span> Comprador <small>· para quién (opcional)</small></h4>
+            <div class="form-field">
+              <label for="f-comprador">Nombre completo</label>
+              <input id="f-comprador" type="text" placeholder="Si aún no lo tienes, déjalo en blanco">
+            </div>
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="f-comprador-cedula">Cédula</label>
+                <input id="f-comprador-cedula" type="text" inputmode="numeric" placeholder="Ej: 1098765432">
+              </div>
+              <div class="form-field">
+                <label for="f-comprador-telefono">Teléfono</label>
+                <input id="f-comprador-telefono" type="tel" inputmode="tel" placeholder="Ej: 3109876543">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -792,15 +1032,15 @@
         <div class="form-grid cols-3">
           <div class="form-field">
             <label for="f-modelo">Año del modelo</label>
-            <input id="f-modelo" type="text" placeholder="Ej: 2022">
+            <input id="f-modelo" type="text" inputmode="numeric" maxlength="4" placeholder="Ej: 2022">
           </div>
           <div class="form-field">
             <label for="f-placa">Placa</label>
-            <input id="f-placa" type="text" placeholder="Ej: ABC123" style="text-transform:uppercase">
+            <input id="f-placa" type="text" placeholder="Moto ABC12D · Carro ABC123" style="text-transform:uppercase" autocapitalize="characters">
           </div>
           <div style="display:flex;flex-direction:column;gap:5px">
             <label style="opacity:0">‎</label>
-            <div style="font-size:12px;color:var(--text3);padding:8px 0">Placa en mayúsculas automático</div>
+            <div style="font-size:12px;color:var(--text3);padding:8px 0">Te avisamos si la placa ya está registrada</div>
           </div>
         </div>
 
@@ -839,6 +1079,7 @@
             <textarea id="f-nota" placeholder="Ej: Le pagué a la tramitadora el 15/07/2026, quedó de entregarlo el viernes..."></textarea>
           </div>
         </div>
+        <div class="errores-box" id="f-errores"></div>
         <div class="form-actions">
           <button class="btn btn-ghost" onclick="clearForm()">Limpiar</button>
           <button class="btn btn-primary" onclick="saveRecord()">
@@ -908,7 +1149,7 @@
           <option value="Moto">Moto</option>
           <option value="Carro">Carro</option>
         </select>
-        <input type="text" id="fp-search" placeholder="Buscar placa o vendedor..." oninput="renderPending()">
+        <input type="text" id="fp-search" placeholder="Buscar placa, nombre, cédula, nota…" oninput="renderPending()" style="width:260px">
         <span class="filter-count" id="fp-count"></span>
       </div>
       <div id="pending-list"></div>
@@ -927,7 +1168,7 @@
           <option value="Moto">Moto</option>
           <option value="Carro">Carro</option>
         </select>
-        <input type="text" id="fc-search" placeholder="Buscar placa o vendedor..." oninput="renderDone()">
+        <input type="text" id="fc-search" placeholder="Buscar placa, nombre, cédula, nota…" oninput="renderDone()" style="width:260px">
         <span class="filter-count" id="fc-count"></span>
       </div>
       <div id="done-list"></div>
@@ -941,7 +1182,7 @@
       </div>
       <div class="stats-grid" id="todos-stats"></div>
       <div class="filter-bar" style="margin-bottom:1rem">
-        <input type="text" id="ft-search" placeholder="Buscar placa, vendedor o modelo..." oninput="renderTodos()" style="width:240px">
+        <input type="text" id="ft-search" placeholder="Buscar placa, nombre, cédula, nota…" oninput="renderTodos()" style="width:260px">
         <select id="ft-tipo" onchange="renderTodos()">
           <option value="">Todos los tipos</option>
           <option value="Moto">Moto</option>
@@ -970,7 +1211,7 @@
                 <th class="col-tipo">Tipo</th>
                 <th class="col-placa" onclick="sortTodos('placa')">Placa <i class="sort-arrow" id="sa-placa">↕</i></th>
                 <th class="col-modelo" onclick="sortTodos('modelo')">Modelo <i class="sort-arrow" id="sa-modelo">↕</i></th>
-                <th class="col-vendor" onclick="sortTodos('vendedor')">Vendedor <i class="sort-arrow" id="sa-vendedor">↕</i></th>
+                <th class="col-vendor" onclick="sortTodos('vendedor')">Vendedor → Comprador <i class="sort-arrow" id="sa-vendedor">↕</i></th>
                 <th class="col-costo" onclick="sortTodos('costo')">Costo <i class="sort-arrow" id="sa-costo">↕</i></th>
                 <th class="col-estado">Estado</th>
                 <th class="col-acc">Acciones</th>
@@ -1119,13 +1360,24 @@
       </button>
     </div>
     <input type="hidden" id="edit-id">
-    <div class="form-grid">
-      <div class="form-field"><label>Nombre del vendedor</label><input id="e-vendedor" type="text"></div>
-      <div class="form-field"><label>Cédula</label><input id="e-cedula" type="text"></div>
-    </div>
-    <div class="form-grid">
-      <div class="form-field"><label>Teléfono del vendedor</label><input id="e-telefono" type="tel" placeholder="Ej: 3001234567"></div>
-      <div></div>
+    <div class="ruta-form">
+      <div class="ruta-panel de">
+        <h4><span class="ruta-num">1</span> Vendedor</h4>
+        <div class="form-field"><label for="e-vendedor">Nombre completo</label><input id="e-vendedor" type="text"></div>
+        <div class="form-grid">
+          <div class="form-field"><label for="e-cedula">Cédula</label><input id="e-cedula" type="text" inputmode="numeric"></div>
+          <div class="form-field"><label for="e-telefono">Teléfono</label><input id="e-telefono" type="tel" inputmode="tel" placeholder="Ej: 3001234567"></div>
+        </div>
+      </div>
+      <div class="ruta-flecha">➜</div>
+      <div class="ruta-panel para">
+        <h4><span class="ruta-num">2</span> Comprador <small>· opcional</small></h4>
+        <div class="form-field"><label for="e-comprador">Nombre completo</label><input id="e-comprador" type="text" placeholder="A quién se traspasa"></div>
+        <div class="form-grid">
+          <div class="form-field"><label for="e-comprador-cedula">Cédula</label><input id="e-comprador-cedula" type="text" inputmode="numeric"></div>
+          <div class="form-field"><label for="e-comprador-telefono">Teléfono</label><input id="e-comprador-telefono" type="tel" inputmode="tel" placeholder="Ej: 3109876543"></div>
+        </div>
+      </div>
     </div>
     <div class="form-grid cols-3">
       <div class="form-field">
@@ -1136,7 +1388,7 @@
       <div class="form-field"><label>Color</label><input id="e-color" type="text" placeholder="Ej: Rojo"></div>
     </div>
     <div class="form-grid cols-3">
-      <div class="form-field"><label>Año del modelo</label><input id="e-modelo" type="text" placeholder="Ej: 2022"></div>
+      <div class="form-field"><label>Año del modelo</label><input id="e-modelo" type="text" inputmode="numeric" maxlength="4" placeholder="Ej: 2022"></div>
       <div class="form-field"><label>Placa</label><input id="e-placa" type="text" style="text-transform:uppercase"></div>
       <div class="form-field"><label>Costo ($)</label><input id="e-costo" type="number" min="0" step="1000"></div>
     </div>
@@ -1146,19 +1398,20 @@
         <input type="date" id="e-fecha-registro">
         <input type="hidden" id="e-fecha-registro-display">
       </div>
-      <div class="form-field"><label>Fecha de envío <span style="font-weight:400;color:var(--text3)">(cuando lo mandes)</span></label><input id="e-fecha-envio" type="date"></div>
+      <div class="form-field"><label for="e-fecha-envio">Fecha de envío <span style="font-weight:400;color:var(--text3)">(cuando lo mandes)</span></label><input id="e-fecha-envio" type="date"></div>
       <div class="form-field">
         <label>Estado</label>
-        <select id="e-estado"><option value="Pendiente">Pendiente</option><option value="Completado">Completado</option></select>
+        <select id="e-estado" onchange="tvMostrarCampoCompletado()"><option value="Pendiente">Pendiente</option><option value="Completado">Completado</option></select>
       </div>
     </div>
     <div class="form-grid">
       <div class="form-field"><label>Motivo de pendiente</label><input id="e-motivo" type="text" placeholder="Ej: Falta firma del vendedor..."></div>
-      <div class="form-field"></div>
+      <div class="form-field" id="e-completado-campo"><label for="e-fecha-completado">Fecha de completado</label><input id="e-fecha-completado" type="date"></div>
     </div>
     <div class="form-grid full">
       <div class="form-field"><label>Nota</label><textarea id="e-nota" placeholder="Ej: Le pagué a la tramitadora el 15/07/2026, quedó de entregarlo el viernes..."></textarea></div>
     </div>
+    <div class="errores-box" id="e-errores"></div>
     <div class="form-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="saveEdit()">
@@ -1204,6 +1457,29 @@
   </div>
 </div>
 
+<!-- WHATSAPP CON MENSAJES LISTOS -->
+<div class="modal-overlay" id="tv-wa" style="display:none;z-index:2050" onclick="if(event.target.id==='tv-wa') tvCerrarWA()">
+  <div class="modal-box" style="max-width:500px">
+    <div class="modal-title">
+      💬 Enviar WhatsApp
+      <button class="modal-close" onclick="tvCerrarWA()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="wa-veh" id="tv-wa-veh"></div>
+    <div class="wa-label">Para</div>
+    <div class="wa-para" id="tv-wa-para"></div>
+    <div class="wa-label">Mensaje</div>
+    <div class="wa-plantillas" id="tv-wa-plantillas"></div>
+    <textarea id="tv-wa-texto" rows="5"></textarea>
+    <div style="font-size:11.5px;color:var(--text3);margin-top:4px">Puedes cambiar el texto antes de enviarlo.</div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px">
+      <button class="btn" onclick="tvCerrarWA()">Cancelar</button>
+      <button class="btn btn-wa-fuerte" onclick="tvEnviarWA()">Abrir WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<div id="tv-deshacer"><span id="tv-deshacer-msg"></span><button onclick="tvDeshacer()">Deshacer</button></div>
+
 <div id="toast"></div>
 
 <script>
@@ -1219,7 +1495,10 @@ function showPanel(name, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
-  btn.classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name !== 'buscar' && document.getElementById('tv-buscar')) document.getElementById('tv-buscar').value = '';
+  if(name === 'hoy') renderHoy();
+  if(name === 'buscar') renderBusqueda();
   if(name === 'pendientes') renderPending();
   if(name === 'completados') renderDone();
   if(name === 'todos') renderTodos();
@@ -1270,10 +1549,12 @@ function updateBadge() {
   const badgeDone = document.getElementById('badge-done');
   badgeDone.textContent = d;
   badgeDone.style.display = d > 0 ? 'inline-block' : 'none';
+  actualizarBadgeHoy();
 }
 
 function clearForm() {
-  ['f-vendedor','f-cedula','f-telefono','f-nombre','f-color','f-modelo','f-placa','f-costo','f-motivo','f-nota','f-fecha-envio'].forEach(id => {
+  ['f-vendedor','f-cedula','f-telefono','f-comprador','f-comprador-cedula','f-comprador-telefono',
+   'f-nombre','f-color','f-modelo','f-placa','f-costo','f-motivo','f-nota','f-fecha-envio'].forEach(id => {
     const el = document.getElementById(id);
     if(el) el.value = '';
   });
@@ -1282,7 +1563,9 @@ function clearForm() {
   const t = today();
   document.getElementById('f-fecha-registro').value = t;
   document.getElementById('f-fecha-registro').max = t;
+  document.getElementById('f-fecha-envio').max = t;
   document.getElementById('f-fecha-registro-display').value = fmtDate(t);
+  mostrarErrores('f', []);
 }
 
 function today() {
@@ -1294,31 +1577,17 @@ function today() {
 }
 
 async function saveRecord() {
-  const vendedor      = document.getElementById('f-vendedor').value.trim();
-  const cedula        = document.getElementById('f-cedula').value.trim();
-  const telefono      = document.getElementById('f-telefono').value.trim();
-  const tipo          = document.getElementById('f-tipo').value;
-  const nombre        = document.getElementById('f-nombre').value.trim();
-  const color         = document.getElementById('f-color').value.trim();
-  const modelo        = document.getElementById('f-modelo').value.trim();
-  const placa         = document.getElementById('f-placa').value.trim().toUpperCase();
   const fechaRegistro = document.getElementById('f-fecha-registro').value || today();
-  const fechaEnvio    = document.getElementById('f-fecha-envio').value || '';
-  const costo         = parseFloat(document.getElementById('f-costo').value) || 0;
-  const estado        = document.getElementById('f-estado').value;
-  const motivo        = document.getElementById('f-motivo').value.trim();
-  const nota          = document.getElementById('f-nota').value.trim();
-
-  if(!vendedor || !tipo || !nombre || !placa) {
-    alert('Por favor completa: vendedor, tipo de vehículo, nombre del vehículo y placa.');
-    return;
-  }
+  const {d, errores, avisos} = leerTramite('f', fechaRegistro);
+  mostrarErrores('f', errores);
+  if(errores.length){ toast('Revisa los datos marcados en rojo'); return; }
   if(!await confirmarFechaRegistro('f-fecha-registro', today(), fechaRegistro, 'nuevo')) return;
+  const revisar = [...avisosPlacaDuplicada(d.placa, null, null), ...avisos.map(a => a.msg)];
+  if(!await confirmarAvisos(revisar, 'guardar')) return;
   records.push({
-    id: Date.now(), vendedor, cedula, telefono, tipo, nombre, color, modelo, placa,
+    id: Date.now(), ...d,
     fecha: fechaRegistro,
-    fechaEnvio,
-    costo, estado, motivo, nota
+    fechaCompletado: '',
   });
   persist();
   updateBadge();
@@ -1347,6 +1616,8 @@ async function deleteRecord(id) {
   renderHistoryAnual();
   toast('Trámite eliminado');
   sonido('borrar');
+  if(panelActivo() === 'hoy') renderHoy();
+  if(panelActivo() === 'buscar') renderBusqueda();
 }
 
 function toggleStatus(id) {
@@ -1354,6 +1625,7 @@ function toggleStatus(id) {
   if(!r) return;
   r.estado = r.estado === 'Pendiente' ? 'Completado' : 'Pendiente';
   if(r.estado === 'Completado') r.motivo = '';
+  r.fechaCompletado = r.estado === 'Completado' ? today() : '';
   persist();
   updateBadge();
   renderPending();
@@ -1364,51 +1636,60 @@ function toggleStatus(id) {
   toast(r.estado === 'Completado' ? '✓ Marcado como completado' : 'Marcado como pendiente');
 }
 
-function openEdit(id) {
+function openEdit(id, foco) {
   const r = records.find(r => r.id === id);
   if(!r) return;
+  const set = (k, v) => { const el = document.getElementById('e-' + k); if(el) el.value = v == null ? '' : v; };
+  const hoy = today();
   document.getElementById('edit-id').value = id;
-  document.getElementById('e-vendedor').value = r.vendedor;
-  document.getElementById('e-cedula').value = r.cedula;
-  document.getElementById('e-telefono').value = r.telefono || '';
-  document.getElementById('e-tipo').value = r.tipo;
-  document.getElementById('e-nombre').value = r.nombre || '';
-  document.getElementById('e-color').value = r.color || '';
-  document.getElementById('e-modelo').value = r.modelo || '';
-  document.getElementById('e-placa').value = r.placa;
-  document.getElementById('e-costo').value = r.costo;
+  set('vendedor', r.vendedor); set('cedula', r.cedula); set('telefono', r.telefono);
+  set('comprador', r.compradorNombre); set('comprador-cedula', r.compradorCedula); set('comprador-telefono', r.compradorTelefono);
+  set('tipo', r.tipo); set('nombre', r.nombre); set('color', r.color); set('modelo', r.modelo);
+  set('placa', r.placa); set('costo', r.costo);
   // Fechas
-  const fr = r.fecha || today();
-  document.getElementById('e-fecha-registro').value = fr;
-  document.getElementById('e-fecha-registro').max = today();
-  document.getElementById('e-fecha-registro-display').value = fmtDate(fr);
-  document.getElementById('e-fecha-envio').value = r.fechaEnvio || '';
-  document.getElementById('e-estado').value = r.estado;
-  document.getElementById('e-motivo').value = r.motivo || '';
-  document.getElementById('e-nota').value = r.nota || '';
+  const fr = r.fecha || hoy;
+  set('fecha-registro', fr); set('fecha-registro-display', fmtDate(fr));
+  set('fecha-envio', r.fechaEnvio); set('fecha-completado', r.fechaCompletado);
+  ['fecha-registro','fecha-envio','fecha-completado'].forEach(k => { document.getElementById('e-' + k).max = hoy; });
+  set('estado', r.estado); set('motivo', r.motivo); set('nota', r.nota);
+  tvMostrarCampoCompletado();
+  mostrarErrores('e', []);
   document.getElementById('edit-modal').style.display = 'flex';
+  if(foco === 'comprador') setTimeout(() => {
+    const el = document.getElementById('e-comprador');
+    el.scrollIntoView({block:'center'}); el.focus();
+  }, 60);
 }
 
 async function saveEdit() {
   const id = parseInt(document.getElementById('edit-id').value);
   const r = records.find(r => r.id === id);
   if(!r) return;
-  const fechaNueva = document.getElementById('e-fecha-registro').value || r.fecha || today();
-  if(!await confirmarFechaRegistro('e-fecha-registro', r.fecha || today(), fechaNueva, 'editar')) return;
-  r.vendedor   = document.getElementById('e-vendedor').value.trim();
-  r.cedula     = document.getElementById('e-cedula').value.trim();
-  r.telefono   = document.getElementById('e-telefono').value.trim();
-  r.tipo       = document.getElementById('e-tipo').value;
-  r.nombre     = document.getElementById('e-nombre').value.trim();
-  r.color      = document.getElementById('e-color').value.trim();
-  r.modelo     = document.getElementById('e-modelo').value.trim();
-  r.placa      = document.getElementById('e-placa').value.trim().toUpperCase();
-  r.costo      = parseFloat(document.getElementById('e-costo').value) || 0;
-  r.fecha      = document.getElementById('e-fecha-registro').value || today();
-  r.fechaEnvio = document.getElementById('e-fecha-envio').value || '';
-  r.estado     = document.getElementById('e-estado').value;
-  r.motivo     = document.getElementById('e-motivo').value.trim();
-  r.nota       = document.getElementById('e-nota').value.trim();
+  const hoy = today();
+  const fechaNueva = document.getElementById('e-fecha-registro').value || r.fecha || hoy;
+  const {d, errores, avisos} = leerTramite('e', fechaNueva);
+  // Fecha de completado (solo si está completado)
+  let fechaCompletado = '';
+  if(d.estado === 'Completado'){
+    fechaCompletado = document.getElementById('e-fecha-completado').value || r.fechaCompletado || hoy;
+    if(fechaCompletado > hoy) errores.push({campo:'fecha-completado', msg:'La fecha de completado no puede ser posterior a hoy.'});
+    else if(fechaCompletado < fechaNueva) errores.push({campo:'fecha-completado', msg:'La fecha de completado es anterior a la fecha de registro.'});
+  }
+  mostrarErrores('e', errores);
+  if(errores.length){ toast('Revisa los datos marcados en rojo'); return; }
+  if(!await confirmarFechaRegistro('e-fecha-registro', r.fecha || hoy, fechaNueva, 'editar')) return;
+  // Solo se avisa de lo que cambió (no de datos viejos que no tocaste)
+  const clave = {placa:'placa', modelo:'modelo', costo:'costo', cedula:'cedula', telefono:'telefono',
+                 'comprador-cedula':'compradorCedula', 'comprador-telefono':'compradorTelefono', comprador:'compradorNombre'};
+  const cambiados = avisos.filter(a => {
+    const k = clave[a.campo];
+    if(!k) return true;
+    if(a.campo === 'placa') return normPlaca(d.placa) !== normPlaca(r.placa) || d.tipo !== r.tipo;
+    return txt(d[k]) !== txt(r[k]);
+  }).map(a => a.msg);
+  const dup = normPlaca(d.placa) !== normPlaca(r.placa) ? avisosPlacaDuplicada(d.placa, r.id, null) : [];
+  if(!await confirmarAvisos([...dup, ...cambiados], 'guardar los cambios')) return;
+  Object.assign(r, d, {fecha: fechaNueva, fechaCompletado});
   persist();
   updateBadge();
   closeModal();
@@ -1417,6 +1698,8 @@ async function saveEdit() {
   renderTodos();
   renderHistory();
   renderHistoryAnual();
+  if(panelActivo() === 'hoy') renderHoy();
+  if(panelActivo() === 'buscar') renderBusqueda();
   toast('✓ Trámite actualizado');
   sonido('guardar');
 }
@@ -1483,45 +1766,44 @@ function vehiculoLabel(r) {
 }
 
 function cardHTML(r) {
+  const pend = r.estado === 'Pendiente';
   const tipoBadge = r.tipo === 'Moto' ? 'badge-moto' : 'badge-carro';
-  const estadoBadge = r.estado === 'Pendiente' ? 'badge-pending' : 'badge-done';
-  let estadoClass = r.estado === 'Pendiente' ? 'is-pending' : 'is-done';
-  if(r.estado === 'Pendiente' && daysPending(r.fecha) >= 30) estadoClass += ' is-urgent';
-  const toggleLabel = r.estado === 'Pendiente'
-    ? '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Marcar completado'
-    : '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.57"/></svg> Marcar pendiente';
+  const estadoBadge = pend ? 'badge-pending' : 'badge-done';
+  let estadoClass = pend ? 'is-pending' : 'is-done';
+  if(pend && daysPending(r.fecha) >= 30) estadoClass += ' is-urgent';
+  const tieneTel = soloDigitos(r.telefono) || soloDigitos(r.compradorTelefono);
+  const fechas = [
+    `<span>📅 Registrado ${fmtDate(r.fecha)}</span>`,
+    r.fechaEnvio ? `<span class="f-ok">📤 Enviado ${fmtDate(r.fechaEnvio)}</span>` : (pend ? `<span class="f-pend">📤 Sin enviar</span>` : ''),
+    !pend ? `<span class="f-ok">✅ Completado${r.fechaCompletado ? ' ' + fmtDate(r.fechaCompletado) : ''}</span>` : '',
+  ].join('');
+  const icoEditar = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+  const icoBorrar = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>';
   return `
   <div class="record-card ${estadoClass}" id="rc-${r.id}">
     <div class="rc-top">
-      <div style="flex:1">
+      <div style="flex:1;min-width:0">
         <div class="rc-badges">
-          <span class="badge ${tipoBadge}">${r.tipo}</span>
-          <span class="badge ${estadoBadge}">${r.estado}</span>
+          <span class="badge ${tipoBadge}">${escHTML(r.tipo)}</span>
+          <span class="badge ${estadoBadge}">${escHTML(r.estado)}</span>
           ${ageBadge(r)}
         </div>
-        <div class="rc-title">${vehiculoLabel(r)} &mdash; <span style="font-family:monospace;letter-spacing:.5px">${r.placa}</span></div>
-        <div class="rc-meta">
-          Vendedor: <strong>${r.vendedor}</strong>${r.cedula ? ' &bull; C.C. ' + r.cedula : ''}${r.telefono ? ` &bull; <a href="https://wa.me/57${r.telefono.replace(/\D/g,'')}" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:600">📱 ${r.telefono}</a>` : ''}<br>
-          Registrado: ${fmtDate(r.fecha)}
-          ${r.fechaEnvio
-            ? ` &bull; <span style="color:var(--done-text);font-weight:600">Enviado: ${fmtDate(r.fechaEnvio)}</span>`
-            : ` &bull; <span style="color:var(--pending-text);font-weight:600">Sin fecha de envío aún</span>`}
-        </div>
+        <div class="rc-title">${escHTML(vehiculoLabel(r) || r.tipo)} ${placaChip(r.placa)}</div>
       </div>
-      <div class="rc-price">${fmtPrice(r.costo)}</div>
+      <div class="rc-price">${fmtPrice(r.costo || 0)}</div>
     </div>
-    ${r.motivo ? `<div class="reason-box"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>${r.motivo}</span></div>` : ''}
-    ${r.nota ? `<div style="background:var(--accent-light);border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:8px 12px;font-size:12.5px;color:var(--accent);margin-top:6px;display:flex;gap:8px;align-items:flex-start"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span>${r.nota}</span></div>` : ''}
+    ${rutaHTML(r)}
+    <div class="rc-fechas">${fechas}</div>
+    ${r.motivo ? `<div class="reason-box"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>${escHTML(r.motivo)}</span></div>` : ''}
+    ${r.nota ? `<div style="background:var(--accent-light);border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:8px 12px;font-size:12.5px;color:var(--accent);margin-top:6px;display:flex;gap:8px;align-items:flex-start"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>${escHTML(r.nota)}</span></div>` : ''}
     <div class="rc-actions">
-      <button class="btn btn-sm btn-success" onclick="toggleStatus(${r.id})">${toggleLabel}</button>
-      <button class="btn btn-sm" onclick="openEdit(${r.id})">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Editar
-      </button>
-      <button class="btn btn-sm btn-danger" onclick="deleteRecord(${r.id})">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        Eliminar
-      </button>
+      ${pend && !r.fechaEnvio ? `<button class="btn btn-sm btn-envio" onclick="marcarEnviadoHoy(${r.id})">📤 Enviado hoy</button>` : ''}
+      ${pend
+        ? `<button class="btn btn-sm btn-success" onclick="marcarCompletadoHoy(${r.id})">✅ Completado hoy</button>`
+        : `<button class="btn btn-sm btn-success" onclick="toggleStatus(${r.id})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.57"/></svg> Marcar pendiente</button>`}
+      ${tieneTel ? `<button class="btn btn-sm btn-wa" onclick="tvAbrirWhatsApp(${r.id})">💬 WhatsApp</button>` : ''}
+      <button class="btn btn-sm" onclick="openEdit(${r.id})">${icoEditar} Editar</button>
+      <button class="btn btn-sm btn-danger" onclick="deleteRecord(${r.id})">${icoBorrar} Eliminar</button>
     </div>
   </div>`;
 }
@@ -1569,17 +1851,14 @@ function renderTodos() {
   if(estado) rows = rows.filter(r => r.estado === estado);
   if(anio)   rows = rows.filter(r => r.fecha && r.fecha.slice(0,4) === anio);
   if(mes)    rows = rows.filter(r => monthKey(r.fecha) === mes);
-  if(search) rows = rows.filter(r =>
-    r.placa.toLowerCase().includes(search) ||
-    r.vendedor.toLowerCase().includes(search) ||
-    r.modelo.toLowerCase().includes(search)
-  );
+  if(search) rows = rows.filter(r => coincideBusqueda(r, search));
 
   const col = todosSort.col;
   const dir = todosSort.dir;
   rows.sort((a,b) => {
     let va = a[col], vb = b[col];
-    if(col === 'costo') { va = Number(va); vb = Number(vb); }
+    if(col === 'costo') { va = Number(va) || 0; vb = Number(vb) || 0; }
+    else { va = sinTildes(va); vb = sinTildes(vb); }
     if(va < vb) return dir;
     if(va > vb) return -dir;
     return 0;
@@ -1603,7 +1882,7 @@ function renderTodos() {
   const totalAll   = records.length;
   const pendAll    = records.filter(r => r.estado === 'Pendiente').length;
   const doneAll    = records.filter(r => r.estado === 'Completado').length;
-  const costoAll   = records.reduce((s,r) => s + r.costo, 0);
+  const costoAll   = records.reduce((s,r) => s + (Number(r.costo) || 0), 0);
   document.getElementById('todos-stats').innerHTML = `
     <div class="stat-card"><div class="sc-label">Total trámites</div><div class="sc-value">${totalAll}</div></div>
     <div class="stat-card"><div class="sc-label">Pendientes</div><div class="sc-value orange">${pendAll}</div></div>
@@ -1619,7 +1898,7 @@ function renderTodos() {
     return;
   }
 
-  const costoFiltrado = rows.reduce((s,r) => s + r.costo, 0);
+  const costoFiltrado = rows.reduce((s,r) => s + (Number(r.costo) || 0), 0);
   tbody.innerHTML = rows.map((r, i) => {
     const tipoBadge  = r.tipo === 'Moto' ? 'badge-moto' : 'badge-carro';
     const estadoBadge = r.estado === 'Pendiente' ? 'badge-pending' : 'badge-done';
@@ -1627,11 +1906,14 @@ function renderTodos() {
       <td class="col-n td-n">${i+1}</td>
       <td class="col-fecha">${fmtDate(r.fecha)}</td>
       <td class="col-tipo"><span class="badge ${tipoBadge}" style="font-size:10px;padding:2px 7px">${r.tipo}</span></td>
-      <td class="col-placa td-placa">${r.placa}</td>
-      <td class="col-modelo" title="${vehiculoLabel(r)}">${vehiculoLabel(r)}</td>
-      <td class="col-vendor" title="${r.vendedor}${r.cedula?' · '+r.cedula:''}">${r.vendedor}${r.cedula ? '<br><span style="font-size:11px;color:var(--text3)">C.C. '+r.cedula+'</span>' : ''}</td>
-      <td class="col-costo td-costo">${fmtPrice(r.costo)}</td>
-      <td class="col-estado"><span class="badge ${estadoBadge}" style="font-size:10px;padding:2px 7px">${r.estado}</span></td>
+      <td class="col-placa td-placa">${placaChip(r.placa)}</td>
+      <td class="col-modelo" title="${escHTML(vehiculoLabel(r))}">${escHTML(vehiculoLabel(r))}</td>
+      <td class="col-vendor" title="${escHTML((r.vendedor || '—') + ' → ' + (r.compradorNombre || 'sin comprador'))}">
+        <div class="tv-mini"><span class="dot de"></span>${escHTML(r.vendedor || '—')}</div>
+        <div class="tv-mini ${r.compradorNombre ? '' : 'vacio'}"><span class="dot para"></span>${r.compradorNombre ? escHTML(r.compradorNombre) : 'sin comprador'}</div>
+      </td>
+      <td class="col-costo td-costo">${fmtPrice(r.costo || 0)}</td>
+      <td class="col-estado"><span class="badge ${estadoBadge}" style="font-size:10px;padding:2px 7px">${escHTML(r.estado)}</span></td>
       <td class="col-acc">
         <button class="btn btn-sm btn-ghost" style="padding:3px 8px" onclick="openEdit(${r.id})" title="Editar">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -1653,7 +1935,7 @@ function renderPending() {
   const search = document.getElementById('fp-search').value.toLowerCase();
   let pending  = records.filter(r => r.estado === 'Pendiente');
   if(tipo)   pending = pending.filter(r => r.tipo === tipo);
-  if(search) pending = pending.filter(r => r.placa.toLowerCase().includes(search) || r.vendedor.toLowerCase().includes(search));
+  if(search) pending = pending.filter(r => coincideBusqueda(r, search));
   // Más recientes primero
   pending.sort((a,b) => b.fecha < a.fecha ? -1 : 1);
 
@@ -1689,7 +1971,7 @@ function renderDone() {
   const search = document.getElementById('fc-search').value.toLowerCase();
   let done     = records.filter(r => r.estado === 'Completado');
   if(tipo)   done = done.filter(r => r.tipo === tipo);
-  if(search) done = done.filter(r => r.placa.toLowerCase().includes(search) || r.vendedor.toLowerCase().includes(search));
+  if(search) done = done.filter(r => coincideBusqueda(r, search));
   done.sort((a,b) => b.fecha < a.fecha ? -1 : 1);
 
   const totalDone  = records.filter(r => r.estado === 'Completado').length;
@@ -2168,62 +2450,81 @@ function renderMC() {
       ${borradores.length} vehículo(s) recibido(s) desde MotoContable — confirma para crear el trámite
     </div>`;
 
-  listEl.innerHTML = borradores.map((b, i) => `
-    <div class="record-card" style="border-left:3px solid var(--accent)" id="mc-card-${b.id}">
+  listEl.innerHTML = borradores.map(b => {
+    const p = normPlaca(b.placa);
+    const pendienteIgual = p && records.find(r => r.estado === 'Pendiente' && normPlaca(r.placa) === p);
+    const yaConfirmado = records.find(r => r.origenMC === b.id);
+    const aviso = yaConfirmado
+      ? `<div class="reason-box">Este vehículo ya se confirmó antes (trámite del ${fmtDate(yaConfirmado.fecha)}, ${escHTML(yaConfirmado.estado)}).</div>`
+      : pendienteIgual
+        ? `<div class="reason-box">⚠️ Ya tienes un trámite pendiente con la placa ${escHTML(p)} (registrado el ${fmtDate(pendienteIgual.fecha)}).</div>`
+        : '';
+    return `
+    <div class="record-card" style="border-left:3px solid #38bdf8" id="mc-card-${escHTML(b.id)}">
       <div class="rc-top">
-        <div style="flex:1">
+        <div style="flex:1;min-width:0">
           <div class="rc-badges">
-            <span class="badge ${b.tipo === 'Moto' ? 'badge-moto' : 'badge-carro'}">${b.tipo}</span>
-            <span class="badge" style="background:#e8eef5;color:#1d3a5f;border:1px solid #a8c4df">Desde MotoContable</span>
+            <span class="badge ${b.tipo === 'Moto' ? 'badge-moto' : 'badge-carro'}">${escHTML(b.tipo)}</span>
+            <span class="badge" style="background:#e0f2fe;color:#0369a1;border:1px solid #9bd3f3">Desde MotoContable</span>
           </div>
-          <div class="rc-title">${b.nombre}${b.color ? ' · ' + b.color : ''}${b.modelo ? ' · ' + b.modelo : ''} — <span style="font-family:monospace">${b.placa || 'Sin placa'}</span></div>
-          <div class="rc-meta">
-            Vendedor: <strong>${b.vendedor || '—'}</strong>${b.cedula ? ' · C.C. ' + b.cedula : ''}${b.telefono ? ` · <a href="https://wa.me/57${b.telefono.replace(/\D/g,'')}" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:600">📱 ${b.telefono}</a>` : ''}<br>
-            Recibido el: ${b.fechaOrigen}
-          </div>
+          <div class="rc-title">${escHTML([b.nombre, b.color, b.modelo].filter(Boolean).join(' · ') || b.tipo)} ${placaChip(b.placa)}</div>
         </div>
       </div>
+      ${rutaHTML(b, {sinBoton:true})}
+      <div class="rc-fechas"><span>📥 Recibido el ${escHTML(fechaLegible(b.fechaOrigen))}</span></div>
+      ${aviso}
       <div class="rc-actions">
-        <button class="btn btn-sm btn-primary" onclick="confirmarBorrador('${b.id}')">
+        <button class="btn btn-sm btn-primary" onclick="confirmarBorrador('${escHTML(b.id)}')">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           Confirmar y crear trámite
         </button>
-        <button class="btn btn-sm btn-danger" onclick="descartarBorrador('${b.id}')">
+        <button class="btn btn-sm btn-danger" onclick="descartarBorrador('${escHTML(b.id)}')">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
           Descartar
         </button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
-function confirmarBorrador(id) {
-  let borradores = getBorradores();
-  const b = borradores.find(x => x.id === id);
+async function confirmarBorrador(id) {
+  const b = getBorradores().find(x => x.id === id);
   if(!b) return;
+  // Avisos: ya confirmado antes o placa ya registrada
+  const yaConfirmado = records.find(r => r.origenMC === b.id);
+  const revisar = [];
+  if(yaConfirmado) revisar.push(`Este vehículo ya se confirmó antes: trámite del ${fmtDate(yaConfirmado.fecha)} (${yaConfirmado.estado}).`);
+  avisosPlacaDuplicada(b.placa, yaConfirmado ? yaConfirmado.id : null, b.id).forEach(a => revisar.push(a));
+  if(!await confirmarAvisos(revisar, 'crear el trámite')) return;
 
   // Crear el trámite en el sistema de traspasos
   const fechaHoy = today();
   records.push({
-    id:           Date.now(),
-    vendedor:     b.vendedor  || '',
-    cedula:       b.cedula    || '',
-    telefono:     b.telefono  || '',
-    tipo:         b.tipo,
-    nombre:       b.nombre    || '',
-    color:        b.color     || '',
-    modelo:       b.modelo    || '',
-    placa:        b.placa     || '',
-    fecha:        fechaHoy,
-    fechaEnvio:   '',
-    costo:        0,
-    estado:       'Pendiente',
-    motivo:       '',
-    nota:         'Recibido desde MotoContable el ' + b.fechaOrigen,
+    id:                Date.now(),
+    vendedor:          b.vendedor  || '',
+    cedula:            b.cedula    || '',
+    telefono:          b.telefono  || '',
+    compradorNombre:   b.compradorNombre   || '',
+    compradorCedula:   b.compradorCedula   || '',
+    compradorTelefono: b.compradorTelefono || '',
+    tipo:              b.tipo,
+    nombre:            b.nombre    || '',
+    color:             b.color     || '',
+    modelo:            b.modelo    || '',
+    placa:             normPlaca(b.placa) || b.placa || '',
+    fecha:             fechaHoy,
+    fechaEnvio:        '',
+    fechaCompletado:   '',
+    costo:             0,
+    estado:            'Pendiente',
+    motivo:            '',
+    nota:              'Recibido desde MotoContable el ' + fechaLegible(b.fechaOrigen),
+    origenMC:          b.id,
   });
   persist();
 
   // Eliminar el borrador
-  borradores = borradores.filter(x => x.id !== id);
+  const borradores = getBorradores().filter(x => x.id !== id);
   localStorage.setItem(MC_KEY, JSON.stringify(borradores));
   tvMarcarCambios();
 
@@ -2232,6 +2533,8 @@ function confirmarBorrador(id) {
   toast('✓ Trámite creado — completa el costo y la fecha de envío');
   sonido('confirmar');
   renderMC();
+  if(panelActivo() === 'hoy') renderHoy();
+  if(panelActivo() === 'buscar') renderBusqueda();
 }
 
 async function descartarBorrador(id) {
@@ -2250,6 +2553,8 @@ async function descartarBorrador(id) {
   renderMC();
   toast('Descartado');
   sonido('borrar');
+  if(panelActivo() === 'hoy') renderHoy();
+  if(panelActivo() === 'buscar') renderBusqueda();
 }
 
 // ── INIT ──
@@ -2260,6 +2565,517 @@ document.getElementById('f-fecha-registro-display').value = fmtDate(t0);
 load();
 updateBadge();
 updateBadgeMC();
+// ════════════════════════════════════════════════════════════════════════════
+// ── MEJORAS: validaciones, comprador, Hoy, botones rápidos, WhatsApp,
+//    buscador general y recordatorios ────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── Utilidades ───────────────────────────────────────────────────────────────
+function txt(v){ return v == null ? '' : String(v); }
+function escHTML(s){
+  return txt(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function sinTildes(s){ return txt(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+function normPlaca(p){ return txt(p).toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+function soloDigitos(s){ return txt(s).replace(/\D/g, ''); }
+function waNumero(tel){
+  let d = soloDigitos(tel);
+  if(d.length === 10) d = '57' + d;
+  return d;
+}
+function primerNombre(n){
+  const p = txt(n).trim().split(/\s+/)[0] || '';
+  return p ? p.charAt(0).toUpperCase() + p.slice(1).toLowerCase() : '';
+}
+// Fecha de MotoContable (AAAA-MM-DD) en formato DD/MM/AAAA
+function fechaLegible(f){ return /^\d{4}-\d{2}-\d{2}$/.test(txt(f)) ? fmtDate(f) : txt(f); }
+function placaChip(p){ return `<span class="placa-chip">${escHTML(normPlaca(p) || txt(p) || 'SIN PLACA')}</span>`; }
+function telLink(tel){
+  if(!soloDigitos(tel)) return '';
+  return `<a href="https://wa.me/${waNumero(tel)}" target="_blank" rel="noopener" title="Abrir WhatsApp">📱 ${escHTML(tel)}</a>`;
+}
+function panelActivo(){ return ((document.querySelector('.panel.active') || {}).id || '').replace('panel-', ''); }
+function irAPanel(nombre){
+  const btn = [...document.querySelectorAll('.nav-btn')].find(b => (b.getAttribute('onclick') || '').includes(`'${nombre}'`));
+  showPanel(nombre, btn || null);
+}
+
+// ── Búsqueda: encuentra por placa, vendedor, comprador, cédulas, teléfonos,
+//    vehículo, color, nota, motivo… sin importar tildes ni mayúsculas ─────────
+function textoBusqueda(r){
+  return sinTildes([r.placa, normPlaca(r.placa), r.vendedor, r.cedula, r.telefono, r.nombre, r.color, r.modelo,
+    r.compradorNombre, r.compradorCedula, r.compradorTelefono, r.nota, r.motivo, r.tipo, r.estado,
+    r.fecha ? fmtDate(r.fecha) : ''].map(txt).join(' | '));
+}
+function coincideBusqueda(r, q){
+  const partes = sinTildes(q).trim().split(/\s+/).filter(Boolean);
+  if(!partes.length) return true;
+  const t = textoBusqueda(r);
+  return partes.every(p => t.includes(p) || (normPlaca(p) && t.includes(normPlaca(p).toLowerCase())));
+}
+
+// ── Validaciones ─────────────────────────────────────────────────────────────
+const PLACA_FORMATOS = {
+  Carro: [/^[A-Z]{3}\d{3}$/],                    // ABC123
+  Moto:  [/^[A-Z]{3}\d{2}[A-Z]$/, /^[A-Z]{3}\d{2}$/],  // ABC12D (o antiguas ABC12)
+};
+function revisarDocumento(raw, quien, campo, errores, avisos){
+  const v = txt(raw).trim();
+  if(!v) return '';
+  const limpio = v.replace(/[.\s,\-]/g, '');
+  if(/^\d+$/.test(limpio)){
+    if(limpio.length < 5 || limpio.length > 10)
+      avisos.push({campo, msg:`La cédula del ${quien} (${limpio}) tiene ${limpio.length} dígitos; normalmente tiene entre 6 y 10.`});
+    return limpio;
+  }
+  if(/^[A-Za-z0-9]+$/.test(limpio)){
+    avisos.push({campo, msg:`La cédula del ${quien} (${limpio.toUpperCase()}) tiene letras. ¿Es pasaporte o cédula de extranjería?`});
+    return limpio.toUpperCase();
+  }
+  errores.push({campo, msg:`La cédula del ${quien} solo puede tener números (y letras si es pasaporte).`});
+  return v;
+}
+function revisarTelefono(raw, quien, campo, errores, avisos){
+  const v = txt(raw).trim();
+  if(!v) return '';
+  if(/[A-Za-z]/.test(v)){ errores.push({campo, msg:`El teléfono del ${quien} solo debe tener números.`}); return v; }
+  let d = soloDigitos(v);
+  if(d.length === 12 && d.startsWith('57')) d = d.slice(2);
+  if(!(d.length === 10 && (d[0] === '3' || d.startsWith('60'))))
+    avisos.push({campo, msg:`El teléfono del ${quien} (${d}) no parece un número colombiano de 10 dígitos (celular 3XX XXX XXXX).`});
+  return d;
+}
+// Lee y revisa un formulario ('f' = nuevo trámite, 'e' = editar)
+function leerTramite(pre, fechaRegistro){
+  const g = id => { const el = document.getElementById(pre + '-' + id); return el ? el.value : ''; };
+  const errores = [], avisos = [];
+  const hoy = today();
+  const d = {
+    vendedor:        g('vendedor').trim().replace(/\s+/g, ' '),
+    tipo:            g('tipo'),
+    nombre:          g('nombre').trim().replace(/\s+/g, ' '),
+    color:           g('color').trim(),
+    modelo:          g('modelo').trim(),
+    placa:           normPlaca(g('placa')),
+    compradorNombre: g('comprador').trim().replace(/\s+/g, ' '),
+    fechaEnvio:      g('fecha-envio') || '',
+    estado:          g('estado') || 'Pendiente',
+    motivo:          g('motivo').trim(),
+    nota:            g('nota').trim(),
+  };
+  // Obligatorios
+  if(!d.vendedor) errores.push({campo:'vendedor', msg:'Escribe el nombre del vendedor.'});
+  if(!d.tipo)     errores.push({campo:'tipo',     msg:'Elige si es moto o carro.'});
+  if(!d.nombre)   errores.push({campo:'nombre',   msg:'Escribe el nombre del vehículo (ej: Honda CB 125).'});
+  // Placa
+  if(!d.placa) errores.push({campo:'placa', msg:'Escribe la placa.'});
+  else if(d.placa.length < 5 || d.placa.length > 7)
+    errores.push({campo:'placa', msg:`La placa "${d.placa}" no es válida: debe tener entre 5 y 7 letras y números.`});
+  else if(d.tipo && !(PLACA_FORMATOS[d.tipo] || []).some(rx => rx.test(d.placa)))
+    avisos.push({campo:'placa', msg:`La placa ${d.placa} no tiene el formato usual de ${d.tipo === 'Moto' ? 'moto (ABC12D)' : 'carro (ABC123)'}.`});
+  // Documentos y teléfonos
+  d.cedula            = revisarDocumento(g('cedula'), 'vendedor', 'cedula', errores, avisos);
+  d.telefono          = revisarTelefono(g('telefono'), 'vendedor', 'telefono', errores, avisos);
+  d.compradorCedula   = revisarDocumento(g('comprador-cedula'), 'comprador', 'comprador-cedula', errores, avisos);
+  d.compradorTelefono = revisarTelefono(g('comprador-telefono'), 'comprador', 'comprador-telefono', errores, avisos);
+  if(!d.compradorNombre && (d.compradorCedula || d.compradorTelefono))
+    avisos.push({campo:'comprador', msg:'Pusiste cédula o teléfono del comprador, pero falta su nombre.'});
+  if(d.compradorNombre && sinTildes(d.compradorNombre) === sinTildes(d.vendedor))
+    avisos.push({campo:'comprador', msg:'El vendedor y el comprador tienen el mismo nombre.'});
+  if(d.compradorCedula && d.compradorCedula === d.cedula)
+    avisos.push({campo:'comprador-cedula', msg:'El vendedor y el comprador tienen la misma cédula.'});
+  // Año del modelo
+  if(d.modelo){
+    const anio = parseInt(d.modelo, 10);
+    if(!/^\d{4}$/.test(d.modelo) || anio < 1950 || anio > new Date().getFullYear() + 1)
+      avisos.push({campo:'modelo', msg:`El año del modelo "${d.modelo}" no parece correcto (ej: 2022).`});
+  }
+  // Costo
+  const costoRaw = g('costo');
+  d.costo = costoRaw === '' ? 0 : parseFloat(costoRaw);
+  if(isNaN(d.costo) || d.costo < 0){ errores.push({campo:'costo', msg:'El costo debe ser un número mayor o igual a 0.'}); d.costo = 0; }
+  else if(d.costo > 20000000) avisos.push({campo:'costo', msg:`El costo ${fmtPrice(d.costo)} parece muy alto para un traspaso.`});
+  // Fecha de envío
+  if(d.fechaEnvio){
+    if(d.fechaEnvio > hoy) errores.push({campo:'fecha-envio', msg:'La fecha de envío no puede ser posterior a hoy.'});
+    else if(fechaRegistro && d.fechaEnvio < fechaRegistro)
+      errores.push({campo:'fecha-envio', msg:`La fecha de envío (${fmtDate(d.fechaEnvio)}) es anterior a la fecha de registro (${fmtDate(fechaRegistro)}).`});
+  }
+  return {d, errores, avisos};
+}
+// Trámites y vehículos recibidos con la misma placa
+function avisosPlacaDuplicada(placa, idExcluir, borradorExcluir){
+  const p = normPlaca(placa);
+  if(!p) return [];
+  const avisos = [];
+  records.filter(r => r.id !== idExcluir && normPlaca(r.placa) === p).forEach(r => {
+    if(r.estado === 'Pendiente')
+      avisos.push(`⚠️ Ya tienes un trámite PENDIENTE con la placa ${p}: ${vehiculoLabel(r) || r.tipo} · vendedor ${r.vendedor || '—'} · registrado el ${fmtDate(r.fecha)}.`);
+    else
+      avisos.push(`La placa ${p} ya tuvo un traspaso COMPLETADO${r.fechaCompletado ? ' el ' + fmtDate(r.fechaCompletado) : ''} (${vehiculoLabel(r) || r.tipo}). Puede ser normal si es otra venta del mismo vehículo.`);
+  });
+  getBorradores().filter(b => b.id !== borradorExcluir && normPlaca(b.placa) === p)
+    .forEach(() => avisos.push(`La placa ${p} está en "Desde MotoContable" esperando que la confirmes.`));
+  return avisos;
+}
+function mostrarErrores(pre, errores){
+  document.querySelectorAll('.campo-error').forEach(el => { if(el.id.startsWith(pre + '-')) el.classList.remove('campo-error'); });
+  const box = document.getElementById(pre + '-errores');
+  if(!box) return;
+  if(!errores.length){ box.style.display = 'none'; box.innerHTML = ''; return; }
+  errores.forEach(e => { const el = document.getElementById(pre + '-' + e.campo); if(el) el.classList.add('campo-error'); });
+  box.innerHTML = '<strong>Revisa estos datos:</strong><ul>' + errores.map(e => '<li>' + escHTML(e.msg) + '</li>').join('') + '</ul>';
+  box.style.display = 'block';
+  const primero = document.getElementById(pre + '-' + errores[0].campo);
+  if(primero){ primero.focus(); primero.scrollIntoView({block:'center', behavior:'smooth'}); }
+}
+document.addEventListener('input', e => { if(e.target.classList && e.target.classList.contains('campo-error')) e.target.classList.remove('campo-error'); });
+async function confirmarAvisos(avisos, accion){
+  if(!avisos.length) return true;
+  return tvPreguntar({
+    titulo: '🔎 Revisa antes de ' + accion,
+    texto: avisos.map(a => '• ' + a).join('\n\n') + '\n\n¿Quieres continuar de todos modos?',
+    si: 'Sí, continuar', no: 'Corregir'
+  });
+}
+
+// ── Ruta del traspaso (vendedor → comprador) ─────────────────────────────────
+function rutaHTML(r, opciones){
+  const o = opciones || {};
+  const lado = (cls, etq, nombre, cc, tel) => `
+    <div class="ruta-lado ${cls}">
+      <div class="ruta-etq">${etq}</div>
+      <div class="ruta-nombre" title="${escHTML(nombre)}">${escHTML(nombre)}</div>
+      <div class="ruta-datos">${cc ? `<span>C.C. ${escHTML(cc)}</span>` : ''}${telLink(tel)}</div>
+    </div>`;
+  const de = lado('ruta-de', 'De · vendedor', r.vendedor || '—', r.cedula, r.telefono);
+  const hayComprador = r.compradorNombre || r.compradorCedula || r.compradorTelefono;
+  const para = hayComprador
+    ? lado('ruta-para', 'Para · comprador', r.compradorNombre || '(sin nombre)', r.compradorCedula, r.compradorTelefono)
+    : o.sinBoton
+      ? `<div class="ruta-lado ruta-sin">Sin comprador aún</div>`
+      : `<button class="ruta-lado ruta-vacia" onclick="openEdit(${r.id}, 'comprador')">＋ Agregar comprador</button>`;
+  return `<div class="ruta">${de}<div class="ruta-flecha">➜</div>${para}</div>`;
+}
+
+// ── Botones rápidos con "Deshacer" ───────────────────────────────────────────
+let _tvDeshacerTimer = null, _tvDeshacerFn = null;
+function tvToastDeshacer(msg, fn){
+  const el = document.getElementById('tv-deshacer');
+  document.getElementById('tv-deshacer-msg').textContent = msg;
+  _tvDeshacerFn = fn;
+  el.classList.add('show');
+  clearTimeout(_tvDeshacerTimer);
+  _tvDeshacerTimer = setTimeout(() => { el.classList.remove('show'); _tvDeshacerFn = null; }, 7000);
+}
+function tvDeshacer(){
+  const fn = _tvDeshacerFn;
+  _tvDeshacerFn = null;
+  document.getElementById('tv-deshacer').classList.remove('show');
+  if(fn){ fn(); toast('↩ Cambio deshecho'); }
+}
+function tvRefrescarPantalla(){ updateBadge(); updateBadgeMC(); tvRefrescarUI(); }
+function marcarEnviadoHoy(id){
+  const r = records.find(x => x.id === id);
+  if(!r) return;
+  const antes = r.fechaEnvio || '';
+  r.fechaEnvio = today();
+  persist(); tvRefrescarPantalla(); sonido('guardar');
+  tvToastDeshacer(`📤 ${normPlaca(r.placa) || 'Trámite'} marcado como enviado hoy`, () => {
+    const x = records.find(y => y.id === id); if(!x) return;
+    x.fechaEnvio = antes; persist(); tvRefrescarPantalla();
+  });
+}
+function marcarCompletadoHoy(id){
+  const r = records.find(x => x.id === id);
+  if(!r) return;
+  const antes = {estado: r.estado, fechaCompletado: r.fechaCompletado || '', motivo: r.motivo || ''};
+  r.estado = 'Completado';
+  r.fechaCompletado = today();
+  r.motivo = '';
+  persist(); tvRefrescarPantalla(); sonido('confirmar');
+  tvToastDeshacer(`✅ ${normPlaca(r.placa) || 'Trámite'} completado hoy`, () => {
+    const x = records.find(y => y.id === id); if(!x) return;
+    Object.assign(x, antes); persist(); tvRefrescarPantalla();
+  });
+}
+function tvMostrarCampoCompletado(){
+  const c = document.getElementById('e-completado-campo');
+  if(c) c.style.display = document.getElementById('e-estado').value === 'Completado' ? '' : 'none';
+}
+
+// ── Pantalla "Hoy" ───────────────────────────────────────────────────────────
+let _hoyFiltro = null;
+function actualizarBadgeHoy(){
+  const b = document.getElementById('badge-hoy');
+  if(!b) return;
+  const n = records.filter(r => r.estado === 'Pendiente' && daysPending(r.fecha) >= 30).length;
+  b.textContent = n;
+  b.style.display = n > 0 ? 'inline-block' : 'none';
+}
+function hoyListas(){
+  const pend = records.filter(r => r.estado === 'Pendiente');
+  const dias = r => daysPending(r.fecha);
+  const porDias = (a, b) => dias(b) - dias(a);
+  const mes = today().slice(0, 7);
+  return {
+    pend,
+    urgentes:  pend.filter(r => dias(r) >= 30).sort(porDias),
+    alerta:    pend.filter(r => dias(r) >= 15 && dias(r) < 30).sort(porDias),
+    porEnviar: pend.filter(r => !r.fechaEnvio).sort(porDias),
+    sinCosto:  pend.filter(r => !(Number(r.costo) > 0)).sort(porDias),
+    recibidos: getBorradores(),
+    completadosMes: records.filter(r => r.estado === 'Completado' && txt(r.fechaCompletado).slice(0, 7) === mes),
+  };
+}
+function hoyFilaHTML(r){
+  const d = daysPending(r.fecha);
+  const cls = d >= 30 ? 'urg' : d >= 15 ? 'warn' : '';
+  const badge = d >= 30 ? 'badge-age-urgent' : d >= 15 ? 'badge-age-warn' : 'badge-age-ok';
+  const tieneTel = soloDigitos(r.telefono) || soloDigitos(r.compradorTelefono);
+  return `
+  <div class="hoy-fila ${cls}">
+    ${placaChip(r.placa)}
+    <div class="hoy-info">
+      <div class="hoy-veh">${escHTML(vehiculoLabel(r) || r.tipo)}</div>
+      <div class="hoy-sub"><span class="dot de"></span>${escHTML(r.vendedor || '—')}<span class="flechita">➜</span><span class="dot para"></span>${r.compradorNombre ? escHTML(r.compradorNombre) : '<em>sin comprador</em>'}${Number(r.costo) > 0 ? ' · ' + fmtPrice(r.costo) : ' · <em>sin costo</em>'}</div>
+    </div>
+    <span class="badge ${badge}">${d} día${d === 1 ? '' : 's'}</span>
+    <div class="hoy-acciones">
+      ${r.fechaEnvio
+        ? `<span class="hoy-enviado">📤 ${fmtDate(r.fechaEnvio)}</span>`
+        : `<button class="btn btn-sm btn-envio" onclick="marcarEnviadoHoy(${r.id})">📤 Enviado hoy</button>`}
+      <button class="btn btn-sm btn-success" onclick="marcarCompletadoHoy(${r.id})">✅ Completado</button>
+      ${tieneTel ? `<button class="btn btn-sm btn-wa" onclick="tvAbrirWhatsApp(${r.id})" title="Enviar WhatsApp">💬</button>` : ''}
+      <button class="btn btn-sm" onclick="openEdit(${r.id})" title="Editar">✏️</button>
+    </div>
+  </div>`;
+}
+function hoyRecibidoHTML(b){
+  return `
+  <div class="hoy-fila recibido">
+    ${placaChip(b.placa)}
+    <div class="hoy-info">
+      <div class="hoy-veh">${escHTML([b.nombre, b.color, b.modelo].filter(Boolean).join(' · ') || b.tipo)}</div>
+      <div class="hoy-sub"><span class="dot de"></span>${escHTML(b.vendedor || '—')}<span class="flechita">➜</span><span class="dot para"></span>${b.compradorNombre ? escHTML(b.compradorNombre) : '<em>sin comprador</em>'} · recibido el ${escHTML(fechaLegible(b.fechaOrigen))}</div>
+    </div>
+    <div class="hoy-acciones">
+      <button class="btn btn-sm btn-primary" onclick="confirmarBorrador('${escHTML(b.id)}')">Confirmar y crear trámite</button>
+    </div>
+  </div>`;
+}
+function hoyFiltrar(clave){
+  if(clave === 'recibidos'){ irAPanel('motocontable'); return; }
+  _hoyFiltro = _hoyFiltro === clave ? null : clave;
+  renderHoy();
+}
+function renderHoy(){
+  const cont = document.getElementById('hoy-contenido');
+  if(!cont) return;
+  const L = hoyListas();
+  const ahora = new Date();
+  const h = ahora.getHours();
+  const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+  const fechaLarga = ahora.toLocaleDateString('es-CO', {weekday:'long', day:'numeric', month:'long'});
+  const notifOn = ('Notification' in window) && Notification.permission === 'granted' && localStorage.getItem('tv_notif') === '1';
+
+  const kpis = [
+    ['urgentes',  'k-rojo',    L.urgentes.length,  '🔴 30 días o más'],
+    ['alerta',    'k-naranja', L.alerta.length,    '🟠 15 a 29 días'],
+    ['porEnviar', 'k-azul',    L.porEnviar.length, '📤 Por enviar'],
+    ['sinCosto',  'k-morado',  L.sinCosto.length,  '💲 Sin costo'],
+    ['recibidos', 'k-celeste', L.recibidos.length, '📥 De MotoContable'],
+    ['completadosMes', 'k-verde', L.completadosMes.length, '✅ Completados este mes'],
+  ];
+  let html = `
+    <div class="hoy-top">
+      <div class="hoy-saludo">${saludo}, <strong>Samuel</strong> · ${fechaLarga}</div>
+      <button class="btn btn-sm btn-ghost" onclick="tvActivarRecordatorios()">${notifOn ? '🔔 Recordatorios activados' : '🔔 Activar recordatorios'}</button>
+    </div>`;
+  if(L.urgentes.length || L.alerta.length){
+    const partes = [];
+    if(L.urgentes.length) partes.push(`<strong>${L.urgentes.length} trámite${L.urgentes.length === 1 ? '' : 's'} con 30 días o más</strong>`);
+    if(L.alerta.length)   partes.push(`${L.alerta.length} entre 15 y 29 días`);
+    html += `<div class="recordatorio"><span class="rec-ico">🔔</span><div>Recordatorio: tienes ${partes.join(' y ')} pendientes. Revísalos primero.</div></div>`;
+  }
+  html += `<div class="hoy-kpis">${kpis.map(([k, cls, n, lbl]) =>
+    `<button class="hoy-kpi ${cls} ${_hoyFiltro === k ? 'activo' : ''}" onclick="hoyFiltrar('${k}')"><div class="k-num">${n}</div><div class="k-lbl">${lbl}</div></button>`).join('')}</div>`;
+
+  if(_hoyFiltro){
+    // Vista filtrada: la lista completa del indicador elegido
+    const titulos = {urgentes:'🔴 30 días o más', alerta:'🟠 15 a 29 días', porEnviar:'📤 Por enviar', sinCosto:'💲 Sin costo registrado', completadosMes:'✅ Completados este mes'};
+    const lista = L[_hoyFiltro] || [];
+    html += `<div class="hoy-seccion"><h3>${titulos[_hoyFiltro]} <span class="cuenta">${lista.length}</span>
+      <button class="hoy-mas" onclick="hoyFiltrar(null)" style="margin-left:auto">← Volver al resumen</button></h3>
+      ${lista.length ? lista.map(r => _hoyFiltro === 'completadosMes' ? cardHTML(r) : hoyFilaHTML(r)).join('') : '<div class="hoy-vacio">Nada por aquí 👍</div>'}</div>`;
+  } else {
+    // Agenda: cada trámite aparece una sola vez, en su sección más importante
+    const usados = new Set();
+    const tomar = lista => lista.filter(r => !usados.has(r.id) && usados.add(r.id));
+    const secciones = [
+      ['urgentes',  '🔴 Urgentes · 30 días o más', tomar(L.urgentes)],
+      ['alerta',    '🟠 En alerta · 15 a 29 días',  tomar(L.alerta)],
+      ['porEnviar', '📤 Por enviar',               tomar(L.porEnviar)],
+      ['sinCosto',  '💲 Falta registrar el costo', tomar(L.sinCosto)],
+    ];
+    const MAX = 6;
+    let algo = false;
+    if(L.recibidos.length){
+      algo = true;
+      html += `<div class="hoy-seccion"><h3>📥 Recibidos de MotoContable <span class="cuenta">${L.recibidos.length}</span></h3>
+        ${L.recibidos.slice(0, MAX).map(hoyRecibidoHTML).join('')}
+        ${L.recibidos.length > MAX ? `<button class="hoy-mas" onclick="irAPanel('motocontable')">Ver los ${L.recibidos.length}</button>` : ''}</div>`;
+    }
+    secciones.forEach(([k, titulo, lista]) => {
+      if(!lista.length) return;
+      algo = true;
+      html += `<div class="hoy-seccion"><h3>${titulo} <span class="cuenta">${lista.length}</span></h3>
+        ${lista.slice(0, MAX).map(hoyFilaHTML).join('')}
+        ${lista.length > MAX ? `<button class="hoy-mas" onclick="hoyFiltrar('${k}')">Ver ${lista.length - MAX} más</button>` : ''}</div>`;
+    });
+    if(!algo){
+      html += `<div class="hoy-vacio"><div class="grande">🎉</div><strong>Todo al día.</strong><br>${L.pend.length ? 'Tus trámites pendientes ya están enviados, con costo y a tiempo.' : 'No tienes trámites pendientes.'}</div>`;
+    }
+    const invertido = L.completadosMes.reduce((s, r) => s + (Number(r.costo) || 0), 0);
+    html += `<div class="hoy-pie">✅ Este mes completaste <strong>${L.completadosMes.length}</strong> trámite${L.completadosMes.length === 1 ? '' : 's'}${invertido ? ` · invertiste <strong>${fmtPrice(invertido)}</strong>` : ''} · Pendientes en total: <strong>${L.pend.length}</strong></div>`;
+  }
+  cont.innerHTML = html;
+}
+
+// ── WhatsApp con mensajes listos ─────────────────────────────────────────────
+let _waId = null, _waPara = 'vendedor', _waPlantilla = 'seguimiento';
+const WA_PLANTILLAS = [
+  {id:'listo',       etq:'✅ Traspaso listo',  txt:p => `Hola ${p.nombre}, te saluda Samuel. Te cuento que el traspaso de ${p.veh} placa ${p.placa} ya quedó listo ✅. ¡Gracias por tu paciencia!`},
+  {id:'enviado',     etq:'📤 Ya se radicó',    txt:p => `Hola ${p.nombre}, te saluda Samuel. El traspaso de ${p.veh} placa ${p.placa} ya fue radicado${p.envio ? ' el ' + p.envio : ''}. Te aviso apenas esté listo.`},
+  {id:'falta',       etq:'📄 Falta algo',      txt:p => `Hola ${p.nombre}, te saluda Samuel. Para continuar con el traspaso de ${p.veh} placa ${p.placa} necesitamos: ${p.motivo || '______'}. ¿Me colaboras, por favor?`},
+  {id:'seguimiento', etq:'🔄 Seguimiento',     txt:p => `Hola ${p.nombre}, te saluda Samuel. Te escribo para contarte que el traspaso de ${p.veh} placa ${p.placa} sigue en proceso. Cualquier novedad te aviso.`},
+  {id:'libre',       etq:'✍️ Mensaje libre',   txt:p => `Hola ${p.nombre}, `},
+];
+function tvAbrirWhatsApp(id){
+  const r = records.find(x => x.id === id);
+  if(!r) return;
+  _waId = id;
+  const telV = soloDigitos(r.telefono), telC = soloDigitos(r.compradorTelefono);
+  _waPara = (r.estado === 'Completado' && telC) || !telV ? 'comprador' : 'vendedor';
+  _waPlantilla = r.estado === 'Completado' ? 'listo' : r.motivo ? 'falta' : r.fechaEnvio ? 'enviado' : 'seguimiento';
+  tvRenderWA();
+  document.getElementById('tv-wa').style.display = 'flex';
+}
+function tvCerrarWA(){ document.getElementById('tv-wa').style.display = 'none'; }
+function tvElegirWA(campo, valor){
+  if(campo === 'para') _waPara = valor; else _waPlantilla = valor;
+  tvRenderWA();
+}
+function tvRenderWA(){
+  const r = records.find(x => x.id === _waId);
+  if(!r) return;
+  document.getElementById('tv-wa-veh').innerHTML = `${placaChip(r.placa)} <span>${escHTML(vehiculoLabel(r) || r.tipo)}</span>`;
+  const dest = (clave, cls, etq, nombre, tel) => `
+    <button class="wa-dest ${cls} ${_waPara === clave ? 'activo' : ''}" ${soloDigitos(tel) ? '' : 'disabled'} onclick="tvElegirWA('para','${clave}')">
+      <div class="ruta-etq" style="color:${cls === 'de' ? '#b45309' : '#15803d'}">${etq}</div>
+      <div class="ruta-nombre">${escHTML(nombre || '—')}</div>
+      <div class="wa-tel">${soloDigitos(tel) ? '📱 ' + escHTML(tel) : 'Sin teléfono'}</div>
+    </button>`;
+  document.getElementById('tv-wa-para').innerHTML =
+    dest('vendedor', 'de', 'Vendedor', r.vendedor, r.telefono) +
+    dest('comprador', 'para', 'Comprador', r.compradorNombre, r.compradorTelefono);
+  document.getElementById('tv-wa-plantillas').innerHTML = WA_PLANTILLAS.map(p =>
+    `<button class="wa-chip ${_waPlantilla === p.id ? 'activo' : ''}" onclick="tvElegirWA('plantilla','${p.id}')">${p.etq}</button>`).join('');
+  const nombre = _waPara === 'comprador' ? r.compradorNombre : r.vendedor;
+  const p = {
+    nombre: primerNombre(nombre) || 'buen día',
+    veh: (r.tipo === 'Carro' ? 'el carro ' : 'la moto ') + txt(r.nombre).trim(),
+    placa: normPlaca(r.placa) || txt(r.placa),
+    envio: r.fechaEnvio ? fmtDate(r.fechaEnvio) : '',
+    motivo: (m => m ? m.charAt(0).toLowerCase() + m.slice(1) : '')(txt(r.motivo).trim()),
+  };
+  const plantilla = WA_PLANTILLAS.find(x => x.id === _waPlantilla) || WA_PLANTILLAS[3];
+  document.getElementById('tv-wa-texto').value = plantilla.txt(p).replace(/\s+placa/, ' placa');
+}
+function tvEnviarWA(){
+  const r = records.find(x => x.id === _waId);
+  if(!r) return;
+  const tel = _waPara === 'comprador' ? r.compradorTelefono : r.telefono;
+  const numero = waNumero(tel);
+  if(!numero){ toast('Ese contacto no tiene teléfono'); return; }
+  const texto = document.getElementById('tv-wa-texto').value.trim();
+  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank');
+  tvCerrarWA();
+}
+
+// ── Buscador general (cabecera) ──────────────────────────────────────────────
+let _panelAntesBusqueda = 'hoy';
+function tvBuscarGlobal(){
+  const q = document.getElementById('tv-buscar').value;
+  const activo = panelActivo();
+  if(q.trim()){
+    if(activo !== 'buscar'){ _panelAntesBusqueda = activo || 'hoy'; showPanel('buscar', null); }
+    else renderBusqueda();
+  } else if(activo === 'buscar'){
+    irAPanel(_panelAntesBusqueda || 'hoy');
+  }
+}
+function tvLimpiarBusqueda(){ document.getElementById('tv-buscar').value = ''; tvBuscarGlobal(); }
+function renderBusqueda(){
+  const q = document.getElementById('tv-buscar').value;
+  const tramites = records.filter(r => coincideBusqueda(r, q))
+    .sort((a, b) => (a.estado === b.estado ? (txt(b.fecha) > txt(a.fecha) ? 1 : -1) : (a.estado === 'Pendiente' ? -1 : 1)));
+  const recibidos = getBorradores().filter(b => coincideBusqueda(b, q));
+  const LIMITE = 60;
+  document.getElementById('buscar-resumen').innerHTML =
+    `<div class="filter-bar"><span style="font-size:13px;color:var(--text2)">Buscando <strong>"${escHTML(q.trim())}"</strong>: ${tramites.length} trámite${tramites.length === 1 ? '' : 's'}${recibidos.length ? ` · ${recibidos.length} recibido${recibidos.length === 1 ? '' : 's'} de MotoContable` : ''}</span>
+     <button class="btn btn-sm btn-ghost" onclick="tvLimpiarBusqueda()" style="margin-left:auto">✕ Limpiar búsqueda</button></div>`;
+  let html = '';
+  if(recibidos.length) html += `<div class="hoy-seccion"><h3>📥 Recibidos de MotoContable</h3>${recibidos.map(hoyRecibidoHTML).join('')}</div>`;
+  if(tramites.length) html += tramites.slice(0, LIMITE).map(cardHTML).join('') +
+    (tramites.length > LIMITE ? `<p style="font-size:12px;color:var(--text3);text-align:center">Se muestran los primeros ${LIMITE}. Escribe más para afinar.</p>` : '');
+  if(!html) html = `<div class="empty-state"><p>No hay resultados. Prueba con la placa, un nombre, una cédula o un teléfono.</p></div>`;
+  document.getElementById('buscar-lista').innerHTML = html;
+}
+
+// ── Recordatorios ────────────────────────────────────────────────────────────
+function tvResumenPendientes(){
+  const pend = records.filter(r => r.estado === 'Pendiente');
+  const urg = pend.filter(r => daysPending(r.fecha) >= 30).length;
+  const al  = pend.filter(r => { const d = daysPending(r.fecha); return d >= 15 && d < 30; }).length;
+  return {urg, al, texto: [urg ? `${urg} con 30 días o más` : '', al ? `${al} entre 15 y 29 días` : ''].filter(Boolean).join(' y ')};
+}
+function tvRecordatorioDiario(){
+  const {urg, al, texto} = tvResumenPendientes();
+  if(!urg && !al) return;
+  try { if(localStorage.getItem('tv_recordatorio_dia') === today()) return; localStorage.setItem('tv_recordatorio_dia', today()); } catch(e){}
+  toast('🔔 Trámites pendientes: ' + texto);
+  if(('Notification' in window) && Notification.permission === 'granted' && localStorage.getItem('tv_notif') === '1'){
+    try { new Notification('Traspasos de Vehículos', {body: `Tienes trámites pendientes: ${texto}. Revisa la pantalla Hoy.`}); } catch(e){}
+  }
+}
+async function tvActivarRecordatorios(){
+  if(!('Notification' in window)){
+    toast('En este dispositivo los recordatorios aparecen en la pantalla Hoy cada vez que abres la app');
+    return;
+  }
+  if(Notification.permission === 'granted' && localStorage.getItem('tv_notif') === '1'){
+    localStorage.setItem('tv_notif', '0'); toast('Recordatorios desactivados'); renderHoy(); return;
+  }
+  let permiso = Notification.permission;
+  if(permiso !== 'granted') permiso = await Notification.requestPermission();
+  if(permiso === 'granted'){
+    localStorage.setItem('tv_notif', '1');
+    const {texto} = tvResumenPendientes();
+    try { new Notification('Traspasos de Vehículos', {body: texto ? `Recordatorios activados. Hoy tienes: ${texto}.` : 'Recordatorios activados. Te avisaremos de los trámites atrasados.'}); } catch(e){}
+    toast('🔔 Recordatorios activados');
+  } else {
+    toast('El navegador no dio permiso para avisos. Los verás en la pantalla Hoy.');
+  }
+  renderHoy();
+}
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ tvRecordatorioDiario(); if(panelActivo() === 'hoy') renderHoy(); } });
+
+// Arranque de las mejoras
+actualizarBadgeHoy();
+renderHoy();
+setTimeout(tvRecordatorioDiario, 1500);
+
 // ── SONIDOS ──────────────────────────────────────────────────────────────────
 // Tonos cortos generados con Web Audio (sin archivos). Se pueden desactivar en
 // «Respaldo y nube»; la preferencia se guarda en este dispositivo.
@@ -2715,7 +3531,7 @@ function tvRefrescarUI(){
   if(panel==='nuevo' || panel==='nube') return;
   if(tvEditando()){ _tvRefrescar = true; return; }
   _tvRefrescar = false;
-  const render = {pendientes:renderPending, completados:renderDone, todos:renderTodos, historial:renderHistory,
+  const render = {hoy:renderHoy, buscar:renderBusqueda, pendientes:renderPending, completados:renderDone, todos:renderTodos, historial:renderHistory,
                   'historial-anual':renderHistoryAnual, analisis:renderAnalisis, motocontable:renderMC}[panel];
   if(render) render();
 }
