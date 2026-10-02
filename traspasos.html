@@ -1425,6 +1425,107 @@ function tvAplicarColor(id){
   /* Avisos flotantes */
   #toast { background: #111827; }
 
+  /* ── Sombra roja: crece con los días que lleva pendiente ── */
+  .record-card.calor, .hoy-fila.calor {
+    border-color: rgba(225,29,72, calc(.14 + .42 * var(--calor)));
+    background: linear-gradient(135deg, rgba(255,228,232, calc(.35 + .65 * var(--calor))) 0%, #ffffff 58%);
+    box-shadow:
+      0 0 0 calc(var(--calor) * 3px) rgba(225,29,72,.07),
+      0 14px 34px -14px rgba(225,29,72, calc(.22 + .5 * var(--calor))),
+      0 1px 2px rgba(15,23,42,.04);
+  }
+  .record-card.calor:hover, .hoy-fila.calor:hover {
+    box-shadow:
+      0 0 0 calc(var(--calor) * 3px) rgba(225,29,72,.1),
+      0 20px 40px -14px rgba(225,29,72, calc(.3 + .5 * var(--calor))),
+      0 1px 2px rgba(15,23,42,.04);
+  }
+
+  /* ── Aviso grande ── */
+  #tv-aviso {
+    position: fixed; inset: 0; z-index: 3000; align-items: center; justify-content: center; padding: 18px;
+    background: rgba(15,23,42,.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    opacity: 0; transition: opacity .25s ease;
+  }
+  #tv-aviso.show { opacity: 1; }
+  .av-card {
+    position: relative; width: 100%; max-width: 470px; max-height: calc(100vh - 36px); overflow: auto;
+    background: var(--surface); border-radius: 28px; box-shadow: 0 40px 90px -24px rgba(15,23,42,.6);
+    transform: translateY(18px) scale(.94); transition: transform .45s cubic-bezier(.2,1.3,.4,1);
+    --av1: #e11d48; --av2: #f97316; --avsoft: #fff1f2; --avtxt: #be123c;
+  }
+  .av-card.av-naranja { --av1: #ea580c; --av2: #f59e0b; --avsoft: #fff7ed; --avtxt: #c2410c; }
+  #tv-aviso.show .av-card { transform: none; }
+  .av-hero {
+    position: relative; overflow: hidden; text-align: center; color: #fff; padding: 30px 24px 26px;
+    background:
+      radial-gradient(260px 160px at 85% -10%, rgba(255,255,255,.28), transparent 70%),
+      radial-gradient(220px 160px at 0% 110%, rgba(0,0,0,.16), transparent 70%),
+      linear-gradient(135deg, var(--av1), var(--av2));
+  }
+  .av-campana {
+    position: relative; width: 66px; height: 66px; margin: 6px auto 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.2); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35);
+  }
+  .av-campana svg { animation: avTimbre 1.4s ease-in-out infinite; transform-origin: 50% 10%; }
+  .av-onda { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(255,255,255,.55); animation: avOnda 2s ease-out infinite; }
+  .av-onda.o2 { animation-delay: 1s; }
+  @keyframes avOnda { from { transform: scale(1); opacity: .9; } to { transform: scale(1.9); opacity: 0; } }
+  @keyframes avTimbre { 0%, 55%, 100% { transform: rotate(0); } 10% { transform: rotate(14deg); } 20% { transform: rotate(-12deg); } 30% { transform: rotate(9deg); } 40% { transform: rotate(-6deg); } }
+  .av-kicker { font-size: 12.5px; font-weight: 700; opacity: .92; letter-spacing: .01em; }
+  .av-num { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -.05em; margin-top: 6px; font-variant-numeric: tabular-nums; text-shadow: 0 8px 24px rgba(0,0,0,.18); }
+  .av-titulo { font-size: 18px; font-weight: 800; letter-spacing: -.02em; margin-top: 4px; }
+  .av-x {
+    position: absolute; top: 14px; right: 14px; z-index: 2; width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+    background: rgba(255,255,255,.2); color: #fff; display: flex; align-items: center; justify-content: center; transition: background .15s;
+  }
+  .av-x:hover { background: rgba(255,255,255,.32); }
+  .av-cuerpo { padding: 20px 22px 22px; }
+  .av-texto { font-size: 14px; line-height: 1.55; color: var(--text2); text-align: center; margin: 0 0 16px; }
+  .av-texto strong { color: var(--avtxt); font-weight: 700; }
+  .av-lista { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .av-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 14px;
+    border: 1px solid rgba(225,29,72, calc(.12 + .35 * var(--calor, 0)));
+    background: linear-gradient(135deg, rgba(255,228,232, calc(.3 + .7 * var(--calor, 0))), #fff 70%);
+  }
+  .av-naranja .av-item { border-color: #fed7aa; background: linear-gradient(135deg, #fff7ed, #fff 70%); }
+  .av-veh { flex: 1; min-width: 0; font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .av-veh small { display: block; font-size: 11.5px; font-weight: 500; color: var(--text3); }
+  .av-dias { font-size: 12px; font-weight: 800; color: var(--avtxt); background: var(--avsoft); padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+  .av-mas { font-size: 12.5px; color: var(--text3); text-align: center; font-weight: 600; }
+  .av-botones { display: flex; gap: 10px; }
+  .av-botones .btn { flex: 1; padding: 13px 16px; border-radius: 14px; font-size: 14px; }
+  .btn.av-ir {
+    flex: 1.6; color: #fff; border-color: transparent; background: linear-gradient(135deg, var(--av1), var(--av2));
+    box-shadow: 0 12px 24px -10px var(--av1);
+  }
+  .btn.av-ir:hover { filter: brightness(1.06); background: linear-gradient(135deg, var(--av1), var(--av2)); }
+  .btn.av-cerrar { background: var(--surface2); border-color: transparent; color: var(--text2); box-shadow: none; }
+  .btn.av-cerrar:hover { background: #e9edf4; }
+  @media (prefers-reduced-motion: reduce) {
+    .av-card, #tv-aviso { transition: none; }
+    .av-campana svg, .av-onda { animation: none; }
+  }
+
+  /* ── Gráficas de Análisis ── */
+  .graf-card { padding: 1.3rem 1.4rem 1rem; }
+  .graf-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .graf-card .analisis-card-title { font-size: 15px; font-weight: 800; color: var(--text); text-transform: none; letter-spacing: -.01em; margin: 0; }
+  .graf-sub { font-size: 12.5px; color: var(--text3); margin-top: 2px; }
+  .graf-leyenda { display: flex; gap: 16px; font-size: 12.5px; color: var(--text2); font-weight: 600; padding-top: 2px; }
+  .graf-leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 7px; vertical-align: -1px; }
+  .graf-hero { margin-top: 8px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 12.5px; color: var(--text2); }
+  .graf-hero strong { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .graf-delta { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 20px; font-weight: 700; font-size: 11.5px; background: #f1f4f9; color: var(--text2); align-self: center; }
+  .graf-delta.sube { background: #ecfdf5; color: #047857; }
+  .graf-delta.baja { background: #fff1f2; color: #be123c; }
+  .graf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+  @media (max-width: 900px) { .graf-grid { grid-template-columns: 1fr; } }
+  .analisis-card-title { text-transform: none; letter-spacing: -.01em; color: var(--text); font-size: 15px; font-weight: 800; }
+  .analisis-table th { text-transform: none; letter-spacing: 0; font-size: 12px; font-weight: 600; color: var(--text3); }
+
   /* ── iPhone: menú inferior tipo app ── */
   @media (max-width: 680px) {
     header { height: auto; }
@@ -1456,6 +1557,9 @@ function tvAplicarColor(id){
     #toast { bottom: calc(92px + env(safe-area-inset-bottom)); right: 12px; left: 12px; }
     #tv-deshacer { bottom: calc(150px + env(safe-area-inset-bottom)); }
     .record-card:hover, .hoy-kpi:hover, .hoy-fila:hover { transform: none; }
+    .av-num { font-size: 56px; }
+    .av-hero { padding: 26px 20px 22px; }
+    .av-cuerpo { padding: 18px 16px 18px; }
   }
   @media (max-width: 680px) {
     header { padding: 10px 14px 8px; gap: 10px; }
@@ -1904,26 +2008,47 @@ function tvAplicarColor(id){
       </div>
 
       <!-- Gráfico barras apiladas -->
-      <div class="analisis-card" style="margin-bottom:1.25rem">
-        <div class="analisis-card-title">Trámites por mes — Completados vs Pendientes</div>
-        <div style="position:relative;height:260px">
+      <div class="analisis-card graf-card" style="margin-bottom:1.25rem">
+        <div class="graf-head">
+          <div>
+            <div class="analisis-card-title">Trámites por mes</div>
+            <div class="graf-sub">Completados y pendientes, según la fecha de registro</div>
+          </div>
+          <div class="graf-leyenda">
+            <span><i style="background:#059669"></i>Completados</span>
+            <span><i style="background:#f59e0b"></i>Pendientes</span>
+          </div>
+        </div>
+        <div style="position:relative;height:270px">
           <canvas id="chart-barras"></canvas>
         </div>
       </div>
 
-      <!-- Gráfico tendencia línea -->
-      <div class="analisis-card" style="margin-bottom:1.25rem">
-        <div class="analisis-card-title">Tendencia de trámites totales por mes</div>
-        <div style="position:relative;height:200px">
-          <canvas id="chart-linea"></canvas>
+      <div class="graf-grid">
+        <!-- Gráfico tendencia línea -->
+        <div class="analisis-card graf-card">
+          <div class="graf-head">
+            <div>
+              <div class="analisis-card-title">Tendencia mensual</div>
+              <div class="graf-hero" id="graf-hero-linea"></div>
+            </div>
+          </div>
+          <div style="position:relative;height:210px">
+            <canvas id="chart-linea"></canvas>
+          </div>
         </div>
-      </div>
 
-      <!-- Gráfico costo mensual -->
-      <div class="analisis-card" style="margin-bottom:1.25rem">
-        <div class="analisis-card-title">Inversión en trámites por mes ($)</div>
-        <div style="position:relative;height:200px">
-          <canvas id="chart-costo"></canvas>
+        <!-- Gráfico costo mensual -->
+        <div class="analisis-card graf-card">
+          <div class="graf-head">
+            <div>
+              <div class="analisis-card-title">Inversión por mes</div>
+              <div class="graf-hero" id="graf-hero-costo"></div>
+            </div>
+          </div>
+          <div style="position:relative;height:210px">
+            <canvas id="chart-costo"></canvas>
+          </div>
         </div>
       </div>
 
@@ -2087,6 +2212,30 @@ function tvAplicarColor(id){
 </div>
 
 <div id="tv-deshacer"><span id="tv-deshacer-msg"></span><button onclick="tvDeshacer()">Deshacer</button></div>
+
+<!-- AVISO DE TRÁMITES ATRASADOS (sale solo al entrar y 6 horas después) -->
+<div id="tv-aviso" style="display:none" role="alertdialog" aria-modal="true" aria-labelledby="tv-aviso-titulo">
+  <div class="av-card" id="tv-aviso-card">
+    <button class="av-x" onclick="tvCerrarAviso()" aria-label="Cerrar"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <div class="av-hero">
+      <div class="av-campana" aria-hidden="true">
+        <span class="av-onda"></span><span class="av-onda o2"></span>
+        <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+      </div>
+      <div class="av-kicker" id="tv-aviso-kicker">Samuel, atención</div>
+      <div class="av-num" id="tv-aviso-num">0</div>
+      <div class="av-titulo" id="tv-aviso-titulo"></div>
+    </div>
+    <div class="av-cuerpo">
+      <p class="av-texto" id="tv-aviso-texto"></p>
+      <div class="av-lista" id="tv-aviso-lista"></div>
+      <div class="av-botones">
+        <button class="btn av-cerrar" onclick="tvCerrarAviso()">Cerrar</button>
+        <button class="btn av-ir" id="tv-aviso-ir" onclick="tvIrAlAviso()">Ir a revisarlos <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div id="toast"></div>
 
@@ -2373,6 +2522,19 @@ function vehiculoLabel(r) {
   return nombre + color + anio;
 }
 
+// Qué tan "caliente" está un trámite pendiente: 0 si lleva menos de 15 días,
+// y sube de 0,2 (15 días) hasta 1 (60 días o más). Se usa para la sombra roja.
+function calorDias(r){
+  if(r.estado !== 'Pendiente') return 0;
+  const d = daysPending(r.fecha);
+  if(d < 15) return 0;
+  return +(0.2 + 0.8 * Math.min(1, (d - 15) / 45)).toFixed(2);
+}
+function calorAttr(r){
+  const c = calorDias(r);
+  return c ? {cls: ' calor', style: ` style="--calor:${c}"`} : {cls: '', style: ''};
+}
+
 function cardHTML(r) {
   const pend = r.estado === 'Pendiente';
   const tipoBadge = r.tipo === 'Moto' ? 'badge-moto' : 'badge-carro';
@@ -2388,7 +2550,7 @@ function cardHTML(r) {
   const icoEditar = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
   const icoBorrar = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>';
   return `
-  <div class="record-card ${estadoClass}" id="rc-${r.id}">
+  <div class="record-card ${estadoClass}${calorAttr(r).cls}" id="rc-${r.id}"${calorAttr(r).style}>
     <div class="rc-top">
       <div style="flex:1;min-width:0">
         <div class="rc-badges">
@@ -2824,13 +2986,61 @@ function renderAnalisis() {
   const totalByM   = allMks.map(mk => data.filter(r => monthKey(r.fecha)===mk).length);
   const costoByM   = allMks.map(mk => data.filter(r => monthKey(r.fecha)===mk).reduce((s,r)=>s+r.costo,0));
 
-  const chartDefaults = {
-    plugins: { legend: { labels: { font: { family: "'Plus Jakarta Sans', system-ui", size: 12 }, color: '#526079' } } },
-    scales: {
-      x: { ticks: { color: '#526079', font: { size: 11 } }, grid: { color: '#eef1f8' } },
-      y: { ticks: { color: '#526079', font: { size: 11 } }, grid: { color: '#eef1f8' } }
+  // ── Estilo común de las gráficas: rejilla discreta, sin bordes, tooltip oscuro ──
+  const fuente = "'Plus Jakarta Sans', system-ui, sans-serif";
+  const acento = tvColorCSS('--accent') || '#4f46e5';
+  const acentoRgb = tvColorCSS('--accent-rgb') || '79,70,229';
+  const acento2Rgb = tvColorCSS('--accent-2-rgb') || '124,58,237';
+  const dinero = v => {
+    const n = Number(v) || 0;
+    if(Math.abs(n) >= 1e6) return '$' + (n / 1e6).toFixed(1).replace('.0', '') + 'M';
+    if(Math.abs(n) >= 1e3) return '$' + Math.round(n / 1e3) + 'K';
+    return '$' + n;
+  };
+  const tooltip = {
+    backgroundColor: '#111827', titleColor: '#ffffff', bodyColor: '#e5e7eb', footerColor: '#9ca3af',
+    titleFont: { family: fuente, size: 12.5, weight: '700' }, bodyFont: { family: fuente, size: 12 }, footerFont: { family: fuente, size: 11.5, weight: '600' },
+    padding: 12, cornerRadius: 12, boxPadding: 5, usePointStyle: true, caretSize: 6, displayColors: true,
+  };
+  const ejeX = { grid: { display: false }, border: { display: false }, ticks: { color: '#8a94ab', font: { family: fuente, size: 11.5, weight: '600' }, padding: 6 } };
+  const ejeY = { beginAtZero: true, grid: { color: '#eef1f8', drawTicks: false }, border: { display: false }, ticks: { color: '#a0a8bb', font: { family: fuente, size: 11 }, padding: 10, maxTicksLimit: 5, precision: 0 } };
+  // Línea vertical que sigue al dedo/mouse en la tendencia
+  const guia = {
+    id: 'tvGuia',
+    afterDatasetsDraw(chart){
+      const act = chart.tooltip && chart.tooltip.getActiveElements ? chart.tooltip.getActiveElements() : [];
+      if(!act.length) return;
+      const x = act[0].element.x, {top, bottom} = chart.chartArea, c = chart.ctx;
+      c.save(); c.beginPath(); c.moveTo(x, top); c.lineTo(x, bottom);
+      c.lineWidth = 1; c.strokeStyle = 'rgba(15,23,42,.14)'; c.setLineDash([4, 4]); c.stroke(); c.restore();
     }
   };
+  const degradado = (ctx, area, de, a) => {
+    const g = ctx.createLinearGradient(0, area.bottom, 0, area.top);
+    g.addColorStop(0, de); g.addColorStop(1, a);
+    return g;
+  };
+
+  // ── Cifras grandes encima de las gráficas ──
+  const ultimo = allMks.length - 1;
+  const deltaHTML = (act, ant) => {
+    if(ultimo < 1 || !ant) return '';
+    const p = Math.round((act - ant) / ant * 100);
+    if(!p) return `<span class="graf-delta">igual que el mes anterior</span>`;
+    const flecha = p > 0 ? '<path d="M12 19V5M5 12l7-7 7 7"/>' : '<path d="M12 5v14M19 12l-7 7-7-7"/>';
+    return `<span class="graf-delta ${p > 0 ? 'sube' : 'baja'}"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">${flecha}</svg>${Math.abs(p)}% vs mes anterior</span>`;
+  };
+  const heroL = document.getElementById('graf-hero-linea');
+  const heroC = document.getElementById('graf-hero-costo');
+  if(ultimo >= 0){
+    const mesNom = monthLabel(allMks[ultimo]);
+    if(heroL) heroL.innerHTML = `<strong>${totalByM[ultimo]}</strong><span>${totalByM[ultimo] === 1 ? 'trámite' : 'trámites'} en ${escHTML(mesNom)}</span>${deltaHTML(totalByM[ultimo], totalByM[ultimo - 1])}`;
+    const prom = Math.round(inversion / allMks.length);
+    if(heroC) heroC.innerHTML = `<strong>${fmtPrice(costoByM[ultimo])}</strong><span>en ${escHTML(mesNom)} · promedio ${fmtPrice(prom)} al mes</span>`;
+  } else {
+    if(heroL) heroL.innerHTML = '<span>Sin datos todavía</span>';
+    if(heroC) heroC.innerHTML = '<span>Sin datos todavía</span>';
+  }
 
   // ── GRÁFICO BARRAS APILADAS ──
   if(chartBarras) chartBarras.destroy();
@@ -2842,39 +3052,43 @@ function renderAnalisis() {
         {
           label: 'Completados',
           data: doneByM,
-          backgroundColor: 'rgba(16,185,129,.75)',
-          borderColor: '#10b981',
-          borderWidth: 1.5,
-          borderRadius: 4,
+          backgroundColor: '#059669',
+          hoverBackgroundColor: '#047857',
+          borderRadius: (c) => (pendByM[c.dataIndex] ? 0 : 6),
+          borderSkipped: 'start',
+          maxBarThickness: 38,
+          categoryPercentage: 0.62,
         },
         {
           label: 'Pendientes',
           data: pendByM,
-          backgroundColor: 'rgba(245,166,35,.75)',
-          borderColor: '#f5a623',
-          borderWidth: 1.5,
-          borderRadius: 4,
+          backgroundColor: '#f59e0b',
+          hoverBackgroundColor: '#d97706',
+          borderColor: '#ffffff',
+          borderWidth: (c) => (doneByM[c.dataIndex] ? { bottom: 2 } : 0),
+          borderRadius: 6,
+          borderSkipped: false,
+          maxBarThickness: 38,
+          categoryPercentage: 0.62,
         }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
       plugins: {
-        ...chartDefaults.plugins,
+        legend: { display: false },
         tooltip: {
+          ...tooltip,
           callbacks: {
-            afterBody: (items) => {
-              const idx = items[0].dataIndex;
-              return `Total: ${totalByM[idx]} trámites`;
-            }
+            footer: (items) => `Total: ${totalByM[items[0].dataIndex]} trámites`
           }
         }
       },
       scales: {
-        ...chartDefaults.scales,
-        x: { ...chartDefaults.scales.x, stacked: true },
-        y: { ...chartDefaults.scales.y, stacked: true, beginAtZero: true, ticks: { ...chartDefaults.scales.y.ticks, stepSize: 1 } }
+        x: { ...ejeX, stacked: true },
+        y: { ...ejeY, stacked: true }
       }
     }
   });
@@ -2886,27 +3100,33 @@ function renderAnalisis() {
     data: {
       labels: labelsShort,
       datasets: [{
-        label: 'Total trámites',
+        label: 'Trámites',
         data: totalByM,
-        borderColor: tvColorCSS('--accent'),
-        backgroundColor: 'rgba(' + tvColorCSS('--accent-rgb') + ',.10)',
+        borderColor: acento,
+        backgroundColor: (c) => c.chart.chartArea
+          ? degradado(c.chart.ctx, c.chart.chartArea, `rgba(${acentoRgb},0)`, `rgba(${acentoRgb},.22)`)
+          : `rgba(${acentoRgb},.1)`,
         borderWidth: 2.5,
-        pointBackgroundColor: tvColorCSS('--accent'),
-        pointRadius: 5,
-        pointHoverRadius: 7,
+        pointRadius: totalByM.map((_, i) => i === ultimo ? 5 : 0),
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: acento,
+        pointBorderWidth: 2.5,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: acento,
+        pointHoverBorderColor: '#ffffff',
+        pointHitRadius: 18,
         fill: true,
-        tension: 0.35
+        tension: 0.4
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: chartDefaults.plugins,
-      scales: {
-        ...chartDefaults.scales,
-        y: { ...chartDefaults.scales.y, beginAtZero: true, ticks: { ...chartDefaults.scales.y.ticks, stepSize: 1 } }
-      }
-    }
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip },
+      scales: { x: ejeX, y: ejeY }
+    },
+    plugins: [guia]
   });
 
   // ── GRÁFICO COSTO ──
@@ -2916,33 +3136,30 @@ function renderAnalisis() {
     data: {
       labels: labelsShort,
       datasets: [{
-        label: 'Inversión ($)',
+        label: 'Inversión',
         data: costoByM,
-        backgroundColor: 'rgba(' + tvColorCSS('--accent-2-rgb') + ',.55)',
-        borderColor: tvColorCSS('--accent'),
-        borderWidth: 1.5,
-        borderRadius: 4
+        backgroundColor: (c) => {
+          if(c.dataIndex !== ultimo) return `rgba(${acentoRgb},.28)`;
+          return c.chart.chartArea ? degradado(c.chart.ctx, c.chart.chartArea, `rgb(${acentoRgb})`, `rgb(${acento2Rgb})`) : acento;
+        },
+        hoverBackgroundColor: `rgba(${acentoRgb},.75)`,
+        borderRadius: 6,
+        borderSkipped: 'start',
+        maxBarThickness: 34,
+        categoryPercentage: 0.62,
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
       plugins: {
-        ...chartDefaults.plugins,
-        tooltip: {
-          callbacks: { label: (ctx) => ' ' + fmtPrice(ctx.raw) }
-        }
+        legend: { display: false },
+        tooltip: { ...tooltip, callbacks: { label: (ctx) => ' Inversión: ' + fmtPrice(ctx.raw) } }
       },
       scales: {
-        ...chartDefaults.scales,
-        y: {
-          ...chartDefaults.scales.y,
-          beginAtZero: true,
-          ticks: {
-            ...chartDefaults.scales.y.ticks,
-            callback: v => '$' + (v/1000).toFixed(0) + 'K'
-          }
-        }
+        x: ejeX,
+        y: { ...ejeY, ticks: { ...ejeY.ticks, precision: undefined, callback: v => dinero(v) } }
       }
     }
   });
@@ -3509,7 +3726,7 @@ function hoyFilaHTML(r){
   const badge = d >= 30 ? 'badge-age-urgent' : d >= 15 ? 'badge-age-warn' : 'badge-age-ok';
   const tieneTel = soloDigitos(r.telefono) || soloDigitos(r.compradorTelefono);
   return `
-  <div class="hoy-fila ${cls}">
+  <div class="hoy-fila ${cls}${calorAttr(r).cls}"${calorAttr(r).style}>
     ${placaChip(r.placa)}
     <div class="hoy-info">
       <div class="hoy-veh">${escHTML(vehiculoLabel(r) || r.tipo)}</div>
@@ -3555,7 +3772,6 @@ function renderHoy(){
   const h = ahora.getHours();
   const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   const fechaLarga = ahora.toLocaleDateString('es-CO', {weekday:'long', day:'numeric', month:'long'});
-  const notifOn = ('Notification' in window) && Notification.permission === 'granted' && localStorage.getItem('tv_notif') === '1';
 
   const kpis = [
     ['urgentes',  'k-rojo',    L.urgentes.length,  '30 días o más',  'fuego'],
@@ -3568,7 +3784,7 @@ function renderHoy(){
   let html = `
     <div class="hoy-top">
       <div class="hoy-saludo">${saludo}, <strong>Samuel</strong> · ${fechaLarga}</div>
-      <button class="btn btn-sm btn-ghost" onclick="tvActivarRecordatorios()">${ico('campana', 14)}${notifOn ? 'Recordatorios activados' : 'Activar recordatorios'}</button>
+      ${L.urgentes.length || L.alerta.length ? `<button class="btn btn-sm btn-ghost" onclick="tvMostrarAviso()">${ico('campana', 14)}Ver aviso</button>` : ''}
     </div>`;
   if(L.urgentes.length || L.alerta.length){
     const partes = [];
@@ -3718,41 +3934,89 @@ function tvResumenPendientes(){
   const al  = pend.filter(r => { const d = daysPending(r.fecha); return d >= 15 && d < 30; }).length;
   return {urg, al, texto: [urg ? `${urg} con 30 días o más` : '', al ? `${al} entre 15 y 29 días` : ''].filter(Boolean).join(' y ')};
 }
-function tvRecordatorioDiario(){
-  const {urg, al, texto} = tvResumenPendientes();
+// ── Aviso grande de trámites atrasados ────────────────────────────────────────
+// Sale solo, sin botones que activar: al entrar a la app y otra vez 6 horas
+// después (máximo 2 veces al día). Se queda en pantalla hasta que lo cierres.
+const TV_AVISO_KEY = 'tv_avisos', TV_AVISO_HORAS = 6, TV_AVISO_MAX = 2;
+let _tvAvisoTipo = null;
+function tvAvisoEstado(){
+  try {
+    const e = JSON.parse(localStorage.getItem(TV_AVISO_KEY) || 'null');
+    if(e && e.fecha === today()) return e;
+  } catch(x){}
+  return {fecha: today(), veces: 0, ultimo: 0};
+}
+function tvAvisoToca(){
+  const e = tvAvisoEstado();
+  if(e.veces >= TV_AVISO_MAX) return false;
+  return e.veces === 0 || Date.now() - e.ultimo >= TV_AVISO_HORAS * 3600 * 1000;
+}
+function tvAvisoAbierto(){ const el = document.getElementById('tv-aviso'); return !!el && el.style.display !== 'none'; }
+function tvHayVentanaAbierta(){
+  return [...document.querySelectorAll('.modal-overlay')].some(m => getComputedStyle(m).display !== 'none');
+}
+function tvRevisarAviso(){
+  if(document.visibilityState === 'hidden' || tvAvisoAbierto() || tvHayVentanaAbierta()) return;
+  const {urg, al} = tvResumenPendientes();
   if(!urg && !al) return;
-  try { if(localStorage.getItem('tv_recordatorio_dia') === today()) return; localStorage.setItem('tv_recordatorio_dia', today()); } catch(e){}
-  toast('Trámites pendientes: ' + texto);
-  if(('Notification' in window) && Notification.permission === 'granted' && localStorage.getItem('tv_notif') === '1'){
-    try { new Notification('Traspasos de Vehículos', {body: `Tienes trámites pendientes: ${texto}. Revisa la pantalla Hoy.`}); } catch(e){}
-  }
+  if(!tvAvisoToca()) return;
+  const e = tvAvisoEstado();
+  e.veces++; e.ultimo = Date.now();
+  try { localStorage.setItem(TV_AVISO_KEY, JSON.stringify(e)); } catch(x){}
+  tvMostrarAviso();
 }
-async function tvActivarRecordatorios(){
-  if(!('Notification' in window)){
-    toast('En este dispositivo los recordatorios aparecen en la pantalla Hoy cada vez que abres la app');
-    return;
-  }
-  if(Notification.permission === 'granted' && localStorage.getItem('tv_notif') === '1'){
-    localStorage.setItem('tv_notif', '0'); toast('Recordatorios desactivados'); renderHoy(); return;
-  }
-  let permiso = Notification.permission;
-  if(permiso !== 'granted') permiso = await Notification.requestPermission();
-  if(permiso === 'granted'){
-    localStorage.setItem('tv_notif', '1');
-    const {texto} = tvResumenPendientes();
-    try { new Notification('Traspasos de Vehículos', {body: texto ? `Recordatorios activados. Hoy tienes: ${texto}.` : 'Recordatorios activados. Te avisaremos de los trámites atrasados.'}); } catch(e){}
-    toast('✓ Recordatorios activados');
-  } else {
-    toast('El navegador no dio permiso para avisos. Los verás en la pantalla Hoy.');
-  }
+function tvMostrarAviso(){
+  const pend = records.filter(r => r.estado === 'Pendiente');
+  const dias = r => daysPending(r.fecha);
+  const urg = pend.filter(r => dias(r) >= 30).sort((a, b) => dias(b) - dias(a));
+  const al  = pend.filter(r => dias(r) >= 15 && dias(r) < 30).sort((a, b) => dias(b) - dias(a));
+  if(!urg.length && !al.length) return;
+  const lista = urg.length ? urg : al;
+  const n = lista.length;
+  _tvAvisoTipo = urg.length ? 'urgentes' : 'alerta';
+  const h = new Date().getHours();
+  document.getElementById('tv-aviso-card').className = 'av-card ' + (urg.length ? 'av-rojo' : 'av-naranja');
+  document.getElementById('tv-aviso-kicker').textContent = (h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches') + ', Samuel';
+  document.getElementById('tv-aviso-num').textContent = n;
+  document.getElementById('tv-aviso-titulo').textContent = urg.length
+    ? (n === 1 ? 'trámite con 30 días o más' : 'trámites con 30 días o más')
+    : (n === 1 ? 'trámite lleva entre 15 y 29 días' : 'trámites llevan entre 15 y 29 días');
+  document.getElementById('tv-aviso-texto').innerHTML = urg.length
+    ? `Revísa${n === 1 ? 'lo' : 'los'} por favor y ponte al día con esto. Entre más tiempo pasa, más difícil es cerrarlos.${al.length ? ` <strong>Además, ${plural(al.length, 'trámite lleva', 'trámites llevan')} entre 15 y 29 días.</strong>` : ''}`
+    : `Todavía estás a tiempo: adelánta${n === 1 ? 'lo' : 'los'} antes de que lleguen a 30 días.`;
+  const MAX = 4;
+  document.getElementById('tv-aviso-lista').innerHTML = lista.slice(0, MAX).map(r => {
+    const c = calorDias(r);
+    return `<div class="av-item" style="--calor:${c}">${placaChip(r.placa)}<span class="av-veh">${escHTML(vehiculoLabel(r) || r.tipo)}<small>${escHTML(r.vendedor || '—')}</small></span><span class="av-dias">${dias(r)} días</span></div>`;
+  }).join('') + (n > MAX ? `<div class="av-mas">y ${plural(n - MAX, 'trámite más', 'trámites más')}…</div>` : '');
+  const el = document.getElementById('tv-aviso');
+  el.style.display = 'flex';
+  el.classList.remove('show');
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+  setTimeout(() => { const b = document.getElementById('tv-aviso-ir'); if(b) b.focus({preventScroll: true}); }, 60);
+  sonido('aviso');
+}
+function tvCerrarAviso(){
+  const el = document.getElementById('tv-aviso');
+  el.classList.remove('show');
+  el.style.display = 'none';
+}
+function tvIrAlAviso(){
+  const tipo = _tvAvisoTipo;
+  tvCerrarAviso();
+  irAPanel('hoy');
+  _hoyFiltro = tipo;
   renderHoy();
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
-document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ tvRecordatorioDiario(); if(panelActivo() === 'hoy') renderHoy(); } });
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && tvAvisoAbierto()) tvCerrarAviso(); });
+setInterval(tvRevisarAviso, 60 * 1000);
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ setTimeout(tvRevisarAviso, 800); if(panelActivo() === 'hoy') renderHoy(); } });
 
 // Arranque de las mejoras
 actualizarBadgeHoy();
 renderHoy();
-setTimeout(tvRecordatorioDiario, 1500);
+setTimeout(tvRevisarAviso, 2500);
 
 // ── SONIDOS ──────────────────────────────────────────────────────────────────
 // Tonos cortos generados con Web Audio (sin archivos). Se pueden desactivar en
@@ -3794,14 +4058,20 @@ function sonido(tipo){
     confirmar: [[659,0,0.14],[880,0.08,0.16],[1319,0.16,0.36]], // sube: E5 → A5 → E6
     guardar:   [[988,0,0.12],[1319,0.06,0.22]],                // corto: B5 → E6
     borrar:    [[659,0,0.16],[440,0.11,0.34]],                 // baja: E5 → A4
+    aviso:     [[880,0,0.2],[1109,0.14,0.2],[1319,0.28,0.5],   // campanita A5 → C#6 → E6, dos veces
+                [880,0.95,0.2],[1109,1.09,0.2],[1319,1.23,0.65]],
   }[tipo];
   if(!notas) return;
   const tocar = () => {
     const t = ctx.currentTime + 0.01;
-    notas.forEach(([f, d, dur]) => tvTono(ctx, f, t + d, dur, tipo === 'borrar' ? 0.16 : 0.12, 'sine'));
+    notas.forEach(([f, d, dur]) => tvTono(ctx, f, t + d, dur, tipo === 'borrar' || tipo === 'aviso' ? 0.16 : 0.12, tipo === 'aviso' ? 'triangle' : 'sine'));
   };
-  // Si Safari pausó el audio (por ejemplo, tras una ventana), se espera a reanudarlo
-  if(ctx.state !== 'running') ctx.resume().then(tocar).catch(()=>{});
+  // Si Safari pausó el audio (por ejemplo, tras una ventana), se espera a reanudarlo.
+  // El aviso solo suena si el audio arranca enseguida (no tarde, al cerrarlo).
+  if(ctx.state !== 'running'){
+    const t0 = Date.now();
+    ctx.resume().then(() => { if(tipo !== 'aviso' || (Date.now() - t0 < 500 && tvAvisoAbierto())) tocar(); }).catch(()=>{});
+  }
   else tocar();
 }
 function tvActualizarBotonSonidos(){
