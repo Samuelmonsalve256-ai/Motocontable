@@ -20,6 +20,7 @@ Esta guía te lleva paso a paso para configurar tu proyecto de Supabase.
 | `04_migracion.sql` | Copia datos | Pasa tus datos de `mc_datos` a `mc_registros`, y antes guarda un respaldo |
 | `05_cerrar_tabla_antigua.sql` | Quita el acceso público a `mc_datos` | **Solo al final.** No borra datos |
 | `06_traspasos.sql` | Amplía la lista de colecciones permitidas | Permite guardar Traspasos de Vehículos en la nube (FASE 8). No borra datos |
+| `07_deudores.sql` | Amplía la lista de colecciones permitidas | Permite guardar Mis Deudores en la nube (FASE 9). No borra datos |
 
 Ningún archivo borra la tabla `mc_datos` ni tus datos. Los archivos 01 a 05 se pueden volver a ejecutar sin problema: no duplican ni pisan nada.
 
@@ -227,6 +228,17 @@ Traspasos de Vehículos queda publicado junto a MotoContable, en
 - Al confirmar o descartar un vehículo, se actualiza en todos tus dispositivos.
 - Los trámites se guardan solos en la nube. El indicador de la cabecera muestra «Guardando…», «Guardado en la nube», «Error al guardar» o «Sin conexión».
 - Si ya iniciaste sesión en MotoContable en ese navegador, Traspasos entra solo.
+
+---
+
+## FASE 9: Mis Deudores en la nube
+
+La app **Mis Deudores** (repositorio `DEUDORES`) guarda en la misma tabla `mc_registros`, con la colección `deudores`. Usa la misma cuenta, la misma seguridad y el mismo historial.
+
+1. **SQL Editor → New query**, pega el contenido de `07_deudores.sql` y pulsa **Run**. Debe mostrar la regla con las 10 colecciones.
+2. Sigue los demás pasos del `README.md` del repositorio `DEUDORES` (GitHub Pages, Redirect URL y cómo pasar los datos actuales).
+
+> Si en el futuro un archivo SQL nuevo amplía otra vez la lista de colecciones, debe incluir `'deudores'`, o Mis Deudores dejará de poder guardar en la nube.
 
 ---
 
