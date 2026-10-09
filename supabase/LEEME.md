@@ -21,6 +21,7 @@ Esta guía te lleva paso a paso para configurar tu proyecto de Supabase.
 | `05_cerrar_tabla_antigua.sql` | Quita el acceso público a `mc_datos` | **Solo al final.** No borra datos |
 | `06_traspasos.sql` | Amplía la lista de colecciones permitidas | Permite guardar Traspasos de Vehículos en la nube (FASE 8). No borra datos |
 | `07_deudores.sql` | Amplía la lista de colecciones permitidas | Permite guardar Mis Deudores en la nube (FASE 9). No borra datos |
+| `08_deudores_clientes_y_avisos.sql` | Colecciones, carpeta de fotos y tablas de avisos | Perfiles de clientes, ajustes, comprobantes y notificaciones de Mis Deudores (FASE 10). No borra datos |
 
 Ningún archivo borra la tabla `mc_datos` ni tus datos. Los archivos 01 a 05 se pueden volver a ejecutar sin problema: no duplican ni pisan nada.
 
@@ -238,7 +239,12 @@ La app **Mis Deudores** (repositorio `DEUDORES`) guarda en la misma tabla `mc_re
 1. **SQL Editor → New query**, pega el contenido de `07_deudores.sql` y pulsa **Run**. Debe mostrar la regla con las 10 colecciones.
 2. Sigue los demás pasos del `README.md` del repositorio `DEUDORES` (GitHub Pages, Redirect URL y cómo pasar los datos actuales).
 
-> Si en el futuro un archivo SQL nuevo amplía otra vez la lista de colecciones, debe incluir `'deudores'`, o Mis Deudores dejará de poder guardar en la nube.
+> Si en el futuro un archivo SQL nuevo amplía otra vez la lista de colecciones, debe incluir `'deudores'`, `'deudores_clientes'` y `'deudores_ajustes'`, o Mis Deudores dejará de poder guardar en la nube.
+
+## FASE 10: Perfiles de clientes, fotos y notificaciones de Mis Deudores
+
+1. **SQL Editor → New query**, pega el contenido de `08_deudores_clientes_y_avisos.sql` y pulsa **Run**. Es el mismo archivo que `supabase/deudores-2.sql` del repositorio `DEUDORES`; basta con ejecutar uno de los dos.
+2. Para las notificaciones, sigue los pasos 3 a 5 del `README.md` del repositorio `DEUDORES` (función `deudores-avisos` y `deudores-3-avisos.sql`).
 
 ---
 
