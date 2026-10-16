@@ -20,6 +20,7 @@ Esta guía te lleva paso a paso para configurar tu proyecto de Supabase.
 | `04_migracion.sql` | Copia datos | Pasa tus datos de `mc_datos` a `mc_registros`, y antes guarda un respaldo |
 | `05_cerrar_tabla_antigua.sql` | Quita el acceso público a `mc_datos` | **Solo al final.** No borra datos |
 | `06_traspasos.sql` | Amplía la lista de colecciones permitidas | Permite guardar Traspasos de Vehículos en la nube (FASE 8). No borra datos |
+| `07_fotos.sql` | Crea el bucket privado `fotos` y sus reglas | Guarda las fotos de motos y carros como archivos en Supabase Storage (FASE 9). No toca ninguna tabla ni dato |
 
 Ningún archivo borra la tabla `mc_datos` ni tus datos. Los archivos 01 a 05 se pueden volver a ejecutar sin problema: no duplican ni pisan nada.
 
@@ -227,6 +228,33 @@ Traspasos de Vehículos queda publicado junto a MotoContable, en
 - Al confirmar o descartar un vehículo, se actualiza en todos tus dispositivos.
 - Los trámites se guardan solos en la nube. El indicador de la cabecera muestra «Guardando…», «Guardado en la nube», «Error al guardar» o «Sin conexión».
 - Si ya iniciaste sesión en MotoContable en ese navegador, Traspasos entra solo.
+
+
+---
+
+## FASE 9: Fotos de los vehículos en la nube (Supabase Storage)
+
+Antes, cada foto se guardaba **dentro** de los datos de la moto. Eso llenaba el almacenamiento del navegador (unos 5 MB) y hacía pesada la sincronización. Ahora cada foto es un archivo en Supabase Storage, y en la moto solo queda una referencia corta.
+
+**Paso 1: ejecutar el SQL (una sola vez)**
+1. En Supabase abre **SQL Editor → New query**.
+2. Pega `07_fotos.sql` y pulsa **Run**.
+3. Al final debe mostrar el bucket `fotos` con `public = false` y 4 políticas (`mc_fotos_ver`, `mc_fotos_subir`, `mc_fotos_cambiar`, `mc_fotos_borrar`).
+4. Si quieres verlo, entra a **Storage**: aparece el bucket `fotos` marcado como privado.
+
+**Paso 2: abrir MotoContable**
+1. Recarga MotoContable (en el Mac **Cmd + Opción + R**).
+2. Al entrar, la app sube sola las fotos que ya tenías. Cada foto se reemplaza por su referencia **solo después** de que la subida termina bien: si algo falla, la foto sigue donde estaba y se reintenta.
+3. Para comprobarlo, ve a **Ajustes → Fotos de los vehículos → Ver estado**. Debe decir "N fotos en la nube · 0 solo en este dispositivo · Todo al día ✓".
+
+**Cómo funciona desde ahora:**
+- Al agregar una foto, se comprime (máx. 1280 px, buena calidad) y se sube directo a la nube. Se ve en el Mac y en el iPhone.
+- Las fotos son **privadas**: solo se ven con tu sesión iniciada, y cada usuario solo puede ver su carpeta.
+- Sin internet, la foto se guarda en el dispositivo un momento y se sube sola cuando vuelve la conexión.
+- La misma foto nunca se sube dos veces. Por ejemplo, la foto de la moto y la de su venta usan el mismo archivo.
+- Quitar o cambiar una foto **no borra el archivo** de Storage, por seguridad: se puede recuperar desde el historial.
+- Las versiones antiguas guardadas en `mc_historial` conservan la foto como estaba. No se borran.
+- El plan gratis de Supabase incluye 1 GB de Storage, suficiente para miles de fotos de ~150 KB.
 
 ---
 

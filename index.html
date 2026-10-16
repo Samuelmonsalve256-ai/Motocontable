@@ -456,6 +456,8 @@ textarea{resize:vertical;min-height:65px}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end}
 
 /* ── FOTO ────────────────────────────────────────────── */
+img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.13) 50%,rgba(255,255,255,.04) 100%);background-size:200% 100%;animation:mcFotoBrillo 1.2s linear infinite}
+@keyframes mcFotoBrillo{from{background-position:200% 0}to{background-position:-200% 0}}
 .foto-wrap{position:relative;overflow:hidden}
 .foto-img{width:100%;height:160px;object-fit:cover;display:block;transition:transform .3s}
 .foto-wrap:hover .foto-img{transform:scale(1.03)}
@@ -999,15 +1001,16 @@ textarea{resize:vertical;min-height:65px}
     </div>
   </div>
 
-  <!-- LIBERAR ESPACIO DE FOTOS -->
+  <!-- FOTOS -->
   <div class="card">
-    <div class="card-head"><span class="card-head-title">🗑 Liberar espacio de fotos</span></div>
+    <div class="card-head"><span class="card-head-title">📷 Fotos de los vehículos</span></div>
     <div class="card-body">
-      <p style="font-size:13px;color:var(--text2);margin-bottom:.75rem">Si el sistema no te deja agregar fotos por falta de espacio, usa este botón. <strong>Solo borra las fotos</strong> — todos tus datos de motos, ventas y gastos quedan intactos.</p>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:.75rem">Las fotos se guardan en la nube (Supabase), no en este dispositivo: no llenan el sistema y las ves en el Mac y en el iPhone. Si tomas una foto sin internet, se guarda aquí un momento y se sube sola cuando vuelva la conexión.</p>
       <div id="espacio-info" style="font-size:12px;color:var(--text3);margin-bottom:.85rem"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-ghost" onclick="verEspacioFotos()">📊 Ver cuánto ocupan</button>
-        <button class="btn btn-danger" onclick="liberarEspacioFotos()">🗑 Borrar todas las fotos</button>
+        <button class="btn btn-ghost" onclick="subirFotosAhora()">☁️ Subir fotos pendientes</button>
+        <button class="btn btn-ghost" onclick="verEspacioFotos()">📊 Ver estado</button>
+        <button class="btn btn-danger" onclick="liberarEspacioFotos()">🗑 Borrar fotos que no están en la nube</button>
       </div>
     </div>
   </div>
@@ -1767,6 +1770,8 @@ function mcLimpiarCacheLocal(){
   Object.values(MC_COLS).forEach(c=>{ c.set([]); try{ localStorage.removeItem(c.key); }catch(e){} });
   cfgData = {}; try{ localStorage.removeItem(KEY_CFG); }catch(e){}
   try{ localStorage.removeItem(MC_SYNC_KEY); }catch(e){}
+  try{ localStorage.removeItem(MC_FOTOS_URLS_KEY); }catch(e){}
+  _mcFotoUrls = {};
   _mcEstado = null;
 }
 
@@ -1877,6 +1882,8 @@ async function mcConSesion(session){
   if(_mcRecuperacion) mcMostrarLogin('nueva');
   await mcSincronizar('inicio', {reconciliar:true});
   mcCargarTraspasos();
+  mcSubirFotosPendientes();
+  mcHidratarFotos();
 }
 function mcSuscribirTiempoReal(uid){
   if(_mcCanal || !_supa.channel) return;
@@ -1890,7 +1897,7 @@ function mcSuscribirTiempoReal(uid){
 function mcRegistrarEventos(){
   if(_mcEventosListos) return;
   _mcEventosListos = true;
-  window.addEventListener('online',  ()=>{ _mcFallos = 0; mcGuardarAhora('online'); });
+  window.addEventListener('online',  ()=>{ _mcFallos = 0; mcGuardarAhora('online'); setTimeout(mcSubirFotosPendientes, 1500); });
   window.addEventListener('offline', ()=>mcActualizarIndicador());
   document.addEventListener('visibilitychange', ()=>{
     if(document.visibilityState==='hidden') mcGuardarAhora('oculta');
@@ -1898,7 +1905,7 @@ function mcRegistrarEventos(){
   });
   window.addEventListener('pagehide', mcEnvioDeEmergencia);
   window.addEventListener('pageshow', e=>{ if(e.persisted) mcSincronizar('pageshow'); });
-  setInterval(()=>{ if(document.visibilityState==='visible') mcSincronizar('periodico'); }, 60000);
+  setInterval(()=>{ if(document.visibilityState==='visible'){ mcSincronizar('periodico'); mcSubirFotosPendientes(); } }, 60000);
 }
 async function mcIniciar(){
   try { if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
@@ -2363,7 +2370,7 @@ function renderMotos(){
             <div id="fw-moto-${mo.id}" style="position:relative;flex-shrink:0">
               ${mo.foto
                 ? `<div style="position:relative">
-                     <img src="${mo.foto}" ondblclick="abrirVisor(this.src)" title="Doble clic para ver en grande"
+                     <img ${mcFotoAttr(mo.foto)} ondblclick="abrirVisor(this.src)" title="Doble clic para ver en grande"
                        style="width:90px;height:90px;border-radius:12px;object-fit:cover;cursor:zoom-in;border:2px solid var(--accent);display:block">
                      <div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:3px">
                        <button onclick="abrirFoto('moto','${mo.id}')" title="Cambiar foto"
@@ -3586,13 +3593,168 @@ function elimGastoVenta(id,idx){
   saveVentas();renderVentas();toast('Gasto eliminado');
 }
 
+// ── FOTOS EN LA NUBE (Supabase Storage) ──────────────────────────────────────
+// Las fotos se guardan como archivos en el bucket privado 'fotos' (ver
+// supabase/07_fotos.sql). En la moto/carro solo queda una referencia corta
+// "sb:<usuario>/fotos/<huella>.jpg". El nombre es la huella del contenido, así
+// la misma foto nunca se sube dos veces. Las fotos viejas (guardadas dentro de
+// los datos) se suben solas y solo se reemplazan cuando la subida terminó bien.
+const MC_FOTOS_BUCKET   = 'fotos';
+const MC_FOTOS_URLS_KEY = 'mc_fotos_urls';
+const MC_FOTO_URL_DIAS  = 7;
+const MC_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+let _mcFotoUrls = (()=>{ try { return JSON.parse(localStorage.getItem(MC_FOTOS_URLS_KEY) || '{}') || {}; } catch(e){ return {}; } })();
+const _mcFotoLocal = {};        // referencia → imagen ya disponible en esta sesión
+let _mcFotosNube = null;        // null: sin probar · true: lista · false: falta 07_fotos.sql
+let _mcFotosFalloEn = 0;
+let _mcSubiendoFotos = null;
+let _mcHidratarTimer = null;
+
+function mcEsFotoNube(f){ return typeof f === 'string' && f.startsWith('sb:'); }
+function mcEsFotoLocal(f){ return typeof f === 'string' && f.startsWith('data:image'); }
+function mcFotosNubeDisponible(){
+  return !!(_supa && _supa.storage && _mcSesion && _mcEstadoListo && navigator.onLine &&
+            (_mcFotosNube !== false || Date.now() - _mcFotosFalloEn > 10 * 60 * 1000));
+}
+function mcGuardarFotoUrls(){
+  const ahora = Date.now();
+  Object.keys(_mcFotoUrls).forEach(k => { if(!_mcFotoUrls[k] || _mcFotoUrls[k].exp < ahora) delete _mcFotoUrls[k]; });
+  try { localStorage.setItem(MC_FOTOS_URLS_KEY, JSON.stringify(_mcFotoUrls)); } catch(e){}
+}
+function mcFotoSrc(f){
+  if(!mcEsFotoNube(f)) return f || '';
+  if(_mcFotoLocal[f]) return _mcFotoLocal[f];
+  const c = _mcFotoUrls[f];
+  return c && c.exp > Date.now() + 3600 * 1000 ? c.url : '';
+}
+// Atributos para <img>: si la foto es de la nube y aún no hay enlace, se pide
+// enseguida (en lote) y mientras tanto se muestra un brillo de carga.
+function mcFotoAttr(f){
+  const src = mcFotoSrc(f);
+  if(src) return `src="${src}"`;
+  clearTimeout(_mcHidratarTimer);
+  _mcHidratarTimer = setTimeout(mcHidratarFotos, 0);
+  return `src="${MC_PIXEL}" data-sbfoto="${String(f).replace(/"/g, '')}"`;
+}
+async function mcHidratarFotos(){
+  const imgs = [...document.querySelectorAll('img[data-sbfoto]')];
+  if(!imgs.length) return;
+  const faltan = [...new Set(imgs.map(i => i.dataset.sbfoto).filter(f => !mcFotoSrc(f)))];
+  if(faltan.length && _supa && _supa.storage && _mcSesion && navigator.onLine){
+    try {
+      const {data, error} = await _supa.storage.from(MC_FOTOS_BUCKET)
+        .createSignedUrls(faltan.map(f => f.slice(3)), MC_FOTO_URL_DIAS * 86400);
+      if(!error && Array.isArray(data)){
+        const exp = Date.now() + MC_FOTO_URL_DIAS * 86400 * 1000;
+        data.forEach(d => { if(d && d.signedUrl && !d.error) _mcFotoUrls['sb:' + d.path] = {url: d.signedUrl, exp}; });
+        mcGuardarFotoUrls();
+      }
+    } catch(e){ console.log('No se pudieron pedir las fotos:', e && e.message); }
+  }
+  imgs.forEach(i => {
+    const src = mcFotoSrc(i.dataset.sbfoto);
+    if(src){ i.src = src; i.removeAttribute('data-sbfoto'); }
+  });
+}
+function mcComprimirFoto(img, maxW, calidad){
+  return new Promise((ok, mal) => {
+    const canvas = document.createElement('canvas');
+    const lado = Math.max(img.width, img.height);
+    const scale = lado > maxW ? maxW / lado : 1;
+    canvas.width  = Math.round(img.width  * scale);
+    canvas.height = Math.round(img.height * scale);
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob(b => b ? ok(b) : mal(new Error('No se pudo comprimir la foto')), 'image/jpeg', calidad);
+  });
+}
+function mcDataUrlABlob(d){
+  const coma = d.indexOf(',');
+  const tipo = (d.slice(0, coma).match(/data:([^;]+)/) || [])[1] || 'image/jpeg';
+  const bin = atob(d.slice(coma + 1));
+  const u = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  return new Blob([u], {type: tipo});
+}
+async function mcHuella(blob){
+  const h = await crypto.subtle.digest('SHA-256', await blob.arrayBuffer());
+  return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
+}
+async function mcSubirFotoBlob(blob){
+  if(!mcFotosNubeDisponible()) return null;
+  const tipo = ['image/png', 'image/webp'].includes(blob.type) ? blob.type : 'image/jpeg';
+  const ext = tipo === 'image/png' ? 'png' : tipo === 'image/webp' ? 'webp' : 'jpg';
+  const path = `${_mcSesion.user.id}/fotos/${await mcHuella(blob)}.${ext}`;
+  const {error} = await _supa.storage.from(MC_FOTOS_BUCKET)
+    .upload(path, blob, {contentType: tipo, upsert: true, cacheControl: '31536000'});
+  if(error){
+    if(/bucket not found/i.test(error.message || '') || String(error.statusCode) === '404'){ _mcFotosNube = false; _mcFotosFalloEn = Date.now(); }
+    throw error;
+  }
+  _mcFotosNube = true;
+  return 'sb:' + path;
+}
+// Sube las fotos que todavía están guardadas dentro de los datos (las viejas o
+// las tomadas sin conexión). Nunca borra nada: solo cambia la foto por su
+// referencia cuando la subida terminó bien y la foto no cambió mientras tanto.
+function mcFotosPorSubir(){
+  const p = [];
+  motos.forEach(o  => { if(mcEsFotoLocal(o.foto)) p.push({col:'motos', id:o.id, campo:'foto', valor:o.foto}); });
+  carros.forEach(o => { if(mcEsFotoLocal(o.foto)) p.push({col:'carros', id:o.id, campo:'foto', valor:o.foto}); });
+  ventas.forEach(o => { if(mcEsFotoLocal(o.fotoVehiculo)) p.push({col:'ventas', id:o.id, campo:'fotoVehiculo', valor:o.fotoVehiculo}); });
+  return p;
+}
+function mcSubirFotosPendientes(){
+  if(_mcSubiendoFotos) return _mcSubiendoFotos;
+  const pendientes = mcFotosPorSubir();
+  if(!pendientes.length || !mcFotosNubeDisponible()) return Promise.resolve(0);
+  _mcSubiendoFotos = (async () => {
+    const listas = {motos: () => motos, carros: () => carros, ventas: () => ventas};
+    const subidas = {}, tocadas = new Set();
+    let n = 0;
+    for(const p of pendientes){
+      try {
+        const ref = subidas[p.valor] || await mcSubirFotoBlob(mcDataUrlABlob(p.valor));
+        if(!ref) break;
+        subidas[p.valor] = ref;
+        _mcFotoLocal[ref] = p.valor;
+        const actual = listas[p.col]().find(x => x.id === p.id);
+        if(actual && actual[p.campo] === p.valor){ actual[p.campo] = ref; tocadas.add(p.col); n++; }
+      } catch(e){
+        console.log('No se pudo subir una foto:', e && e.message);
+        if(_mcFotosNube === false || !navigator.onLine) break;
+      }
+    }
+    if(tocadas.has('motos'))  saveMotos();
+    if(tocadas.has('carros')) saveCarros();
+    if(tocadas.has('ventas')) saveVentas();
+    if(document.getElementById('espacio-info')) verEspacioFotos();
+    return n;
+  })().finally(() => { _mcSubiendoFotos = null; });
+  return _mcSubiendoFotos;
+}
+async function subirFotosAhora(){
+  if(!_mcSesion){ toast('Inicia sesión para subir las fotos a la nube','err'); return; }
+  if(!navigator.onLine){ toast('Sin conexión: las fotos se subirán cuando vuelva el internet','err'); return; }
+  const antes = mcFotosPorSubir().length;
+  if(!antes){ toast('✓ Todas las fotos ya están en la nube'); verEspacioFotos(); return; }
+  _mcFotosFalloEn = 0;
+  if(_mcFotosNube === false) _mcFotosNube = null;
+  toast('Subiendo ' + antes + ' foto' + (antes !== 1 ? 's' : '') + '…');
+  const n = await mcSubirFotosPendientes();
+  const faltan = mcFotosPorSubir().length;
+  if(_mcFotosNube === false) toast('Falta activar las fotos en Supabase (archivo 07_fotos.sql)','err');
+  else if(faltan) toast(`Se subieron ${n}; faltan ${faltan}. Se reintentará solo.`,'err');
+  else toast('✓ ' + antes + ' foto' + (antes !== 1 ? 's' : '') + ' subida' + (antes !== 1 ? 's' : '') + ' a la nube');
+  verEspacioFotos();
+}
+
 // ── FOTOS DE VEHÍCULO ─────────────────────────────────────────────────────────
 let _fotoTipo = '', _fotoId = '';
 
 function fotoHtml(tipo, id, foto, avatarIco){
   if(foto){
     return `<div class="foto-wrap" id="fw-${tipo}-${id}">
-      <img class="foto-img" src="${foto}" alt="foto">
+      <img class="foto-img" ${mcFotoAttr(foto)} alt="foto">
       <button class="foto-btn-cambiar" onclick="abrirFoto('${tipo}','${id}')">📷 Cambiar foto</button>
       <button class="foto-btn-quitar" onclick="borrarFoto('${tipo}','${id}')">🗑</button>
     </div>`;
@@ -3636,51 +3798,71 @@ document.addEventListener('DOMContentLoaded', ()=>{
     reader.onload = e => {
       const img = new Image();
       img.onload = () => {
-        const comprimir = (maxW, calidad) => {
-          const canvas = document.createElement('canvas');
-          const scale  = img.width > maxW ? maxW / img.width : 1;
-          canvas.width  = Math.round(img.width  * scale);
-          canvas.height = Math.round(img.height * scale);
-          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-          return canvas.toDataURL('image/jpeg', calidad);
-        };
         const tipo = _fotoTipo, id = _fotoId;
-        const guardar = (b64) => {
+        _fotoTipo=''; _fotoId='';
+        const guardar = (valor) => {
           try {
             if(tipo==='carro'){
               const ca=carros.find(c=>c.id===id); if(!ca) return false;
-              const prev=ca.foto; ca.foto=b64;
+              const prev=ca.foto; ca.foto=valor;
               try{ saveCarros(); return true; }catch(e){ ca.foto=prev; return false; }
             } else {
               const mo=motos.find(m=>m.id===id); if(!mo) return false;
-              const prev=mo.foto; mo.foto=b64;
+              const prev=mo.foto; mo.foto=valor;
               try{ saveMotos(); return true; }catch(e){ mo.foto=prev; return false; }
             }
           } catch(e){ return false; }
         };
-        const configs=[{maxW:600,q:0.6},{maxW:400,q:0.5},{maxW:300,q:0.4},{maxW:200,q:0.35},{maxW:150,q:0.3}];
-        let b64Final=null;
-        for(const cfg of configs){
-          const b64=comprimir(cfg.maxW,cfg.q);
-          if(guardar(b64)){ b64Final=b64; break; }
-        }
-        if(!b64Final){
-          toast('Sin espacio. Ve a Ajustes → Liberar espacio de fotos.','err');
-          _fotoTipo=''; _fotoId=''; return;
-        }
-        const wrap=document.getElementById(`fw-${tipo}-${id}`);
-        if(wrap){
+        const pintar = (valor) => {
+          const wrap=document.getElementById(`fw-${tipo}-${id}`);
+          if(!wrap) return;
           const borde=tipo==='carro'?'var(--blue)':'var(--accent)';
           wrap.innerHTML=`<div style="position:relative">
-            <img src="${b64Final}" ondblclick="abrirVisor(this.src)" title="Doble clic para ver en grande"
+            <img ${mcFotoAttr(valor)} ondblclick="abrirVisor(this.src)" title="Doble clic para ver en grande"
               style="width:90px;height:90px;border-radius:12px;object-fit:cover;cursor:zoom-in;border:2px solid ${borde};display:block">
             <div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:3px">
               <button onclick="abrirFoto('${tipo}','${id}')" style="background:rgba(0,0,0,.7);border:none;border-radius:5px;color:#fff;font-size:10px;padding:2px 6px;cursor:pointer;font-family:inherit">📷</button>
               <button onclick="borrarFoto('${tipo}','${id}')" style="background:rgba(255,69,96,.8);border:none;border-radius:5px;color:#fff;font-size:10px;padding:2px 6px;cursor:pointer;font-family:inherit">✕</button>
             </div></div>`;
-        }
-        toast('Foto guardada ✓');
-        _fotoTipo=''; _fotoId='';
+        };
+        // Respaldo: si no hay nube, se guarda pequeña en este dispositivo
+        // (como antes) y se sube sola apenas haya conexión.
+        const guardarLocal = () => {
+          const comprimir = (maxW, calidad) => {
+            const canvas = document.createElement('canvas');
+            const scale  = img.width > maxW ? maxW / img.width : 1;
+            canvas.width  = Math.round(img.width  * scale);
+            canvas.height = Math.round(img.height * scale);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg', calidad);
+          };
+          const configs=[{maxW:600,q:0.6},{maxW:400,q:0.5},{maxW:300,q:0.4},{maxW:200,q:0.35},{maxW:150,q:0.3}];
+          for(const cfg of configs){
+            const b64=comprimir(cfg.maxW,cfg.q);
+            if(guardar(b64)) return b64;
+          }
+          return null;
+        };
+        (async () => {
+          let ref = null;
+          if(mcFotosNubeDisponible()){
+            toast('Subiendo foto a la nube…');
+            try {
+              const blob = await mcComprimirFoto(img, 1280, 0.82);
+              ref = await mcSubirFotoBlob(blob);
+              if(ref) _mcFotoLocal[ref] = URL.createObjectURL(blob);
+            } catch(e){ console.log('No se pudo subir la foto:', e && e.message); ref = null; }
+          }
+          if(ref && guardar(ref)){
+            pintar(ref);
+            toast('Foto guardada en la nube ✓');
+            return;
+          }
+          const b64 = guardarLocal();
+          if(!b64){ toast('Sin espacio. Ve a Ajustes → Fotos.','err'); return; }
+          pintar(b64);
+          toast(_mcSesion ? 'Foto guardada en este dispositivo · se subirá a la nube cuando se pueda' : 'Foto guardada ✓');
+        })();
       };
       img.onerror=()=>{ toast('Error al leer la imagen','err'); _fotoTipo=''; _fotoId=''; };
       img.src=e.target.result;
@@ -3810,15 +3992,19 @@ function verEspacioFotos(){
   Object.keys(localStorage).forEach(k=>{ totalLS+=localStorage.getItem(k)?.length||0; });
   const kb    = Math.round(totalBytes/1024);
   const totalKb = Math.round(totalLS/1024);
+  const enNube = [...motos, ...carros].filter(o=>mcEsFotoNube(o.foto)).length;
+  const estadoNube = !_mcSesion ? 'Inicia sesión para guardar las fotos en la nube.'
+    : _mcFotosNube === false ? '<span style="color:var(--red);font-weight:600">Falta activar las fotos en Supabase (archivo 07_fotos.sql).</span>'
+    : cantFotos ? 'Las fotos de este dispositivo se subirán solas a la nube.' : 'Todo al día ✓';
   const el = document.getElementById('espacio-info');
   if(el) el.innerHTML =
-    '📷 <strong>'+cantFotos+' foto'+(cantFotos!==1?'s':'')+'</strong> ocupando <strong>'+kb+' KB</strong> de los ~5120 KB disponibles.<br>'+
+    '☁️ <strong>'+enNube+' foto'+(enNube!==1?'s':'')+'</strong> en la nube · 📱 <strong>'+cantFotos+'</strong> solo en este dispositivo ('+kb+' KB). '+estadoNube+'<br>'+
     '💾 Total usado en sistema: <strong>'+totalKb+' KB</strong> de ~5120 KB'+
     (totalKb>4500?'<br><span style="color:var(--red);font-weight:600">⚠️ Almacenamiento casi lleno — libera espacio.</span>':'');
 }
 
 function liberarEspacioFotos(){
-  confirm2('🗑 Borrar todas las fotos','¿Eliminar todas las fotos del inventario? Los datos de motos, ventas y gastos NO se borran.',()=>{
+  confirm2('🗑 Borrar fotos que no están en la nube','¿Eliminar las fotos que todavía no se han subido a la nube? Las fotos que ya están en la nube y los datos de motos, ventas y gastos NO se borran.',()=>{
     let borradas=0;
     // Borrar fotos embebidas en motos
     motos.forEach(mo=>{ if(mo.foto?.startsWith('data:image')){ mo.foto=''; borradas++; } });
@@ -4478,7 +4664,7 @@ function renderCarros(){
             <div id="fw-carro-${ca.id}" style="position:relative;flex-shrink:0">
               ${ca.foto
                 ? `<div style="position:relative">
-                     <img src="${ca.foto}" ondblclick="abrirVisor(this.src)" title="Doble clic para ver en grande"
+                     <img ${mcFotoAttr(ca.foto)} ondblclick="abrirVisor(this.src)" title="Doble clic para ver en grande"
                        style="width:90px;height:90px;border-radius:12px;object-fit:cover;cursor:zoom-in;border:2px solid var(--blue);display:block">
                      <div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:3px">
                        <button onclick="abrirFoto('carro','${ca.id}')" title="Cambiar foto"
