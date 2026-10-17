@@ -2,7 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0e0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>MotoContable – Control Financiero</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -455,6 +458,179 @@ textarea{resize:vertical;min-height:65px}
 .modal-sub{font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.55}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end}
 
+
+/* ════════════════════════════════════════════════════════════════════
+   IPHONE (pantallas de 760 px o menos). En el Mac nada de esto se ve.
+   ════════════════════════════════════════════════════════════════════ */
+#mc-top,#mc-tabs,.mc-hoja,.mc-hoja-fondo{display:none}
+@media (max-width:760px){
+  html,body{overflow-x:hidden}
+  body{font-size:14px;-webkit-text-size-adjust:100%}
+  .sidebar{display:none}
+  .shell{display:block}
+  .main{padding:calc(68px + env(safe-area-inset-top)) 14px calc(104px + env(safe-area-inset-bottom));overflow-x:hidden}
+
+  /* Barra superior */
+  #mc-top{display:flex;align-items:center;gap:8px;position:fixed;top:0;left:0;right:0;z-index:600;
+    padding:calc(10px + env(safe-area-inset-top)) 14px 10px;
+    background:rgba(14,14,26,.86);backdrop-filter:saturate(1.4) blur(16px);-webkit-backdrop-filter:saturate(1.4) blur(16px);
+    border-bottom:1px solid var(--border)}
+  .mt-marca{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+  .mt-logo{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--accent) 0%,#1855cc 100%);box-shadow:0 4px 14px rgba(42,127,255,.35)}
+  .mt-nombre{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16.5px;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mt-btn{height:34px;min-width:34px;border-radius:11px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-size:15px;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 9px;font-family:inherit;cursor:pointer}
+  .mt-sync span{font-size:11.5px;font-weight:600;color:var(--text2)}
+  .mt-sync i{width:8px;height:8px;border-radius:50%;background:var(--text3);box-shadow:0 0 0 3px rgba(255,255,255,.06)}
+  .mt-sync[data-estado="guardado"] i{background:var(--green);box-shadow:0 0 0 3px rgba(0,214,143,.18)}
+  .mt-sync[data-estado="guardando"] i,.mt-sync[data-estado="cargando"] i{background:var(--accent);animation:mtLatido 1s infinite}
+  .mt-sync[data-estado="error"] i{background:var(--red)}
+  .mt-sync[data-estado^="sin-"] i{background:var(--amber)}
+  @keyframes mtLatido{50%{opacity:.35}}
+
+  /* Barra de pestañas */
+  #mc-tabs{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:600;align-items:flex-end;
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom));
+    background:rgba(14,14,26,.9);backdrop-filter:saturate(1.4) blur(18px);-webkit-backdrop-filter:saturate(1.4) blur(18px);
+    border-top:1px solid var(--border2)}
+  .mtab{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;
+    color:var(--text3);font:600 10.5px/1.2 'Inter',sans-serif;padding:6px 2px 4px;border-radius:12px;cursor:pointer}
+  .mtab span{font-size:21px;line-height:1;filter:grayscale(1);opacity:.65;transition:.15s}
+  .mtab.activa{color:var(--text)}
+  .mtab.activa span{filter:none;opacity:1;transform:translateY(-1px)}
+  .mtab.activa::before{content:'';position:absolute;top:-6px;left:50%;width:22px;height:3px;margin-left:-11px;border-radius:3px;background:var(--accent)}
+  .mtab-mas-nuevo b{width:52px;height:52px;margin-top:-26px;border-radius:17px;display:flex;align-items:center;justify-content:center;
+    font-size:28px;font-weight:400;color:#fff;background:linear-gradient(135deg,var(--accent),#1855cc);
+    box-shadow:0 10px 24px -6px rgba(42,127,255,.75),0 0 0 4px var(--bg)}
+  .mtab-n{position:absolute;top:0;right:calc(50% - 22px);min-width:17px;height:17px;padding:0 5px;border-radius:9px;
+    background:var(--red);color:#fff;font:700 10px/17px 'Inter',sans-serif;font-style:normal}
+  .mtab-n:empty{display:none}
+
+  /* Hojas que suben desde abajo */
+  .mc-hoja-fondo{display:block;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s}
+  .mc-hoja-fondo.abierta{opacity:1;pointer-events:auto}
+  .mc-hoja{display:block;position:fixed;left:0;right:0;bottom:0;z-index:710;max-height:85vh;overflow:auto;
+    background:var(--bg2);border-top:1px solid var(--border2);border-radius:24px 24px 0 0;
+    padding:8px 16px calc(18px + env(safe-area-inset-bottom));transform:translateY(105%);visibility:hidden;transition:transform .32s cubic-bezier(.2,.9,.3,1),visibility 0s linear .32s}
+  .mc-hoja.abierta{transform:none;visibility:visible;transition:transform .32s cubic-bezier(.2,.9,.3,1),visibility 0s}
+  .mh-asa{width:40px;height:5px;border-radius:3px;background:var(--border3);margin:4px auto 12px}
+  .mh-titulo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;margin:0 2px 12px}
+  .mh-fila{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:13px 12px;margin-bottom:8px;border-radius:16px;
+    background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:inherit;cursor:pointer}
+  .mh-fila strong{display:block;font-size:15px}
+  .mh-fila small{display:block;font-size:12px;color:var(--text2)}
+  .mh-ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .mh-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .mh-cuadro{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:15px 6px 13px;border-radius:16px;
+    background:var(--bg3);border:1px solid var(--border);color:var(--text);font:600 12px/1.2 'Inter',sans-serif;cursor:pointer}
+  .mh-cuadro span{font-size:24px}
+  .mh-cuadro .mtab-n{top:8px;right:10px}
+  .mh-cuenta{font-size:11.5px;color:var(--text3);text-align:center;margin-top:14px}
+
+  /* Títulos y encabezados */
+  .page-header{margin-bottom:1.1rem}
+  .page-header[style*="display:flex"]{flex-wrap:wrap;gap:10px}
+  .page-header .btn-primary{display:none}
+  .page-title{font-size:22px;line-height:1.2}
+  .page-sub{font-size:12.5px}
+
+  /* Indicadores: dos por fila */
+  .metrics-grid,[style*="repeat(auto-fit,minmax(160px,1fr))"],[style*="repeat(auto-fill,minmax(170px,1fr))"]{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .metric-card{padding:.8rem .85rem .75rem}
+  .metric-label{font-size:9.5px;margin-bottom:5px}
+  .metric-value{font-size:17.5px}
+  [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:1fr 1fr!important}
+  [style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr!important}
+  [style*="grid-template-columns:1fr 1fr;"],[style*="grid-template-columns:1fr 1fr\""]{grid-template-columns:1fr!important}
+
+  /* Tarjetas, tablas y listas */
+  .card{border-radius:16px;margin-bottom:1rem}
+  .card-head{padding:.8rem 1rem;flex-wrap:wrap;gap:6px}
+  .card-body{padding:1rem}
+  .card:has(table){overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .card table{min-width:560px}
+  th{padding:8px 10px;font-size:10px}
+  td{padding:9px 10px;font-size:12.5px}
+  .motos-grid,[style*="repeat(auto-fill,minmax(340px,1fr))"]{grid-template-columns:1fr!important}
+  .moto-card{border-radius:18px}
+  .moto-card-hd{padding:1rem}
+  .moto-stats{padding:.8rem 1rem}
+  .moto-docs,.gastos-lista{padding:.8rem 1rem}
+
+  /* Formularios: una columna y letra de 16 px (el iPhone no hace zoom) */
+  .form-grid,.form-grid3{grid-template-columns:1fr!important}
+  input,select,textarea{font-size:16px!important}
+  .btn{min-height:42px}
+  .btn-sm{min-height:36px}
+
+  /* Ventanas */
+  .modal,.modal-box,[id^="modal-"] > div{max-width:100%!important;width:100%!important}
+  [id^="modal-"]{padding:12px!important;align-items:flex-end!important}
+  [id^="modal-"] > div{max-height:88vh;overflow-y:auto;border-radius:22px!important}
+  #modal-celebracion{align-items:center!important}
+
+  /* Ventas */
+  .vta-nums{display:grid!important;grid-template-columns:1fr 1fr;width:100%}
+  .vta-nums > div{min-width:0!important}
+  .vta-acc{width:100%;justify-content:flex-end}
+  .vta-acc .btn{min-height:38px;min-width:42px}
+
+  /* Filas para agregar gastos: concepto arriba, valor y botón abajo */
+  .add-gasto-form,div:has(> input[id^="gvn-"]){display:flex!important;flex-wrap:wrap;gap:8px}
+  .add-gasto-form input[type="text"],div:has(> input[id^="gvn-"]) input[type="text"]{flex:1 1 100%!important;width:100%!important}
+  .add-gasto-form input[type="number"],div:has(> input[id^="gvn-"]) input[type="number"]{flex:1 1 0!important;min-width:0!important;width:auto!important}
+
+  /* Papelera */
+  .pap-item{flex-wrap:wrap}
+  .pap-acc{width:100%;justify-content:stretch}
+  .pap-acc .btn{flex:1}
+
+  /* Avisos flotantes por encima de la barra de pestañas */
+  #toast{left:14px;right:14px;bottom:calc(96px + env(safe-area-inset-bottom));justify-content:center}
+  html #mc-notifs{top:calc(62px + env(safe-area-inset-top));left:12px;right:12px;width:auto}
+  #mc-aviso{z-index:960}
+}
+/* ── NOTIFICACIONES DE ACCIONES ─────────────────────────── */
+#mc-notifs{position:fixed;top:18px;right:18px;z-index:1000;display:flex;flex-direction:column;gap:10px;width:min(370px,calc(100vw - 28px));pointer-events:none}
+.mcn{pointer-events:auto;position:relative;overflow:hidden;display:flex;gap:12px;align-items:flex-start;padding:13px 40px 14px 14px;border-radius:16px;
+  background:rgba(26,26,40,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--border2);
+  box-shadow:0 18px 44px rgba(0,0,0,.55);transform:translateX(30px) scale(.97);opacity:0;transition:transform .35s cubic-bezier(.2,1.2,.4,1),opacity .25s}
+.mcn.show{transform:none;opacity:1}
+.mcn.salir{transform:translateX(30px);opacity:0}
+.mcn-ico{width:36px;height:36px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;background:var(--c2);color:var(--c)}
+.mcn{--c:var(--green);--c2:rgba(0,214,143,.15)}
+.mcn-agregar{--c:var(--accent);--c2:rgba(42,127,255,.16)}
+.mcn-borrar{--c:var(--red);--c2:rgba(255,61,107,.15)}
+.mcn-foto{--c:var(--purple);--c2:rgba(155,113,255,.16)}
+.mcn-restaurar{--c:#38bdf8;--c2:rgba(56,189,248,.15)}
+.mcn-confirmar{--c:var(--green);--c2:rgba(0,214,143,.15)}
+.mcn-txt{flex:1;min-width:0}
+.mcn-txt strong{display:block;font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--text);line-height:1.3}
+.mcn-txt span{display:block;font-size:12.5px;color:var(--text2);line-height:1.45;margin-top:2px;word-wrap:break-word}
+.mcn-acc{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+.mcn-acc:empty{display:none}
+.mcn-acc button{font:600 12px/1 'Inter',sans-serif;padding:7px 12px;border-radius:9px;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text)}
+.mcn-acc button:first-child{background:var(--c2);border-color:transparent;color:var(--c)}
+.mcn-x{position:absolute;top:9px;right:9px;width:24px;height:24px;border-radius:50%;border:none;background:transparent;color:var(--text3);cursor:pointer;font-size:12px}
+.mcn-x:hover{background:var(--bg4);color:var(--text)}
+.mcn-barra{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--c);opacity:.7;transform-origin:left;animation:mcnBarra linear forwards}
+@keyframes mcnBarra{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@media (prefers-reduced-motion: reduce){.mcn{transition:none}.mcn-barra{animation:none;display:none}}
+/* ── PAPELERA ─────────────────────────────────────────── */
+.nav-count{margin-left:auto;font-size:10px;font-weight:700;color:var(--red);background:var(--red2);border-radius:20px;padding:0 7px;line-height:17px}
+.nav-count:empty{display:none}
+.nav-count + .nav-dot{margin-left:8px!important}
+.pap-lista{display:flex;flex-direction:column;gap:10px}
+.pap-item{display:flex;gap:14px;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px}
+.pap-foto{width:58px;height:58px;border-radius:12px;object-fit:cover;flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid var(--border2)}
+.pap-info{flex:1;min-width:0}
+.pap-nombre{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14.5px;color:var(--text)}
+.pap-sub{font-size:11.5px;color:var(--text2);margin-top:1px}
+.pap-cuando{font-size:11px;color:var(--text3);margin-top:3px}
+.pap-acc{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+.pap-vacia{text-align:center;padding:3rem 1rem;color:var(--text2);background:var(--bg2);border:1px dashed var(--border2);border-radius:var(--r2)}
+.pap-vacia .grande{font-size:38px;margin-bottom:6px}
 /* ── AVISO DEL DÍA ─────────────────────────────────────── */
 #mc-aviso{position:fixed;inset:0;z-index:960;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;transition:opacity .25s}
 #mc-aviso.show{opacity:1}
@@ -569,12 +745,22 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
     <div class="nav-item" onclick="go('metas')"><span class="nav-ico">🎯</span>Mis metas<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('contactos')"><span class="nav-ico">👥</span>Contactos<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('ajustes')"><span class="nav-ico">🎨</span>Personalizar paneles<div class="nav-dot" style="margin-left:auto"></div></div>
+    <div class="nav-item" onclick="go('papelera')"><span class="nav-ico">🗑</span>Papelera<span class="nav-count" id="nav-papelera-n"></span><div class="nav-dot" style="margin-left:auto"></div></div>
   </nav>
   <div class="sidebar-footer"><p id="sync-cuenta">Datos guardados en la nube.</p><div id="sync-indicator" style="font-size:11px;color:var(--text3);margin-top:2px;cursor:pointer" onclick="sincronizarAhora()" title="Toca para sincronizar">☁️ Nube</div></div>
 </div>
 
 <!-- MAIN -->
 <div class="main">
+
+<!-- PAPELERA -->
+<div class="page" id="page-papelera">
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+    <div><div class="page-title">🗑 Papelera</div><div class="page-sub">Lo que eliminas queda aquí. Puedes restaurarlo cuando quieras, en todos tus dispositivos.</div></div>
+    <button class="btn btn-ghost btn-sm" id="btn-vaciar-papelera" onclick="vaciarPapelera()">Vaciar papelera</button>
+  </div>
+  <div id="papelera-lista"></div>
+</div>
 
 <!-- RESUMEN -->
 <div class="page active" id="page-resumen">
@@ -1042,6 +1228,22 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
     </div>
   </div>
 
+  <!-- SONIDOS -->
+  <div class="card">
+    <div class="card-head"><span class="card-head-title">🔊 Sonidos y notificaciones</span></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:.75rem">Cada acción tiene su sonido y una notificación en pantalla: ingresar o modificar un vehículo, agregar un gasto, agregar una foto, eliminar y restaurar. En el iPhone no se oyen si está en silencio.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost" id="btn-sonidos" onclick="mcAlternarSonidos()">🔊 Sonidos activados</button>
+        <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('agregar')">Ingresar</button>
+        <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('guardar')">Modificar</button>
+        <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('foto')">Foto</button>
+        <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('borrar')">Eliminar</button>
+        <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('restaurar')">Restaurar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- FOTOS -->
   <div class="card">
     <div class="card-head"><span class="card-head-title">📷 Fotos de los vehículos</span></div>
@@ -1168,6 +1370,46 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
       <button class="btn btn-primary" id="mc-pregunta-si">Aceptar</button>
     </div>
   </div>
+</div>
+
+<div id="mc-notifs" aria-live="polite"></div>
+
+<!-- ── INTERFAZ DEL IPHONE (solo se ve en pantallas pequeñas) ── -->
+<header id="mc-top">
+  <div class="mt-marca" onclick="go('resumen')"><span class="mt-logo" id="mt-logo">🏍️</span><span class="mt-nombre" id="mt-nombre">MotoContable</span></div>
+  <button class="mt-btn mt-sync" id="mc-top-sync" onclick="sincronizarAhora()" aria-label="Estado de la nube"><i></i><span id="mc-top-sync-txt">Nube</span></button>
+  <button class="mt-btn" onclick="mcMostrarAviso()" aria-label="Ver aviso del día">🔔</button>
+</header>
+<nav id="mc-tabs" aria-label="Menú principal">
+  <button class="mtab" data-tab="resumen" onclick="go('resumen')"><span>📊</span>Inicio</button>
+  <button class="mtab" data-tab="motos" onclick="go('motos')"><span>🏍️</span>Motos</button>
+  <button class="mtab mtab-mas-nuevo" onclick="mcAbrirHoja('mc-hoja-nuevo')" aria-label="Agregar"><b>＋</b></button>
+  <button class="mtab" data-tab="ventas" onclick="go('ventas')"><span>🤝</span>Ventas</button>
+  <button class="mtab" data-tab="mas" onclick="mcAbrirHoja('mc-hoja-mas')"><span>☰</span>Más<i class="mtab-n" id="mc-mas-papelera-n"></i></button>
+</nav>
+<div class="mc-hoja-fondo" id="mc-hoja-fondo" onclick="mcCerrarHojas()"></div>
+<div class="mc-hoja" id="mc-hoja-nuevo" role="dialog" aria-label="Agregar">
+  <div class="mh-asa"></div>
+  <div class="mh-titulo">¿Qué quieres registrar?</div>
+  <button class="mh-fila" onclick="mcCerrarHojas();document.getElementById('nm-edit-id').value='';go('nueva-moto')"><span class="mh-ico" style="background:rgba(42,127,255,.16)">🏍️</span><span><strong>Nueva moto</strong><small>Ingresar una moto al inventario</small></span></button>
+  <button class="mh-fila" onclick="mcCerrarHojas();document.getElementById('nc-edit-id').value='';go('nuevo-carro')"><span class="mh-ico" style="background:rgba(77,159,255,.16)">🚗</span><span><strong>Nuevo carro</strong><small>Ingresar un carro al inventario</small></span></button>
+  <button class="mh-fila" onclick="mcCerrarHojas();go('nueva-venta')"><span class="mh-ico" style="background:rgba(0,214,143,.15)">💵</span><span><strong>Registrar venta</strong><small>Vender un vehículo del inventario</small></span></button>
+</div>
+<div class="mc-hoja" id="mc-hoja-mas" role="dialog" aria-label="Más opciones">
+  <div class="mh-asa"></div>
+  <div class="mh-titulo">Más</div>
+  <div class="mh-grid">
+    <button class="mh-cuadro" onclick="mcCerrarHojas();go('carros')"><span>🚗</span>Mis carros</button>
+    <button class="mh-cuadro" onclick="mcCerrarHojas();go('inventario')"><span>📦</span>Inventario</button>
+    <button class="mh-cuadro" onclick="mcCerrarHojas();go('analisis')"><span>📈</span>Análisis</button>
+    <button class="mh-cuadro" onclick="mcCerrarHojas();go('metas')"><span>🎯</span>Metas</button>
+    <button class="mh-cuadro" onclick="mcCerrarHojas();go('contactos')"><span>👥</span>Contactos</button>
+    <button class="mh-cuadro" onclick="mcCerrarHojas();go('papelera')"><span>🗑</span>Papelera<i class="mtab-n" id="mc-mas-papelera-n2"></i></button>
+    <button class="mh-cuadro" onclick="mcCerrarHojas();go('ajustes')"><span>⚙️</span>Ajustes</button>
+    <button class="mh-cuadro" onclick="mcCerrarHojas();mcMostrarAviso()"><span>🔔</span>Aviso del día</button>
+    <button class="mh-cuadro" onclick="mcCerrarHojas();sincronizarAhora()"><span>☁️</span>Sincronizar</button>
+  </div>
+  <div class="mh-cuenta" id="mh-cuenta"></div>
 </div>
 
 <!-- AVISO DEL DÍA -->
@@ -1659,6 +1901,13 @@ function mcIndicador(estado, n){
     'cargando':      ['☁️ Cargando…',                                   'var(--accent)', ''],
   }[estado] || ['☁️ Nube','var(--text3)',''];
   ind.textContent = e[0]; ind.style.color = e[1]; ind.title = e[2];
+  const top = document.getElementById('mc-top-sync');
+  if(top){
+    top.dataset.estado = estado;
+    top.title = e[0].replace('☁️ ', '');
+    const t = document.getElementById('mc-top-sync-txt');
+    if(t) t.textContent = {guardando:'Guardando…', guardado:'Guardado', error:'Error', 'sin-nube':'Sin nube', 'sin-conexion':'Sin conexión', 'sin-sesion':'Sin sesión', cargando:'Cargando…'}[estado] || 'Nube';
+  }
 }
 function mcActualizarIndicador(){
   let n = 0;
@@ -1697,7 +1946,7 @@ function mcEditando(){
   return a && a.closest && a.closest('.main') && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName);
 }
 function mcRefrescarUI(tocadas){
-  if(tocadas && tocadas.has('config')) aplicarConfigInicial();
+  if(tocadas && tocadas.has('config')){ aplicarConfigInicial(); mcContadorPapelera(); }
   if(tocadas && [...tocadas].some(c=>c!=='config')) limpiarConsistencia();
   const activa = (document.querySelector('.page.active')||{}).id || '';
   const pagina = activa.replace('page-','');
@@ -2075,7 +2324,7 @@ function calcMoto(id){
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────────
-const NAV_PAGES = ['resumen','motos','carros','ventas','inventario','analisis','nueva-moto','nuevo-carro','nueva-venta','metas','contactos','ajustes'];
+const NAV_PAGES = ['resumen','motos','carros','ventas','inventario','analisis','nueva-moto','nuevo-carro','nueva-venta','metas','contactos','ajustes','papelera'];
 function go(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -2094,12 +2343,217 @@ function go(page){
   if(page==='nueva-moto')  initFormMoto();
   if(page==='nuevo-carro') initFormCarro();
   if(page==='nueva-venta') populateVentaSelect();
+  if(page==='papelera')    renderPapelera();
+  mcContadorPapelera();
+  if(typeof mcTabActiva === 'function') mcTabActiva(page);
   if(page==='ajustes')    { renderPaletaColores(); renderPanelesEditor();
     document.getElementById('cfg-appname').value=cfgData.appName||'';
     document.getElementById('cfg-appicon').value=cfgData.appIcon||'';
     if(cfgData.fontSize) document.getElementById('cfg-fontsize').value=cfgData.fontSize;
   }
 }
+
+// ── SONIDOS DE LAS ACCIONES ──────────────────────────────────────────────────
+// Tonos cortos generados con Web Audio (sin archivos). Se pueden apagar en Ajustes.
+const MC_SONIDOS_KEY = 'mc_sonidos';
+function mcSonidosActivos(){ try { return localStorage.getItem(MC_SONIDOS_KEY) !== '0'; } catch(e){ return true; } }
+const MC_NOTAS = {
+  agregar:   [[784,0,.18],[1175,.09,.32]],                    // sube: ingresar / agregar
+  guardar:   [[988,0,.12],[1319,.06,.22]],                    // corto: modificar
+  confirmar: [[659,0,.14],[880,.08,.16],[1319,.16,.36]],      // listo
+  borrar:    [[659,0,.16],[440,.11,.34]],                     // baja: eliminar
+  foto:      [[1568,0,.05],[2093,.045,.09],[2637,.1,.18]],    // clic de cámara
+  restaurar: [[523,0,.12],[659,.08,.12],[784,.16,.3]],        // vuelve
+};
+function mcSonido(tipo){
+  if(!mcSonidosActivos()) return;
+  const notas = MC_NOTAS[tipo] || MC_NOTAS.guardar;
+  const ctx = mcAudioAviso();
+  if(!ctx) return;
+  const tocar = ()=>{
+    const t0 = ctx.currentTime + 0.01;
+    notas.forEach(([f,d,dur])=>{
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = tipo==='foto' ? 'square' : 'sine';
+      o.frequency.setValueAtTime(f, t0+d);
+      const vol = tipo==='foto' ? 0.05 : tipo==='borrar' ? 0.16 : 0.12;
+      g.gain.setValueAtTime(0.0001, t0+d);
+      g.gain.exponentialRampToValueAtTime(vol, t0+d+0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+d+dur);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t0+d); o.stop(t0+d+dur+0.02);
+    });
+  };
+  // Safari puede pausar el audio (por ejemplo, tras una ventana): se reanuda y suena
+  if(ctx.state === 'running') tocar(); else ctx.resume().then(tocar).catch(()=>{});
+}
+function mcActualizarBotonSonidos(){
+  const b = document.getElementById('btn-sonidos');
+  if(b) b.textContent = mcSonidosActivos() ? '🔊 Sonidos activados' : '🔇 Sonidos desactivados';
+}
+function mcAlternarSonidos(){
+  try { localStorage.setItem(MC_SONIDOS_KEY, mcSonidosActivos() ? '0' : '1'); } catch(e){}
+  mcActualizarBotonSonidos();
+  if(mcSonidosActivos()) mcSonido('confirmar');
+}
+function mcProbarSonido(t){ const antes = mcSonidosActivos(); if(!antes){ toast('Los sonidos están desactivados','err'); return; } mcSonido(t); }
+
+// ── NOTIFICACIONES EN PANTALLA ───────────────────────────────────────────────
+// Tarjeta que aparece arriba con ícono, título, detalle y (opcional) botones,
+// y se va sola en unos segundos. Suena según el tipo de acción.
+const MC_NOTIF_ICO = {ok:'✓', agregar:'＋', guardar:'✓', confirmar:'✓', borrar:'🗑', foto:'📷', restaurar:'↩'};
+function mcNotificar({tipo='ok', titulo='', texto='', acciones=[], sonido, ms}){
+  if(sonido !== false) mcSonido(sonido || tipo);
+  const cont = document.getElementById('mc-notifs');
+  if(!cont){ toast(titulo); return; }
+  const n = document.createElement('div');
+  n.className = 'mcn mcn-' + tipo;
+  n.setAttribute('role', 'status');
+  n.innerHTML = `<div class="mcn-ico">${MC_NOTIF_ICO[tipo]||'✓'}</div><div class="mcn-txt"><strong></strong><span></span><div class="mcn-acc"></div></div><button class="mcn-x" aria-label="Cerrar">✕</button><i class="mcn-barra"></i>`;
+  n.querySelector('strong').textContent = titulo;
+  n.querySelector('.mcn-txt span').textContent = texto;
+  if(!texto) n.querySelector('.mcn-txt span').remove();
+  const dur = ms || (acciones.length ? 7000 : 3800);
+  n.querySelector('.mcn-barra').style.animationDuration = dur + 'ms';
+  let cerrada = false;
+  const cerrar = ()=>{ if(cerrada) return; cerrada = true; n.classList.add('salir'); setTimeout(()=>n.remove(), 300); };
+  acciones.forEach(a=>{
+    const b = document.createElement('button');
+    b.textContent = a.label;
+    b.onclick = ()=>{ cerrar(); a.fn(); };
+    n.querySelector('.mcn-acc').appendChild(b);
+  });
+  n.querySelector('.mcn-x').onclick = cerrar;
+  cont.prepend(n);
+  [...cont.children].slice(3).forEach(x=>x.remove());
+  requestAnimationFrame(()=>requestAnimationFrame(()=>n.classList.add('show')));
+  setTimeout(cerrar, dur);
+}
+function mcDescVeh(o){ return [o.modelo, o.placa].filter(Boolean).join(' · '); }
+
+// ── PAPELERA ─────────────────────────────────────────────────────────────────
+// Lo eliminado (motos, carros y ventas) se guarda completo en cfgData.papelera,
+// que se sincroniza con la nube: se ve y se restaura desde cualquier dispositivo.
+function mcPapelera(){ if(!Array.isArray(cfgData.papelera)) cfgData.papelera = []; return cfgData.papelera; }
+function mcEnviarAPapelera(col, item, extra){
+  const e = {pid: uid(), col, fecha: new Date().toISOString(), item: JSON.parse(JSON.stringify(item)), ...(extra||{})};
+  mcPapelera().unshift(e);
+  saveCfg();
+  mcContadorPapelera();
+  return e.pid;
+}
+function mcContadorPapelera(){
+  const n = Array.isArray(cfgData.papelera) ? cfgData.papelera.length : 0;
+  const el = document.getElementById('nav-papelera-n'); if(el) el.textContent = n || '';
+  ['mc-mas-papelera-n','mc-mas-papelera-n2'].forEach(id=>{ const m = document.getElementById(id); if(m) m.textContent = n || ''; });
+}
+const MC_PAP_TIPO = {motos:{nombre:'Moto', ico:'🏍️'}, carros:{nombre:'Carro', ico:'🚗'}, ventas:{nombre:'Venta', ico:'🤝'}};
+function mcHaceCuanto(iso){
+  const d = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+  return d <= 0 ? 'hoy' : d === 1 ? 'ayer' : `hace ${d} días`;
+}
+function renderPapelera(){
+  const cont = document.getElementById('papelera-lista');
+  if(!cont) return;
+  const lista = mcPapelera();
+  const btnV = document.getElementById('btn-vaciar-papelera'); if(btnV) btnV.style.display = lista.length ? '' : 'none';
+  if(!lista.length){
+    cont.innerHTML = `<div class="pap-vacia"><div class="grande">🗑</div><strong>La papelera está vacía</strong><br>Cuando elimines una moto, un carro o una venta, quedará aquí para que puedas recuperarla.</div>`;
+    return;
+  }
+  cont.innerHTML = '<div class="pap-lista">' + lista.map(e=>{
+    const o = e.item || {}, t = MC_PAP_TIPO[e.col] || {nombre:'', ico:'•'};
+    const esVenta = e.col === 'ventas';
+    const foto = esVenta ? o.fotoVehiculo : o.foto;
+    const nombre = esVenta ? (o.motoNombre || 'Venta') : (o.nombre || t.nombre);
+    const sub = esVenta
+      ? [`Venta · ${o.fecha ? new Date(o.fecha+'T00:00:00').toLocaleDateString('es-CO') : ''}`, o.precioVenta ? fmt(o.precioVenta) : '', o.comprador ? 'a '+o.comprador : ''].filter(Boolean).join(' · ')
+      : [t.nombre, mcDescVeh(o), Number(o.precioCompra) > 0 ? 'compra '+fmt(Number(o.precioCompra)) : ''].filter(Boolean).join(' · ');
+    const extra = !esVenta && (o.gastos||[]).length ? ` · ${(o.gastos||[]).length} gasto${(o.gastos||[]).length!==1?'s':''}` : '';
+    return `<div class="pap-item">
+      ${foto ? `<img class="pap-foto" ${mcFotoAttr(foto)} alt="">` : `<div class="pap-foto">${t.ico}</div>`}
+      <div class="pap-info">
+        <div class="pap-nombre">${t.ico} ${escPap(nombre)}</div>
+        <div class="pap-sub">${escPap(sub)}${extra}</div>
+        <div class="pap-cuando">Eliminada ${mcHaceCuanto(e.fecha)} · ${new Date(e.fecha).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})}</div>
+      </div>
+      <div class="pap-acc">
+        <button class="btn btn-primary btn-sm" onclick="restaurarPapelera('${e.pid}')">↩ Restaurar</button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="eliminarDePapelera('${e.pid}')">Eliminar definitivamente</button>
+      </div>
+    </div>`;
+  }).join('') + '</div>';
+}
+function escPap(t){ return String(t==null?'':t).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function restaurarPapelera(pid){
+  const lista = mcPapelera();
+  const i = lista.findIndex(e=>e.pid===pid);
+  if(i < 0) return;
+  const e = lista[i];
+  const o = JSON.parse(JSON.stringify(e.item || {}));
+  if(e.col === 'motos' || e.col === 'carros'){
+    const arr = e.col === 'motos' ? motos : carros;
+    if(!o.id || arr.some(x=>x.id===o.id)) o.id = uid();
+    arr.unshift(o);
+    if(e.col === 'motos'){
+      if(Array.isArray(e.movs) && e.movs.length){ movimientos.push(...e.movs.map(m=>({...m, motoId:o.id}))); saveMovs(); }
+      saveMotos();
+    } else saveCarros();
+  } else if(e.col === 'ventas'){
+    if(!o.id || ventas.some(x=>x.id===o.id)) o.id = uid();
+    ventas.push(o); saveVentas();
+  } else return;
+  lista.splice(i, 1);
+  saveCfg(); mcContadorPapelera();
+  const t = MC_PAP_TIPO[e.col];
+  const nombre = e.col === 'ventas' ? (o.motoNombre||'La venta') : o.nombre;
+  const pagina = ((document.querySelector('.page.active')||{}).id||'').replace('page-','');
+  go(pagina === 'papelera' ? 'papelera' : (e.col === 'carros' ? 'carros' : e.col === 'ventas' ? 'ventas' : 'motos'));
+  mcNotificar({tipo:'restaurar', titulo: e.col === 'ventas' ? 'Venta restaurada' : `${t.nombre} restaurad${e.col==='motos'?'a':'o'} al inventario`, texto: `${nombre}${e.col!=='ventas' && mcDescVeh(o) ? ' · '+mcDescVeh(o) : ''}`});
+}
+function eliminarDePapelera(pid){
+  const e = mcPapelera().find(x=>x.pid===pid); if(!e) return;
+  const nombre = e.col === 'ventas' ? (e.item.motoNombre||'esta venta') : (e.item.nombre||'este vehículo');
+  confirm2('Eliminar definitivamente', `¿Eliminar "${nombre}" para siempre? Ya no se podrá restaurar desde la papelera.`, ()=>{
+    cfgData.papelera = mcPapelera().filter(x=>x.pid!==pid);
+    saveCfg(); mcContadorPapelera(); renderPapelera();
+    mcNotificar({tipo:'borrar', titulo:'Eliminado definitivamente', texto:nombre});
+  });
+}
+function vaciarPapelera(){
+  const n = mcPapelera().length; if(!n) return;
+  confirm2('Vaciar papelera', `¿Eliminar para siempre ${n === 1 ? 'el elemento' : 'los '+n+' elementos'} de la papelera? Ya no se podrán restaurar.`, ()=>{
+    cfgData.papelera = [];
+    saveCfg(); mcContadorPapelera(); renderPapelera();
+    mcNotificar({tipo:'borrar', titulo:'Papelera vacía', texto: n === 1 ? '1 elemento eliminado' : n+' elementos eliminados'});
+  });
+}
+
+// ── INTERFAZ DEL IPHONE ──────────────────────────────────────────────────────
+// Barra de pestañas abajo, botón "+" y menú "Más". En el Mac no se ve.
+const MC_TAB_DE = {resumen:'resumen', motos:'motos', 'nueva-moto':'motos', ventas:'ventas', 'nueva-venta':'ventas'};
+function mcTabActiva(page){
+  const tab = MC_TAB_DE[page] || 'mas';
+  document.querySelectorAll('#mc-tabs .mtab[data-tab]').forEach(b=>b.classList.toggle('activa', b.dataset.tab === tab));
+  const ln = document.getElementById('logo-name-el'), li = document.getElementById('logo-icon-el');
+  if(ln) document.getElementById('mt-nombre').textContent = ln.textContent;
+  if(li) document.getElementById('mt-logo').textContent = li.textContent;
+  mcCerrarHojas();
+  if(window.matchMedia && window.matchMedia('(max-width: 760px)').matches) window.scrollTo(0, 0);
+}
+function mcAbrirHoja(id){
+  mcCerrarHojas();
+  if(id === 'mc-hoja-mas'){
+    const c = document.getElementById('mh-cuenta'), info = document.getElementById('sync-cuenta');
+    if(c) c.textContent = info ? info.textContent : '';
+  }
+  document.getElementById('mc-hoja-fondo').classList.add('abierta');
+  document.getElementById(id).classList.add('abierta');
+}
+function mcCerrarHojas(){
+  document.querySelectorAll('.mc-hoja.abierta, .mc-hoja-fondo.abierta').forEach(e=>e.classList.remove('abierta'));
+}
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape') mcCerrarHojas(); });
 
 // ── TOAST & MODAL ─────────────────────────────────────────────────────────────
 function toast(msg, tipo='ok'){
@@ -2516,13 +2970,15 @@ function agregarGasto(id){
   if(!mo) return;
   if(!mo.gastos) mo.gastos = [];
   mo.gastos.push({nombre, monto, fecha: hoyLocal()});
-  saveMotos(); renderMotos(); toast('Gasto agregado correctamente');
+  saveMotos(); renderMotos();
+  mcNotificar({tipo:'agregar', titulo:'Gasto agregado', texto:`${nombre} · ${fmt(monto)} — ${mo.nombre}`});
 }
 function elimGasto(id, idx){
   const mo = motos.find(m=>m.id===id);
   if(!mo||!mo.gastos) return;
-  mo.gastos.splice(idx,1);
-  saveMotos(); renderMotos(); toast('Gasto eliminado');
+  const g = mo.gastos.splice(idx,1)[0];
+  saveMotos(); renderMotos();
+  mcNotificar({tipo:'borrar', titulo:'Gasto eliminado', texto:`${g ? g.nombre+' · '+fmt(g.monto) : ''} — ${mo.nombre}`});
 }
 
 // ── FORM MOTO ─────────────────────────────────────────────────────────────────
@@ -2611,10 +3067,10 @@ async function guardarMoto(){
     const idx=motos.findIndex(m=>m.id===editId);
     if(idx>-1) motos[idx]={...motos[idx],...data};
     document.getElementById('nm-edit-id').value='';
-    toast('Moto actualizada');
+    mcNotificar({tipo:'guardar', titulo:'Cambios guardados', texto:`${nombre}${mcDescVeh(data) ? ' · '+mcDescVeh(data) : ''}`});
   } else {
     motos.unshift({id:uid(), gastos:[], ...data});
-    toast('Moto registrada');
+    mcNotificar({tipo:'agregar', titulo:'Moto ingresada al inventario', texto:`${nombre}${mcDescVeh(data) ? ' · '+mcDescVeh(data) : ''}${Number(data.precioCompra) > 0 ? ' · '+fmt(Number(data.precioCompra)) : ''}`});
   }
   saveMotos(); go('motos');
 }
@@ -2650,10 +3106,15 @@ function editarMoto(id){
 
 function confirmarElimMoto(id){
   const mo=motos.find(m=>m.id===id);
-  confirm2('Eliminar moto',`¿Eliminar "${mo?mo.nombre:'esta moto'}" y todos sus movimientos?`,()=>{
+  if(!mo) return;
+  confirm2('Eliminar moto',`¿Eliminar "${mo.nombre}"? Se moverá a la papelera con su foto, gastos y datos, y podrás restaurarla cuando quieras.`,()=>{
+    if(!motos.some(m=>m.id===id)) return;
+    const pid = mcEnviarAPapelera('motos', mo, {movs: movimientos.filter(m=>m.motoId===id)});
     motos=motos.filter(m=>m.id!==id);
     movimientos=movimientos.filter(m=>m.motoId!==id);
-    saveMotos();saveMovs();renderMotos();toast('Moto eliminada');
+    saveMotos();saveMovs();renderMotos();
+    mcNotificar({tipo:'borrar', titulo:'Moto eliminada', texto:`${mo.nombre} se movió a la papelera`,
+      acciones:[{label:'Deshacer', fn:()=>restaurarPapelera(pid)}, {label:'Ver papelera', fn:()=>go('papelera')}]});
   });
 }
 
@@ -2888,7 +3349,7 @@ function renderVentas(){
               ${Number(v.inversionCompra) > 0 ? '' : `<div onclick="abrirEditVenta('${v.id}')" title="Toca para corregir" style="cursor:pointer;margin-top:4px;display:inline-block;font-size:11px;font-weight:600;color:var(--amber);background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:6px;padding:2px 8px">⚠️ Sin precio de compra · la ganancia puede estar inflada · Corregir</div>`}
               ${v.fechaCompra?`<div style="font-size:11px;color:var(--text3)">🛒 Comprado el ${new Date(v.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</div>`:''}
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div class="vta-nums" style="display:flex;gap:8px;flex-wrap:wrap">
               <div style="background:var(--bg3);border-radius:8px;padding:6px 12px;text-align:center;min-width:90px">
                 <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Compra</div>
                 <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--blue)">${fmt(v.inversionCompra)}</div>
@@ -2906,7 +3367,7 @@ function renderVentas(){
                 <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:${ganReal>=0?'var(--green)':'var(--red)'}">${ganReal>=0?'+':''}${fmt(ganReal)}</div>
               </div>
             </div>
-            <div style="display:flex;gap:5px;flex-shrink:0">
+            <div class="vta-acc" style="display:flex;gap:5px;flex-shrink:0">
               <button class="btn btn-ghost btn-sm btn-icon" onclick="abrirEditVenta('${v.id}')" title="Editar">✏️</button>
               <button class="btn btn-ghost btn-sm btn-icon" onclick="confirmarDevolverInventario('${v.id}')" title="Devolver al inventario" style="color:var(--blue);border-color:rgba(77,159,255,.3)">↩</button>
               <button class="btn btn-ghost btn-sm btn-icon" onclick="exportarATrapasos('${v.id}')" title="Exportar a Traspasos Vehiculares" style="color:#25D366;border-color:rgba(37,211,102,.3)">📋</button>
@@ -3021,15 +3482,20 @@ function resolverPapel(ventaId, papel){
   if(!v.papelesResueltos.includes(papel)) v.papelesResueltos.push(papel);
   saveVentas();
   renderVentas();
-  toast(`✓ ${papel} marcado como tramitado`);
+  mcNotificar({tipo:'confirmar', titulo:'Papel tramitado', texto:`${papel} — ${v.motoNombre||''}`});
 }
 
 function confirmarElimVenta(id){
   const v=ventas.find(v=>v.id===id);
   const nv=nomVeh(v?.tipoVehiculo,'singular');
-  confirm2('Eliminar venta definitivamente',`¿Eliminar la venta de "${v?v.motoNombre:`este ${nv}`}"? Esta acción borra el registro por completo y NO se puede deshacer. Si quieres recuperar ${nomVeh(v?.tipoVehiculo,'articulo')} en tu inventario, usa el botón ↩ en su lugar.`,()=>{
-    ventas=ventas.filter(v=>v.id!==id);
-    saveVentas();renderVentas();toast('Venta eliminada definitivamente');
+  if(!v) return;
+  confirm2('Eliminar venta',`¿Eliminar la venta de "${v.motoNombre||`este ${nv}`}"? Se moverá a la papelera y podrás restaurarla. Si lo que quieres es recuperar ${nomVeh(v.tipoVehiculo,'articulo')} en tu inventario, usa el botón ↩ en su lugar.`,()=>{
+    if(!ventas.some(x=>x.id===id)) return;
+    const pid = mcEnviarAPapelera('ventas', v);
+    ventas=ventas.filter(x=>x.id!==id);
+    saveVentas();renderVentas();
+    mcNotificar({tipo:'borrar', titulo:'Venta eliminada', texto:`${v.motoNombre||'La venta'} se movió a la papelera`,
+      acciones:[{label:'Deshacer', fn:()=>restaurarPapelera(pid)}, {label:'Ver papelera', fn:()=>go('papelera')}]});
   });
 }
 
@@ -3113,9 +3579,11 @@ async function devolverAlInventario(id){
     ventas = ventas.filter(x=>x.id!==id);
     saveVentas();
     renderVentas();
-    toast(completo
-      ? `"${veh.nombre}" volvió al inventario de ${nomVeh(v.tipoVehiculo,'plural')} con todos sus datos`
-      : `"${veh.nombre}" volvió al inventario. Esta venta es antigua: revisa las fechas de SOAT y tecnomecánica`);
+    mcNotificar({tipo:'restaurar', titulo:'Volvió al inventario',
+      texto: completo
+        ? `"${veh.nombre}" volvió al inventario de ${nomVeh(v.tipoVehiculo,'plural')} con todos sus datos`
+        : `"${veh.nombre}" volvió al inventario. Esta venta es antigua: revisa las fechas de SOAT y tecnomecánica`,
+      ms: completo ? undefined : 7000});
   } finally { _mcDevolviendo = false; }
 }
 
@@ -3173,6 +3641,7 @@ function agregarGastoEditVenta(){
   if(!nombre){ toast('Escribe el concepto','err'); return; }
   if(!monto||monto<=0){ toast('El monto debe ser mayor a 0','err'); return; }
   _evGastos.push({nombre, monto, fecha: hoyLocal()});
+  mcSonido('agregar');
   document.getElementById('ev-gn').value='';
   document.getElementById('ev-gm').value='';
   renderEvGastos();
@@ -3220,7 +3689,7 @@ function guardarEditVenta(){
   saveVentas();
   cerrarModalEditVenta();
   renderVentas();
-  toast('Venta actualizada correctamente');
+  mcNotificar({tipo:'guardar', titulo:'Venta actualizada', texto:`${ventas[idx].motoNombre||''} · ${fmt(precio)}`});
 }
 
 // ── INVENTARIO ────────────────────────────────────────────────────────────────
@@ -3754,15 +4223,17 @@ function agregarGastoVenta(id){
   // Recalcular ganancia neta
   const totGExtra=v.gastosList.reduce((a,g)=>a+g.monto,0);
   v.gananciaNeta=v.precioVenta-v.inversionCompra-v.gastos-totGExtra;
-  saveVentas();renderVentas();toast('Gasto agregado a la venta');
+  saveVentas();renderVentas();
+  mcNotificar({tipo:'agregar', titulo:'Gasto agregado a la venta', texto:`${nombre} · ${fmt(monto)} — ${v.motoNombre||''}`});
 }
 function elimGastoVenta(id,idx){
   const v=ventas.find(v=>v.id===id);
   if(!v||!v.gastosList) return;
-  v.gastosList.splice(idx,1);
+  const g = v.gastosList.splice(idx,1)[0];
   const totGExtra=v.gastosList.reduce((a,g)=>a+g.monto,0);
   v.gananciaNeta=v.precioVenta-v.inversionCompra-v.gastos-totGExtra;
-  saveVentas();renderVentas();toast('Gasto eliminado');
+  saveVentas();renderVentas();
+  mcNotificar({tipo:'borrar', titulo:'Gasto eliminado', texto:`${g ? g.nombre+' · '+fmt(g.monto) : ''} — ${v.motoNombre||''}`});
 }
 
 // ── FOTOS EN LA NUBE (Supabase Storage) ──────────────────────────────────────
@@ -4027,13 +4498,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
           }
           if(ref && guardar(ref)){
             pintar(ref);
-            toast('Foto guardada en la nube ✓');
+            mcNotificar({tipo:'foto', titulo:'Foto agregada', texto:`Guardada en la nube · ${(tipo==='carro'?carros:motos).find(x=>x.id===id)?.nombre||''}`});
             return;
           }
           const b64 = guardarLocal();
           if(!b64){ toast('Sin espacio. Ve a Ajustes → Fotos.','err'); return; }
           pintar(b64);
-          toast(_mcSesion ? 'Foto guardada en este dispositivo · se subirá a la nube cuando se pueda' : 'Foto guardada ✓');
+          mcNotificar({tipo:'foto', titulo:'Foto agregada', texto: _mcSesion ? 'Guardada en este dispositivo · se subirá a la nube cuando se pueda' : 'Guardada en este dispositivo'});
         })();
       };
       img.onerror=()=>{ toast('Error al leer la imagen','err'); _fotoTipo=''; _fotoId=''; };
@@ -4061,7 +4532,7 @@ function borrarFoto(tipo, id){
       <span style="position:absolute;bottom:-3px;right:-3px;background:var(--accent);border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff">📷</span>
     </div>`;
   }
-  toast('Foto eliminada');
+  mcNotificar({tipo:'borrar', titulo:'Foto quitada', texto:(tipo==='carro'?carros:motos).find(x=>x.id===id)?.nombre||''});
 }
 
 // ── GESTIÓN DE ESPACIO DE FOTOS ───────────────────────────────────────────────
@@ -4590,7 +5061,7 @@ function guardarNota(tipo, id, texto){
     const mo=motos.find(m=>m.id===id); if(!mo) return;
     mo.nota=texto; saveMotos();
   }
-  toast('Nota guardada');
+  mcNotificar({tipo:'guardar', titulo:'Nota guardada', texto:(tipo==='carro'?carros:motos).find(x=>x.id===id)?.nombre||''});
 }
 function borrarNota(tipo, id){
   if(tipo==='carro'){
@@ -4600,11 +5071,11 @@ function borrarNota(tipo, id){
     const mo=motos.find(m=>m.id===id); if(!mo) return;
     mo.nota=''; saveMotos(); renderMotos();
   }
-  toast('Nota eliminada');
+  mcNotificar({tipo:'borrar', titulo:'Nota eliminada', texto:(tipo==='carro'?carros:motos).find(x=>x.id===id)?.nombre||''});
 }
 function borrarNotaVenta(id){
   const v=ventas.find(v=>v.id===id); if(!v) return;
-  v.notaVehiculo=''; saveVentas(); renderVentas(); toast('Nota eliminada');
+  v.notaVehiculo=''; saveVentas(); renderVentas(); mcNotificar({tipo:'borrar', titulo:'Nota eliminada', texto:v.motoNombre||''});
 }
 
 // ── PERSONALIZACIÓN ───────────────────────────────────────────────────────────
@@ -4973,14 +5444,16 @@ function agregarGastoCarro(id){
   if(!ca) return;
   if(!ca.gastos) ca.gastos=[];
   ca.gastos.push({nombre,monto,fecha:hoyLocal()});
-  saveCarros(); renderCarros(); toast('Gasto agregado');
+  saveCarros(); renderCarros();
+  mcNotificar({tipo:'agregar', titulo:'Gasto agregado', texto:`${nombre} · ${fmt(monto)} — ${ca.nombre}`});
 }
 
 function elimGastoCarro(id,idx){
   const ca=carros.find(c=>c.id===id);
   if(!ca||!ca.gastos) return;
-  ca.gastos.splice(idx,1);
-  saveCarros(); renderCarros(); toast('Gasto eliminado');
+  const g = ca.gastos.splice(idx,1)[0];
+  saveCarros(); renderCarros();
+  mcNotificar({tipo:'borrar', titulo:'Gasto eliminado', texto:`${g ? g.nombre+' · '+fmt(g.monto) : ''} — ${ca.nombre}`});
 }
 
 function toggleDocC(tipo){
@@ -5037,10 +5510,10 @@ async function guardarCarro(){
     const idx=carros.findIndex(c=>c.id===editId);
     if(idx>-1) carros[idx]={...carros[idx],...data};
     document.getElementById('nc-edit-id').value='';
-    toast('Carro actualizado');
+    mcNotificar({tipo:'guardar', titulo:'Cambios guardados', texto:`${nombre}${mcDescVeh(data) ? ' · '+mcDescVeh(data) : ''}`});
   } else {
     carros.unshift({id:uid(),gastos:[],...data});
-    toast('Carro registrado');
+    mcNotificar({tipo:'agregar', titulo:'Carro ingresado al inventario', texto:`${nombre}${mcDescVeh(data) ? ' · '+mcDescVeh(data) : ''}${Number(data.precioCompra) > 0 ? ' · '+fmt(Number(data.precioCompra)) : ''}`});
   }
   saveCarros(); go('carros');
 }
@@ -5078,9 +5551,14 @@ function editarCarro(id){
 
 function confirmarElimCarro(id){
   const ca=carros.find(c=>c.id===id);
-  confirm2('Eliminar carro',`¿Eliminar "${ca?ca.nombre:'este carro'}"? No se puede deshacer.`,()=>{
+  if(!ca) return;
+  confirm2('Eliminar carro',`¿Eliminar "${ca.nombre}"? Se moverá a la papelera con su foto, gastos y datos, y podrás restaurarlo cuando quieras.`,()=>{
+    if(!carros.some(c=>c.id===id)) return;
+    const pid = mcEnviarAPapelera('carros', ca);
     carros=carros.filter(c=>c.id!==id);
-    saveCarros(); renderCarros(); toast('Carro eliminado');
+    saveCarros(); renderCarros();
+    mcNotificar({tipo:'borrar', titulo:'Carro eliminado', texto:`${ca.nombre} se movió a la papelera`,
+      acciones:[{label:'Deshacer', fn:()=>restaurarPapelera(pid)}, {label:'Ver papelera', fn:()=>go('papelera')}]});
   });
 }
 renderResumen();
@@ -5304,6 +5782,10 @@ function mcSonarAviso(){
   else { const t = Date.now(); ctx.resume().then(()=>{ if(Date.now()-t < 500 && mcAvisoAbierto()) tocar(); }).catch(()=>{}); }
 }
 
+mcActualizarBotonSonidos();
+mcContadorPapelera();
+mcTabActiva(((document.querySelector('.page.active')||{}).id||'page-resumen').replace('page-',''));
+
 // Botón en el menú lateral para volver a ver el aviso
 document.querySelector('.sidebar-footer').insertAdjacentHTML('beforeend', `
   <button onclick="mcMostrarAviso()" id="btn-aviso"
@@ -5397,10 +5879,10 @@ function guardarContacto(){
   if(editId){
     const idx=contactos.findIndex(c=>c.id===editId);
     if(idx>-1) contactos[idx]={...contactos[idx],...data};
-    toast('Contacto actualizado ✓');
+    mcNotificar({tipo:'guardar', titulo:'Contacto actualizado', texto:nombre});
   } else {
     contactos.unshift({id:uid(),historial:0,...data});
-    toast('Contacto guardado ✓');
+    mcNotificar({tipo:'agregar', titulo:'Contacto guardado', texto:nombre});
   }
   saveContactos(); cerrarModalContacto(); renderContactos();
 }
@@ -5420,7 +5902,7 @@ function eliminarContacto(id){
   const c=contactos.find(x=>x.id===id);
   confirm2('Eliminar contacto',`¿Eliminar a "${c?.nombre}"?`,()=>{
     contactos=contactos.filter(x=>x.id!==id);
-    saveContactos(); renderContactos(); toast('Contacto eliminado');
+    saveContactos(); renderContactos(); mcNotificar({tipo:'borrar', titulo:'Contacto eliminado', texto:c?.nombre||''});
   });
 }
 function abrirBuscarContacto(tipo,form){
@@ -5579,10 +6061,10 @@ function guardarMeta(){
   if(editId){
     const idx=metas.findIndex(m=>m.id===editId);
     if(idx>-1) metas[idx]={...metas[idx],...data};
-    toast('Meta actualizada ✓');
+    mcNotificar({tipo:'guardar', titulo:'Meta actualizada', texto:data.nombre||''});
   } else {
     metas.unshift({id:uid(),...data,creadaEn:new Date().toISOString()});
-    toast('¡Meta creada! A trabajar por ella 🎯');
+    mcNotificar({tipo:'agregar', titulo:'¡Meta creada! 🎯', texto:`${data.nombre||''} · a trabajar por ella`});
   }
   saveMetas(); cerrarModalMeta(); renderMetas();
 }
@@ -5591,7 +6073,7 @@ function eliminarMeta(id){
   const m=metas.find(x=>x.id===id);
   confirm2('Eliminar meta','¿Eliminar "'+m?.nombre+'"? No se puede deshacer.',()=>{
     metas=metas.filter(x=>x.id!==id);
-    saveMetas(); renderMetas(); toast('Meta eliminada');
+    saveMetas(); renderMetas(); mcNotificar({tipo:'borrar', titulo:'Meta eliminada', texto:m?.nombre||''});
   });
 }
 
