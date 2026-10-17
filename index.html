@@ -617,6 +617,105 @@ textarea{resize:vertical;min-height:65px}
 .mcn-barra{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--c);opacity:.7;transform-origin:left;animation:mcnBarra linear forwards}
 @keyframes mcnBarra{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 @media (prefers-reduced-motion: reduce){.mcn{transition:none}.mcn-barra{animation:none;display:none}}
+/* ── FORMA DE PAGO Y ANÁLISIS CONTADO / FINANCIADO ──────── */
+.fp-grupo{margin-bottom:12px}
+.fp-sel{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-radius:14px}
+.fp-sel button{display:flex;align-items:center;gap:11px;text-align:left;padding:11px 13px;border-radius:13px;cursor:pointer;
+  background:var(--bg3);border:1.5px solid var(--border2);color:var(--text);font-family:inherit;transition:border-color .15s,background .15s,transform .1s}
+.fp-sel button:active{transform:scale(.98)}
+.fp-sel b{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--bg4);flex-shrink:0}
+.fp-sel strong{display:block;font-size:13.5px}
+.fp-sel small{display:block;font-size:11px;color:var(--text3)}
+.fp-sel button[data-fp="contado"].activo{border-color:#0ea372;background:rgba(14,163,114,.12)}
+.fp-sel button[data-fp="contado"].activo b{background:rgba(14,163,114,.25)}
+.fp-sel button[data-fp="financiado"].activo{border-color:#9b71ff;background:rgba(155,113,255,.12)}
+.fp-sel button[data-fp="financiado"].activo b{background:rgba(155,113,255,.25)}
+.fp-sel.fp-falta{animation:fpSacudir .45s;box-shadow:0 0 0 2px rgba(255,61,107,.55)}
+@keyframes fpSacudir{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.fp-tag{display:inline-block;margin-top:5px;margin-right:6px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid}
+.fp-c{color:#3fd3a0;background:rgba(14,163,114,.12);border-color:rgba(14,163,114,.35)}
+.fp-f{color:#b9a0ff;background:rgba(155,113,255,.12);border-color:rgba(155,113,255,.35)}
+.fp-nd{color:var(--text2);background:var(--bg3);border-color:var(--border2);border-style:dashed;cursor:pointer}
+.fp-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.fp-filtros{display:flex;gap:8px;flex-wrap:wrap}
+.fp-filtros select{min-width:190px;width:auto}
+.fp-hero{display:flex;gap:28px;align-items:center;background:radial-gradient(500px 220px at 0% 0%,rgba(14,163,114,.10),transparent 70%),radial-gradient(500px 220px at 100% 100%,rgba(155,113,255,.12),transparent 70%),var(--bg2);
+  border:1px solid var(--border);border-radius:var(--r3);padding:1.6rem 1.75rem;margin-bottom:1rem}
+.fp-anillo{position:relative;width:190px;height:190px;border-radius:50%;flex-shrink:0;box-shadow:0 18px 40px -18px rgba(0,0,0,.8)}
+.fp-anillo::after{content:'';position:absolute;inset:-1px;border-radius:50%;background:repeating-conic-gradient(from 0deg,transparent 0 359.2deg,var(--bg2) 359.2deg 360deg);pointer-events:none}
+.fp-anillo-centro{position:absolute;inset:26px;border-radius:50%;background:var(--bg2);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px var(--border)}
+.fp-anillo-centro strong{font-family:'Space Grotesk',sans-serif;font-size:40px;line-height:1;color:var(--text)}
+.fp-anillo-centro span{font-size:12px;color:var(--text2);margin-top:4px}
+.fp-hero-info{flex:1;min-width:0}
+.fp-periodo{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.fp-leyenda{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.fp-leyenda div{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text2)}
+.fp-leyenda b{font-family:'Space Grotesk',sans-serif;font-size:26px;color:var(--text);min-width:76px}
+.fp-leyenda em{font-style:normal;margin-left:auto;font-family:'JetBrains Mono',monospace;color:var(--text);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:1px 9px;font-size:12.5px}
+.fp-dot{width:11px;height:11px;border-radius:4px;flex-shrink:0;display:inline-block}
+.fp-barra{display:flex;height:12px;border-radius:8px;overflow:hidden;gap:2px;background:var(--bg3)}
+.fp-barra i{display:block;height:100%}
+.fp-frase{font-size:13.5px;line-height:1.55;color:var(--text2);margin-top:12px}
+.fp-frase strong{color:var(--text)}
+.fp-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.fp-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:1.1rem 1.2rem;position:relative;overflow:hidden}
+.fp-card::before{content:'';position:absolute;left:0;right:0;top:0;height:3px}
+.fp-card-contado::before{background:#0ea372}
+.fp-card-financiado::before{background:#9b71ff}
+.fp-card-top{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:var(--text2)}
+.fp-card-top b{margin-left:auto;font-family:'Space Grotesk',sans-serif;font-size:15px;color:var(--text)}
+.fp-card-num{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;margin:6px 0 8px;color:var(--text)}
+.fp-card-num small{font-size:13px;color:var(--text3);font-weight:500}
+.fp-card-fila{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid var(--border);font-size:12.5px;color:var(--text2)}
+.fp-card-fila strong{font-family:'JetBrains Mono',monospace;color:var(--text);font-weight:500}
+.fp-sec .card-head{gap:8px;flex-wrap:wrap}
+.fp-sub{font-size:11.5px;color:var(--text3)}
+.fp-meses{display:flex;flex-direction:column}
+.fp-mes{display:grid;grid-template-columns:70px 1fr 190px;gap:14px;align-items:center;padding:11px 1.25rem;background:none;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:inherit;cursor:pointer;text-align:left}
+.fp-mes:last-child{border-bottom:none}
+.fp-mes:hover{background:var(--bg3)}
+.fp-mes-nom{font-weight:700;font-size:13px}
+.fp-mes-barra{display:flex;height:22px;border-radius:7px;overflow:hidden;gap:2px;background:var(--bg3)}
+.fp-mes-barra i{display:flex;align-items:center;justify-content:center;height:100%;min-width:18px}
+.fp-mes-barra em{font-style:normal;font-size:11px;font-weight:700;color:#fff}
+.fp-mes-pct{font-size:11.5px;color:var(--text2);text-align:right}
+.fp-mes-pct b{color:var(--text)}
+.fp-ent-fila{display:grid;grid-template-columns:minmax(110px,180px) 1fr 82px;gap:12px;align-items:center;padding:6px 0}
+.fp-ent-nom{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fp-ent-barra{height:10px;border-radius:6px;background:var(--bg3);overflow:hidden}
+.fp-ent-barra i{display:block;height:100%;background:#9b71ff;border-radius:6px}
+.fp-ent-n{font-family:'JetBrains Mono',monospace;font-size:12px;text-align:right;color:var(--text2)}
+.fp-nd-card{border-color:rgba(255,181,71,.25)}
+.fp-nd-lista,.fp-det{display:flex;flex-direction:column}
+.fp-nd-fila,.fp-det-fila{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 1.25rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.fp-nd-fila:last-child,.fp-det-fila:last-child{border-bottom:none}
+.fp-nd-info{min-width:0}
+.fp-nd-info strong{display:block;font-size:13.5px}
+.fp-nd-info span{display:block;font-size:11.5px;color:var(--text3)}
+.fp-nd-acc{display:flex;gap:8px}
+.fp-nd-acc button{padding:7px 12px;border-radius:10px;font:600 12px 'Inter',sans-serif;cursor:pointer;border:1px solid}
+.fp-btn-c{color:#3fd3a0;background:rgba(14,163,114,.12);border-color:rgba(14,163,114,.35)}
+.fp-btn-f{color:#b9a0ff;background:rgba(155,113,255,.12);border-color:rgba(155,113,255,.35)}
+.fp-vacio{text-align:center;padding:3rem 1rem;color:var(--text2);background:var(--bg2);border:1px dashed var(--border2);border-radius:var(--r2)}
+.fp-vacio .grande{font-size:38px;margin-bottom:6px}
+@media (max-width:760px){
+  .fp-filtros{width:100%}
+  .fp-filtros select{flex:1;min-width:0}
+  .fp-hero{flex-direction:column;align-items:stretch;gap:18px;padding:1.2rem}
+  .fp-anillo{width:170px;height:170px;margin:0 auto}
+  .fp-leyenda b{font-size:22px;min-width:64px}
+  .fp-cards{grid-template-columns:1fr}
+  .fp-mes{grid-template-columns:52px 1fr;gap:10px;padding:10px 1rem}
+  .fp-mes-pct{grid-column:2;text-align:left;margin-top:-4px}
+  .fp-ent-fila{grid-template-columns:1fr 70px}
+  .fp-ent-barra{grid-column:1 / -1;order:3}
+  .fp-nd-fila,.fp-det-fila{padding:11px 1rem}
+  .fp-nd-acc{width:100%}
+  .fp-nd-acc button{flex:1;min-height:40px}
+  .fp-sel{grid-template-columns:1fr 1fr}
+  .fp-sel button{padding:10px;gap:8px}
+  .fp-sel b{width:30px;height:30px;font-size:16px}
+}
 /* ── PAPELERA ─────────────────────────────────────────── */
 .nav-count{margin-left:auto;font-size:10px;font-weight:700;color:var(--red);background:var(--red2);border-radius:20px;padding:0 7px;line-height:17px}
 .nav-count:empty{display:none}
@@ -737,6 +836,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
     <div class="nav-item" onclick="go('ventas')"><span class="nav-ico">🤝</span>Ventas<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('inventario')"><span class="nav-ico">📦</span>Inventario<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('analisis')"><span class="nav-ico">📈</span>Análisis mensual<div class="nav-dot" style="margin-left:auto"></div></div>
+    <div class="nav-item" onclick="go('analisis-ventas')"><span class="nav-ico">💳</span>Contado vs financiado<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-label">Registrar</div>
     <div class="nav-item" onclick="go('nueva-moto')"><span class="nav-ico">🏍️</span>Nueva moto<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('nuevo-carro')"><span class="nav-ico">🚗</span>Nuevo carro<div class="nav-dot" style="margin-left:auto"></div></div>
@@ -752,6 +852,20 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
 
 <!-- MAIN -->
 <div class="main">
+
+<!-- CONTADO VS FINANCIADO -->
+<div class="page" id="page-analisis-ventas">
+  <div class="page-header fp-head">
+    <div><div class="page-title">💳 Contado vs financiado</div><div class="page-sub">Cómo te están pagando tus ventas, mes a mes</div></div>
+    <div class="fp-filtros">
+      <select id="fpf-periodo" onchange="renderAnalisisVentas()" aria-label="Periodo"></select>
+      <select id="fpf-tipo" onchange="renderAnalisisVentas()" aria-label="Tipo de vehículo">
+        <option value="">Motos y carros</option><option value="moto">Solo motos</option><option value="carro">Solo carros</option>
+      </select>
+    </div>
+  </div>
+  <div id="fp-contenido"></div>
+</div>
 
 <!-- PAPELERA -->
 <div class="page" id="page-papelera">
@@ -1063,6 +1177,18 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
           <div class="form-group"><label class="form-label">Precio de venta ($) <span>*</span></label><input type="number" id="vta-precio" placeholder="0" min="0" oninput="calcularVenta()"></div>
           <div class="form-group"><label class="form-label">Nombre del comprador</label><input type="text" id="vta-comprador" placeholder="Nombre completo"></div>
         </div>
+        <div class="form-group fp-grupo">
+          <label class="form-label">Forma de pago <span>*</span></label>
+          <div class="fp-sel" id="vta-fp">
+            <button type="button" data-fp="contado" onclick="elegirFormaPago('vta','contado')"><b>💵</b><span><strong>De contado</strong><small>Pagó el total</small></span></button>
+            <button type="button" data-fp="financiado" onclick="elegirFormaPago('vta','financiado')"><b>🏦</b><span><strong>Financiado</strong><small>Crédito o cuotas</small></span></button>
+          </div>
+          <input type="hidden" id="vta-forma-pago">
+          <div id="vta-entidad-g" style="display:none;margin-top:10px">
+            <label class="form-label">¿Quién lo financia? <span style="color:var(--text3);font-weight:400">(opcional)</span></label>
+            <input type="text" id="vta-entidad" placeholder="Ej: Banco de Bogotá, Crediorbe, financiado por mí…" list="mc-entidades" autocomplete="off">
+          </div>
+        </div>
         <div class="form-grid" style="margin-bottom:8px">
           <div class="form-group"><label class="form-label">CC del comprador</label><input type="text" id="vta-cc" placeholder="Número de cédula"></div>
           <div class="form-group"><label class="form-label">Celular del comprador</label><input type="text" id="vta-celular" placeholder="Ej: 3001234567"></div>
@@ -1288,6 +1414,18 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
         <div class="form-group"><label class="form-label">Precio de compra ($)</label><input type="number" id="ev-compra" placeholder="0" min="0" oninput="recalcEditVenta()"></div>
         <div class="form-group"><label class="form-label">Gastos base ($)</label><input type="number" id="ev-gastos" placeholder="0" min="0" oninput="recalcEditVenta()"></div>
       </div>
+      <div class="form-group fp-grupo">
+          <label class="form-label">Forma de pago </label>
+          <div class="fp-sel" id="ev-fp">
+            <button type="button" data-fp="contado" onclick="elegirFormaPago('ev','contado')"><b>💵</b><span><strong>De contado</strong><small>Pagó el total</small></span></button>
+            <button type="button" data-fp="financiado" onclick="elegirFormaPago('ev','financiado')"><b>🏦</b><span><strong>Financiado</strong><small>Crédito o cuotas</small></span></button>
+          </div>
+          <input type="hidden" id="ev-forma-pago">
+          <div id="ev-entidad-g" style="display:none;margin-top:10px">
+            <label class="form-label">¿Quién lo financia? <span style="color:var(--text3);font-weight:400">(opcional)</span></label>
+            <input type="text" id="ev-entidad" placeholder="Ej: Banco de Bogotá, Crediorbe, financiado por mí…" list="mc-entidades" autocomplete="off">
+          </div>
+        </div>
     </div>
     <div class="form-section">
       <div class="form-section-title">Datos del comprador</div>
@@ -1373,6 +1511,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
 </div>
 
 <div id="mc-notifs" aria-live="polite"></div>
+<datalist id="mc-entidades"></datalist>
 
 <!-- ── INTERFAZ DEL IPHONE (solo se ve en pantallas pequeñas) ── -->
 <header id="mc-top">
@@ -1402,6 +1541,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('carros')"><span>🚗</span>Mis carros</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('inventario')"><span>📦</span>Inventario</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('analisis')"><span>📈</span>Análisis</button>
+    <button class="mh-cuadro" onclick="mcCerrarHojas();go('analisis-ventas')"><span>💳</span>Contado / financiado</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('metas')"><span>🎯</span>Metas</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('contactos')"><span>👥</span>Contactos</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('papelera')"><span>🗑</span>Papelera<i class="mtab-n" id="mc-mas-papelera-n2"></i></button>
@@ -2324,7 +2464,7 @@ function calcMoto(id){
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────────
-const NAV_PAGES = ['resumen','motos','carros','ventas','inventario','analisis','nueva-moto','nuevo-carro','nueva-venta','metas','contactos','ajustes','papelera'];
+const NAV_PAGES = ['resumen','motos','carros','ventas','inventario','analisis','analisis-ventas','nueva-moto','nuevo-carro','nueva-venta','metas','contactos','ajustes','papelera'];
 function go(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -2344,6 +2484,7 @@ function go(page){
   if(page==='nuevo-carro') initFormCarro();
   if(page==='nueva-venta') populateVentaSelect();
   if(page==='papelera')    renderPapelera();
+  if(page==='analisis-ventas') renderAnalisisVentas();
   mcContadorPapelera();
   if(typeof mcTabActiva === 'function') mcTabActiva(page);
   if(page==='ajustes')    { renderPaletaColores(); renderPanelesEditor();
@@ -2430,6 +2571,175 @@ function mcNotificar({tipo='ok', titulo='', texto='', acciones=[], sonido, ms}){
   setTimeout(cerrar, dur);
 }
 function mcDescVeh(o){ return [o.modelo, o.placa].filter(Boolean).join(' · '); }
+
+// ── FORMA DE PAGO (contado / financiado) ─────────────────────────────────────
+function elegirFormaPago(pre, fp){
+  const h = document.getElementById(pre+'-forma-pago'); if(!h) return;
+  h.value = fp || '';
+  document.querySelectorAll('#'+pre+'-fp button').forEach(b=>b.classList.toggle('activo', b.dataset.fp === fp));
+  const g = document.getElementById(pre+'-fp'); if(g && fp) g.classList.remove('fp-falta');
+  const eg = document.getElementById(pre+'-entidad-g'); if(eg) eg.style.display = fp === 'financiado' ? '' : 'none';
+  if(fp !== 'financiado'){ const e = document.getElementById(pre+'-entidad'); if(e) e.value = ''; }
+  mcLlenarEntidades();
+}
+function mcLlenarEntidades(){
+  const dl = document.getElementById('mc-entidades'); if(!dl) return;
+  const nombres = [...new Set(ventas.map(v=>String(v.entidadFinanciera||'').trim()).filter(Boolean))].sort();
+  dl.innerHTML = nombres.map(n=>`<option value="${escPap(n)}">`).join('');
+}
+function mcEtiquetaFormaPago(v){
+  if(v.formaPago === 'contado') return `<div class="fp-tag fp-c">💵 De contado</div>`;
+  if(v.formaPago === 'financiado') return `<div class="fp-tag fp-f">🏦 Financiado${v.entidadFinanciera ? ' · '+escPap(v.entidadFinanciera) : ''}</div>`;
+  return `<div class="fp-tag fp-nd" onclick="abrirEditVenta('${v.id}')" title="Toca para definirla">❔ Forma de pago sin definir · Definir</div>`;
+}
+function mcFijarFormaPago(id, fp){
+  const v = ventas.find(x=>x.id===id); if(!v) return;
+  v.formaPago = fp;
+  if(fp !== 'financiado') v.entidadFinanciera = '';
+  saveVentas();
+  renderAnalisisVentas();
+  mcNotificar({tipo:'guardar', titulo: fp === 'contado' ? 'Marcada de contado' : 'Marcada como financiada', texto: v.motoNombre || ''});
+}
+
+// ── ANÁLISIS: CONTADO VS FINANCIADO ──────────────────────────────────────────
+const FP_COLOR = {contado:'#0ea372', financiado:'#9b71ff', nd:'#3a3a52'};   // validados: daltonismo y contraste
+const FP_MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const fpMesKey = f => String(f||'').slice(0,7);
+const fpMesNombre = k => { const [y,m] = k.split('-'); return FP_MESES[+m-1] + ' ' + y; };
+const fpMesCorto = k => { const [y,m] = k.split('-'); return FP_MESES[+m-1].slice(0,3) + ' ' + y.slice(2); };
+const fpPct = (n, t) => t ? Math.round(n / t * 100) : 0;
+function fpGanancia(v){ return (Number(v.precioVenta)||0) - (Number(v.inversionCompra)||0) - (Number(v.gastos)||0) - (v.gastosList||[]).reduce((a,g)=>a+(Number(g.monto)||0),0); }
+function fpGrupos(lista){
+  const g = {contado:[], financiado:[], nd:[]};
+  lista.forEach(v=>{ (v.formaPago === 'contado' ? g.contado : v.formaPago === 'financiado' ? g.financiado : g.nd).push(v); });
+  return g;
+}
+function fpLlenarPeriodos(){
+  const sel = document.getElementById('fpf-periodo'); if(!sel) return;
+  const actual = sel.value || sessionStorage.getItem('fp_periodo') || fpMesKey(hoyLocal());
+  const meses = [...new Set(ventas.map(v=>fpMesKey(v.fecha)).filter(k=>/^\d{4}-\d{2}$/.test(k)))].sort().reverse();
+  const hoyMes = fpMesKey(hoyLocal());
+  if(!meses.includes(hoyMes)) meses.unshift(hoyMes);
+  const anios = [...new Set(meses.map(k=>k.slice(0,4)))].sort().reverse();
+  sel.innerHTML = `<option value="todos">📅 Todos los meses</option>`
+    + `<optgroup label="Por año">${anios.map(a=>`<option value="a${a}">Año ${a}</option>`).join('')}</optgroup>`
+    + `<optgroup label="Por mes">${meses.map(k=>`<option value="${k}">${fpMesNombre(k)}${k===hoyMes?' (este mes)':''}</option>`).join('')}</optgroup>`;
+  sel.value = [...sel.options].some(o=>o.value===actual) ? actual : hoyMes;
+}
+function renderAnalisisVentas(){
+  const cont = document.getElementById('fp-contenido'); if(!cont) return;
+  fpLlenarPeriodos();
+  const periodo = document.getElementById('fpf-periodo').value;
+  const tipo = document.getElementById('fpf-tipo').value;
+  try { sessionStorage.setItem('fp_periodo', periodo); } catch(e){}
+  const deTipo = v => !tipo || (tipo === 'carro' ? v.tipoVehiculo === 'carro' : v.tipoVehiculo !== 'carro');
+  const enPeriodo = v => periodo === 'todos' || (periodo[0] === 'a' ? String(v.fecha||'').startsWith(periodo.slice(1)) : fpMesKey(v.fecha) === periodo);
+  const lista = ventas.filter(v=>deTipo(v) && enPeriodo(v));
+  const nombrePeriodo = periodo === 'todos' ? 'todo tu historial' : periodo[0] === 'a' ? 'el año ' + periodo.slice(1) : fpMesNombre(periodo);
+  if(!lista.length){
+    cont.innerHTML = `<div class="fp-vacio"><div class="grande">💳</div><strong>Sin ventas en ${nombrePeriodo}</strong><br>Elige otro mes o "Todos los meses" para ver tu historial.</div>`;
+    return;
+  }
+  const g = fpGrupos(lista), N = lista.length;
+  const nC = g.contado.length, nF = g.financiado.length, nD = g.nd.length, def = nC + nF;
+  const pC = fpPct(nC, N), pF = fpPct(nF, N), pD = 100 - pC - pF;
+  // Anillo (conic-gradient) con separación entre partes
+  const a1 = nC / N * 360, a2 = a1 + nF / N * 360;
+  const anillo = `conic-gradient(${FP_COLOR.contado} 0deg ${a1}deg, ${FP_COLOR.financiado} ${a1}deg ${a2}deg, ${FP_COLOR.nd} ${a2}deg 360deg)`;
+  const suma = (arr, f) => arr.reduce((a,v)=>a+f(v),0);
+  const tarjeta = (clave, titulo, ico, arr) => {
+    const n = arr.length, ing = suma(arr, v=>Number(v.precioVenta)||0), gan = suma(arr, fpGanancia);
+    return `<div class="fp-card fp-card-${clave}">
+      <div class="fp-card-top"><span class="fp-dot" style="background:${FP_COLOR[clave]}"></span>${ico} ${titulo}<b>${fpPct(n, N)}%</b></div>
+      <div class="fp-card-num">${n} <small>venta${n!==1?'s':''}</small></div>
+      <div class="fp-card-fila"><span>Ingresos</span><strong>${fmt(ing)}</strong></div>
+      <div class="fp-card-fila"><span>Ganancia</span><strong>${fmt(gan)}</strong></div>
+      <div class="fp-card-fila"><span>Precio promedio</span><strong>${n ? fmt(Math.round(ing/n)) : '—'}</strong></div>
+      <div class="fp-card-fila"><span>Ganancia promedio</span><strong>${n ? fmt(Math.round(gan/n)) : '—'}</strong></div>
+    </div>`;
+  };
+  // Frase principal
+  let frase = '';
+  if(def){
+    const mayor = nC >= nF ? ['de contado', nC] : ['financiadas', nF];
+    frase = nC === nF ? `En ${nombrePeriodo}, la mitad de tus ventas fueron de contado y la mitad financiadas.`
+      : `En ${nombrePeriodo}, <strong>${mayor[1]} de cada ${def}</strong> ventas fueron <strong>${mayor[0]}</strong> (${fpPct(mayor[1], def)}%).`;
+  }
+  // Comparación con el mes anterior (solo cuando se mira un mes)
+  let comparacion = '';
+  if(/^\d{4}-\d{2}$/.test(periodo) && def){
+    const [y,m] = periodo.split('-').map(Number);
+    const ant = `${m===1 ? y-1 : y}-${String(m===1 ? 12 : m-1).padStart(2,'0')}`;
+    const ga = fpGrupos(ventas.filter(v=>deTipo(v) && fpMesKey(v.fecha) === ant));
+    const defA = ga.contado.length + ga.financiado.length;
+    if(defA){
+      const dif = fpPct(nF, def) - fpPct(ga.financiado.length, defA);
+      comparacion = dif === 0 ? `Igual que en ${fpMesNombre(ant)}.`
+        : `Las financiadas ${dif > 0 ? 'subieron' : 'bajaron'} <strong>${Math.abs(dif)} puntos</strong> frente a ${fpMesNombre(ant)} (${fpPct(ga.financiado.length, defA)}% → ${fpPct(nF, def)}%).`;
+    }
+  }
+  let html = `
+  <div class="fp-hero">
+    <div class="fp-anillo" style="background:${anillo}" role="img" aria-label="${pC}% de contado, ${pF}% financiado${nD ? ', '+pD+'% sin definir' : ''}">
+      <div class="fp-anillo-centro"><strong>${N}</strong><span>venta${N!==1?'s':''}</span></div>
+    </div>
+    <div class="fp-hero-info">
+      <div class="fp-periodo">${periodo === 'todos' ? 'Todo el historial' : periodo[0]==='a' ? 'Año '+periodo.slice(1) : fpMesNombre(periodo)}${tipo ? ' · '+(tipo==='moto'?'solo motos':'solo carros') : ''}</div>
+      <div class="fp-leyenda">
+        <div><span class="fp-dot" style="background:${FP_COLOR.contado}"></span><b>${pC}%</b> De contado <em>${nC}</em></div>
+        <div><span class="fp-dot" style="background:${FP_COLOR.financiado}"></span><b>${pF}%</b> Financiado <em>${nF}</em></div>
+        ${nD ? `<div><span class="fp-dot" style="background:${FP_COLOR.nd}"></span><b>${pD}%</b> Sin definir <em>${nD}</em></div>` : ''}
+      </div>
+      <div class="fp-barra" aria-hidden="true">
+        ${nC ? `<i style="width:${nC/N*100}%;background:${FP_COLOR.contado}"></i>` : ''}${nF ? `<i style="width:${nF/N*100}%;background:${FP_COLOR.financiado}"></i>` : ''}${nD ? `<i style="width:${nD/N*100}%;background:${FP_COLOR.nd}"></i>` : ''}
+      </div>
+      ${frase ? `<p class="fp-frase">${frase} ${comparacion}</p>` : `<p class="fp-frase">Aún no has marcado la forma de pago de estas ventas. Hazlo abajo con un toque.</p>`}
+    </div>
+  </div>
+  <div class="fp-cards">${tarjeta('contado', 'De contado', '💵', g.contado)}${tarjeta('financiado', 'Financiado', '🏦', g.financiado)}</div>`;
+
+  // Mes a mes (cuando se mira un año o todo el historial)
+  if(!/^\d{4}-\d{2}$/.test(periodo)){
+    const meses = [...new Set(lista.map(v=>fpMesKey(v.fecha)))].sort().reverse();
+    html += `<div class="card fp-sec"><div class="card-head"><span class="card-head-title">📅 Mes a mes</span><span class="fp-sub">${meses.length} mes${meses.length!==1?'es':''} · toca un mes para verlo</span></div><div class="fp-meses">` +
+      meses.map(k=>{
+        const gm = fpGrupos(lista.filter(v=>fpMesKey(v.fecha) === k)), t = gm.contado.length + gm.financiado.length + gm.nd.length;
+        return `<button class="fp-mes" onclick="document.getElementById('fpf-periodo').value='${k}';renderAnalisisVentas();window.scrollTo({top:0,behavior:'smooth'})">
+          <span class="fp-mes-nom">${fpMesCorto(k)}</span>
+          <span class="fp-mes-barra">${gm.contado.length ? `<i style="width:${gm.contado.length/t*100}%;background:${FP_COLOR.contado}"><em>${gm.contado.length}</em></i>` : ''}${gm.financiado.length ? `<i style="width:${gm.financiado.length/t*100}%;background:${FP_COLOR.financiado}"><em>${gm.financiado.length}</em></i>` : ''}${gm.nd.length ? `<i style="width:${gm.nd.length/t*100}%;background:${FP_COLOR.nd}"><em>${gm.nd.length}</em></i>` : ''}</span>
+          <span class="fp-mes-pct"><b>${fpPct(gm.contado.length, t)}%</b> contado · <b>${fpPct(gm.financiado.length, t)}%</b> fin.</span>
+        </button>`;
+      }).join('') + `</div></div>`;
+  }
+
+  // Quién financia
+  if(nF){
+    const ent = {};
+    g.financiado.forEach(v=>{ const k = String(v.entidadFinanciera||'').trim() || 'Sin especificar'; ent[k] = (ent[k]||0) + 1; });
+    const filas = Object.entries(ent).sort((a,b)=>b[1]-a[1]);
+    html += `<div class="card fp-sec"><div class="card-head"><span class="card-head-title">🏦 ¿Quién financia?</span><span class="fp-sub">${nF} venta${nF!==1?'s':''} financiada${nF!==1?'s':''}</span></div><div class="card-body fp-ent">` +
+      filas.map(([k,n])=>`<div class="fp-ent-fila"><span class="fp-ent-nom">${escPap(k)}</span><span class="fp-ent-barra"><i style="width:${n/filas[0][1]*100}%"></i></span><span class="fp-ent-n">${n} · ${fpPct(n, nF)}%</span></div>`).join('') + `</div></div>`;
+  }
+
+  // Ventas sin forma de pago: se clasifican con un toque
+  if(nD){
+    html += `<div class="card fp-sec fp-nd-card"><div class="card-head"><span class="card-head-title">❔ ${nD} venta${nD!==1?'s':''} sin forma de pago</span><span class="fp-sub">Márcalas para que el análisis sea exacto</span></div><div class="fp-nd-lista">` +
+      g.nd.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha))).map(v=>`<div class="fp-nd-fila">
+        <div class="fp-nd-info"><strong>${nomVeh(v.tipoVehiculo,'ico')} ${escPap(v.motoNombre||'Venta')}</strong><span>${v.fecha ? new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO') : ''} · ${fmt(Number(v.precioVenta)||0)}${v.comprador ? ' · '+escPap(v.comprador) : ''}</span></div>
+        <div class="fp-nd-acc"><button class="fp-btn-c" onclick="mcFijarFormaPago('${v.id}','contado')">💵 Contado</button><button class="fp-btn-f" onclick="mcFijarFormaPago('${v.id}','financiado')">🏦 Financiado</button></div>
+      </div>`).join('') + `</div></div>`;
+  }
+
+  // Detalle del mes elegido
+  if(/^\d{4}-\d{2}$/.test(periodo)){
+    html += `<div class="card fp-sec"><div class="card-head"><span class="card-head-title">🧾 Ventas de ${fpMesNombre(periodo)}</span></div><div class="fp-det">` +
+      lista.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha))).map(v=>`<div class="fp-det-fila">
+        <div class="fp-nd-info"><strong>${nomVeh(v.tipoVehiculo,'ico')} ${escPap(v.motoNombre||'Venta')}</strong><span>${v.fecha ? new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO') : ''} · ${fmt(Number(v.precioVenta)||0)} · ganancia ${fmt(fpGanancia(v))}</span></div>
+        ${mcEtiquetaFormaPago(v)}
+      </div>`).join('') + `</div></div>`;
+  }
+  cont.innerHTML = html;
+}
 
 // ── PAPELERA ─────────────────────────────────────────────────────────────────
 // Lo eliminado (motos, carros y ventas) se guarda completo en cfgData.papelera,
@@ -3126,6 +3436,7 @@ function populateVentaSelect(){
   ['vp-inversion','vp-gastos','vp-total'].forEach(id=>document.getElementById(id).textContent='$0');
   document.getElementById('vp-ganancia').textContent='—';
   const avisoC = document.getElementById('vp-aviso-compra'); if(avisoC) avisoC.style.display='none';
+  if(!document.getElementById('vta-moto').value) elegirFormaPago('vta', '');
 }
 
 function calcularVenta(){
@@ -3170,6 +3481,13 @@ async function guardarVenta(){
   if(!sel){toast('Selecciona un vehículo','err');return;}
   if(!precio||precio<=0){toast('El precio debe ser mayor a 0','err');return;}
   if(!fecha){toast('La fecha es obligatoria','err');return;}
+  const formaPago = document.getElementById('vta-forma-pago').value;
+  if(!formaPago){
+    toast('Elige si la venta fue de contado o financiada','err');
+    const g = document.getElementById('vta-fp'); if(g){ g.classList.remove('fp-falta'); void g.offsetWidth; g.classList.add('fp-falta'); g.scrollIntoView({block:'center', behavior:'smooth'}); }
+    return;
+  }
+  const entidadFin = formaPago==='financiado' ? document.getElementById('vta-entidad').value.trim() : '';
   const [tipoV,vid]=sel.split(':');
   const esCarro = tipoV==='carro';
   if(!(esCarro ? carros : motos).some(x=>x.id===vid)){ toast('Ese vehículo ya no está en el inventario','err'); populateVentaSelect(); return; }
@@ -3204,6 +3522,7 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
     motoPlaca:  vehiculo?vehiculo.placa||'':'',
     motoColor:  vehiculo?vehiculo.color||'':'',
     fecha, precioVenta:precio,
+    formaPago, entidadFinanciera: entidadFin,
     inversionCompra: compraBase,
     fechaCompra: vehiculo?vehiculo.fechaCompra||'':'',
     gastos:0, gananciaNeta,
@@ -3232,6 +3551,7 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
   saveVentas();
   ['vta-moto','vta-precio','vta-fecha','vta-comprador','vta-cc','vta-celular']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  elegirFormaPago('vta', '');
   const diasParado = vehiculo?.fechaCompra ? diasEnInventario(vehiculo.fechaCompra) : 0;
   mostrarCelebracion(gananciaNeta, vehiculo?vehiculo.nombre:'', fecha, diasParado);
 }
@@ -3346,6 +3666,7 @@ function renderVentas(){
               <div style="font-size:11px;color:var(--text3)">${v.motoModelo||''} ${v.motoPlaca?'· '+v.motoPlaca:''}</div>
               <div style="margin-top:4px;font-size:11px;color:var(--text2)">📅 Vendido el ${new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO')}</div>
               ${mcEtiquetaTraspaso(v)}
+              ${mcEtiquetaFormaPago(v)}
               ${Number(v.inversionCompra) > 0 ? '' : `<div onclick="abrirEditVenta('${v.id}')" title="Toca para corregir" style="cursor:pointer;margin-top:4px;display:inline-block;font-size:11px;font-weight:600;color:var(--amber);background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:6px;padding:2px 8px">⚠️ Sin precio de compra · la ganancia puede estar inflada · Corregir</div>`}
               ${v.fechaCompra?`<div style="font-size:11px;color:var(--text3)">🛒 Comprado el ${new Date(v.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</div>`:''}
             </div>
@@ -3601,6 +3922,8 @@ function abrirEditVenta(id){
   document.getElementById('ev-comprador').value   = v.comprador||'';
   document.getElementById('ev-cc').value          = v.compradorCC||'';
   document.getElementById('ev-celular').value     = v.compradorCel||'';
+  elegirFormaPago('ev', v.formaPago||'');
+  document.getElementById('ev-entidad').value     = v.entidadFinanciera||'';
   _evGastos = (v.gastosList||[]).map(g=>({...g}));
   renderEvGastos();
   recalcEditVenta();
@@ -3684,6 +4007,8 @@ function guardarEditVenta(){
     comprador:     document.getElementById('ev-comprador').value.trim(),
     compradorCC:   document.getElementById('ev-cc').value.trim(),
     compradorCel:  document.getElementById('ev-celular').value.trim(),
+    formaPago:     document.getElementById('ev-forma-pago').value || ventas[idx].formaPago || '',
+    entidadFinanciera: document.getElementById('ev-forma-pago').value==='financiado' ? document.getElementById('ev-entidad').value.trim() : '',
     gastosList:    _evGastos.map(g=>({...g})),
   };
   saveVentas();
