@@ -455,6 +455,46 @@ textarea{resize:vertical;min-height:65px}
 .modal-sub{font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.55}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end}
 
+/* ── AVISO DEL DÍA ─────────────────────────────────────── */
+#mc-aviso{position:fixed;inset:0;z-index:960;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;transition:opacity .25s}
+#mc-aviso.show{opacity:1}
+.mca-card{position:relative;width:100%;max-width:470px;max-height:calc(100vh - 36px);overflow:auto;background:var(--bg2);border:1px solid var(--border2);border-radius:26px;box-shadow:0 40px 90px -20px rgba(0,0,0,.8);transform:translateY(18px) scale(.94);transition:transform .45s cubic-bezier(.2,1.3,.4,1);--m1:#4d9fff;--m2:#7c5cff}
+#mc-aviso.show .mca-card{transform:none}
+.mca-top{--m1:#22c98a;--m2:#0ea5e9}
+.mca-bien{--m1:#22c98a;--m2:#4d9fff}
+.mca-info{--m1:#4d9fff;--m2:#7c5cff}
+.mca-debajo{--m1:#f5a623;--m2:#f97316}
+.mca-mal{--m1:#ff4560;--m2:#f97316}
+.mca-hero{position:relative;overflow:hidden;text-align:center;color:#fff;padding:30px 24px 24px;background:radial-gradient(260px 160px at 85% -10%,rgba(255,255,255,.25),transparent 70%),linear-gradient(135deg,var(--m1),var(--m2))}
+.mca-campana{position:relative;width:64px;height:64px;margin:4px auto 16px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.2);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35)}
+.mca-campana svg{animation:mcaTimbre 1.4s ease-in-out infinite;transform-origin:50% 10%}
+.mca-onda{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,255,255,.55);animation:mcaOnda 2s ease-out infinite}
+.mca-onda.o2{animation-delay:1s}
+@keyframes mcaOnda{from{transform:scale(1);opacity:.9}to{transform:scale(1.9);opacity:0}}
+@keyframes mcaTimbre{0%,55%,100%{transform:rotate(0)}10%{transform:rotate(14deg)}20%{transform:rotate(-12deg)}30%{transform:rotate(9deg)}40%{transform:rotate(-6deg)}}
+.mca-kicker{font-size:12.5px;font-weight:600;opacity:.92}
+.mca-titulo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:4px;line-height:1.15}
+.mca-x{position:absolute;top:14px;right:14px;z-index:2;width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;background:rgba(255,255,255,.2);color:#fff;font-size:15px}
+.mca-x:hover{background:rgba(255,255,255,.32)}
+.mca-cuerpo{padding:20px 22px 22px}
+.mca-texto{font-size:14px;line-height:1.6;color:var(--text);margin:0 0 16px}
+.mca-datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+.mca-dato{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.mca-dato strong{display:block;font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--text)}
+.mca-dato span{font-size:11px;color:var(--text3)}
+.mca-extra{font-size:12.5px;line-height:1.5;color:var(--text2);margin-bottom:14px}
+.mca-extra:empty{display:none}
+.mca-botones{display:flex;gap:10px}
+.mca-btn{flex:1;padding:13px 16px;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:none}
+.mca-cerrar{background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
+.mca-ir{flex:1.5;color:#fff;background:linear-gradient(135deg,var(--m1),var(--m2));box-shadow:0 12px 24px -10px var(--m1)}
+@media (prefers-reduced-motion: reduce){.mca-card,#mc-aviso{transition:none}.mca-campana svg,.mca-onda{animation:none}}
+@media (max-width:600px){.mca-titulo{font-size:21px}.mca-cuerpo{padding:18px 16px}}
+/* ── AVISO DE PLACA REPETIDA ───────────────────────────── */
+.placa-aviso{font-size:11.5px;line-height:1.45;margin-top:5px}
+.placa-aviso:empty{display:none}
+.placa-aviso .rep{color:var(--amber);font-weight:600}
+.placa-aviso .info{color:var(--text3)}
 /* ── FOTO ────────────────────────────────────────────── */
 img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.13) 50%,rgba(255,255,255,.04) 100%);background-size:200% 100%;animation:mcFotoBrillo 1.2s linear infinite}
 @keyframes mcFotoBrillo{from{background-position:200% 0}to{background-position:-200% 0}}
@@ -578,7 +618,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
           <div class="form-group"><label class="form-label">Modelo <span>*</span></label><input type="text" id="nc-modelo" placeholder="Ej: Renault Sandero 2020"></div>
         </div>
         <div class="form-grid" style="margin-bottom:12px">
-          <div class="form-group"><label class="form-label">Placa</label><input type="text" id="nc-placa" placeholder="Ej: ABC 123"></div>
+          <div class="form-group"><label class="form-label">Placa</label><input type="text" id="nc-placa" placeholder="Ej: ABC 123" oninput="avisoPlacaForm('carro')"><div id="nc-placa-aviso" class="placa-aviso"></div></div>
           <div class="form-group"><label class="form-label">Color</label><input type="text" id="nc-color" placeholder="Ej: Blanco perla"></div>
         </div>
         <div class="form-grid">
@@ -754,7 +794,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
           <div class="form-group"><label class="form-label">Modelo del vehículo <span>*</span></label><input type="text" id="nm-modelo" placeholder="Ej: Honda CB 190R 2022"></div>
         </div>
         <div class="form-grid">
-          <div class="form-group"><label class="form-label">Placa</label><input type="text" id="nm-placa" placeholder="Ej: ABC 123"></div>
+          <div class="form-group"><label class="form-label">Placa</label><input type="text" id="nm-placa" placeholder="Ej: ABC 123" oninput="avisoPlacaForm('moto')"><div id="nm-placa-aviso" class="placa-aviso"></div></div>
           <div class="form-group"><label class="form-label">Color</label><input type="text" id="nm-color" placeholder="Ej: Rojo mate"></div>
         </div>
       </div>
@@ -855,6 +895,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
           <div class="metric-card green"><div class="metric-label">Ganancia neta</div><div class="metric-value green" id="vp-ganancia">—</div></div>
         </div>
         <p style="font-size:11px;color:var(--text3)">Ganancia = Precio venta − Precio de compra − Gastos del vehículo</p>
+        <div id="vp-aviso-compra" style="display:none;margin-top:.6rem;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.35);border-radius:8px;padding:.6rem .85rem;font-size:12.5px;color:var(--amber);line-height:1.5"></div>
       </div>
       <div style="display:flex;gap:10px">
         <button class="btn btn-primary" onclick="guardarVenta()">✓ Registrar venta</button>
@@ -1125,6 +1166,29 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
     <div class="modal-actions">
       <button class="btn btn-ghost" id="mc-pregunta-no">Cancelar</button>
       <button class="btn btn-primary" id="mc-pregunta-si">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<!-- AVISO DEL DÍA -->
+<div id="mc-aviso" style="display:none" role="alertdialog" aria-modal="true" aria-labelledby="mc-aviso-titulo">
+  <div class="mca-card mca-info" id="mc-aviso-card">
+    <button class="mca-x" onclick="mcCerrarAviso()" aria-label="Cerrar">✕</button>
+    <div class="mca-hero">
+      <div class="mca-campana" aria-hidden="true"><span class="mca-onda"></span><span class="mca-onda o2"></span>
+        <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+      </div>
+      <div class="mca-kicker" id="mc-aviso-kicker">Samuel</div>
+      <div class="mca-titulo" id="mc-aviso-titulo"></div>
+    </div>
+    <div class="mca-cuerpo">
+      <p class="mca-texto" id="mc-aviso-texto"></p>
+      <div class="mca-datos" id="mc-aviso-datos"></div>
+      <div class="mca-extra" id="mc-aviso-extra"></div>
+      <div class="mca-botones">
+        <button class="mca-btn mca-cerrar" onclick="mcCerrarAviso()">Cerrar</button>
+        <button class="mca-btn mca-ir" id="mc-aviso-ir" onclick="mcIrAlAviso()">Ver mi resumen →</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1884,6 +1948,7 @@ async function mcConSesion(session){
   mcCargarTraspasos();
   mcSubirFotosPendientes();
   mcHidratarFotos();
+  setTimeout(mcRevisarAviso, 2500);
 }
 function mcSuscribirTiempoReal(uid){
   if(_mcCanal || !_supa.channel) return;
@@ -1972,6 +2037,12 @@ function nomVeh(tipo, forma='singular'){
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 const fmt   = n => '$' + Math.round(n).toLocaleString('es-CO');
 const uid   = () => 'id' + Date.now() + Math.random().toString(36).slice(2,6);
+// Fecha (AAAA-MM-DD) en la hora del dispositivo. No usar toISOString(): usa la hora
+// universal y en Colombia, después de las 7 pm, daba la fecha del día siguiente.
+function hoyLocal(d){
+  d = d || new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
 const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 function vigencia(fecha, tipo){
@@ -2444,7 +2515,7 @@ function agregarGasto(id){
   const mo = motos.find(m=>m.id===id);
   if(!mo) return;
   if(!mo.gastos) mo.gastos = [];
-  mo.gastos.push({nombre, monto, fecha: new Date().toISOString().slice(0,10)});
+  mo.gastos.push({nombre, monto, fecha: hoyLocal()});
   saveMotos(); renderMotos(); toast('Gasto agregado correctamente');
 }
 function elimGasto(id, idx){
@@ -2472,16 +2543,51 @@ function initFormMoto(){
       document.querySelectorAll(`input[name="${name}"]`)[0].checked=true;
     });
     ['nm-soat','nm-tecno'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+    const avP=document.getElementById('nm-placa-aviso'); if(avP) avP.innerHTML='';
     setTimeout(()=>initImpuesto('moto',[]),50);
   }
 }
 
-function guardarMoto(){
+// ── PLACA REPETIDA ───────────────────────────────────────────────────────────
+// Busca la placa en el inventario (motos y carros) y en las ventas.
+function placaCoincidencias(placa, excluirId){
+  const p = mcNormPlaca(placa);
+  if(p.length < 4) return {inventario:[], vendidas:[]};
+  const inventario = [
+    ...motos.map(m=>({tipo:'moto', id:m.id, nombre:m.nombre, placa:m.placa})),
+    ...carros.map(c=>({tipo:'carro', id:c.id, nombre:c.nombre, placa:c.placa})),
+  ].filter(x => x.id !== excluirId && mcNormPlaca(x.placa) === p);
+  const vendidas = ventas.filter(v => mcNormPlaca(v.motoPlaca) === p)
+    .sort((a,b)=> String(b.fecha||'').localeCompare(String(a.fecha||'')));
+  return {inventario, vendidas};
+}
+function avisoPlacaForm(tipo){
+  const pre = tipo==='carro' ? 'nc' : 'nm';
+  const el = document.getElementById(pre+'-placa-aviso');
+  if(!el) return;
+  const {inventario, vendidas} = placaCoincidencias(document.getElementById(pre+'-placa').value, document.getElementById(pre+'-edit-id').value);
+  let html = '';
+  if(inventario.length) html += `<div class="rep">⚠️ Ya tienes en el inventario ${inventario.map(x=>`${nomVeh(x.tipo,'ico')} "${x.nombre}"`).join(', ')} con esta placa.</div>`;
+  if(vendidas.length) html += `<div class="info">ℹ️ Esta placa ya la vendiste el ${new Date(vendidas[0].fecha+'T00:00:00').toLocaleDateString('es-CO')}${vendidas[0].comprador ? ' a '+vendidas[0].comprador : ''}.</div>`;
+  el.innerHTML = html;
+}
+async function confirmarPlacaRepetida(placa, excluirId){
+  const {inventario} = placaCoincidencias(placa, excluirId);
+  if(!inventario.length) return true;
+  return mcPreguntar({
+    titulo: '⚠️ Placa repetida',
+    texto: `Ya tienes ${inventario.map(x=>`"${x.nombre}"`).join(', ')} en el inventario con la placa ${String(placa).toUpperCase()}.\n\n¿Guardar de todas formas?`,
+    si: 'Guardar igual', no: 'Revisar'
+  });
+}
+
+async function guardarMoto(){
   const nombre = document.getElementById('nm-nombre').value.trim();
   const modelo = document.getElementById('nm-modelo').value.trim();
   if(!nombre){ toast('El nombre es obligatorio','err'); return; }
   if(!modelo){ toast('El modelo es obligatorio','err'); return; }
   const editId    = document.getElementById('nm-edit-id').value;
+  if(!await confirmarPlacaRepetida(document.getElementById('nm-placa').value, editId)) return;
   const soatV     = document.querySelector('input[name="soat-tipo"]:checked').value;
   const tecnoV    = document.querySelector('input[name="tecno-tipo"]:checked').value;
   const debidos    = getAñosDebidosImp('moto');
@@ -2523,6 +2629,7 @@ function editarMoto(id){
     document.getElementById('nm-nombre').value          =mo.nombre||'';
     document.getElementById('nm-modelo').value          =mo.modelo||'';
     document.getElementById('nm-placa').value           =mo.placa||'';
+    avisoPlacaForm('moto');
     document.getElementById('nm-color').value           =mo.color||'';
     document.getElementById('nm-compra').value          =mo.precioCompra||'';
     document.getElementById('nm-fecha-compra').value    =mo.fechaCompra||'';
@@ -2557,6 +2664,7 @@ function populateVentaSelect(){
   document.getElementById('vta-moto').innerHTML = '<option value="">Seleccionar vehículo…</option>'+optsMotos+optsCarros;
   ['vp-inversion','vp-gastos','vp-total'].forEach(id=>document.getElementById(id).textContent='$0');
   document.getElementById('vp-ganancia').textContent='—';
+  const avisoC = document.getElementById('vp-aviso-compra'); if(avisoC) avisoC.style.display='none';
 }
 
 function calcularVenta(){
@@ -2579,6 +2687,11 @@ function calcularVenta(){
   const total = compraBase + gastosCard;
   const gan   = precio - total;
   document.getElementById('vp-inversion').textContent = fmt(compraBase);
+  const avisoC = document.getElementById('vp-aviso-compra');
+  if(avisoC){
+    avisoC.style.display = compraBase > 0 ? 'none' : 'block';
+    avisoC.innerHTML = compraBase > 0 ? '' : `⚠️ <strong>${vehiculo.nombre}</strong> no tiene precio de compra registrado. La ganancia saldría igual al precio de venta. Agrégalo en <strong>Editar</strong> antes de vender, o corrígelo después en la venta (✏️).`;
+  }
   document.getElementById('vp-gastos').textContent    = fmt(gastosCard);
   document.getElementById('vp-total').textContent     = fmt(total);
   const gEl = document.getElementById('vp-ganancia');
@@ -2587,7 +2700,9 @@ function calcularVenta(){
   gEl.closest('.metric-card').className = 'metric-card '+(gan>=0?'green':'red');
 }
 
-function guardarVenta(){
+let _mcGuardandoVenta = false;
+async function guardarVenta(){
+  if(_mcGuardandoVenta) return;
   const sel=document.getElementById('vta-moto').value;
   const precio=parseFloat(document.getElementById('vta-precio').value);
   const fecha=document.getElementById('vta-fecha').value;
@@ -2596,6 +2711,21 @@ function guardarVenta(){
   if(!fecha){toast('La fecha es obligatoria','err');return;}
   const [tipoV,vid]=sel.split(':');
   const esCarro = tipoV==='carro';
+  if(!(esCarro ? carros : motos).some(x=>x.id===vid)){ toast('Ese vehículo ya no está en el inventario','err'); populateVentaSelect(); return; }
+  if(!(parseFloat((esCarro ? carros : motos).find(x=>x.id===vid).precioCompra) > 0)){
+    _mcGuardandoVenta = true;
+    const nombreV = (esCarro ? carros : motos).find(x=>x.id===vid).nombre;
+    const seguir = await mcPreguntar({
+      titulo: '⚠️ Falta el precio de compra',
+      texto: `"${nombreV}" no tiene precio de compra registrado, así que la ganancia quedaría igual al precio de venta (${fmt(precio)}).
+
+Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en la venta (✏️).`,
+      si: 'Vender de todas formas', no: 'Cancelar'
+    });
+    _mcGuardandoVenta = false;
+    if(!seguir) return;
+    if(!(esCarro ? carros : motos).some(x=>x.id===vid)) return;
+  }
   const vehiculo = esCarro ? carros.find(c=>c.id===vid) : motos.find(m=>m.id===vid);
   const compraBase = parseFloat(vehiculo?.precioCompra)||0;
   const gastosCard = (vehiculo?.gastos||[]).reduce((a,g)=>a+g.monto,0);
@@ -2626,6 +2756,9 @@ function guardarVenta(){
     papelesFaltantes, papelesResueltos:[],
     notaVehiculo: vehiculo?vehiculo.nota||'':'',  // la nota viaja con la venta
     fotoVehiculo: vehiculo?vehiculo.foto||'':'',  // la foto también viaja
+    // Copia completa del vehículo tal como estaba al venderlo, para poder devolverlo
+    // al inventario sin perder nada (la foto va aparte, en fotoVehiculo)
+    vehiculoOriginal: vehiculo ? mcCopiaVehiculo(vehiculo) : null,
   });
   if(esCarro){
     carros = carros.filter(c=>c.id!==vid);
@@ -2749,9 +2882,10 @@ function renderVentas(){
           <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:.75rem">
             <div style="flex:1;min-width:190px">
               <div style="font-weight:700;font-size:14px;margin-bottom:2px">${nomVeh(v.tipoVehiculo,'ico')} ${v.motoNombre}</div>
-              <div style="font-size:11px;color:var(--text3)">${v.motoModelo} ${v.motoPlaca?'· '+v.motoPlaca:''}</div>
+              <div style="font-size:11px;color:var(--text3)">${v.motoModelo||''} ${v.motoPlaca?'· '+v.motoPlaca:''}</div>
               <div style="margin-top:4px;font-size:11px;color:var(--text2)">📅 Vendido el ${new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO')}</div>
               ${mcEtiquetaTraspaso(v)}
+              ${Number(v.inversionCompra) > 0 ? '' : `<div onclick="abrirEditVenta('${v.id}')" title="Toca para corregir" style="cursor:pointer;margin-top:4px;display:inline-block;font-size:11px;font-weight:600;color:var(--amber);background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:6px;padding:2px 8px">⚠️ Sin precio de compra · la ganancia puede estar inflada · Corregir</div>`}
               ${v.fechaCompra?`<div style="font-size:11px;color:var(--text3)">🛒 Comprado el ${new Date(v.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</div>`:''}
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -2905,46 +3039,84 @@ function confirmarDevolverInventario(id){
   const nv=nomVeh(v.tipoVehiculo,'singular');
   confirm2(
     `↩ Devolver ${nv} al inventario`,
-    `¿Devolver "${v.motoNombre}" (${v.motoModelo||'sin modelo'}) al inventario activo? Esto cancela la venta y ${nomVeh(v.tipoVehiculo,'articulo')} vuelve a "Mis ${nomVeh(v.tipoVehiculo,'plural')}" con su precio de compra, papeles y gastos originales.`,
+    `¿Devolver "${v.motoNombre}" (${v.motoModelo||'sin modelo'}) al inventario activo? Esto cancela la venta y ${nomVeh(v.tipoVehiculo,'articulo')} vuelve a "Mis ${nomVeh(v.tipoVehiculo,'plural')}" con su foto, nota, precio de compra, papeles y gastos. El costo automático del trámite de Traspasos no se pasa al inventario.`,
     ()=>devolverAlInventario(id)
   );
 }
 
-function devolverAlInventario(id){
+function mcCopiaVehiculo(veh){
+  const c = JSON.parse(JSON.stringify(veh || {}));
+  delete c.foto;
+  return c;
+}
+// Ventas registradas antes de guardar la copia completa: se busca la última
+// versión del vehículo en el historial de la nube (mc_historial).
+async function mcVehiculoDesdeHistorial(v){
+  if(!_supa || !_mcSesion || !_mcEstadoListo || !navigator.onLine || !v.vehiculoId) return null;
+  try {
+    const {data, error} = await _supa.from('mc_historial').select('data')
+      .eq('coleccion', v.tipoVehiculo==='carro' ? 'carros' : 'motos')
+      .eq('id', String(v.vehiculoId))
+      .order('guardado_en', {ascending:false}).limit(10);
+    if(error) throw error;
+    const f = (data||[]).find(r=>r.data && r.data.nombre);
+    return f ? mcCopiaVehiculo(f.data) : null;
+  } catch(e){ console.log('No se pudo buscar el vehículo en el historial:', e); return null; }
+}
+let _mcDevolviendo = false;
+async function devolverAlInventario(id){
+  if(_mcDevolviendo) return;
   const v = ventas.find(v=>v.id===id);
   if(!v) return;
-  // Reconstruir la moto con la info que se guardó al momento de la venta
-  const esCarro = v.tipoVehiculo === 'carro';
-  const vehiculoRecuperado = {
-    id: uid(),
-    nombre: v.motoNombre || (esCarro?'Carro recuperado':'Moto recuperada'),
-    modelo: v.motoModelo || '',
-    placa:  v.motoPlaca  || '',
-    color:  v.motoColor  || '',
-    precioCompra: v.inversionCompra || 0,
-    fechaCompra:  v.fechaCompra || '',
-    vendedorCC:     v.vendedorCC || '',
-    vendedorNombre: v.vendedorNombre || '',
-    vendedorTel:    '',
-    soatTiene:    !(v.papelesFaltantes||[]).includes('SOAT') || (v.papelesResueltos||[]).includes('SOAT'),
-    soat: '',
-    tecnoTiene:   !(v.papelesFaltantes||[]).includes('Tecnomecánica') || (v.papelesResueltos||[]).includes('Tecnomecánica'),
-    tecno: '',
-    impuestoPago: !(v.papelesFaltantes||[]).includes('Impuesto gubernamental') || (v.papelesResueltos||[]).includes('Impuesto gubernamental'),
-    impuesto: '',
-    gastos: (v.gastosList||[]).map(g=>({...g})),
-  };
-  if(esCarro){
-    carros.unshift(vehiculoRecuperado);
-    saveCarros();
-  } else {
-    motos.unshift(vehiculoRecuperado);
-    saveMotos();
-  }
-  ventas = ventas.filter(x=>x.id!==id);
-  saveVentas();
-  renderVentas();
-  toast(`"${vehiculoRecuperado.nombre}" devuelto al inventario de ${nomVeh(v.tipoVehiculo,'plural')} correctamente`);
+  _mcDevolviendo = true;
+  try {
+    const esCarro = v.tipoVehiculo === 'carro';
+    let base = v.vehiculoOriginal ? mcCopiaVehiculo(v.vehiculoOriginal) : null;
+    let completo = !!base;
+    if(!base){ base = await mcVehiculoDesdeHistorial(v); completo = !!base; }
+    if(!ventas.some(x=>x.id===id)) return;   // la venta cambió mientras se buscaba
+    const resuelto = p => (v.papelesResueltos||[]).includes(p);
+    const falta    = p => (v.papelesFaltantes||[]).includes(p);
+    // Lo mínimo, con los datos que guarda cualquier venta
+    const veh = {
+      nombre: v.motoNombre || (esCarro?'Carro recuperado':'Moto recuperada'),
+      modelo: v.motoModelo || '',
+      placa:  v.motoPlaca  || '',
+      color:  v.motoColor  || '',
+      fechaCompra:    v.fechaCompra || '',
+      vendedorCC:     v.vendedorCC || '',
+      vendedorNombre: v.vendedorNombre || '',
+      vendedorTel:    v.vendedorTel || '',
+      soatTiene: !falta('SOAT'), soat: '',
+      tecnoTiene: !falta('Tecnomecánica'), tecno: '',
+      impuestoPago: !falta('Impuesto gubernamental'), impuesto: '',
+      // Encima, todo lo que tenía el vehículo (fechas, km, cilindraje, impuestos…)
+      ...(base || {}),
+    };
+    // Lo que se pudo cambiar en la venta después de vender manda
+    veh.precioCompra = Number(v.inversionCompra) || 0;
+    veh.fechaCompra  = v.fechaCompra || veh.fechaCompra || '';
+    veh.nota = ('notaVehiculo' in v) ? (v.notaVehiculo || '') : (veh.nota || '');
+    veh.foto = v.fotoVehiculo || '';
+    if(resuelto('SOAT')) veh.soatTiene = true;
+    if(resuelto('Tecnomecánica')) veh.tecnoTiene = true;
+    if(resuelto('Impuesto gubernamental')){ veh.impuestoPago = true; veh.impPagados = []; veh.impuesto = 'pagado'; }
+    // Gastos: los de la venta (los de antes de vender y los que agregaste después),
+    // sin el gasto automático del trámite en Traspasos, que pertenece a la venta.
+    veh.gastos = (v.gastosList||[]).filter(g=>g && g.origen!=='traspasos').map(g=>({...g}));
+    if(Number(v.gastos) > 0) veh.gastos.push({nombre:'Gastos registrados en la venta', monto:Number(v.gastos), fecha:v.fecha || hoyLocal()});
+    // Mismo número interno de antes, si está libre
+    const lista = esCarro ? carros : motos;
+    veh.id = (v.vehiculoId && !lista.some(x=>x.id===v.vehiculoId)) ? v.vehiculoId : uid();
+    if(esCarro){ carros.unshift(veh); saveCarros(); }
+    else { motos.unshift(veh); saveMotos(); }
+    ventas = ventas.filter(x=>x.id!==id);
+    saveVentas();
+    renderVentas();
+    toast(completo
+      ? `"${veh.nombre}" volvió al inventario de ${nomVeh(v.tipoVehiculo,'plural')} con todos sus datos`
+      : `"${veh.nombre}" volvió al inventario. Esta venta es antigua: revisa las fechas de SOAT y tecnomecánica`);
+  } finally { _mcDevolviendo = false; }
 }
 
 // ── EDITAR VENTA ──────────────────────────────────────────────────────────────
@@ -3000,7 +3172,7 @@ function agregarGastoEditVenta(){
   const monto  = parseFloat(document.getElementById('ev-gm').value);
   if(!nombre){ toast('Escribe el concepto','err'); return; }
   if(!monto||monto<=0){ toast('El monto debe ser mayor a 0','err'); return; }
-  _evGastos.push({nombre, monto, fecha: new Date().toISOString().slice(0,10)});
+  _evGastos.push({nombre, monto, fecha: hoyLocal()});
   document.getElementById('ev-gn').value='';
   document.getElementById('ev-gm').value='';
   renderEvGastos();
@@ -3122,7 +3294,7 @@ function renderInventario(){
     const tGan=g.ventas.reduce((a,v)=>a+v.gananciaNeta,0);
     const rows=g.ventas.map(v=>`<tr>
       <td style="font-size:11px;color:var(--text2)">${new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO')}</td>
-      <td><div style="font-weight:600;font-size:13px">${v.motoNombre}</div><div style="font-size:11px;color:var(--text3)">${v.motoModelo}</div></td>
+      <td><div style="font-weight:600;font-size:13px">${v.motoNombre}</div><div style="font-size:11px;color:var(--text3)">${v.motoModelo||''}</div></td>
       <td style="color:var(--blue);font-family:'DM Mono',monospace">${fmt(v.inversionCompra)}</td>
       <td style="color:var(--amber);font-family:'DM Mono',monospace">${fmt(v.gastos)}</td>
       <td style="color:var(--green);font-family:'DM Mono',monospace">${fmt(v.precioVenta)}</td>
@@ -3276,7 +3448,7 @@ function renderAnalisis(){
   }
 
   // Racha actual — días seguidos vendiendo hasta hoy
-  const hoyStr = new Date().toISOString().slice(0,10);
+  const hoyStr = hoyLocal();
   let rachaHoy = 0;
   if(fechasConVenta.length){
     // Recorrer desde el último día hacia atrás contando días consecutivos hasta hoy
@@ -3291,7 +3463,7 @@ function renderAnalisis(){
       let check = new Date(ultimaFecha+'T00:00:00');
       rachaHoy = 0;
       while(true){
-        const str = check.toISOString().slice(0,10);
+        const str = hoyLocal(check);
         if(fechasSet.has(str)){ rachaHoy++; check.setDate(check.getDate()-1); }
         else break;
       }
@@ -3578,7 +3750,7 @@ function agregarGastoVenta(id){
   const v=ventas.find(v=>v.id===id);
   if(!v) return;
   if(!v.gastosList) v.gastosList=[];
-  v.gastosList.push({nombre,monto,fecha:new Date().toISOString().slice(0,10)});
+  v.gastosList.push({nombre,monto,fecha:hoyLocal()});
   // Recalcular ganancia neta
   const totGExtra=v.gastosList.reduce((a,g)=>a+g.monto,0);
   v.gananciaNeta=v.precioVenta-v.inversionCompra-v.gastos-totGExtra;
@@ -3894,7 +4066,36 @@ function borrarFoto(tipo, id){
 
 // ── GESTIÓN DE ESPACIO DE FOTOS ───────────────────────────────────────────────
 // ── BACKUP Y RESTAURACIÓN ─────────────────────────────────────────────────────
-function exportarDatos(){
+// Fotos que están en la nube (referencias sb:) dentro de los datos del respaldo
+function mcRefsFotosRespaldo(d){
+  const refs = new Set();
+  (d.motos||[]).forEach(o=>{ if(mcEsFotoNube(o.foto)) refs.add(o.foto); });
+  (d.carros||[]).forEach(o=>{ if(mcEsFotoNube(o.foto)) refs.add(o.foto); });
+  (d.ventas||[]).forEach(o=>{ if(mcEsFotoNube(o.fotoVehiculo)) refs.add(o.fotoVehiculo); });
+  return [...refs];
+}
+function mcBlobADataUrl(b){
+  return new Promise((ok, mal)=>{ const r = new FileReader(); r.onload = ()=>ok(r.result); r.onerror = mal; r.readAsDataURL(b); });
+}
+// Descarga las fotos de la nube para meterlas en el respaldo: {referencia: dataURL}
+async function mcDescargarFotos(refs){
+  const fotos = {};
+  if(!refs.length || !_supa || !_supa.storage || !_mcSesion || !navigator.onLine) return fotos;
+  const {data, error} = await _supa.storage.from(MC_FOTOS_BUCKET).createSignedUrls(refs.map(r=>r.slice(3)), 600);
+  if(error || !Array.isArray(data)) return fotos;
+  for(const d of data){
+    if(!d || !d.signedUrl || d.error) continue;
+    try {
+      const resp = await fetch(d.signedUrl);
+      if(resp.ok) fotos['sb:' + d.path] = await mcBlobADataUrl(await resp.blob());
+    } catch(e){ console.log('No se pudo descargar una foto para el respaldo:', e && e.message); }
+  }
+  return fotos;
+}
+
+let _mcExportando = false;
+async function exportarDatos(){
+  if(_mcExportando) return;
   const backup = {
     version:    '1.0',
     fecha:      new Date().toISOString(),
@@ -3909,6 +4110,17 @@ function exportarDatos(){
     configApp:  JSON.parse(localStorage.getItem(KEY_CFG)        ||'{}'),
   };
 
+  // Las fotos de la nube van dentro del respaldo, para que no se pierdan nunca
+  const refs = mcRefsFotosRespaldo(backup);
+  let sinIncluir = 0;
+  if(refs.length){
+    _mcExportando = true;
+    toast(`Preparando el respaldo con ${refs.length} foto${refs.length!==1?'s':''}…`);
+    try { backup.fotos = await mcDescargarFotos(refs); } catch(e){ backup.fotos = {}; }
+    finally { _mcExportando = false; }
+    sinIncluir = refs.filter(r=>!backup.fotos[r]).length;
+  }
+
   const json = JSON.stringify(backup, null, 2);
   const blob = new Blob([json], {type:'application/json'});
   const url  = URL.createObjectURL(blob);
@@ -3921,7 +4133,31 @@ function exportarDatos(){
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
-  toast('✅ Backup descargado correctamente');
+  if(sinIncluir) toast(`Backup descargado · ${sinIncluir} foto${sinIncluir!==1?'s':''} no se pudieron incluir (sin conexión o sin sesión). Siguen guardadas en la nube.`, 'err');
+  else toast(refs.length ? `✅ Backup descargado con ${refs.length} foto${refs.length!==1?'s':''}` : '✅ Backup descargado correctamente');
+}
+
+// Al restaurar: las fotos del respaldo que ya no estén en la nube vuelven a los
+// datos para que se suban solas. Las que siguen en la nube no se tocan.
+async function mcReponerFotosRespaldo(data){
+  const fotos = data.fotos || {};
+  const refs = mcRefsFotosRespaldo(data).filter(r=>fotos[r]);
+  if(!refs.length) return 0;
+  let faltan = refs;
+  if(_supa && _supa.storage && _mcSesion && navigator.onLine){
+    try {
+      const {data:firmas, error} = await _supa.storage.from(MC_FOTOS_BUCKET).createSignedUrls(refs.map(r=>r.slice(3)), 60);
+      if(!error && Array.isArray(firmas)){
+        const existen = new Set(firmas.filter(f=>f && f.signedUrl && !f.error).map(f=>'sb:'+f.path));
+        faltan = refs.filter(r=>!existen.has(r));
+      }
+    } catch(e){}
+  } else return 0;   // sin conexión no se puede comprobar: se dejan las referencias
+  const set = new Set(faltan);
+  (data.motos||[]).forEach(o=>{ if(set.has(o.foto)) o.foto = fotos[o.foto]; });
+  (data.carros||[]).forEach(o=>{ if(set.has(o.foto)) o.foto = fotos[o.foto]; });
+  (data.ventas||[]).forEach(o=>{ if(set.has(o.fotoVehiculo)) o.fotoVehiculo = fotos[o.fotoVehiculo]; });
+  return faltan.length;
 }
 
 function importarDatos(input){
@@ -3940,16 +4176,20 @@ function importarDatos(input){
       }
 
       const cant = k => Array.isArray(data[k]) ? data[k].length : 0;
+      const nFotos = data.fotos ? Object.keys(data.fotos).length : 0;
       const fechaBk = data.fecha ? new Date(data.fecha).toLocaleString('es-CO') : 'fecha desconocida';
       const ok = await mcPreguntar({
         titulo: '📥 ¿Restaurar este backup?',
-        texto:  `Backup del ${fechaBk}:\n• ${cant('motos')} motos · ${cant('carros')} carros\n• ${cant('ventas')} ventas · ${cant('movimientos')} movimientos\n• ${cant('contactos')} contactos · ${cant('metas')} metas\n\nEsto REEMPLAZA los datos actuales en este dispositivo y en la nube (todos tus dispositivos). Lo que se reemplace o elimine quedará guardado en el historial de Supabase.`,
+        texto:  `Backup del ${fechaBk}:\n• ${cant('motos')} motos · ${cant('carros')} carros\n• ${cant('ventas')} ventas · ${cant('movimientos')} movimientos\n• ${cant('contactos')} contactos · ${cant('metas')} metas${nFotos ? `\n• ${nFotos} foto${nFotos!==1?'s':''}` : ''}\n\nEsto REEMPLAZA los datos actuales en este dispositivo y en la nube (todos tus dispositivos). Lo que se reemplace o elimine quedará guardado en el historial de Supabase.`,
         si: 'Sí, restaurar', no: 'Cancelar'
       });
       if(!ok){
         if(status){ status.style.display='block'; status.style.color='var(--text3)'; status.textContent='Restauración cancelada. No se cambió nada.'; }
         return;
       }
+
+      // Fotos del respaldo que ya no estén en la nube
+      try { await mcReponerFotosRespaldo(data); } catch(e){ console.log('Fotos del respaldo:', e); }
 
       // Restaurar todos los datos
       if(data.motos)       localStorage.setItem('mc_motos_v3',       JSON.stringify(data.motos));
@@ -4059,7 +4299,7 @@ async function exportarATrapasos(ventaId){
     compradorTelefono: v.compradorCel||'',
     ventaId:     v.id,
     // Meta
-    fechaOrigen: new Date().toISOString().slice(0,10),
+    fechaOrigen: hoyLocal(),
     estado:      'pendiente',
     origen:      'MotoContable',
   };
@@ -4163,7 +4403,7 @@ function mcSincronizarGastosTraspaso(){
     const lista = v.gastosList || [];
     const idx = lista.findIndex(g => g && g.origen === 'traspasos');
     if(costo > 0){
-      const g = {nombre:'Traspaso', monto:costo, fecha: t.fechaEnvio || t.fecha || new Date().toISOString().slice(0,10),
+      const g = {nombre:'Traspaso', monto:costo, fecha: t.fechaEnvio || t.fecha || hoyLocal(),
                  origen:'traspasos', tramiteId:String(t.id)};
       if(idx < 0) v.gastosList = [...lista, g];
       else if(lista[idx].monto !== costo || lista[idx].tramiteId !== g.tramiteId) v.gastosList = lista.map((x,i)=> i===idx ? g : x);
@@ -4303,14 +4543,6 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado){
     document.getElementById('cel-ganancia').style.color = 'var(--green)';
     document.getElementById('cel-sub').textContent      = m.sub;
     card.style.borderColor = capitalLiberado ? 'rgba(0,214,143,.5)' : 'rgba(34,201,138,.4)';
-
-    // Notificación del sistema si capital liberado
-    if(capitalLiberado){
-      enviarNotif(
-        `💸 ¡Capital liberado! — ${nombreVehiculo}`,
-        `${diasParado} días parado y hoy salió. Ganancia: +${fmt(ganancia)}. El capital en movimiento es el que trabaja para ti.`
-      );
-    }
 
   } else {
     const datosMeses = Array.from({length:12},(_,i)=>{
@@ -4740,7 +4972,7 @@ function agregarGastoCarro(id){
   const ca=carros.find(c=>c.id===id);
   if(!ca) return;
   if(!ca.gastos) ca.gastos=[];
-  ca.gastos.push({nombre,monto,fecha:new Date().toISOString().slice(0,10)});
+  ca.gastos.push({nombre,monto,fecha:hoyLocal()});
   saveCarros(); renderCarros(); toast('Gasto agregado');
 }
 
@@ -4768,16 +5000,18 @@ function initFormCarro(){
       document.querySelectorAll(`input[name="${name}"]`)[0].checked=true;
     });
     ['nc-soat','nc-tecno'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+    const avP=document.getElementById('nc-placa-aviso'); if(avP) avP.innerHTML='';
     setTimeout(()=>initImpuesto('carro',[]),50);
   }
 }
 
-function guardarCarro(){
+async function guardarCarro(){
   const nombre=document.getElementById('nc-nombre').value.trim();
   const modelo=document.getElementById('nc-modelo').value.trim();
   if(!nombre){toast('El nombre es obligatorio','err');return;}
   if(!modelo){toast('El modelo es obligatorio','err');return;}
   const editId=document.getElementById('nc-edit-id').value;
+  if(!await confirmarPlacaRepetida(document.getElementById('nc-placa').value, editId)) return;
   const soatV =document.querySelector('input[name="c-soat-tipo"]:checked').value;
   const tecnoV=document.querySelector('input[name="c-tecno-tipo"]:checked').value;
   const debidosC   = getAñosDebidosImp('carro');
@@ -4821,6 +5055,7 @@ function editarCarro(id){
     document.getElementById('nc-nombre').value          =ca.nombre||'';
     document.getElementById('nc-modelo').value          =ca.modelo||'';
     document.getElementById('nc-placa').value           =ca.placa||'';
+    avisoPlacaForm('carro');
     document.getElementById('nc-color').value           =ca.color||'';
     document.getElementById('nc-km').value              =ca.km||'';
     document.getElementById('nc-cilindraje').value      =ca.cilindraje||'';
@@ -4880,6 +5115,7 @@ function getMensajeNotif(){
   const diasDelMes = new Date(anioAct, mesAct+1, 0).getDate();
   const pctMes   = diaHoy / diasDelMes;
   const MESES    = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const nomMes   = MESES[mesAct];
 
   // Ventas del mes actual
   const ventasMes = ventas.filter(v=>{
@@ -4921,11 +5157,11 @@ function getMensajeNotif(){
       [`MotoContable 🔴`, `${nomMes} sin cierres hasta ahora. Cada día sin venta es capital quieto. ${nomMejor?`En ${nomMejor} cerraste ${mejorMes.cnt} — necesitas ese ritmo.`:''} ${diasDelMes-diaHoy} días para revertirlo.`],
       [`MotoContable ⚠️`, `Sin ventas en ${nomMes}. Seré directo: si no empiezas a mover inventario hoy, este mes va a doler. ${diasDelMes-diaHoy} días quedan. Arranca.`],
     ];
-    return {titulo:msgs[0][0], cuerpo:msgs[Math.floor(Math.random()*msgs.length)][1]};
+    return {titulo:msgs[0][0], cuerpo:msgs[Math.floor(Math.random()*msgs.length)][1], tono:'mal', corto:`${nomMes} sin ventas todavía`};
   }
 
   if(!promGan){
-    return {titulo:`MotoContable 📊`, cuerpo:`${cntMes} venta${cntMes!==1?'s':''} en ${nomMes}. Ganancia: ${fmt(ganMes)}. Sigue registrando para tener comparativas mes a mes.`};
+    return {titulo:`MotoContable 📊`, cuerpo:`${cntMes} venta${cntMes!==1?'s':''} en ${nomMes}. Ganancia: ${fmt(ganMes)}. Sigue registrando para tener comparativas mes a mes.`, tono:'info', corto:`Así va ${nomMes}`};
   }
 
   const difPct = Math.round(((ganProy-promGan)/Math.abs(promGan))*100);
@@ -4937,7 +5173,7 @@ function getMensajeNotif(){
       `💰 ${cntMes} ventas y proyectado a +${difPct}% sobre el promedio en ${nomMes}. ${nomMejor?`Si mantienes este ritmo puedes acercarte a ${nomMejor}.`:''} El GT3 y el SVJ se acercan. 🏎️🐂`,
       `🔥 Así se trabaja. ${nomMes} va por encima de todo tu historial. ${cntMes} cierres en ${diaHoy} días — proyección de ${fmt(ganProy)} al cierre. No pares ahora.`,
     ];
-    return {titulo:`MotoContable 🚀 — ¡Mes excepcional!`, cuerpo:msgs[Math.floor(Math.random()*msgs.length)]};
+    return {titulo:`MotoContable 🚀 — ¡Mes excepcional!`, cuerpo:msgs[Math.floor(Math.random()*msgs.length)], tono:'top', corto:'¡Mes excepcional!'};
   }
 
   // ── Ritmo normal ────────────────────────────────────────────────────────────
@@ -4947,7 +5183,7 @@ function getMensajeNotif(){
       `📈 Vas bien en ${nomMes} — cerca de tu promedio de ${fmt(promGan)}. ${nomMejor?`Para superar ${nomMejor} necesitas acelerar en los ${diasDelMes-diaHoy} días que quedan.`:'Aprovecha el tiempo que queda.'}`,
       `👍 Sólido pero mejorable. ${cntMes} ventas en ${nomMes}. ${nomMejor?`Tu techo lo pusiste en ${nomMejor} — todavía no lo has superado.`:'El mejor mes aún está por escribirse.'}`,
     ];
-    return {titulo:`MotoContable ✅ — Vas bien`, cuerpo:msgs[Math.floor(Math.random()*msgs.length)]};
+    return {titulo:`MotoContable ✅ — Vas bien`, cuerpo:msgs[Math.floor(Math.random()*msgs.length)], tono:'bien', corto:'Vas bien este mes'};
   }
 
   // ── Por debajo del ritmo ────────────────────────────────────────────────────
@@ -4957,7 +5193,7 @@ function getMensajeNotif(){
       `📉 Hay que ser directo: el ritmo de ${nomMes} no está donde debe estar. ${nomMejor?`Tu mejor marca es ${nomMejor} — ¿qué hacías diferente ese mes?`:''} Quedan ${diasDelMes-diaHoy} días. Muévete.`,
       `⚡ ${nomMes} por debajo del promedio. ${cntMes} venta${cntMes!==1?'s':''} no alcanza. Identifica qué vehículos puedes mover antes del ${diasDelMes} y activa esas ventas hoy.`,
     ];
-    return {titulo:`MotoContable ⚠️ — Mes por debajo`, cuerpo:msgs[Math.floor(Math.random()*msgs.length)]};
+    return {titulo:`MotoContable ⚠️ — Mes por debajo`, cuerpo:msgs[Math.floor(Math.random()*msgs.length)], tono:'debajo', corto:'Mes por debajo del promedio'};
   }
 
   // ── Mes muy difícil ─────────────────────────────────────────────────────────
@@ -4966,172 +5202,122 @@ function getMensajeNotif(){
     `🚨 Hay que hablar claro: ${nomMes} está siendo tu peor mes. ${cntMes} cierre${cntMes!==1?'s':''} y proyectado ${fmt(ganProy)}. ${nomMejor?`En ${nomMejor} demostraste que puedes hacer ${fmt(ganMejor)}.`:''} Quedan ${diasDelMes-diaHoy} días — usálos todos.`,
     `💪 No voy a endulzarlo: ${nomMes} va mal. Pero no está terminado — quedan ${diasDelMes-diaHoy} días y tú has demostrado que puedes hacer grandes meses. ${nomMejor?`${nomMejor} fue prueba de eso.`:''} El GT3 y el SVJ no esperan para siempre. 🏎️`,
   ];
-  return {titulo:`MotoContable 🔴 — Hay que acelerar YA`, cuerpo:msgs[Math.floor(Math.random()*msgs.length)]};
+  return {titulo:`MotoContable 🔴 — Hay que acelerar YA`, cuerpo:msgs[Math.floor(Math.random()*msgs.length)], tono:'mal', corto:'Hay que acelerar YA'};
 }
 
-async function enviarNotificacion(){
-  // Verificar si ya se mandó hoy
-  const hoy = new Date().toISOString().slice(0,10);
-  if(localStorage.getItem(KEY_NOTIF_HOY) === hoy) return;
+// ── AVISO DEL DÍA (dentro de la app, ya no con notificaciones de Safari) ─────
+// Sale solo: al entrar y otra vez 6 horas después (máximo 2 veces al día).
+// Se queda en pantalla hasta que lo cierres.
+const MC_AVISO_KEY = 'mc_avisos', MC_AVISO_HORAS = 6, MC_AVISO_MAX = 2;
+function mcAvisoEstado(){
+  try {
+    const e = JSON.parse(localStorage.getItem(MC_AVISO_KEY) || 'null');
+    if(e && e.fecha === hoyLocal()) return e;
+  } catch(x){}
+  return {fecha: hoyLocal(), veces: 0, ultimo: 0};
+}
+function mcAvisoToca(){
+  const e = mcAvisoEstado();
+  if(e.veces >= MC_AVISO_MAX) return false;
+  return e.veces === 0 || Date.now() - e.ultimo >= MC_AVISO_HORAS * 3600 * 1000;
+}
+function mcAvisoAbierto(){ const el = document.getElementById('mc-aviso'); return !!el && el.style.display === 'flex'; }
+function mcHayVentanaAbierta(){
+  return ['mc-login','mc-pregunta','modal-overlay','modal-edit-venta','visor-foto','modal-celebracion','modal-contacto','modal-buscar-contacto','modal-meta']
+    .some(id => { const el = document.getElementById(id); return el && !el.classList.contains('modal-hidden') && getComputedStyle(el).display !== 'none'; });
+}
+function mcRevisarAviso(){
+  if(document.visibilityState === 'hidden' || mcAvisoAbierto() || mcHayVentanaAbierta()) return;
+  if(!(motos.length + carros.length + ventas.length)) return;
+  if(_supa && !_mcEstadoListo) return;          // espera a tener los datos de la nube
+  if(!mcAvisoToca()) return;
+  const e = mcAvisoEstado();
+  e.veces++; e.ultimo = Date.now();
+  try { localStorage.setItem(MC_AVISO_KEY, JSON.stringify(e)); } catch(x){}
+  mcMostrarAviso();
+}
+function mcMostrarAviso(){
+  const m = getMensajeNotif();
+  const ahora = new Date(), mesAct = ahora.getMonth(), anioAct = ahora.getFullYear();
+  const ventasMes = ventas.filter(v=>{ const d=new Date(v.fecha+'T00:00:00'); return d.getMonth()===mesAct && d.getFullYear()===anioAct; });
+  const ganMes = ventasMes.reduce((a,v)=>a+(Number(v.precioVenta)||0)-(Number(v.inversionCompra)||0)-(Number(v.gastos)||0)-(v.gastosList||[]).reduce((b,g)=>b+(Number(g.monto)||0),0),0);
+  const inventario = [...motos.map(x=>({...x, _t:'moto'})), ...carros.map(x=>({...x, _t:'carro'}))];
+  const quieto = inventario.filter(x=>x.fechaCompra).sort((a,b)=>diasEnInventario(b.fechaCompra)-diasEnInventario(a.fechaCompra))[0];
+  const papeles = ventas.reduce((a,v)=>a+(v.papelesFaltantes||[]).filter(p=>!(v.papelesResueltos||[]).includes(p)).length,0);
+  const h = ahora.getHours();
+  document.getElementById('mc-aviso-card').className = 'mca-card mca-' + (m.tono || 'info');
+  document.getElementById('mc-aviso-kicker').textContent = (h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches') + ', Samuel';
+  document.getElementById('mc-aviso-titulo').textContent = m.corto || 'Así va el mes';
+  document.getElementById('mc-aviso-texto').textContent = m.cuerpo;
+  const dato = (valor, etiqueta) => `<div class="mca-dato"><strong>${valor}</strong><span>${etiqueta}</span></div>`;
+  document.getElementById('mc-aviso-datos').innerHTML =
+    dato(ventasMes.length, ventasMes.length === 1 ? 'venta este mes' : 'ventas este mes') +
+    dato(fmt(ganMes), 'ganancia del mes') +
+    dato(inventario.length, inventario.length === 1 ? 'vehículo en inventario' : 'vehículos en inventario') +
+    (papeles ? dato(papeles, papeles === 1 ? 'papel pendiente' : 'papeles pendientes') : '');
+  document.getElementById('mc-aviso-extra').innerHTML = quieto && diasEnInventario(quieto.fechaCompra) >= 30
+    ? `${nomVeh(quieto._t,'ico')} <strong>${quieto.nombre}</strong> lleva <strong>${diasEnInventario(quieto.fechaCompra)} días</strong> en el inventario: es el que más capital tiene quieto.`
+    : '';
+  const el = document.getElementById('mc-aviso');
+  el.style.display = 'flex';
+  el.classList.remove('show');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{ const b = document.getElementById('mc-aviso-ir'); if(b) b.focus({preventScroll:true}); }, 60);
+  mcSonarAviso();
+}
+function mcCerrarAviso(){
+  const el = document.getElementById('mc-aviso');
+  el.classList.remove('show');
+  el.style.display = 'none';
+}
+function mcIrAlAviso(){ mcCerrarAviso(); go('resumen'); window.scrollTo({top:0, behavior:'smooth'}); }
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && mcAvisoAbierto()) mcCerrarAviso(); });
 
-  if(!('Notification' in window)) return;
-
-  if(Notification.permission === 'granted'){
-    const {titulo, cuerpo} = getMensajeNotif();
-    new Notification(titulo, {
-      body: cuerpo,
-      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🏍️</text></svg>',
-      badge:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📊</text></svg>',
-      tag:'motocontable-diario',
-      renotify:true,
+// Sonido del aviso (campanita doble). Safari solo deja sonar después de tocar la
+// pantalla: se prepara el audio con el primer toque y, si no arranca enseguida,
+// no suena tarde (por ejemplo, al cerrar el aviso).
+let _mcAudioAviso = null;
+function mcAudioAviso(){
+  try {
+    if(!_mcAudioAviso){ const C = window.AudioContext || window.webkitAudioContext; if(!C) return null; _mcAudioAviso = new C(); }
+    if(_mcAudioAviso.state !== 'running') _mcAudioAviso.resume().catch(()=>{});
+    return _mcAudioAviso;
+  } catch(e){ return null; }
+}
+['pointerdown','touchend','keydown'].forEach(ev => document.addEventListener(ev, ()=>mcAudioAviso(), {once:true, passive:true}));
+function mcSonarAviso(){
+  const ctx = mcAudioAviso();
+  if(!ctx) return;
+  const tocar = ()=>{
+    const t0 = ctx.currentTime + 0.01;
+    [[880,0,.2],[1109,.14,.2],[1319,.28,.5],[880,.95,.2],[1109,1.09,.2],[1319,1.23,.65]].forEach(([f,d,dur])=>{
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'triangle'; o.frequency.setValueAtTime(f, t0+d);
+      g.gain.setValueAtTime(0.0001, t0+d);
+      g.gain.exponentialRampToValueAtTime(0.16, t0+d+0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+d+dur);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t0+d); o.stop(t0+d+dur+0.02);
     });
-    localStorage.setItem(KEY_NOTIF_HOY, hoy);
-  } else if(Notification.permission === 'default'){
-    // Pedir permiso
-    const perm = await Notification.requestPermission();
-    if(perm === 'granted'){
-      enviarNotificacion();
-    }
-  }
+  };
+  if(ctx.state === 'running') tocar();
+  else { const t = Date.now(); ctx.resume().then(()=>{ if(Date.now()-t < 500 && mcAvisoAbierto()) tocar(); }).catch(()=>{}); }
 }
 
-// Botón para activar notificaciones en el sidebar footer
-function enviarNotif(titulo, cuerpo){
-  if(!('Notification' in window) || Notification.permission!=='granted') return;
-  new Notification(titulo, {
-    body: cuerpo,
-    icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🏍️</text></svg>',
-    tag:'motocontable', renotify:true,
-  });
-}
-
-function verificarYNotificar(){
-  if(!('Notification' in window) || Notification.permission!=='granted') return;
-  const ahora = new Date();
-  const hora  = ahora.getHours();
-  const clave = `mc_notif_${ahora.toISOString().slice(0,10)}_${hora}`;
-  if(!HORAS_NOTIF.includes(hora)) return;
-  if(localStorage.getItem(clave)) return;
-  localStorage.setItem(clave,'1');
-  const [titulo, cuerpo] = getMensajeNotif();
-  enviarNotif(titulo, cuerpo);
-}
-
-// Revisar cada 60 seg si toca notificar
-setInterval(verificarYNotificar, 60000);
-
-async function activarNotificaciones(){
-  if(!('Notification' in window)){toast('Tu navegador no soporta notificaciones','err');return;}
-  if(Notification.permission==='granted'){
-    // Mandar notificación de prueba inmediata
-    const [t,c] = getMensajeNotif();
-    new Notification(t,{
-      body:c,
-      icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🏍️</text></svg>',
-      tag:'motocontable-test', renotify:true,
-    });
-    toast('🔔 Notificación de prueba enviada');
-  } else {
-    const perm=await Notification.requestPermission();
-    if(perm==='granted'){
-      localStorage.setItem('mc_notif_activadas','1');
-      actualizarBtnNotif();
-      const [t,c]=getMensajeNotif();
-      new Notification(t,{
-        body:c,
-        icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🏍️</text></svg>',
-        tag:'motocontable', renotify:true,
-      });
-      toast('✅ Notificaciones activadas — recibirás avisos a las 9am, 1pm y 6pm');
-    } else {
-      toast('Permiso denegado — ve a ajustes del navegador para activarlas','err');
-    }
-  }
-}
-function actualizarBtnNotif(){
-  const lbl=document.getElementById('notif-label'),btn=document.getElementById('btn-notif');
-  if(!lbl||!btn) return;
-  if(Notification.permission==='granted'){lbl.textContent='🔔 Notificaciones activas';btn.style.color='var(--green)';btn.style.borderColor='rgba(0,214,143,.3)';}
-  else{lbl.textContent='🔔 Activar notificaciones';btn.style.color='var(--text2)';}
-}
-// Botón en sidebar
-document.querySelector('.sidebar-footer').innerHTML+=`
-  <button onclick="activarNotificaciones()" id="btn-notif"
+// Botón en el menú lateral para volver a ver el aviso
+document.querySelector('.sidebar-footer').insertAdjacentHTML('beforeend', `
+  <button onclick="mcMostrarAviso()" id="btn-aviso"
     style="margin-top:.6rem;width:100%;padding:6px 10px;background:var(--bg3);
     border:1px solid var(--border2);border-radius:6px;color:var(--text2);
     font-size:11px;font-family:'Inter',sans-serif;cursor:pointer;
     display:flex;align-items:center;gap:6px;transition:all .15s"
     onmouseover="this.style.background='var(--bg4)'"
     onmouseout="this.style.background='var(--bg3)'">
-    <span id="notif-label">🔔 Activar notificaciones</span>
-  </button>`;
-
-// Al cargar: mostrar banner si notificaciones no están activas
-actualizarBtnNotif();
-setInterval(verificarYNotificar, 60000);
-setTimeout(verificarYNotificar, 2000);
-
-function mostrarBannerNotif(){
-  if(!('Notification' in window)) return;
-  if(Notification.permission === 'granted') return;
-  if(Notification.permission === 'denied') return;
-  // No mostrar si el usuario ya las activó antes (aunque haya recargado)
-  if(localStorage.getItem('mc_notif_activadas')) return;
-  // Solo mostrar una vez por día
-  const hoy = new Date().toISOString().slice(0,10);
-  if(localStorage.getItem('mc_notif_banner_'+hoy)) return;
-
-  const banner = document.createElement('div');
-  banner.id = 'banner-notif';
-  banner.innerHTML = `
-    <div style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
-      background:var(--bg2);border:1px solid rgba(42,127,255,.4);border-radius:14px;
-      padding:.85rem 1.25rem;display:flex;align-items:center;gap:12px;
-      box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 0 1px rgba(42,127,255,.1);
-      z-index:400;max-width:420px;width:calc(100% - 2rem);animation:slideUp .3s ease">
-      <span style="font-size:22px;flex-shrink:0">🔔</span>
-      <div style="flex:1">
-        <div style="font-weight:600;font-size:13px;margin-bottom:2px">Activa las notificaciones</div>
-        <div style="font-size:11.5px;color:var(--text3)">Solo se activan una vez — después llegan solas a las 9am, 1pm y 6pm</div>
-      </div>
-      <button onclick="activarDesideBanner()" style="background:var(--accent);color:#fff;border:none;
-        border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;
-        cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;white-space:nowrap">
-        Activar
-      </button>
-      <button onclick="cerrarBannerNotif()" style="background:transparent;border:none;
-        color:var(--text3);cursor:pointer;font-size:16px;padding:4px;flex-shrink:0">✕</button>
-    </div>`;
-  document.body.appendChild(banner);
-}
-
-async function activarDesideBanner(){
-  cerrarBannerNotif();
-  const perm = await Notification.requestPermission();
-  if(perm === 'granted'){
-    localStorage.setItem('mc_notif_activadas','1');
-    actualizarBtnNotif();
-    const [t,c] = getMensajeNotif();
-    new Notification(t,{
-      body:c,
-      icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🏍️</text></svg>',
-      tag:'motocontable', renotify:true,
-    });
-    toast('✅ ¡Activadas! Llegarán solas a las 9am, 1pm y 6pm');
-  } else {
-    toast('Permiso denegado — actívalas desde ajustes del navegador','err');
-  }
-}
-
-function cerrarBannerNotif(){
-  const b = document.getElementById('banner-notif');
-  if(b) b.remove();
-  const hoy = new Date().toISOString().slice(0,10);
-  localStorage.setItem('mc_notif_banner_'+hoy,'1');
-}
-
-// Mostrar banner 2 segundos después de cargar
-setTimeout(mostrarBannerNotif, 2000);
+    🔔 Ver aviso del día
+  </button>`);
+setInterval(mcRevisarAviso, 60 * 1000);
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'visible') setTimeout(mcRevisarAviso, 800); });
+setTimeout(mcRevisarAviso, 3500);
 
 // ── CONTACTOS ─────────────────────────────────────────────────────────────────
 const MC_CONTACTOS_KEY = 'mc_contactos_v1';
@@ -5344,7 +5530,7 @@ function setTipoMeta(tipo){
 }
 
 function abrirModalMeta(id){
-  const hoy = new Date().toISOString().slice(0,10);
+  const hoy = hoyLocal();
   if(id){
     const m = metas.find(x=>x.id===id); if(!m) return;
     document.getElementById('m-edit-id').value  = id;
