@@ -715,6 +715,10 @@ textarea{resize:vertical;min-height:65px}
 .fp-gris{color:var(--text3);font-size:14px}
 .fp-tk-antes{font-size:12px;color:var(--text3);margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .fp-graf-tit{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--text2);margin:16px 0 4px}
+.fp-graf-cab{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 6px}
+.fp-graf-cab .fp-graf-tit{margin:4px 0}
+.fp-chips-graf{padding:3px}
+.fp-graf-poco{font-size:12.5px;color:var(--text2);background:var(--bg2);border:1px dashed var(--border2);border-radius:10px;padding:8px 12px;margin-top:8px}
 .fp-graf-ayuda{font-size:12.5px;color:var(--text3);margin-bottom:6px}
 .fp-sube-txt{color:#b9a0ff;font-weight:700}
 .fp-baja-txt{color:#3fd3a0;font-weight:700}
@@ -734,6 +738,8 @@ textarea{resize:vertical;min-height:65px}
   .an-tab span{display:none}
   .fp-ctrl{flex-direction:column;align-items:stretch}
   .fp-chips{justify-content:space-between}
+  .fp-chips-graf{width:100%}
+  .fp-chips-graf .fp-chip{white-space:nowrap}
   .fp-nav{justify-content:space-between}
   .fp-nav-txt{flex:1;min-width:0}
   .fp-titular{font-size:15.5px}
@@ -2646,7 +2652,8 @@ function fpEstado(){
   let e = {}; try { e = JSON.parse(sessionStorage.getItem('fp_estado') || '{}'); } catch(x){}
   const hoy = hoyLocal();
   const vista = ['mes','anio','todo'].includes(e.vista) ? e.vista : 'mes';
-  return {vista, mes: /^\d{4}-\d{2}$/.test(e.mes||'') ? e.mes : fpMesKey(hoy), anio: /^\d{4}$/.test(String(e.anio||'')) ? String(e.anio) : hoy.slice(0,4)};
+  const graf = ['mes','6m','anio'].includes(e.graf) ? e.graf : 'mes';
+  return {vista, graf, mes: /^\d{4}-\d{2}$/.test(e.mes||'') ? e.mes : fpMesKey(hoy), anio: /^\d{4}$/.test(String(e.anio||'')) ? String(e.anio) : hoy.slice(0,4)};
 }
 function fpGuardarEstado(c){ const e = {...fpEstado(), ...c}; try { sessionStorage.setItem('fp_estado', JSON.stringify(e)); } catch(x){} return e; }
 function fpCambiar(c){ fpGuardarEstado(c); renderAnalisisVentas(); }
@@ -2701,7 +2708,8 @@ function renderAnalisisVentas(){
     const partes = [];
     if(nC) partes.push(`<b class="fp-tc">${nC} de contado</b>`);
     if(nF) partes.push(`<b class="fp-tf">${nF} financiada${nF!==1?'s':''} con ${FP_FINANCIERA}</b>`);
-    frase = `${enQue} vendiste <b>${N}</b>: ${partes.join(' y ')}${nD ? ` <span class="fp-gris">(${nD} sin marcar)</span>` : ''}.`;
+    frase = `${enQue} vendiste <b>${N}</b>: ${partes.join(' y ')}${nD ? ` <span class="fp-gris">(${nD} sin marcar)</span>` : ''}`;
+    if(!/\.(<\/b>)?$/.test(frase)) frase += '.';
   }
   const comparar = (pct, clave) => antesF ? `<div class="fp-tk-antes">${nombreAntes.charAt(0).toUpperCase()+nombreAntes.slice(1)}: ${antesF[clave]}% ${pct > antesF[clave] ? '<span class="fp-sube">▲ subió</span>' : pct < antesF[clave] ? '<span class="fp-baja">▼ bajó</span>' : '<span class="fp-igual">igual</span>'}</div>` : '';
   const caja = (clave, nombre, ico, sub, pct, arr) => `
@@ -2731,9 +2739,17 @@ function renderAnalisisVentas(){
       ${caja('contado', 'De contado', '💵', '', pC, g.contado)}
       ${caja('financiado', 'Financiado', '🏦', FP_FINANCIERA, pF, g.financiado)}
     </div>
-    ${N ? `<div class="fp-graf-tit">¿Cómo te están pagando? · % de ventas financiadas, mes a mes</div>
+    ${N ? `<div class="fp-graf-cab">
+      <div class="fp-graf-tit">${fpTituloGrafica(e)}</div>
+      ${e.vista === 'mes' ? `<div class="fp-chips fp-chips-graf" role="tablist" aria-label="Cuánto mostrar en la gráfica">
+        <button class="fp-chip fp-chip-s ${e.graf==='mes'?'activo':''}" onclick="fpCambiar({graf:'mes'})">${e.mes === hoyM ? 'Este mes' : 'Solo ' + fpMesSolo(e.mes)}</button>
+        <button class="fp-chip fp-chip-s ${e.graf==='6m'?'activo':''}" onclick="fpCambiar({graf:'6m'})">6 meses</button>
+        <button class="fp-chip fp-chip-s ${e.graf==='anio'?'activo':''}" onclick="fpCambiar({graf:'anio'})">Año</button>
+      </div>` : ''}
+    </div>
     <div class="fp-graf-ayuda"><span class="fp-sube-txt">▲ Si la línea sube</span>, vendes más financiado con ${FP_FINANCIERA} · <span class="fp-baja-txt">▼ Si baja</span>, vendes más de contado.</div>
-    <div class="fp-grafica"><canvas id="fp-canvas" role="img" aria-label="Línea del porcentaje de ventas financiadas por mes"></canvas></div>
+    <div class="fp-grafica"><canvas id="fp-canvas" role="img" aria-label="Línea del porcentaje de ventas financiadas"></canvas></div>
+    <div class="fp-graf-poco" id="fp-graf-poco" hidden></div>
     <div class="fp-ley"><span><i style="background:${FP_COLOR.financiado}"></i>Encima de la mitad: más financiado</span><span><i style="background:${FP_COLOR.contado}"></i>Debajo de la mitad: más de contado</span><em>Toca un punto para ver el detalle</em></div>` : ''}
   </div>`;
 
@@ -2769,23 +2785,68 @@ function renderAnalisisVentas(){
   if(N) fpDibujarGrafica(e, meses);
 }
 
-// Gráfica de una sola línea, como la de Traspasos: % de ventas financiadas cada mes.
+function fpTituloGrafica(e){
+  if(e.vista === 'mes' && e.graf === 'mes') return `¿Cómo vas en ${fpMesSolo(e.mes)}? · % financiado, día a día`;
+  if(e.vista === 'mes' && e.graf === 'anio') return `¿Cómo te están pagando? · % financiado, mes a mes en ${e.mes.slice(0,4)}`;
+  if(e.vista === 'mes') return '¿Cómo te están pagando? · % financiado, últimos 6 meses';
+  return '¿Cómo te están pagando? · % de ventas financiadas, mes a mes';
+}
+// Gráfica de una sola línea, como la de Traspasos: % de ventas financiadas.
 // Sube = más financiado; baja = más de contado. Encima de la mitad se pinta morado,
-// debajo verde. En "Mes" se ven los 6 meses que terminan en el mes elegido.
+// debajo verde. En "Mes" se ve por defecto solo ese mes, día a día (cada venta
+// mueve la línea); con los botones se cambia a los últimos 6 meses o al año.
 function fpDibujarGrafica(e, meses){
   const cv = document.getElementById('fp-canvas');
   if(!cv || typeof Chart === 'undefined') return;
   if(_fpChart){ try { _fpChart.destroy(); } catch(x){} _fpChart = null; }
-  const mesesGraf = e.vista === 'mes' ? Array.from({length:6}, (_, i)=>fpMesMas(e.mes, i-5)) : meses;
-  const resaltado = e.vista === 'mes' ? 5 : -1;
-  const etiquetas = [], datos = [], detalle = [];
-  mesesGraf.forEach(k=>{
-    const del = ventas.filter(v=>fpMesKey(v.fecha)===k);
-    const c = del.filter(v=>v.formaPago==='contado').length, f = del.filter(v=>v.formaPago==='financiado').length;
-    etiquetas.push(e.vista === 'anio' ? FP_MESES[Number(k.slice(5,7))-1].slice(0,3) : fpMesCorto(k));
-    datos.push(c + f ? fpPct(f, c + f) : null);
-    detalle.push({mes: fpMesNombre(k), c, f});
-  });
+  const hoy = hoyLocal(), hoyM = fpMesKey(hoy);
+  const etiquetas = [], datos = [], detalle = [], conVenta = [];
+  let resaltado = -1, diario = false;
+  if(e.vista === 'mes' && e.graf === 'mes'){
+    // Día a día: % financiado acumulado desde el 1 del mes hasta ese día
+    diario = true;
+    const [y, m] = e.mes.split('-').map(Number);
+    const ultimoDia = e.mes === hoyM ? Number(hoy.slice(8,10)) : new Date(y, m, 0).getDate();
+    const delMes = ventas.filter(v=>fpMesKey(v.fecha)===e.mes);
+    let c = 0, f = 0;
+    for(let d = 1; d <= ultimoDia; d++){
+      const dia = e.mes + '-' + String(d).padStart(2,'0');
+      const hoyV = delMes.filter(v=>String(v.fecha||'').slice(0,10)===dia);
+      const hc = hoyV.filter(v=>v.formaPago==='contado').length, hf = hoyV.filter(v=>v.formaPago==='financiado').length;
+      c += hc; f += hf;
+      etiquetas.push(d + ' ' + fpMesSolo(e.mes).slice(0,3));
+      datos.push(c + f ? fpPct(f, c + f) : null);
+      detalle.push({mes: (e.mes === hoyM && d === ultimoDia ? 'Hoy, ' : 'Hasta el ') + d + ' de ' + fpMesSolo(e.mes), c, f, hc, hf});
+      conVenta.push(hc + hf > 0);
+    }
+    resaltado = datos.length - 1;
+  } else {
+    let mesesGraf = meses;
+    if(e.vista === 'mes' && e.graf === '6m') mesesGraf = Array.from({length:6}, (_, i)=>fpMesMas(e.mes, i-5));
+    if(e.vista === 'mes' && e.graf === 'anio'){
+      const a = e.mes.slice(0,4); mesesGraf = [];
+      for(let k = a + '-01'; k.startsWith(a) && k <= (a === hoy.slice(0,4) ? hoyM : a + '-12'); k = fpMesMas(k, 1)) mesesGraf.push(k);
+    }
+    if(e.vista === 'mes') resaltado = mesesGraf.indexOf(e.mes);
+    const porAnio = e.vista === 'anio' || (e.vista === 'mes' && e.graf === 'anio');
+    mesesGraf.forEach(k=>{
+      const del = ventas.filter(v=>fpMesKey(v.fecha)===k);
+      const c = del.filter(v=>v.formaPago==='contado').length, f = del.filter(v=>v.formaPago==='financiado').length;
+      etiquetas.push(porAnio ? FP_MESES[Number(k.slice(5,7))-1].slice(0,3) : fpMesCorto(k));
+      datos.push(c + f ? fpPct(f, c + f) : null);
+      detalle.push({mes: fpMesNombre(k), c, f});
+      conVenta.push(c + f > 0);
+    });
+  }
+  // Aviso cuando todavía hay muy pocos datos para ver una línea
+  const poco = document.getElementById('fp-graf-poco');
+  const nPuntos = diario ? conVenta.filter(Boolean).length : datos.filter(v=>v != null).length;
+  if(poco){
+    poco.hidden = nPuntos >= 2;
+    poco.textContent = !nPuntos ? 'Todavía no hay ventas marcadas como contado o financiado aquí.'
+      : diario ? 'Por ahora hay una sola venta este mes: la línea se irá formando con cada venta nueva.'
+      : 'Solo hay un mes con ventas en este rango: la línea se irá formando mes a mes. Prueba “Este mes” para verlo día a día.';
+  }
   const MORADO = FP_COLOR.financiado, VERDE = FP_COLOR.contado;
   const colorDe = v => v == null ? '#6a6a85' : v >= 50 ? MORADO : VERDE;
   // Raya punteada en el 50 % ("la mitad")
@@ -2811,7 +2872,7 @@ function fpDibujarGrafica(e, meses){
       segment: {borderColor: c => (c.p0.parsed.y + c.p1.parsed.y) / 2 >= 50 ? MORADO : VERDE},
       borderColor: MORADO,
       fill: {target: {value: 50}, above: 'rgba(155,113,255,.22)', below: 'rgba(14,163,114,.22)'},
-      pointRadius: datos.map((v, i)=> v == null ? 0 : (i === resaltado || i === ultimo) ? 6 : 3.5),
+      pointRadius: datos.map((v, i)=> v == null ? 0 : (i === resaltado || i === ultimo) ? 6 : diario && !conVenta[i] ? 0 : 3.5),
       pointBackgroundColor: datos.map(colorDe), pointBorderColor: datos.map((v, i)=> i === resaltado ? '#ffffff' : '#0e0e1a'),
       pointBorderWidth: datos.map((v, i)=> i === resaltado ? 2.5 : 2), pointHoverRadius: 7, pointHitRadius: 16,
     }]},
@@ -2828,7 +2889,9 @@ function fpDibujarGrafica(e, meses){
             title: it => detalle[it[0].dataIndex].mes,
             label: it => { const d = detalle[it.dataIndex]; const t = d.c + d.f;
               if(!t) return 'Sin ventas marcadas';
-              return [`🏦 ${fpPct(d.f, t)}% financiado (${d.f} de ${t})`, `💵 ${fpPct(d.c, t)}% de contado (${d.c} de ${t})`]; },
+              const r = [`🏦 ${fpPct(d.f, t)}% financiado (${d.f} de ${t})`, `💵 ${fpPct(d.c, t)}% de contado (${d.c} de ${t})`];
+              if(diario && (d.hc || d.hf)) r.push(`Ese día: ${[d.hf ? d.hf + ' financiada' + (d.hf!==1?'s':'') : '', d.hc ? d.hc + ' de contado' : ''].filter(Boolean).join(' y ')}`);
+              return r; },
           },
         },
       },
