@@ -571,6 +571,7 @@ textarea{resize:vertical;min-height:65px}
   #modal-celebracion{align-items:center!important}
 
   /* Ventas */
+  .vta-item{margin:1.1rem .55rem .8rem;padding:1.05rem .85rem .85rem}
   .vta-nums{display:grid!important;grid-template-columns:1fr 1fr;width:100%}
   .vta-nums > div{min-width:0!important}
   .vta-acc{width:100%;justify-content:flex-end}
@@ -632,6 +633,21 @@ textarea{resize:vertical;min-height:65px}
 .fp-sel button[data-fp="financiado"].activo b{background:rgba(155,113,255,.25)}
 .fp-sel.fp-falta{animation:fpSacudir .45s;box-shadow:0 0 0 2px rgba(255,61,107,.55)}
 @keyframes fpSacudir{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.vta-item{position:relative;margin:1.15rem .85rem .9rem;padding:1.15rem 1.15rem .95rem;background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px}
+.vta-item:last-child{margin-bottom:1rem}
+.vta-cinta{position:absolute;top:-11px;left:14px;font-size:11px;font-weight:700;letter-spacing:.02em;padding:3px 11px;border-radius:20px;border:1.5px solid;background:var(--bg2);line-height:1.35}
+.vta-fp-c{border-color:rgba(14,163,114,.55);background:linear-gradient(180deg,rgba(14,163,114,.06),transparent 90px),var(--bg2)}
+.vta-fp-c .vta-cinta{color:#3fd3a0;border-color:rgba(14,163,114,.6);background:#0f1f1b}
+.vta-fp-f{border-color:rgba(155,113,255,.55);background:linear-gradient(180deg,rgba(155,113,255,.07),transparent 90px),var(--bg2)}
+.vta-fp-f .vta-cinta{color:#c3adff;border-color:rgba(155,113,255,.6);background:#1a1530}
+.vta-fp-nd{border-style:dashed}
+.vta-fp-nd .vta-cinta{color:var(--text2);border-color:var(--border2);border-style:dashed;cursor:pointer}
+.nota-bloque{padding:.75rem 1.1rem;border-top:1px solid var(--border)}
+.nota-tit{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between}
+.nota-bloque.con-nota{background:rgba(245,166,35,.09);box-shadow:inset 4px 0 0 var(--amber)}
+.nota-bloque.con-nota .nota-tit{color:var(--amber);font-weight:800;font-size:11px}
+.nota-bloque.con-nota textarea{color:var(--text);font-weight:500;font-size:13px!important;background:rgba(245,166,35,.06);border-color:rgba(245,166,35,.45)}
+.badge-nota{background:rgba(245,166,35,.16);color:var(--amber);border:1px solid rgba(245,166,35,.4);cursor:default}
 .fp-tag{display:inline-block;margin-top:5px;margin-right:6px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid}
 .fp-c{color:#3fd3a0;background:rgba(14,163,114,.12);border-color:rgba(14,163,114,.35)}
 .fp-f{color:#b9a0ff;background:rgba(155,113,255,.12);border-color:rgba(155,113,255,.35)}
@@ -3392,6 +3408,7 @@ function renderMotos(){
           </div>
         </div>
         <div class="moto-badges">
+          ${mo.nota?`<span class="badge badge-nota" title="${escPap(mo.nota)}">📝 Tiene nota</span>`:''}
           <span class="badge badge-gray">📋 ${mo.placa||'Sin placa'}</span>
           ${mo.color?`<span class="badge badge-gray">🎨 ${mo.color}</span>`:''}
           ${mo.fechaCompra?`<span class="badge badge-blue">📅 ${new Date(mo.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</span>`:''}
@@ -3423,9 +3440,9 @@ function renderMotos(){
           <button class="btn-add-gasto" onclick="agregarGasto('${mo.id}')">+ Agregar gasto</button>
         </div>
       </div>
-      <div style="padding:.75rem 1.1rem;border-top:1px solid var(--border)">
-        <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between">
-          📝 Nota interna
+      <div class="nota-bloque${mo.nota?' con-nota':''}">
+        <div class="nota-tit">
+          <span>📝 Nota interna</span>
           ${mo.nota?`<button onclick="borrarNota('moto','${mo.id}')" style="font-size:11px;color:var(--red);background:rgba(255,69,96,.1);border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit">🗑 Borrar</button>`:''}
         </div>
         <textarea id="nota-${mo.id}" rows="2" placeholder="Ej: Debo $5.000.000 de esta moto a 15 días…" style="font-size:12px;resize:vertical;min-height:50px">${mo.nota||''}</textarea>
@@ -3811,17 +3828,20 @@ function renderVentas(){
           : '';
 
       const notaHtml = v.notaVehiculo
-        ? `<div style="margin-top:.6rem;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:8px;padding:.6rem .85rem;display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+        ? `<div style="margin-top:.6rem;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.4);box-shadow:inset 3px 0 0 var(--amber);border-radius:8px;padding:.6rem .85rem;display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
             <div>
               <div style="font-size:10px;color:var(--amber);font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px">📝 Nota del vehículo</div>
-              <div style="font-size:13px;color:var(--text2);line-height:1.5">${v.notaVehiculo}</div>
+              <div style="font-size:13px;color:var(--text);font-weight:500;line-height:1.5;white-space:pre-wrap">${v.notaVehiculo}</div>
             </div>
             <button onclick="borrarNotaVenta('${v.id}')" style="flex-shrink:0;font-size:11px;color:var(--red);background:rgba(255,69,96,.1);border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit;margin-top:2px">🗑</button>
           </div>`
         : '';
 
+      const fpCls = v.formaPago === 'contado' ? 'c' : v.formaPago === 'financiado' ? 'f' : 'nd';
+      const fpCinta = fpCls === 'c' ? '💵 De contado' : fpCls === 'f' ? `🏦 Financiado · ${FP_FINANCIERA}` : '❔ Sin definir · Toca para marcar';
       return `
-        <div style="border-bottom:1px solid var(--border);padding:1rem 1.25rem;background:var(--bg2)">
+        <div class="vta-item vta-fp-${fpCls}">
+          <div class="vta-cinta"${fpCls === 'nd' ? ` onclick="abrirEditVenta('${v.id}')" title="Toca para definir si fue de contado o financiada"` : ''}>${fpCinta}</div>
 
           <!-- CABECERA: nombre vehículo + números financieros + acciones -->
           <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:.75rem">
@@ -3830,7 +3850,6 @@ function renderVentas(){
               <div style="font-size:11px;color:var(--text3)">${v.motoModelo||''} ${v.motoPlaca?'· '+v.motoPlaca:''}</div>
               <div style="margin-top:4px;font-size:11px;color:var(--text2)">📅 Vendido el ${new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO')}</div>
               ${mcEtiquetaTraspaso(v)}
-              ${mcEtiquetaFormaPago(v)}
               ${Number(v.inversionCompra) > 0 ? '' : `<div onclick="abrirEditVenta('${v.id}')" title="Toca para corregir" style="cursor:pointer;margin-top:4px;display:inline-block;font-size:11px;font-weight:600;color:var(--amber);background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:6px;padding:2px 8px">⚠️ Sin precio de compra · la ganancia puede estar inflada · Corregir</div>`}
               ${v.fechaCompra?`<div style="font-size:11px;color:var(--text3)">🛒 Comprado el ${new Date(v.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</div>`:''}
             </div>
@@ -5891,6 +5910,7 @@ function renderCarros(){
           </div>
         </div>
         <div class="moto-badges">
+          ${ca.nota?`<span class="badge badge-nota" title="${escPap(ca.nota)}">📝 Tiene nota</span>`:''}
           <span class="badge badge-gray">📋 ${ca.placa||'Sin placa'}</span>
           ${ca.color?`<span class="badge badge-gray">🎨 ${ca.color}</span>`:''}
           ${ca.km?`<span class="badge badge-gray">🛣️ ${parseInt(ca.km).toLocaleString('es-CO')} km</span>`:''}
@@ -5924,9 +5944,9 @@ function renderCarros(){
           <button class="btn-add-gasto" onclick="agregarGastoCarro('${ca.id}')">+ Agregar gasto</button>
         </div>
       </div>
-      <div style="padding:.75rem 1.1rem;border-top:1px solid var(--border)">
-        <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between">
-          📝 Nota interna
+      <div class="nota-bloque${ca.nota?' con-nota':''}">
+        <div class="nota-tit">
+          <span>📝 Nota interna</span>
           ${ca.nota?`<button onclick="borrarNota('carro','${ca.id}')" style="font-size:11px;color:var(--red);background:rgba(255,69,96,.1);border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit">🗑 Borrar</button>`:''}
         </div>
         <textarea id="nota-${ca.id}" rows="2" placeholder="Ej: Debo $5.000.000 de este carro a 15 días…" style="font-size:12px;resize:vertical;min-height:50px">${ca.nota||''}</textarea>
