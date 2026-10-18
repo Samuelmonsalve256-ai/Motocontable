@@ -700,14 +700,41 @@ textarea{resize:vertical;min-height:65px}
 .fp-sube{color:#3fd3a0;background:rgba(14,163,114,.14)}
 .fp-baja{color:#ff6b8a;background:rgba(255,61,107,.13)}
 .fp-igual{color:var(--text2);background:var(--bg4)}
-.fp-grafica{position:relative;height:290px;margin:4px -4px 0}
+.fp-grafica{position:relative;height:270px;margin:4px -4px 0}
+.fp-nav{display:flex;align-items:center;gap:8px}
+.fp-flecha{width:40px;height:40px;border-radius:12px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fp-flecha:hover:not(:disabled){background:var(--bg3)}
+.fp-flecha:disabled{opacity:.3;cursor:default}
+.fp-nav-txt{min-width:170px;text-align:center}
+.fp-nav-txt strong{display:block;font-family:'Space Grotesk',sans-serif;font-size:16.5px;color:var(--text)}
+.fp-hoy{border:none;background:none;color:var(--accent);font:600 11.5px 'Inter',sans-serif;cursor:pointer;padding:0}
+.fp-titular{font-size:17px;line-height:1.5;color:var(--text2);margin:0 0 14px}
+.fp-titular b{color:var(--text)}
+.fp-titular .fp-tc{color:#3fd3a0}
+.fp-titular .fp-tf{color:#b9a0ff}
+.fp-gris{color:var(--text3);font-size:14px}
+.fp-tk-antes{font-size:12px;color:var(--text3);margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fp-graf-tit{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin:16px 0 6px}
+.fp-ley{display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--text2);margin-top:8px}
+.fp-ley i{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:6px;vertical-align:-1px}
+.fp-ley em{margin-left:auto;font-style:normal;font-size:11.5px;color:var(--text3)}
+.fp-lista-mes summary{cursor:pointer;list-style:none}
+.fp-lista-mes summary::-webkit-details-marker{display:none}
+.fp-lista-mes[open] .fp-abrir{font-size:0}
+.fp-lista-mes[open] .fp-abrir::after{content:'Ocultar';font-size:11.5px}
+.fp-abrir{color:var(--accent)!important;font-weight:600}
 .fp-card-top small{font-weight:500;color:var(--text3);margin-left:4px;font-size:11.5px}
+.fp-card-top{margin-bottom:6px}
 @media (max-width:760px){
   .an-tabs{width:100%;margin-top:-.4rem;overflow-x:auto}
   .an-tab{flex:1;justify-content:center;padding:9px 8px;font-size:12px;gap:5px}
   .an-tab span{display:none}
   .fp-ctrl{flex-direction:column;align-items:stretch}
   .fp-chips{justify-content:space-between}
+  .fp-nav{justify-content:space-between}
+  .fp-nav-txt{flex:1;min-width:0}
+  .fp-titular{font-size:15.5px}
+  .fp-ley em{margin-left:0;width:100%}
   .fp-chip{flex:1;padding:8px 4px}
   .fp-ctrl-der select{flex:1;min-width:0}
   .fp-bolsa{padding:1rem .9rem .9rem}
@@ -2611,179 +2638,173 @@ function fpGrupos(lista){
   return g;
 }
 let _fpChart = null;
+// Estado de la pantalla: ver un mes, un año o todo. Las flechas mueven el mes o el año.
 function fpEstado(){
   let e = {}; try { e = JSON.parse(sessionStorage.getItem('fp_estado') || '{}'); } catch(x){}
-  return {rango: e.rango || 'mes', mes: e.mes || fpMesKey(hoyLocal()), metrica: e.metrica || 'ventas', tipo: e.tipo || ''};
+  const hoy = hoyLocal();
+  const vista = ['mes','anio','todo'].includes(e.vista) ? e.vista : 'mes';
+  return {vista, mes: /^\d{4}-\d{2}$/.test(e.mes||'') ? e.mes : fpMesKey(hoy), anio: /^\d{4}$/.test(String(e.anio||'')) ? String(e.anio) : hoy.slice(0,4)};
 }
 function fpGuardarEstado(c){ const e = {...fpEstado(), ...c}; try { sessionStorage.setItem('fp_estado', JSON.stringify(e)); } catch(x){} return e; }
 function fpCambiar(c){ fpGuardarEstado(c); renderAnalisisVentas(); }
-// Meses (AAAA-MM) que cubre el rango elegido
-function fpMesesDelRango(e){
-  const hoyM = fpMesKey(hoyLocal());
-  if(e.rango === 'mes') return [e.mes];
-  if(e.rango === 'todo'){
-    const todos = ventas.map(v=>fpMesKey(v.fecha)).filter(k=>/^\d{4}-\d{2}$/.test(k)).sort();
-    const desde = todos[0] || hoyM, hasta = todos[todos.length-1] > hoyM ? todos[todos.length-1] : hoyM;
-    const r = []; for(let k = desde; k <= hasta && r.length < 240; k = fpMesMas(k, 1)) r.push(k);
-    return r;
-  }
-  const n = {'3m':3, '6m':6, '12m':12}[e.rango] || 6;
-  return Array.from({length:n}, (_, i)=>fpMesMas(hoyM, i-n+1));
+function fpMover(paso){
+  const e = fpEstado();
+  if(e.vista === 'mes') fpCambiar({mes: fpMesMas(e.mes, paso)});
+  else if(e.vista === 'anio') fpCambiar({anio: String(Number(e.anio) + paso)});
 }
+// Meses (AAAA-MM) que cubre lo que se está viendo
+function fpMesesDeVista(e){
+  const hoyM = fpMesKey(hoyLocal());
+  if(e.vista === 'mes') return [e.mes];
+  if(e.vista === 'anio'){
+    const r = [];
+    for(let m = 1; m <= 12; m++){ const k = e.anio + '-' + String(m).padStart(2,'0'); if(k > hoyM) break; r.push(k); }
+    return r.length ? r : [e.anio + '-01'];
+  }
+  const todos = ventas.map(v=>fpMesKey(v.fecha)).filter(k=>/^\d{4}-\d{2}$/.test(k)).sort();
+  const desde = todos[0] || hoyM, hasta = (todos[todos.length-1] || hoyM) > hoyM ? todos[todos.length-1] : hoyM;
+  const r = []; for(let k = desde; k <= hasta && r.length < 240; k = fpMesMas(k, 1)) r.push(k);
+  return r;
+}
+const fpMesSolo = k => FP_MESES[Number(k.slice(5,7))-1].toLowerCase();
 function renderAnalisisVentas(){
   const cont = document.getElementById('fp-contenido'); if(!cont) return;
   const e = fpEstado();
-  const deTipo = v => !e.tipo || (e.tipo === 'carro' ? v.tipoVehiculo === 'carro' : v.tipoVehiculo !== 'carro');
-  const meses = fpMesesDelRango(e);
-  const enRango = new Set(meses);
-  const lista = ventas.filter(v=>deTipo(v) && enRango.has(fpMesKey(v.fecha)));
-  // Periodo anterior del mismo tamaño (para la variación, como en la bolsa)
-  const previos = e.rango === 'todo' ? [] : meses.map(k=>fpMesMas(k, -meses.length));
-  const setPrev = new Set(previos);
-  const listaPrev = ventas.filter(v=>deTipo(v) && setPrev.has(fpMesKey(v.fecha)));
+  const hoy = hoyLocal(), hoyM = fpMesKey(hoy), hoyA = hoy.slice(0,4);
+  const meses = fpMesesDeVista(e), enVista = new Set(meses);
+  const lista = ventas.filter(v=>enVista.has(fpMesKey(v.fecha)));
+  // Para comparar: el mes anterior o el año anterior
+  let listaAntes = null, nombreAntes = '';
+  if(e.vista === 'mes'){ const k = fpMesMas(e.mes, -1); listaAntes = ventas.filter(v=>fpMesKey(v.fecha) === k); nombreAntes = 'el mes pasado'; }
+  if(e.vista === 'anio'){ const a = String(Number(e.anio)-1); listaAntes = ventas.filter(v=>String(v.fecha||'').startsWith(a)); nombreAntes = 'en ' + a; }
 
-  // Controles
-  const hoyM = fpMesKey(hoyLocal());
-  const mesesConVentas = [...new Set([hoyM, ...ventas.map(v=>fpMesKey(v.fecha)).filter(k=>/^\d{4}-\d{2}$/.test(k))])].sort().reverse();
-  const chip = (r, txt) => `<button class="fp-chip ${e.rango === r && (r !== 'mes' || e.mes === hoyM) ? 'activo' : ''}" onclick="fpCambiar({rango:'${r}'${r==='mes' ? `, mes:'${hoyM}'` : ''}})">${txt}</button>`;
-  const met = (m, txt) => `<button class="fp-chip fp-chip-s ${e.metrica === m ? 'activo' : ''}" onclick="fpCambiar({metrica:'${m}'})">${txt}</button>`;
-  const nombreRango = e.rango === 'mes' ? fpMesNombre(e.mes) : e.rango === 'todo' ? 'Todo el historial' : {'3m':'Últimos 3 meses','6m':'Últimos 6 meses','12m':'Último año'}[e.rango];
-  const nombrePrev = e.rango === 'mes' ? fpMesNombre(previos[0]) : 'el periodo anterior';
+  const titulo = e.vista === 'mes' ? fpMesNombre(e.mes) : e.vista === 'anio' ? 'Año ' + e.anio : 'Todo el historial';
+  const enQue = e.vista === 'mes' ? 'En ' + fpMesSolo(e.mes) + (e.mes.slice(0,4) !== hoyA ? ' de ' + e.mes.slice(0,4) : '') : e.vista === 'anio' ? 'En ' + e.anio : 'Desde que empezaste';
+  const esActual = e.vista === 'mes' ? e.mes === hoyM : e.vista === 'anio' ? e.anio === hoyA : true;
+  const puedeAdelante = e.vista === 'mes' ? e.mes < hoyM : e.vista === 'anio' ? e.anio < hoyA : false;
 
-  const g = fpGrupos(lista), gp = fpGrupos(listaPrev);
+  const g = fpGrupos(lista);
   const nC = g.contado.length, nF = g.financiado.length, nD = g.nd.length, def = nC + nF, N = lista.length;
-  const defP = gp.contado.length + gp.financiado.length;
-  const pctC = fpPct(nC, def), pctF = def ? 100 - pctC : 0;
+  const pC = fpPct(nC, def), pF = def ? 100 - pC : 0;
   const suma = (arr, f) => arr.reduce((a,v)=>a+f(v),0);
-  const ingC = suma(g.contado, v=>Number(v.precioVenta)||0), ingF = suma(g.financiado, v=>Number(v.precioVenta)||0);
-  const flecha = d => d > 0 ? `<span class="fp-sube">▲ ${d} pts</span>` : d < 0 ? `<span class="fp-baja">▼ ${Math.abs(d)} pts</span>` : `<span class="fp-igual">= 0 pts</span>`;
-  const varC = defP && def ? pctC - fpPct(gp.contado.length, defP) : null;
-  const varF = varC === null ? null : -varC;
-  const ticker = (clave, nombre, sub, pct, vari, n, ing) => `
+  let antesF = null;
+  if(listaAntes){ const ga = fpGrupos(listaAntes); const d = ga.contado.length + ga.financiado.length; if(d) antesF = {c: fpPct(ga.contado.length, d), f: 100 - fpPct(ga.contado.length, d)}; }
+
+  // Frase principal en palabras simples
+  let frase;
+  if(!N) frase = `${enQue} no hay ventas registradas.`;
+  else if(!def) frase = `${enQue} vendiste <b>${N}</b>, pero falta marcar si fueron de contado o financiadas.`;
+  else {
+    const partes = [];
+    if(nC) partes.push(`<b class="fp-tc">${nC} de contado</b>`);
+    if(nF) partes.push(`<b class="fp-tf">${nF} financiada${nF!==1?'s':''} con ${FP_FINANCIERA}</b>`);
+    frase = `${enQue} vendiste <b>${N}</b>: ${partes.join(' y ')}${nD ? ` <span class="fp-gris">(${nD} sin marcar)</span>` : ''}.`;
+  }
+  const comparar = (pct, clave) => antesF ? `<div class="fp-tk-antes">${nombreAntes.charAt(0).toUpperCase()+nombreAntes.slice(1)}: ${antesF[clave]}% ${pct > antesF[clave] ? '<span class="fp-sube">▲ subió</span>' : pct < antesF[clave] ? '<span class="fp-baja">▼ bajó</span>' : '<span class="fp-igual">igual</span>'}</div>` : '';
+  const caja = (clave, nombre, ico, sub, pct, arr) => `
     <div class="fp-tk fp-tk-${clave}">
-      <div class="fp-tk-nom"><span class="fp-dot" style="background:${FP_COLOR[clave]}"></span>${nombre}<small>${sub}</small></div>
-      <div class="fp-tk-val">${def ? pct+'%' : '—'} ${vari === null ? '' : flecha(vari)}</div>
-      <div class="fp-tk-sub">${n} venta${n!==1?'s':''} · ${fmt(ing)}</div>
+      <div class="fp-tk-nom"><span class="fp-dot" style="background:${FP_COLOR[clave]}"></span>${ico} ${nombre}${sub ? `<small>${sub}</small>` : ''}</div>
+      <div class="fp-tk-val">${def ? pct + '%' : '—'}</div>
+      <div class="fp-tk-sub">${arr.length} venta${arr.length!==1?'s':''} · ${fmt(suma(arr, v=>Number(v.precioVenta)||0))}</div>
+      ${def ? comparar(pct, clave === 'contado' ? 'c' : 'f') : ''}
     </div>`;
 
   let html = `
   <div class="fp-ctrl">
-    <div class="fp-chips">${chip('mes','Este mes')}${chip('3m','3M')}${chip('6m','6M')}${chip('12m','1A')}${chip('todo','Todo')}</div>
-    <div class="fp-ctrl-der">
-      <select onchange="fpCambiar({rango:'mes', mes:this.value})" aria-label="Elegir otro mes">
-        <option value="" ${e.rango !== 'mes' || e.mes === hoyM ? 'selected' : ''} disabled>Otro mes…</option>
-        ${mesesConVentas.filter(k=>k!==hoyM).map(k=>`<option value="${k}" ${e.rango==='mes' && e.mes===k ? 'selected' : ''}>${fpMesNombre(k)}</option>`).join('')}
-      </select>
-      <select onchange="fpCambiar({tipo:this.value})" aria-label="Tipo de vehículo">
-        <option value="" ${!e.tipo?'selected':''}>Motos y carros</option><option value="moto" ${e.tipo==='moto'?'selected':''}>Solo motos</option><option value="carro" ${e.tipo==='carro'?'selected':''}>Solo carros</option>
-      </select>
+    <div class="fp-chips" role="tablist" aria-label="Qué quieres ver">
+      <button class="fp-chip ${e.vista==='mes'?'activo':''}" onclick="fpCambiar({vista:'mes'})">Mes</button>
+      <button class="fp-chip ${e.vista==='anio'?'activo':''}" onclick="fpCambiar({vista:'anio'})">Año</button>
+      <button class="fp-chip ${e.vista==='todo'?'activo':''}" onclick="fpCambiar({vista:'todo'})">Todo</button>
+    </div>
+    <div class="fp-nav">
+      ${e.vista !== 'todo' ? `<button class="fp-flecha" onclick="fpMover(-1)" aria-label="Anterior">‹</button>` : ''}
+      <div class="fp-nav-txt"><strong>${titulo}</strong>${e.vista !== 'todo' && !esActual ? `<button class="fp-hoy" onclick="fpCambiar({mes:'${hoyM}', anio:'${hoyA}'})">Volver a hoy</button>` : ''}</div>
+      ${e.vista !== 'todo' ? `<button class="fp-flecha" onclick="fpMover(1)" ${puedeAdelante ? '' : 'disabled'} aria-label="Siguiente">›</button>` : ''}
     </div>
   </div>
   <div class="fp-bolsa">
-    <div class="fp-bolsa-top">
-      <div class="fp-rango-nom">${nombreRango}${e.tipo ? ' · '+(e.tipo==='moto'?'solo motos':'solo carros') : ''}<span>${N} venta${N!==1?'s':''}${nD ? ` · ${nD} sin definir` : ''}</span></div>
-      <div class="fp-metricas">${met('ventas','Ventas')}${met('pct','%')}${met('ingresos','Ingresos')}</div>
-    </div>
+    <p class="fp-titular">${frase}</p>
     <div class="fp-tickers">
-      ${ticker('contado', 'Contado', 'pagó el total', pctC, varC, nC, ingC)}
-      ${ticker('financiado', 'Financiado', FP_FINANCIERA, pctF, varF, nF, ingF)}
+      ${caja('contado', 'De contado', '💵', '', pC, g.contado)}
+      ${caja('financiado', 'Financiado', '🏦', FP_FINANCIERA, pF, g.financiado)}
     </div>
-    <div class="fp-grafica"><canvas id="fp-canvas" role="img" aria-label="Línea de ventas de contado y financiadas"></canvas></div>
-    <p class="fp-frase" id="fp-frase"></p>
+    ${N ? `<div class="fp-graf-tit">${e.vista === 'mes' ? 'Ventas sumadas día a día' : 'Ventas de cada mes'}</div>
+    <div class="fp-grafica"><canvas id="fp-canvas" role="img" aria-label="Gráfica de ventas de contado y financiadas"></canvas></div>
+    <div class="fp-ley"><span><i style="background:${FP_COLOR.contado}"></i>De contado</span><span><i style="background:${FP_COLOR.financiado}"></i>Financiado</span><em>Toca la gráfica para ver el detalle</em></div>` : ''}
   </div>`;
 
   if(!N){
-    html += `<div class="fp-vacio"><div class="grande">💳</div><strong>Sin ventas en ${nombreRango.toLowerCase().startsWith('últ') ? 'los '+nombreRango.toLowerCase() : nombreRango}</strong><br>Prueba con otro rango: 3M, 6M, 1A o Todo.</div>`;
+    html += `<div class="fp-vacio"><div class="grande">💳</div><strong>Sin ventas aquí</strong><br>Usa las flechas ‹ › para ir a otro ${e.vista === 'anio' ? 'año' : 'mes'}, o toca <b>Todo</b>.</div>`;
   } else {
     const tarjeta = (clave, titulo, ico, sub, arr) => {
-      const n = arr.length, ing = suma(arr, v=>Number(v.precioVenta)||0), gan = suma(arr, fpGanancia);
+      const n = arr.length, gan = suma(arr, fpGanancia);
       return `<div class="fp-card fp-card-${clave}">
-        <div class="fp-card-top"><span class="fp-dot" style="background:${FP_COLOR[clave]}"></span>${ico} ${titulo}<small>${sub}</small><b>${fpPct(n, def || N)}%</b></div>
-        <div class="fp-card-num">${n} <small>venta${n!==1?'s':''}</small></div>
-        <div class="fp-card-fila"><span>Ingresos</span><strong>${fmt(ing)}</strong></div>
-        <div class="fp-card-fila"><span>Ganancia</span><strong>${fmt(gan)}</strong></div>
-        <div class="fp-card-fila"><span>Precio promedio</span><strong>${n ? fmt(Math.round(ing/n)) : '—'}</strong></div>
-        <div class="fp-card-fila"><span>Ganancia promedio</span><strong>${n ? fmt(Math.round(gan/n)) : '—'}</strong></div>
+        <div class="fp-card-top"><span class="fp-dot" style="background:${FP_COLOR[clave]}"></span>${ico} ${titulo}${sub ? `<small>${sub}</small>` : ''}</div>
+        <div class="fp-card-fila"><span>Vendiste</span><strong>${fmt(suma(arr, v=>Number(v.precioVenta)||0))}</strong></div>
+        <div class="fp-card-fila"><span>Ganaste</span><strong>${fmt(gan)}</strong></div>
+        <div class="fp-card-fila"><span>Ganancia por venta</span><strong>${n ? fmt(Math.round(gan/n)) : '—'}</strong></div>
       </div>`;
     };
     html += `<div class="fp-cards">${tarjeta('contado', 'De contado', '💵', '', g.contado)}${tarjeta('financiado', 'Financiado', '🏦', FP_FINANCIERA, g.financiado)}</div>`;
     if(nD){
-      html += `<div class="card fp-sec fp-nd-card"><div class="card-head"><span class="card-head-title">❔ ${nD} venta${nD!==1?'s':''} sin forma de pago</span><span class="fp-sub">Márcalas para que el análisis sea exacto</span></div><div class="fp-nd-lista">` +
+      html += `<div class="card fp-sec fp-nd-card"><div class="card-head"><span class="card-head-title">❔ Falta marcar ${nD} venta${nD!==1?'s':''}</span><span class="fp-sub">Toca cómo te pagaron</span></div><div class="fp-nd-lista">` +
         g.nd.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha))).map(v=>`<div class="fp-nd-fila">
           <div class="fp-nd-info"><strong>${nomVeh(v.tipoVehiculo,'ico')} ${escPap(v.motoNombre||'Venta')}</strong><span>${v.fecha ? new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO') : ''} · ${fmt(Number(v.precioVenta)||0)}${v.comprador ? ' · '+escPap(v.comprador) : ''}</span></div>
           <div class="fp-nd-acc"><button class="fp-btn-c" onclick="mcFijarFormaPago('${v.id}','contado')">💵 Contado</button><button class="fp-btn-f" onclick="mcFijarFormaPago('${v.id}','financiado')">🏦 Financiado</button></div>
         </div>`).join('') + `</div></div>`;
     }
-    if(e.rango === 'mes'){
-      html += `<div class="card fp-sec"><div class="card-head"><span class="card-head-title">🧾 Ventas de ${fpMesNombre(e.mes)}</span></div><div class="fp-det">` +
+    if(e.vista === 'mes'){
+      html += `<details class="card fp-sec fp-lista-mes"><summary class="card-head"><span class="card-head-title">🧾 Ver las ${N} venta${N!==1?'s':''} de ${fpMesSolo(e.mes)}</span><span class="fp-sub fp-abrir">Mostrar</span></summary><div class="fp-det">` +
         lista.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha))).map(v=>`<div class="fp-det-fila">
           <div class="fp-nd-info"><strong>${nomVeh(v.tipoVehiculo,'ico')} ${escPap(v.motoNombre||'Venta')}</strong><span>${v.fecha ? new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO') : ''} · ${fmt(Number(v.precioVenta)||0)} · ganancia ${fmt(fpGanancia(v))}</span></div>
           ${mcEtiquetaFormaPago(v)}
-        </div>`).join('') + `</div></div>`;
+        </div>`).join('') + `</div></details>`;
     }
   }
   cont.innerHTML = html;
-
-  // Frase resumen
-  const fr = document.getElementById('fp-frase');
-  if(fr){
-    if(!def) fr.innerHTML = N ? 'Aún no has marcado la forma de pago de estas ventas. Hazlo abajo con un toque.' : '';
-    else {
-      const may = nC >= nF ? ['de contado', nC] : ['financiadas con '+FP_FINANCIERA, nF];
-      fr.innerHTML = (nC === nF ? `En ${nombreRango.toLowerCase().startsWith('últ') ? 'los '+nombreRango.toLowerCase() : nombreRango}, la mitad de tus ventas fueron de contado y la mitad financiadas.`
-        : `<strong>${may[1]} de cada ${def}</strong> ventas fueron <strong>${may[0]}</strong> (${fpPct(may[1], def)}%).`)
-        + (varF ? ` Las financiadas ${varF > 0 ? 'subieron' : 'bajaron'} <strong>${Math.abs(varF)} puntos</strong> frente a ${nombrePrev}.` : varF === 0 ? ` Igual que ${nombrePrev}.` : '');
-    }
-  }
-  fpDibujarGrafica(e, meses, lista);
+  if(N) fpDibujarGrafica(e, meses, lista);
 }
 
-// Gráfica de líneas tipo bolsa: un mes → acumulado día a día; varios meses → mes a mes
+// Gráfica de líneas: un mes → ventas sumadas día a día; año o todo → ventas de cada mes
 function fpDibujarGrafica(e, meses, lista){
   const cv = document.getElementById('fp-canvas');
   if(!cv || typeof Chart === 'undefined') return;
   if(_fpChart){ try { _fpChart.destroy(); } catch(x){} _fpChart = null; }
-  let etiquetas = [], serieC = [], serieF = [], titulos = [];
-  const valor = arr => e.metrica === 'ingresos' ? arr.reduce((a,v)=>a+(Number(v.precioVenta)||0),0) : arr.length;
-  if(e.rango === 'mes'){
+  const etiquetas = [], serieC = [], serieF = [], titulos = [];
+  if(e.vista === 'mes'){
     const [y,m] = e.mes.split('-').map(Number);
     const ultimo = new Date(y, m, 0).getDate();
     const hoy = hoyLocal();
     const hasta = e.mes === fpMesKey(hoy) ? Number(hoy.slice(8,10)) : ultimo;
-    let ac = [], af = [];
+    let c = 0, f = 0;
     for(let d = 1; d <= hasta; d++){
-      const f = e.mes + '-' + String(d).padStart(2,'0');
-      ac = ac.concat(lista.filter(v=>v.fecha===f && v.formaPago==='contado'));
-      af = af.concat(lista.filter(v=>v.fecha===f && v.formaPago==='financiado'));
-      etiquetas.push(String(d)); titulos.push(new Date(f+'T00:00:00').toLocaleDateString('es-CO',{weekday:'short', day:'numeric', month:'short'}));
-      if(e.metrica === 'pct'){ const t = ac.length + af.length; serieC.push(t ? fpPct(ac.length, t) : null); serieF.push(t ? 100 - fpPct(ac.length, t) : null); }
-      else { serieC.push(valor(ac)); serieF.push(valor(af)); }
+      const fe = e.mes + '-' + String(d).padStart(2,'0');
+      c += lista.filter(v=>v.fecha===fe && v.formaPago==='contado').length;
+      f += lista.filter(v=>v.fecha===fe && v.formaPago==='financiado').length;
+      etiquetas.push(String(d)); serieC.push(c); serieF.push(f);
+      titulos.push('Hasta el ' + new Date(fe+'T00:00:00').toLocaleDateString('es-CO',{weekday:'long', day:'numeric', month:'long'}));
     }
   } else {
     meses.forEach(k=>{
-      const delMes = lista.filter(v=>fpMesKey(v.fecha)===k);
-      const c = delMes.filter(v=>v.formaPago==='contado'), f = delMes.filter(v=>v.formaPago==='financiado');
-      etiquetas.push(fpMesCorto(k)); titulos.push(fpMesNombre(k));
-      if(e.metrica === 'pct'){ const t = c.length + f.length; serieC.push(t ? fpPct(c.length, t) : null); serieF.push(t ? 100 - fpPct(c.length, t) : null); }
-      else { serieC.push(valor(c)); serieF.push(valor(f)); }
+      const del = lista.filter(v=>fpMesKey(v.fecha)===k);
+      etiquetas.push(e.vista === 'anio' ? FP_MESES[Number(k.slice(5,7))-1].slice(0,3) : fpMesCorto(k));
+      titulos.push(fpMesNombre(k));
+      serieC.push(del.filter(v=>v.formaPago==='contado').length);
+      serieF.push(del.filter(v=>v.formaPago==='financiado').length);
     });
   }
-  const formato = v => v == null ? '—' : e.metrica === 'ingresos' ? fmt(v) : e.metrica === 'pct' ? v + '%' : v + (v === 1 ? ' venta' : ' ventas');
-  const ejeY = v => e.metrica === 'ingresos' ? (Math.abs(v) >= 1e6 ? '$'+(v/1e6).toFixed(v%1e6?1:0)+'M' : Math.abs(v) >= 1e3 ? '$'+Math.round(v/1e3)+'K' : '$'+v) : e.metrica === 'pct' ? v+'%' : v;
   const fondo = (ctx, color) => {
     const area = ctx.chart.chartArea; if(!area) return color + '22';
     const gr = ctx.chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
     gr.addColorStop(0, color + '55'); gr.addColorStop(1, color + '00');
     return gr;
   };
-  const ultimoIdx = arr => { for(let i = arr.length-1; i >= 0; i--) if(arr[i] != null) return i; return -1; };
   const linea = (nombre, color, datos) => ({
-    label: nombre, data: datos, borderColor: color, borderWidth: 2.5, tension: .35, cubicInterpolationMode: 'monotone', fill: true, spanGaps: true,
+    label: nombre, data: datos, borderColor: color, borderWidth: 2.5, tension: .35, cubicInterpolationMode: 'monotone', fill: true,
     backgroundColor: c => fondo(c, color),
-    pointRadius: datos.map((_, i)=> i === ultimoIdx(datos) ? 4.5 : 0), pointBackgroundColor: color, pointBorderColor: '#0e0e1a', pointBorderWidth: 2,
+    pointRadius: datos.map((_, i)=> i === datos.length-1 ? 4.5 : 0), pointBackgroundColor: color, pointBorderColor: '#0e0e1a', pointBorderWidth: 2,
     pointHoverRadius: 6, pointHitRadius: 14,
   });
-  // Línea guía vertical al pasar el dedo o el mouse
   const guia = {id:'fpGuia', afterDraw(ch){
     const act = ch.tooltip && ch.tooltip.getActiveElements && ch.tooltip.getActiveElements();
     if(!act || !act.length) return;
@@ -2791,9 +2812,10 @@ function fpDibujarGrafica(e, meses, lista){
     c.save(); c.setLineDash([4,4]); c.strokeStyle = 'rgba(255,255,255,.25)'; c.lineWidth = 1;
     c.beginPath(); c.moveTo(x, top); c.lineTo(x, bottom); c.stroke(); c.restore();
   }};
+  const ventasTxt = n => n + (n === 1 ? ' venta' : ' ventas');
   _fpChart = new Chart(cv, {
     type: 'line',
-    data: {labels: etiquetas, datasets: [linea('Contado', FP_COLOR.contado, serieC), linea('Financiado', FP_COLOR.financiado, serieF)]},
+    data: {labels: etiquetas, datasets: [linea('De contado', FP_COLOR.contado, serieC), linea('Financiado', FP_COLOR.financiado, serieF)]},
     options: {
       responsive: true, maintainAspectRatio: false, animation: {duration: 500},
       interaction: {mode: 'index', intersect: false},
@@ -2803,16 +2825,13 @@ function fpDibujarGrafica(e, meses, lista){
           backgroundColor: '#1a1a28', borderColor: 'rgba(255,255,255,.12)', borderWidth: 1, padding: 12, cornerRadius: 12,
           titleColor: '#eeeef5', bodyColor: '#c9c9da', titleFont: {family: 'Inter', weight: '700', size: 12.5}, bodyFont: {family: 'Inter', size: 12},
           usePointStyle: true, boxPadding: 5,
-          callbacks: {
-            title: it => (titulos[it[0].dataIndex] || '') + (e.rango === 'mes' && e.metrica !== 'pct' ? ' · acumulado' : ''),
-            label: it => ` ${it.dataset.label}: ${formato(it.raw)}`,
-          },
+          callbacks: {title: it => titulos[it[0].dataIndex] || '', label: it => ` ${it.dataset.label}: ${ventasTxt(it.raw)}`},
         },
       },
       scales: {
-        x: {grid: {display: false}, border: {display: false}, ticks: {color: '#6a6a85', font: {family: 'Inter', size: 11}, maxRotation: 0, autoSkip: true, maxTicksLimit: e.rango === 'mes' ? 8 : 12}},
-        y: {beginAtZero: true, suggestedMax: e.metrica === 'pct' ? 100 : undefined, grid: {color: 'rgba(255,255,255,.05)'}, border: {display: false},
-            ticks: {color: '#6a6a85', font: {family: 'Inter', size: 11}, precision: 0, maxTicksLimit: 5, callback: ejeY}},
+        x: {grid: {display: false}, border: {display: false}, ticks: {color: '#6a6a85', font: {family: 'Inter', size: 11}, maxRotation: 0, autoSkip: true, maxTicksLimit: e.vista === 'mes' ? 8 : 12}},
+        y: {beginAtZero: true, grid: {color: 'rgba(255,255,255,.05)'}, border: {display: false},
+            ticks: {color: '#6a6a85', font: {family: 'Inter', size: 11}, precision: 0, maxTicksLimit: 5}},
       },
     },
     plugins: [guia],
