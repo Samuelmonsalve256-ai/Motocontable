@@ -572,6 +572,17 @@ textarea{resize:vertical;min-height:65px}
 
   /* Ventas */
   .vta-item{margin:1.1rem .55rem .8rem;padding:1.05rem .85rem .85rem}
+  html .cc-resumen{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  html .cc-tile small{letter-spacing:.03em}
+  html .cc-barra .fp-chips{width:100%}
+  html .cc-barra .fp-chip{white-space:nowrap}
+  html .cc-barra input{min-width:0;width:100%}
+  html .cc-resumen .cc-t-debe{grid-column:1/-1}
+  html .cc-tile strong{font-size:19px}
+  html .cc-lista{grid-template-columns:1fr}
+  html .cc-modal-fondo{align-items:flex-end;padding:0}
+  html .cc-modal{max-width:none;border-radius:22px 22px 0 0;max-height:92vh;padding:1.2rem 1rem calc(1.2rem + env(safe-area-inset-bottom))}
+  html .cc-modal-acc .btn{flex:1;justify-content:center;min-height:44px}
   .vta-nums{display:grid!important;grid-template-columns:1fr 1fr;width:100%}
   .vta-nums > div{min-width:0!important}
   .vta-acc{width:100%;justify-content:flex-end}
@@ -643,6 +654,92 @@ textarea{resize:vertical;min-height:65px}
 .vta-fp-nd{border-style:dashed}
 .vta-fp-nd .vta-cinta{color:var(--text2);border-color:var(--border2);border-style:dashed;cursor:pointer}
 .nota-bloque{padding:.75rem 1.1rem;border-top:1px solid var(--border)}
+/* Cuentas por cobrar */
+.cc-nav-n{background:rgba(245,166,35,.18)!important;color:var(--amber)!important}
+.badge-retoma{background:rgba(77,159,255,.14);color:#7cb6ff;border:1px solid rgba(77,159,255,.35)}
+.moto-card.veh-retoma{position:relative;border-color:rgba(77,159,255,.45)}
+.moto-card.veh-retoma::after{content:'RETOMA';position:absolute;top:150px;left:50%;transform:translateX(-50%) rotate(-22deg);font:900 68px/1 'Inter',sans-serif;letter-spacing:.14em;color:rgba(124,182,255,.07);pointer-events:none;white-space:nowrap;z-index:2}
+.rt-sello{margin-top:.55rem;display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.45;color:#a9cdff;background:rgba(77,159,255,.09);border:1px dashed rgba(77,159,255,.45);border-radius:10px;padding:.5rem .7rem;cursor:pointer}
+.rt-sello b{color:var(--text)}
+.cc-tag{display:block;width:fit-content;max-width:100%;margin-top:5px;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:9px;border:1px solid;line-height:1.4}
+.cc-tag.cc-rt{color:#a9cdff;background:rgba(77,159,255,.08);border-color:rgba(77,159,255,.35);border-style:dashed}
+.cc-tag.cc-pend{color:var(--amber);background:rgba(245,166,35,.1);border-color:rgba(245,166,35,.45);cursor:pointer}
+.cc-tag.cc-ok{color:#3fd3a0;background:rgba(14,163,114,.1);border-color:rgba(14,163,114,.4);cursor:pointer}
+.cc-tag.cc-rev{color:var(--text2);background:var(--bg3);border-color:var(--border2);border-style:dashed;cursor:pointer}
+.cc-tag.cc-efe{color:var(--text2);background:var(--bg3);border-color:var(--border)}
+.cc-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:1rem;padding:.85rem 1.1rem;border-radius:14px;border:1px solid rgba(245,166,35,.4);background:linear-gradient(90deg,rgba(245,166,35,.12),rgba(245,166,35,.03));cursor:pointer}
+.cc-banner strong{color:var(--amber);font-size:15px}
+.cc-banner span{font-size:13px;color:var(--text2)}
+.cc-resumen{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1rem}
+.cc-tile{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1rem 1.1rem}
+.cc-tile small{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.cc-tile strong{display:block;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700}
+.cc-tile span{display:block;font-size:12px;color:var(--text2);margin-top:4px}
+.cc-tile.cc-t-debe{border-color:rgba(245,166,35,.45);background:linear-gradient(180deg,rgba(245,166,35,.1),transparent),var(--bg2)}
+.cc-tile.cc-t-debe strong{color:var(--amber)}
+.cc-tile.cc-t-ok strong{color:#3fd3a0}
+.cc-barra{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+.cc-barra input{flex:1;min-width:200px}
+.cc-revisar{border:1px dashed var(--border2);background:var(--bg2);border-radius:16px;padding:1rem 1.1rem;margin-bottom:1rem}
+.cc-revisar h3{font-size:14px;margin:0 0 4px}
+.cc-revisar p{font-size:12.5px;color:var(--text2);margin:0 0 .75rem;line-height:1.5}
+.cc-rev-fila{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:.6rem 0;border-top:1px solid var(--border)}
+.cc-rev-fila .cc-rev-info{font-size:13px;min-width:0}
+.cc-rev-fila .cc-rev-info span{display:block;font-size:11.5px;color:var(--text3)}
+.cc-rev-acc{display:flex;gap:6px;flex-wrap:wrap}
+.cc-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
+.cc-item{position:relative;background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;padding:1rem 1.1rem;overflow:hidden}
+.cc-item.cc-pendiente{border-color:rgba(245,166,35,.5)}
+.cc-item.cc-cobrada{border-color:rgba(14,163,114,.45)}
+.cc-item.cc-foco{box-shadow:0 0 0 3px rgba(42,127,255,.55)}
+.cc-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:.7rem}
+.cc-veh strong{display:block;font-size:14.5px}
+.cc-veh span{display:block;font-size:11.5px;color:var(--text3);margin-top:2px}
+.cc-dias{flex-shrink:0;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--bg4);color:var(--text2);white-space:nowrap}
+.cc-dias.cc-d-med{background:rgba(245,166,35,.15);color:var(--amber)}
+.cc-dias.cc-d-alta{background:rgba(255,69,96,.15);color:var(--red)}
+.cc-dias.cc-d-ok{background:rgba(14,163,114,.15);color:#3fd3a0}
+.cc-tabla{background:var(--bg3);border-radius:12px;padding:.35rem .8rem}
+.cc-fila{display:flex;justify-content:space-between;gap:12px;padding:.42rem 0;font-size:12.5px;color:var(--text2);border-bottom:1px dashed var(--border)}
+.cc-fila:last-child{border-bottom:none}
+.cc-fila b{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--text);white-space:nowrap}
+.cc-fila.cc-menos b{color:#7cb6ff}
+.cc-fila.cc-pago b{color:#3fd3a0}
+.cc-fila.cc-total{color:var(--text);font-weight:700}
+.cc-fila.cc-total b{color:var(--amber)}
+.cc-falta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:.75rem}
+.cc-falta span{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3)}
+.cc-falta strong{font-family:'JetBrains Mono',monospace;font-size:21px;color:var(--amber)}
+.cc-prog{height:6px;border-radius:6px;background:var(--bg4);overflow:hidden;margin-top:.5rem}
+.cc-prog i{display:block;height:100%;background:#0ea372;border-radius:6px}
+.cc-sello{margin-top:.75rem;text-align:center;font-weight:800;letter-spacing:.06em;color:#3fd3a0;border:2px solid rgba(14,163,114,.5);border-radius:12px;padding:.5rem;font-size:13px;background:rgba(14,163,114,.07)}
+.cc-alerta{margin-top:.6rem;font-size:12px;color:var(--red);background:rgba(255,69,96,.08);border:1px solid rgba(255,69,96,.3);border-radius:10px;padding:.5rem .7rem}
+.cc-acc{display:flex;gap:6px;flex-wrap:wrap;margin-top:.8rem}
+.cc-acc .btn{flex:1;justify-content:center;min-width:110px}
+.cc-vacio{text-align:center;padding:2.2rem 1rem;color:var(--text2);font-size:13.5px;background:var(--bg2);border:1px dashed var(--border2);border-radius:16px}
+.cc-vacio .grande{font-size:34px;margin-bottom:.4rem}
+/* Formulario: parte de pago */
+#vta-cc-campos [hidden],#cc-modal-cuerpo [hidden]{display:none!important}
+.rt-sel button.activo{border-color:#4d9fff;background:rgba(77,159,255,.12)}
+.rt-sel button.activo b{background:rgba(77,159,255,.25)}
+.rt-campos{margin-top:10px;padding:12px;border:1px dashed rgba(77,159,255,.45);border-radius:14px;background:rgba(77,159,255,.05)}
+.cc-cuentas{margin:12px 0 14px;border:1px solid var(--border2);border-radius:14px;overflow:hidden}
+.cc-cuentas-tit{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);padding:.55rem .85rem;background:var(--bg3)}
+.cc-cuentas .cc-fila{padding:.45rem .85rem;margin:0}
+.cc-cuentas .cc-fila.cc-total{background:rgba(245,166,35,.08)}
+.cc-cuentas .cc-fila.cc-total.cc-efectivo b{color:#3fd3a0}
+.cc-cuentas .cc-mal{padding:.55rem .85rem;color:var(--red);font-size:12.5px}
+/* Modal */
+.cc-modal-fondo{position:fixed;inset:0;background:rgba(0,0,0,.75);align-items:center;justify-content:center;z-index:900;padding:1rem;backdrop-filter:blur(4px)}
+.cc-modal-fondo:not(.modal-hidden){display:flex}
+.cc-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r3);padding:1.4rem;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.cc-modal-cab{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:1rem}
+.cc-modal-tit{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700}
+.cc-modal .cc-tabla{margin-bottom:1rem}
+.cc-pista{font-size:12.5px;margin-top:8px;padding:.55rem .75rem;border-radius:10px;background:var(--bg3);color:var(--text2)}
+.cc-pista.ok{color:#3fd3a0;background:rgba(14,163,114,.08)}
+.cc-pista.mal{color:var(--red);background:rgba(255,69,96,.08)}
+.cc-modal-acc{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem;flex-wrap:wrap}
 .nota-tit{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between}
 .nota-bloque.con-nota{background:rgba(245,166,35,.09);box-shadow:inset 4px 0 0 var(--amber)}
 .nota-bloque.con-nota .nota-tit{color:var(--amber);font-weight:800;font-size:11px}
@@ -896,6 +993,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
     <div class="nav-item" onclick="go('motos')"><span class="nav-ico">🏍️</span>Mis motos<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('carros')"><span class="nav-ico">🚗</span>Mis carros<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('ventas')"><span class="nav-ico">🤝</span>Ventas<div class="nav-dot" style="margin-left:auto"></div></div>
+    <div class="nav-item" onclick="go('cobros')"><span class="nav-ico">💰</span>Por cobrar<span class="nav-count cc-nav-n" id="nav-cobros-n"></span><div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('inventario')"><span class="nav-ico">📦</span>Inventario<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('analisis')"><span class="nav-ico">📈</span>Análisis<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-label">Registrar</div>
@@ -913,6 +1011,15 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
 
 <!-- MAIN -->
 <div class="main">
+
+<!-- CUENTAS POR COBRAR -->
+<div class="page" id="page-cobros">
+  <div class="page-header">
+    <div class="page-title">💰 Cuentas por cobrar</div>
+    <div class="page-sub">Lo que Yamaboy S.A.S. te debe por cada venta financiada. Registra cada pago aquí: así ninguna cuenta queda sin cobrar ni se cobra dos veces.</div>
+  </div>
+  <div id="cc-contenido"></div>
+</div>
 
 <!-- PAPELERA -->
 <div class="page" id="page-papelera">
@@ -1037,6 +1144,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
     <div><div class="page-title">Ventas de motos</div><div class="page-sub">Precio compra, precio venta y ganancia neta por vehículo</div></div>
     <button class="btn btn-primary" onclick="go('nueva-venta')">+ Registrar venta</button>
   </div>
+  <div id="ventas-cobros-banner"></div>
   <div id="alertas-papeles"></div>
   <div class="card" style="padding:0"><div id="tabla-ventas"></div></div>
 </div>
@@ -1248,6 +1356,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
           </div>
           <input type="hidden" id="vta-forma-pago">
         </div>
+        <div id="vta-cc-campos"></div>
         <div class="form-grid" style="margin-bottom:8px">
           <div class="form-group"><label class="form-label">CC del comprador</label><input type="text" id="vta-cc" placeholder="Número de cédula"></div>
           <div class="form-group"><label class="form-label">Celular del comprador</label><input type="text" id="vta-celular" placeholder="Ej: 3001234567"></div>
@@ -1554,6 +1663,13 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
   </div>
 </div>
 
+<div id="modal-cc" class="modal-hidden cc-modal-fondo" onclick="if(event.target===this)ccCerrarModal()">
+  <div class="cc-modal" role="dialog" aria-modal="true" aria-labelledby="cc-modal-titulo">
+    <div class="cc-modal-cab"><div class="cc-modal-tit" id="cc-modal-titulo"></div><button class="btn btn-ghost btn-sm" onclick="ccCerrarModal()">✕</button></div>
+    <div id="cc-modal-cuerpo"></div>
+  </div>
+</div>
+
 <div id="mc-pregunta" class="modal-hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:950;backdrop-filter:blur(4px);padding:1rem">
   <div class="modal" style="max-width:100%">
     <div class="modal-title" id="mc-pregunta-titulo"></div>
@@ -1592,6 +1708,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
   <div class="mh-asa"></div>
   <div class="mh-titulo">Más</div>
   <div class="mh-grid">
+    <button class="mh-cuadro" onclick="mcCerrarHojas();go('cobros')"><span>💰</span>Por cobrar<i class="mtab-n" id="mc-mas-cobros-n"></i></button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('carros')"><span>🚗</span>Mis carros</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('inventario')"><span>📦</span>Inventario</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('analisis')"><span>📈</span>Análisis</button>
@@ -2517,7 +2634,7 @@ function calcMoto(id){
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────────
-const NAV_PAGES = ['resumen','motos','carros','ventas','inventario','analisis','nueva-moto','nuevo-carro','nueva-venta','metas','contactos','ajustes','papelera'];
+const NAV_PAGES = ['resumen','motos','carros','ventas','cobros','inventario','analisis','nueva-moto','nuevo-carro','nueva-venta','metas','contactos','ajustes','papelera'];
 function go(page){
   // "Contado vs financiado" ahora es una pestaña dentro de Análisis
   if(page==='analisis-ventas'){ anGuardarTab('pago'); page = 'analisis'; }
@@ -2539,7 +2656,9 @@ function go(page){
   if(page==='nuevo-carro') initFormCarro();
   if(page==='nueva-venta') populateVentaSelect();
   if(page==='papelera')    renderPapelera();
+  if(page==='cobros')      renderCobros();
   mcContadorPapelera();
+  ccContador();
   if(typeof mcTabActiva === 'function') mcTabActiva(page);
   if(page==='ajustes')    { renderPaletaColores(); renderPanelesEditor();
     document.getElementById('cfg-appname').value=cfgData.appName||'';
@@ -2633,6 +2752,7 @@ function elegirFormaPago(pre, fp){
   h.value = fp || '';
   document.querySelectorAll('#'+pre+'-fp button').forEach(b=>b.classList.toggle('activo', b.dataset.fp === fp));
   const g = document.getElementById(pre+'-fp'); if(g && fp) g.classList.remove('fp-falta');
+  if(pre === 'vta') ccResumenForm('vta');
 }
 function mcEtiquetaFormaPago(v){
   if(v.formaPago === 'contado') return `<div class="fp-tag fp-c">💵 De contado</div>`;
@@ -2921,6 +3041,510 @@ function fpDibujarGrafica(e, meses){
   });
 }
 
+// ── CUENTAS POR COBRAR ───────────────────────────────────────────────────────
+// Cada venta financiada es una cuenta que la financiera (Yamaboy S.A.S.) te debe:
+//   saldo = precio de venta − vehículo recibido en retoma − cuota inicial en efectivo.
+// Los pagos se registran uno por uno en venta.cobro.pagos y nunca se deja registrar
+// más de lo que falta: así ninguna cuenta queda sin cobrar ni se cobra dos veces.
+// Las ventas financiadas registradas antes de esto no tienen "cobro" y se piden
+// revisar una sola vez (¿ya te pagó o todavía te debe?).
+const ccNum = x => Number(x) || 0;
+const ccEsc = t => escPap(t);
+function ccCuenta(v){
+  const c = v.cobro || null;
+  const precio = ccNum(v.precioVenta);
+  const retoma = c && c.retoma ? c.retoma : null;
+  const rv = retoma ? ccNum(retoma.valor) : 0;
+  const inicial = c ? ccNum(c.inicial) : 0;
+  const saldo = Math.max(0, precio - rv - inicial);
+  const pagos = c && Array.isArray(c.pagos) ? c.pagos : [];
+  const pagado = pagos.reduce((a,p)=>a+ccNum(p.monto), 0);
+  const falta = Math.max(0, saldo - pagado);
+  const financiado = v.formaPago === 'financiado';
+  const estado = !financiado ? 'no' : !c ? 'revisar' : falta > 0 ? 'pendiente' : 'cobrada';
+  const ultimo = pagos.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)))[0] || null;
+  const dias = v.fecha ? Math.max(0, Math.round((new Date(hoyLocal()+'T00:00:00') - new Date(v.fecha+'T00:00:00')) / 86400000)) : 0;
+  return {precio, retoma, rv, inicial, saldo, pagos, pagado, falta, deMas: Math.max(0, pagado - saldo), estado, ultimo, dias,
+          efectivo: financiado ? inicial : Math.max(0, precio - rv)};
+}
+function ccTotales(){
+  const mes = hoyLocal().slice(0,7);
+  const t = {falta:0, pendientes:0, revisar:0, cobradas:0, cobradoMes:0, masVieja:0};
+  ventas.forEach(v=>{
+    const k = ccCuenta(v);
+    if(k.estado === 'pendiente'){ t.falta += k.falta; t.pendientes++; t.masVieja = Math.max(t.masVieja, k.dias); }
+    if(k.estado === 'revisar') t.revisar++;
+    if(k.estado === 'cobrada') t.cobradas++;
+    if(k.estado !== 'no') k.pagos.forEach(p=>{ if(!p.antes && String(p.fecha||'').startsWith(mes)) t.cobradoMes += ccNum(p.monto); });
+  });
+  return t;
+}
+function ccContador(){
+  const t = ccTotales(), n = t.pendientes + t.revisar;
+  ['nav-cobros-n','mc-mas-cobros-n'].forEach(id=>{ const el = document.getElementById(id); if(el) el.textContent = n || ''; });
+}
+const ccNombreVendido = v => `${v.motoNombre||''}${v.motoModelo ? ' '+v.motoModelo : ''}`.trim();
+const ccVehRetoma = r => r ? (r.tipo === 'carro' ? carros : motos).find(x=>x.id === r.vehiculoId) : null;
+
+// Aviso arriba de la lista de ventas
+function ccBannerVentas(){
+  const el = document.getElementById('ventas-cobros-banner'); if(!el) return;
+  const t = ccTotales();
+  if(!t.falta && !t.revisar){ el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="cc-banner" onclick="go('cobros')" role="button">
+    <div>${t.falta ? `<strong>💰 ${FP_FINANCIERA} te debe ${fmt(t.falta)}</strong><span> en ${t.pendientes} venta${t.pendientes!==1?'s':''} financiada${t.pendientes!==1?'s':''}</span>` : `<strong>💰 Cuentas por cobrar</strong>`}${t.revisar ? `<span> · ${t.revisar} por revisar</span>` : ''}</div>
+    <span>Ver cuentas por cobrar →</span></div>`;
+}
+// Lo que se ve en cada venta: retoma y estado de la cuenta
+function ccEtiquetasVenta(v){
+  const k = ccCuenta(v);
+  let h = '';
+  if(k.retoma) h += `<div class="cc-tag cc-rt">🔁 Recibiste en parte de pago: ${nomVeh(k.retoma.tipo,'ico')} ${ccEsc(k.retoma.nombre)}${k.retoma.placa ? ' · '+ccEsc(k.retoma.placa) : ''} por ${fmt(k.rv)}</div>`;
+  if(k.estado === 'pendiente') h += `<div class="cc-tag cc-pend" onclick="ccIr('${v.id}')" title="Ver la cuenta por cobrar">💰 ${FP_FINANCIERA} te debe ${fmt(k.falta)}${k.pagado ? ` · ya abonó ${fmt(k.pagado)}` : ''} · Ver cuenta</div>`;
+  else if(k.estado === 'cobrada') h += `<div class="cc-tag cc-ok" onclick="ccIr('${v.id}')">✅ Cobrada a ${FP_FINANCIERA}${k.ultimo ? ' el '+mcFechaCorta(k.ultimo.fecha) : ''}</div>`;
+  else if(k.estado === 'revisar') h += `<div class="cc-tag cc-rev" onclick="ccIr('${v.id}')">❔ ¿${FP_FINANCIERA} ya te pagó esta venta? · Revisar</div>`;
+  else if(k.retoma) h += `<div class="cc-tag cc-efe">💵 El cliente pagó en efectivo ${fmt(k.efectivo)}</div>`;
+  const orig = v.vehiculoOriginal && v.vehiculoOriginal.retoma;
+  if(orig) h += `<div class="cc-tag cc-rt">🔁 ${nomVeh(v.tipoVehiculo,'articulo').replace(/^./, c=>c.toUpperCase())} la habías recibido en retoma por ${ccEsc(orig.vendido)}</div>`;
+  return h;
+}
+// Marca en la ficha del vehículo que entró como retoma
+function ccSelloRetoma(veh){
+  const r = veh && veh.retoma; if(!r) return '';
+  return `<div class="rt-sello" onclick="ccIr('${r.ventaId}')" title="Ver la venta"><span>🔁</span><span>Recibida en retoma por <b>${ccEsc(r.vendido)}</b> · ${mcFechaCorta(r.fecha)} · ${fmt(ccNum(r.valor))}</span></div>`;
+}
+function ccAvisoDevolver(v){
+  const k = ccCuenta(v);
+  let t = '';
+  if(k.pagado) t += ` Ojo: esta venta tiene ${fmt(k.pagado)} en pagos registrados de ${FP_FINANCIERA}; su cuenta por cobrar se cancela con la venta.`;
+  if(k.retoma) t += ` ${nomVeh(k.retoma.tipo,'articulo').replace(/^./, c=>c.toUpperCase())} que recibiste en retoma (${k.retoma.nombre}) sigue en tu inventario; si la devolviste, elimínala desde Mis ${nomVeh(k.retoma.tipo,'plural')}.`;
+  return t;
+}
+// Ir a la cuenta (o a la venta, si no es financiada)
+function ccIr(id){
+  const v = ventas.find(x=>x.id === id);
+  if(!v){ toast('Esa venta ya no existe (puede estar en la papelera)', 'err'); return; }
+  if(v.formaPago === 'financiado'){
+    const k = ccCuenta(v);
+    _ccFiltro = k.estado === 'cobrada' ? 'cobradas' : 'pendientes'; _ccBuscar = '';
+    go('cobros');
+    const el = document.getElementById('cc-'+id) || document.getElementById('ccr-'+id);
+    ccResaltar(el);
+  } else {
+    go('ventas');
+    const el = document.getElementById('vta-'+id);
+    if(el){ const b = el.closest('[id^="mes-body-"]'); if(b) b.style.display = ''; }
+    ccResaltar(el);
+  }
+}
+function ccResaltar(el){
+  if(!el) return;
+  setTimeout(()=>{ el.scrollIntoView({block:'center', behavior:'smooth'}); el.classList.add('cc-foco'); setTimeout(()=>el.classList.remove('cc-foco'), 2600); }, 60);
+}
+
+// ── Campos de "parte de pago" (formulario de venta y ajuste de la cuenta) ─────
+function ccCamposHTML(pre){
+  return `
+  <div class="form-group" style="margin-top:12px">
+    <label class="form-label">¿Recibiste un vehículo en parte de pago?</label>
+    <div class="fp-sel rt-sel" id="${pre}-rt-sel">
+      <button type="button" data-rt="no" onclick="ccElegirRetoma('${pre}',false)"><b>✋</b><span><strong>No</strong><small>Sin retoma</small></span></button>
+      <button type="button" data-rt="si" onclick="ccElegirRetoma('${pre}',true)"><b>🔁</b><span><strong>Sí, recibí uno</strong><small>Entra a tu inventario</small></span></button>
+    </div>
+    <input type="hidden" id="${pre}-rt" value="no">
+    <div class="rt-campos" id="${pre}-rt-campos" hidden>
+      <div class="form-grid" style="margin-bottom:10px">
+        <div class="form-group"><label class="form-label">Tipo</label><select id="${pre}-rt-tipo"><option value="moto">🏍️ Moto</option><option value="carro">🚗 Carro</option></select></div>
+        <div class="form-group"><label class="form-label">¿Qué vehículo recibiste? <span>*</span></label><input type="text" id="${pre}-rt-nombre" placeholder="Ej: Boxer CT 100" oninput="ccResumenForm('${pre}')"></div>
+      </div>
+      <div class="form-grid" style="margin-bottom:10px">
+        <div class="form-group"><label class="form-label">Modelo (año)</label><input type="text" id="${pre}-rt-modelo" placeholder="Ej: 2019"></div>
+        <div class="form-group"><label class="form-label">Placa</label><input type="text" id="${pre}-rt-placa" placeholder="Ej: ABC12D"></div>
+      </div>
+      <div class="form-group"><label class="form-label">¿En cuánto lo recibiste? ($) <span>*</span></label><input type="number" id="${pre}-rt-valor" min="0" placeholder="0" oninput="ccResumenForm('${pre}')"></div>
+    </div>
+  </div>
+  <div class="form-group" id="${pre}-inicial-box" style="margin-top:12px" hidden>
+    <label class="form-label">Cuota inicial en efectivo que te dio el cliente ($)</label>
+    <input type="number" id="${pre}-inicial" min="0" placeholder="0 si no te dio nada" oninput="ccResumenForm('${pre}')">
+  </div>
+  <div class="cc-cuentas" id="${pre}-cc-resumen" hidden></div>`;
+}
+function ccPrepararForm(pre){
+  const cont = document.getElementById(pre+'-cc-campos');
+  if(cont && !cont.innerHTML.trim()){ cont.innerHTML = ccCamposHTML(pre); ccElegirRetoma(pre, false); }
+}
+function ccElegirRetoma(pre, si){
+  const h = document.getElementById(pre+'-rt'); if(!h) return;
+  h.value = si ? 'si' : 'no';
+  document.querySelectorAll('#'+pre+'-rt-sel button').forEach(b=>b.classList.toggle('activo', b.dataset.rt === h.value));
+  document.getElementById(pre+'-rt-campos').hidden = !si;
+  ccResumenForm(pre);
+}
+function ccLimpiarForm(pre){
+  ['rt-nombre','rt-modelo','rt-placa','rt-valor','inicial'].forEach(c=>{ const el = document.getElementById(pre+'-'+c); if(el) el.value = ''; });
+  const t = document.getElementById(pre+'-rt-tipo'); if(t){ t.value = 'moto'; t.disabled = false; }
+  ccElegirRetoma(pre, false);
+}
+let _ccAj = null;   // cuenta que se está ajustando en el modal
+function ccDatosForm(pre){
+  if(pre === 'vta') return {precio: ccNum(document.getElementById('vta-precio')?.value), fp: document.getElementById('vta-forma-pago')?.value || '', pagado: 0};
+  return _ccAj || {precio:0, fp:'', pagado:0};
+}
+function ccLeerForm(pre, precio, fp){
+  const val = c => (document.getElementById(pre+'-'+c)?.value || '').trim();
+  let retoma = null;
+  if(val('rt') === 'si'){
+    const nombre = val('rt-nombre'), valor = ccNum(val('rt-valor'));
+    if(!nombre) return {error:'Escribe qué vehículo recibiste en parte de pago', campo: pre+'-rt-nombre'};
+    if(!(valor > 0)) return {error:'Escribe en cuánto recibiste el vehículo de la retoma', campo: pre+'-rt-valor'};
+    retoma = {tipo: val('rt-tipo') === 'carro' ? 'carro' : 'moto', nombre, modelo: val('rt-modelo'), placa: val('rt-placa').toUpperCase(), valor};
+  }
+  const inicial = fp === 'financiado' ? Math.max(0, ccNum(val('inicial'))) : 0;
+  if((retoma ? retoma.valor : 0) + inicial > precio)
+    return {error:'La retoma y la cuota inicial suman más que el precio de venta', campo: retoma ? pre+'-rt-valor' : pre+'-inicial'};
+  return {retoma, inicial};
+}
+// "Cuentas de esta venta" en vivo, mientras se llena el formulario
+function ccResumenForm(pre){
+  const box = document.getElementById(pre+'-cc-resumen'); if(!box) return;
+  const d = ccDatosForm(pre);
+  const ib = document.getElementById(pre+'-inicial-box'); if(ib) ib.hidden = d.fp !== 'financiado';
+  if(!(d.precio > 0) || !d.fp){ box.hidden = true; return; }
+  const si = document.getElementById(pre+'-rt')?.value === 'si';
+  const rv = si ? ccNum(document.getElementById(pre+'-rt-valor')?.value) : 0;
+  const nom = (document.getElementById(pre+'-rt-nombre')?.value || '').trim() || 'vehículo recibido';
+  const ini = d.fp === 'financiado' ? ccNum(document.getElementById(pre+'-inicial')?.value) : 0;
+  const saldo = d.precio - rv - ini;
+  let h = `<div class="cc-cuentas-tit">🧾 Cuentas de esta venta</div>
+    <div class="cc-fila"><span>Precio de venta</span><b>${fmt(d.precio)}</b></div>`;
+  if(si) h += `<div class="cc-fila cc-menos"><span>🔁 Recibiste en retoma: ${ccEsc(nom)}</span><b>− ${fmt(rv)}</b></div>`;
+  if(ini) h += `<div class="cc-fila cc-menos"><span>💵 Cuota inicial en efectivo</span><b>− ${fmt(ini)}</b></div>`;
+  if(saldo < 0){ box.innerHTML = h + `<div class="cc-mal">⚠️ La retoma y la cuota inicial suman más que el precio de venta.</div>`; box.hidden = false; return; }
+  if(d.fp === 'financiado'){
+    h += `<div class="cc-fila cc-total"><span>${FP_FINANCIERA} te debe</span><b>${fmt(saldo)}</b></div>`;
+    if(d.pagado) h += `<div class="cc-fila cc-pago"><span>✅ Pagos ya registrados</span><b>− ${fmt(d.pagado)}</b></div><div class="cc-fila cc-total"><span>Falta por cobrar</span><b>${fmt(Math.max(0, saldo - d.pagado))}</b></div>`;
+  } else {
+    h += `<div class="cc-fila cc-total cc-efectivo"><span>El cliente te paga en efectivo</span><b>${fmt(saldo)}</b></div>`;
+  }
+  box.innerHTML = h; box.hidden = false;
+}
+// El vehículo de la retoma entra al inventario con su marca
+function ccCrearVehiculoRetoma(v, id){
+  const r = v.cobro.retoma;
+  const veh = {id, nombre: r.nombre, modelo: r.modelo || '', placa: r.placa || '', color: '',
+    precioCompra: r.valor, fechaCompra: v.fecha,
+    vendedorCC: v.compradorCC || '', vendedorNombre: v.comprador || '', vendedorTel: v.compradorCel || '',
+    soatTiene:false, soat:'', tecnoTiene:false, tecno:'', impuestoPago:true, impuesto: impTextoFromDebidos([]), impPagados:[],
+    gastos:[], retoma: {ventaId: v.id, vendido: ccNombreVendido(v), fecha: v.fecha, valor: r.valor}};
+  if(r.tipo === 'carro'){ veh.km = ''; veh.cilindraje = ''; carros.unshift(veh); saveCarros(); }
+  else { motos.unshift(veh); saveMotos(); }
+}
+function ccAvisarVentaNueva(v){
+  if(!v) return;
+  const k = ccCuenta(v);
+  if(k.estado !== 'pendiente' && !k.retoma) return;
+  const partes = [];
+  if(k.estado === 'pendiente') partes.push(`${FP_FINANCIERA} te debe ${fmt(k.falta)}`);
+  if(k.retoma) partes.push(`${k.retoma.nombre} entró a Mis ${nomVeh(k.retoma.tipo,'plural')} como retoma: completa sus papeles`);
+  const acciones = [];
+  if(k.estado === 'pendiente') acciones.push({label:'Ver cuenta', fn:()=>ccIr(v.id)});
+  if(k.retoma) acciones.push({label:'Ver retoma', fn:()=>go(nomVeh(k.retoma.tipo,'plural'))});
+  mcNotificar({tipo:'agregar', titulo: k.estado === 'pendiente' ? 'Cuenta por cobrar creada' : 'Retoma ingresada al inventario', texto: partes.join(' · '), acciones, ms: 8000, sonido: false});
+}
+
+// ── Página "Cuentas por cobrar" ───────────────────────────────────────────────
+let _ccFiltro = 'pendientes', _ccBuscar = '';
+function renderCobros(){
+  const cont = document.getElementById('cc-contenido'); if(!cont) return;
+  const t = ccTotales();
+  const rev = ventas.filter(v=>ccCuenta(v).estado === 'revisar').sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
+  let h = `<div class="cc-resumen">
+    <div class="cc-tile cc-t-debe"><small>💰 Te deben</small><strong>${fmt(t.falta)}</strong><span>${t.pendientes ? `${t.pendientes} cuenta${t.pendientes!==1?'s':''} por cobrar a ${FP_FINANCIERA}` : 'No tienes cuentas pendientes'}</span></div>
+    <div class="cc-tile cc-t-ok"><small>✅ Cobrado este mes</small><strong>${fmt(t.cobradoMes)}</strong><span>${t.cobradas} cuenta${t.cobradas!==1?'s':''} cobrada${t.cobradas!==1?'s':''} en total</span></div>
+    <div class="cc-tile"><small>⏳ La más antigua</small><strong style="color:${t.masVieja>30?'var(--red)':t.masVieja>15?'var(--amber)':'var(--text)'}">${t.pendientes ? t.masVieja + ' día' + (t.masVieja!==1?'s':'') : '—'}</strong><span>${t.pendientes ? 'esperando el pago' : 'Todo al día'}</span></div>
+  </div>`;
+  if(rev.length){
+    h += `<div class="cc-revisar"><h3>❔ ${rev.length} venta${rev.length!==1?'s':''} financiada${rev.length!==1?'s':''} de antes</h3>
+      <p>Se registraron antes de tener cuentas por cobrar. Dime si ${FP_FINANCIERA} ya te las pagó para que tus cuentas queden en orden. Si te debe, después puedes agregar la retoma o la cuota inicial con ✏️ Ajustar.</p>
+      ${rev.map(v=>`<div class="cc-rev-fila" id="ccr-${v.id}">
+        <div class="cc-rev-info"><strong>${nomVeh(v.tipoVehiculo,'ico')} ${ccEsc(v.motoNombre||'Venta')}</strong><span>${mcFechaCorta(v.fecha)} · ${fmt(ccNum(v.precioVenta))}${v.comprador ? ' · '+ccEsc(v.comprador) : ''}</span></div>
+        <div class="cc-rev-acc"><button class="btn btn-ghost btn-sm" onclick="ccMarcarRevisada('${v.id}',true)">✅ Ya me pagó</button><button class="btn btn-ghost btn-sm" style="color:var(--amber);border-color:rgba(245,166,35,.4)" onclick="ccMarcarRevisada('${v.id}',false)">⏳ Todavía me debe</button></div>
+      </div>`).join('')}
+      ${rev.length > 1 ? `<div style="padding-top:.6rem;border-top:1px solid var(--border)"><button class="btn btn-ghost btn-sm" onclick="ccTodasPagadas()">✅ Ya me pagó todas estas</button></div>` : ''}
+    </div>`;
+  }
+  const nP = t.pendientes, nC = t.cobradas;
+  h += `<div class="cc-barra">
+    <div class="fp-chips" role="tablist" aria-label="Qué cuentas ver">
+      <button class="fp-chip ${_ccFiltro==='pendientes'?'activo':''}" onclick="ccFiltrar('pendientes')">Por cobrar${nP ? ' ('+nP+')' : ''}</button>
+      <button class="fp-chip ${_ccFiltro==='cobradas'?'activo':''}" onclick="ccFiltrar('cobradas')">Cobradas${nC ? ' ('+nC+')' : ''}</button>
+      <button class="fp-chip ${_ccFiltro==='todas'?'activo':''}" onclick="ccFiltrar('todas')">Todas</button>
+    </div>
+    <input type="text" id="cc-buscar" placeholder="Buscar por vehículo, placa o cliente…" value="${ccEsc(_ccBuscar)}" oninput="_ccBuscar=this.value;ccRenderLista()">
+  </div>
+  <div id="cc-lista-wrap"></div>`;
+  cont.innerHTML = h;
+  ccRenderLista();
+}
+function ccFiltrar(f){ _ccFiltro = f; renderCobros(); }
+function ccRenderLista(){
+  const wrap = document.getElementById('cc-lista-wrap'); if(!wrap) return;
+  const q = _ccBuscar.trim().toLowerCase();
+  let lista = ventas.filter(v=>v.formaPago === 'financiado').map(v=>({v, k: ccCuenta(v)})).filter(x=>x.k.estado === 'pendiente' || x.k.estado === 'cobrada');
+  if(_ccFiltro === 'pendientes') lista = lista.filter(x=>x.k.estado === 'pendiente');
+  if(_ccFiltro === 'cobradas') lista = lista.filter(x=>x.k.estado === 'cobrada');
+  if(q) lista = lista.filter(({v, k})=>[v.motoNombre, v.motoModelo, v.motoPlaca, v.comprador, v.compradorCC, k.retoma && k.retoma.nombre, k.retoma && k.retoma.placa]
+    .some(x=>String(x||'').toLowerCase().includes(q)));
+  // Por cobrar: la más vieja primero. Cobradas: la del pago más reciente primero.
+  lista.sort((a,b)=> a.k.estado !== b.k.estado ? (a.k.estado === 'pendiente' ? -1 : 1)
+    : a.k.estado === 'pendiente' ? String(a.v.fecha).localeCompare(String(b.v.fecha))
+    : String((b.k.ultimo||{}).fecha||b.v.fecha).localeCompare(String((a.k.ultimo||{}).fecha||a.v.fecha)));
+  if(!lista.length){
+    wrap.innerHTML = `<div class="cc-vacio"><div class="grande">${q ? '🔍' : _ccFiltro === 'cobradas' ? '🧾' : '🎉'}</div>${
+      q ? 'Ninguna cuenta coincide con la búsqueda.'
+      : _ccFiltro === 'cobradas' ? 'Todavía no hay cuentas cobradas.'
+      : `<strong>Nada pendiente por cobrar.</strong><br>Cuando registres una venta financiada, su cuenta aparece aquí sola.`}</div>`;
+    return;
+  }
+  wrap.innerHTML = `<div class="cc-lista">${lista.map(({v, k})=>ccTarjeta(v, k)).join('')}</div>`;
+}
+function ccTarjeta(v, k){
+  const pend = k.estado === 'pendiente';
+  const dCls = !pend ? 'cc-d-ok' : k.dias > 30 ? 'cc-d-alta' : k.dias > 15 ? 'cc-d-med' : '';
+  const dTxt = !pend ? `✅ Cobrada${k.ultimo ? ' el '+mcFechaCorta(k.ultimo.fecha) : ''}` : k.dias === 0 ? '⏳ Vendida hoy' : `⏳ Hace ${k.dias} día${k.dias!==1?'s':''}`;
+  let filas = `<div class="cc-fila"><span>Precio de venta · ${mcFechaCorta(v.fecha)}</span><b>${fmt(k.precio)}</b></div>`;
+  if(k.retoma) filas += `<div class="cc-fila cc-menos"><span>🔁 Retoma: ${nomVeh(k.retoma.tipo,'ico')} ${ccEsc(k.retoma.nombre)}${k.retoma.placa ? ' · '+ccEsc(k.retoma.placa) : ''}</span><b>− ${fmt(k.rv)}</b></div>`;
+  if(k.inicial) filas += `<div class="cc-fila cc-menos"><span>💵 Cuota inicial en efectivo</span><b>− ${fmt(k.inicial)}</b></div>`;
+  filas += `<div class="cc-fila cc-total"><span>Saldo que te debe ${FP_FINANCIERA}</span><b>${fmt(k.saldo)}</b></div>`;
+  k.pagos.slice().sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha))).forEach(p=>{
+    filas += `<div class="cc-fila cc-pago"><span>✅ ${p.antes ? 'Ya estaba pagada' : 'Pago del '+mcFechaCorta(p.fecha)}${p.nota && !p.antes ? ' · '+ccEsc(p.nota) : ''}</span><b>− ${fmt(ccNum(p.monto))}</b></div>`;
+  });
+  const pct = k.saldo ? Math.min(100, Math.round(k.pagado / k.saldo * 100)) : 100;
+  return `<div class="cc-item cc-${k.estado}" id="cc-${v.id}">
+    <div class="cc-top">
+      <div class="cc-veh"><strong>${nomVeh(v.tipoVehiculo,'ico')} ${ccEsc(v.motoNombre||'Venta')}</strong>
+        <span>${[v.motoModelo, v.motoPlaca].filter(Boolean).map(ccEsc).join(' · ') || 'Sin modelo'}</span>
+        ${v.comprador || v.compradorCC ? `<span>Cliente: ${ccEsc(v.comprador||'—')}${v.compradorCC ? ' · CC '+ccEsc(v.compradorCC) : ''}</span>` : ''}</div>
+      <span class="cc-dias ${dCls}">${dTxt}</span>
+    </div>
+    <div class="cc-tabla">${filas}</div>
+    ${pend ? `<div class="cc-falta"><span>Falta por cobrar</span><strong>${fmt(k.falta)}</strong></div>${k.pagado ? `<div class="cc-prog" title="${pct}% cobrado"><i style="width:${pct}%"></i></div>` : ''}`
+           : `<div class="cc-sello">✅ COBRADA${k.saldo === 0 ? ' · no quedó saldo por cobrar' : ''}</div>`}
+    ${k.deMas ? `<div class="cc-alerta">⚠️ Hay ${fmt(k.deMas)} registrados de más. Revisa si un pago quedó repetido y quítalo con "Deshacer último pago".</div>` : ''}
+    <div class="cc-acc">
+      ${pend ? `<button class="btn btn-primary btn-sm" onclick="ccAbrirPago('${v.id}')">✅ Registrar pago</button>` : ''}
+      <button class="btn btn-ghost btn-sm" onclick="ccCopiar('${v.id}')">📋 Copiar cuenta</button>
+      <button class="btn btn-ghost btn-sm" onclick="ccAbrirAjustar('${v.id}')">✏️ Ajustar</button>
+      ${k.pagos.length ? `<button class="btn btn-ghost btn-sm" onclick="ccDeshacerPago('${v.id}')">↩ Deshacer último pago</button>` : ''}
+    </div>
+  </div>`;
+}
+function ccRefrescar(){
+  const activa = (document.querySelector('.page.active')||{}).id || '';
+  if(activa === 'page-cobros') renderCobros();
+  if(activa === 'page-ventas') renderVentas();
+  if(activa === 'page-motos') renderMotos();
+  if(activa === 'page-carros') renderCarros();
+  ccContador();
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function ccAbrirModal(titulo, html){
+  document.getElementById('cc-modal-titulo').textContent = titulo;
+  document.getElementById('cc-modal-cuerpo').innerHTML = html;
+  document.getElementById('modal-cc').classList.remove('modal-hidden');
+}
+function ccCerrarModal(){
+  document.getElementById('modal-cc').classList.add('modal-hidden');
+  document.getElementById('cc-modal-cuerpo').innerHTML = '';
+  _ccAj = null;
+}
+
+// Registrar un pago (completo o abono). Nunca más de lo que falta.
+let _ccGuardando = false;
+function ccAbrirPago(id){
+  const v = ventas.find(x=>x.id === id); if(!v) return;
+  const k = ccCuenta(v);
+  if(k.estado !== 'pendiente'){ toast('Esta cuenta ya está cobrada', 'err'); return; }
+  ccAbrirModal(`✅ Pago de ${FP_FINANCIERA}`, `
+    <div class="cc-tabla">
+      <div class="cc-fila"><span>${nomVeh(v.tipoVehiculo,'ico')} ${ccEsc(v.motoNombre||'Venta')}${v.comprador ? ' · '+ccEsc(v.comprador) : ''}</span><b>${mcFechaCorta(v.fecha)}</b></div>
+      <div class="cc-fila"><span>Saldo que te debe</span><b>${fmt(k.saldo)}</b></div>
+      ${k.pagado ? `<div class="cc-fila cc-pago"><span>Ya te pagó (${k.pagos.length} pago${k.pagos.length!==1?'s':''})</span><b>− ${fmt(k.pagado)}</b></div>` : ''}
+      <div class="cc-fila cc-total"><span>Falta por cobrar</span><b>${fmt(k.falta)}</b></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:10px">
+      <div class="form-group"><label class="form-label">¿Cuánto te pagó? ($) <span>*</span></label><input type="number" id="cc-pago-monto" min="0" value="${k.falta}" oninput="ccPistaPago('${id}')"></div>
+      <div class="form-group"><label class="form-label">Fecha del pago <span>*</span></label><input type="date" id="cc-pago-fecha" value="${hoyLocal()}" oninput="ccPistaPago('${id}')"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Nota (opcional)</label><input type="text" id="cc-pago-nota" placeholder="Ej: transferencia a Bancolombia"></div>
+    <div class="cc-pista" id="cc-pago-pista"></div>
+    <div class="cc-modal-acc">
+      <button class="btn btn-ghost" onclick="ccCerrarModal()">Cancelar</button>
+      <button class="btn btn-primary" id="cc-pago-ok" onclick="ccGuardarPago('${id}')">✅ Guardar pago</button>
+    </div>`);
+  ccPistaPago(id);
+}
+function ccPistaPago(id){
+  const v = ventas.find(x=>x.id === id), el = document.getElementById('cc-pago-pista'); if(!v || !el) return;
+  const k = ccCuenta(v), m = ccNum(document.getElementById('cc-pago-monto').value);
+  const fecha = document.getElementById('cc-pago-fecha').value;
+  const repetido = m > 0 && k.pagos.some(p=>p.fecha === fecha && ccNum(p.monto) === m);
+  let cls = '', txt;
+  if(!(m > 0)) txt = 'Escribe cuánto te pagaron.';
+  else if(m > k.falta){ cls = 'mal'; txt = `⚠️ Eso es más de lo que falta (${fmt(k.falta)}). Si ya lo habías registrado, no lo registres otra vez.`; }
+  else if(m === k.falta){ cls = 'ok'; txt = '✅ Con este pago la cuenta queda COBRADA completa.'; }
+  else txt = `Abono parcial: quedarán pendientes ${fmt(k.falta - m)}.`;
+  if(repetido && m <= k.falta){ cls = 'mal'; txt += ` Ojo: ya registraste un pago de ${fmt(m)} con esta misma fecha.`; }
+  el.className = 'cc-pista ' + cls; el.textContent = txt;
+  const b = document.getElementById('cc-pago-ok'); if(b) b.disabled = !(m > 0) || m > k.falta;
+}
+async function ccGuardarPago(id){
+  if(_ccGuardando) return;
+  const v = ventas.find(x=>x.id === id); if(!v || !v.cobro){ ccCerrarModal(); return; }
+  let k = ccCuenta(v);
+  const m = ccNum(document.getElementById('cc-pago-monto').value);
+  const fecha = document.getElementById('cc-pago-fecha').value;
+  const nota = document.getElementById('cc-pago-nota').value.trim();
+  if(k.estado !== 'pendiente'){ toast('Esta cuenta ya está cobrada', 'err'); ccCerrarModal(); return; }
+  if(!(m > 0)){ toast('Escribe cuánto te pagaron', 'err'); return; }
+  if(m > k.falta){ toast(`Solo faltan ${fmt(k.falta)} por cobrar en esta cuenta`, 'err'); return; }
+  if(!fecha){ toast('Elige la fecha del pago', 'err'); return; }
+  if(k.pagos.some(p=>p.fecha === fecha && ccNum(p.monto) === m)){
+    _ccGuardando = true;
+    const seguir = await mcPreguntar({titulo:'⚠️ ¿Pago repetido?', texto:`Ya registraste un pago de ${fmt(m)} el ${mcFechaCorta(fecha)} en esta cuenta.\n\n¿Es otro pago distinto?`, si:'Sí, es otro pago', no:'No, cancelar'});
+    _ccGuardando = false;
+    if(!seguir) return;
+    k = ccCuenta(v);
+    if(k.estado !== 'pendiente' || m > k.falta){ toast('La cuenta cambió; revísala de nuevo', 'err'); ccCerrarModal(); ccRefrescar(); return; }
+  }
+  v.cobro.pagos = [...(v.cobro.pagos||[]), {id: uid(), fecha, monto: m, nota, registrado: new Date().toISOString()}];
+  saveVentas();
+  ccCerrarModal();
+  ccRefrescar();
+  const k2 = ccCuenta(v);
+  if(k2.estado === 'cobrada') mcNotificar({tipo:'confirmar', titulo:'¡Cuenta cobrada!', texto:`${v.motoNombre||'Venta'} · ${FP_FINANCIERA} pagó todo (${fmt(k2.pagado)})`});
+  else mcNotificar({tipo:'guardar', titulo:'Abono registrado', texto:`${v.motoNombre||'Venta'} · ${fmt(m)} · faltan ${fmt(k2.falta)}`});
+}
+async function ccDeshacerPago(id){
+  const v = ventas.find(x=>x.id === id); if(!v || !v.cobro || !(v.cobro.pagos||[]).length) return;
+  const ult = v.cobro.pagos.slice().sort((a,b)=>String(b.registrado||b.fecha).localeCompare(String(a.registrado||a.fecha)))[0];
+  const ok = await mcPreguntar({titulo:'↩ Deshacer último pago', texto:`¿Quitar el pago de ${fmt(ccNum(ult.monto))}${ult.antes ? '' : ' del '+mcFechaCorta(ult.fecha)}? La cuenta vuelve a quedar pendiente por ese valor.`, si:'Quitar pago', no:'Cancelar'});
+  if(!ok) return;
+  v.cobro.pagos = v.cobro.pagos.filter(p=>p !== ult && p.id !== ult.id);
+  saveVentas();
+  if(ccCuenta(v).estado === 'pendiente') _ccFiltro = 'pendientes';
+  ccRefrescar();
+  mcNotificar({tipo:'borrar', titulo:'Pago quitado', texto:`${v.motoNombre||'Venta'} · vuelve a deber ${fmt(ccCuenta(v).falta)}`});
+}
+
+// Ajustar la retoma o la cuota inicial de una cuenta
+function ccAbrirAjustar(id){
+  const v = ventas.find(x=>x.id === id); if(!v) return;
+  const k = ccCuenta(v);
+  _ccAj = {id, precio: k.precio, fp: v.formaPago, pagado: k.pagado};
+  ccAbrirModal('✏️ Ajustar cuenta', `
+    <div class="cc-pista" style="margin:0 0 4px">${nomVeh(v.tipoVehiculo,'ico')} <b>${ccEsc(v.motoNombre||'Venta')}</b> · vendida en ${fmt(k.precio)} el ${mcFechaCorta(v.fecha)}. Si el precio está mal, corrígelo en Ventas con ✏️.</div>
+    ${ccCamposHTML('cb')}
+    <div class="cc-modal-acc">
+      <button class="btn btn-ghost" onclick="ccCerrarModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="ccGuardarAjuste('${id}')">✓ Guardar cambios</button>
+    </div>`);
+  if(k.retoma){
+    const set = (c, x) => { const el = document.getElementById('cb-'+c); if(el) el.value = x == null ? '' : x; };
+    set('rt-tipo', k.retoma.tipo === 'carro' ? 'carro' : 'moto'); set('rt-nombre', k.retoma.nombre); set('rt-modelo', k.retoma.modelo);
+    set('rt-placa', k.retoma.placa); set('rt-valor', k.rv);
+    document.getElementById('cb-rt-tipo').disabled = true;   // ya está en el inventario como moto o carro
+  }
+  if(k.inicial) document.getElementById('cb-inicial').value = k.inicial;
+  ccElegirRetoma('cb', !!k.retoma);
+}
+async function ccGuardarAjuste(id){
+  if(_ccGuardando) return;
+  const v = ventas.find(x=>x.id === id); if(!v){ ccCerrarModal(); return; }
+  const pp = ccLeerForm('cb', ccNum(v.precioVenta), v.formaPago);
+  if(pp.error){ toast(pp.error, 'err'); document.getElementById(pp.campo)?.focus(); return; }
+  const antes = v.cobro && v.cobro.retoma ? v.cobro.retoma : null;
+  const veh = ccVehRetoma(antes);
+  _ccGuardando = true;
+  try {
+    if(pp.retoma && !antes && pp.retoma.placa && !await confirmarPlacaRepetida(pp.retoma.placa, '')) return;
+    if(!pp.retoma && antes && !await mcPreguntar({titulo:'Quitar la retoma', texto:`¿Quitar "${antes.nombre}" como parte de pago de esta venta?${veh ? `\n\n${antes.nombre} seguirá en tu inventario, sin la marca de retoma. Si no la recibiste, elimínala desde Mis ${nomVeh(antes.tipo,'plural')}.` : ''}`, si:'Quitar', no:'Cancelar'})) return;
+  } finally { _ccGuardando = false; }
+  if(!ventas.includes(v)){ ccCerrarModal(); return; }
+  if(!v.cobro) v.cobro = {retoma:null, inicial:0, pagos:[], creada: new Date().toISOString()};
+  if(pp.retoma && !antes){
+    const nid = uid();
+    v.cobro.retoma = {...pp.retoma, vehiculoId: nid};
+    ccCrearVehiculoRetoma(v, nid);
+  } else if(pp.retoma && antes){
+    v.cobro.retoma = {...antes, ...pp.retoma, tipo: antes.tipo, vehiculoId: antes.vehiculoId};
+    if(veh){
+      Object.assign(veh, {nombre: pp.retoma.nombre, modelo: pp.retoma.modelo, placa: pp.retoma.placa, precioCompra: pp.retoma.valor});
+      veh.retoma = {...(veh.retoma||{}), ventaId: v.id, vendido: ccNombreVendido(v), fecha: v.fecha, valor: pp.retoma.valor};
+      antes.tipo === 'carro' ? saveCarros() : saveMotos();
+    }
+  } else if(!pp.retoma && antes){
+    v.cobro.retoma = null;
+    if(veh){ delete veh.retoma; antes.tipo === 'carro' ? saveCarros() : saveMotos(); }
+  }
+  v.cobro.inicial = pp.inicial;
+  saveVentas();
+  ccCerrarModal();
+  ccRefrescar();
+  const k = ccCuenta(v);
+  mcNotificar({tipo:'guardar', titulo:'Cuenta ajustada', texto: v.formaPago === 'financiado'
+    ? (k.estado === 'cobrada' ? `${v.motoNombre||'Venta'} · cobrada` : `${v.motoNombre||'Venta'} · ${FP_FINANCIERA} te debe ${fmt(k.falta)}`)
+    : `${v.motoNombre||'Venta'} · el cliente pagó en efectivo ${fmt(k.efectivo)}`});
+}
+
+// Ventas financiadas de antes: ¿ya pagó o todavía debe?
+function ccMarcarRevisada(id, pagada, silencio){
+  const v = ventas.find(x=>x.id === id); if(!v || v.cobro || v.formaPago !== 'financiado') return;
+  const ahora = new Date().toISOString();
+  v.cobro = {retoma:null, inicial:0, creada: ahora,
+    pagos: pagada ? [{id: uid(), fecha: hoyLocal(), monto: ccNum(v.precioVenta), nota:'Venta anterior: ya estaba pagada', registrado: ahora, antes: true}] : []};
+  if(silencio) return;
+  saveVentas();
+  ccRefrescar();
+  mcNotificar(pagada ? {tipo:'confirmar', titulo:'Marcada como pagada', texto: v.motoNombre||''}
+                     : {tipo:'guardar', titulo:'Agregada a por cobrar', texto:`${v.motoNombre||''} · si recibiste una retoma o cuota inicial, toca ✏️ Ajustar`, ms: 6000});
+}
+async function ccTodasPagadas(){
+  const rev = ventas.filter(v=>ccCuenta(v).estado === 'revisar');
+  if(!rev.length) return;
+  const ok = await mcPreguntar({titulo:'✅ Marcar todas como pagadas', texto:`¿${FP_FINANCIERA} ya te pagó estas ${rev.length} ventas financiadas de antes? Quedarán como cobradas.`, si:'Sí, todas', no:'Cancelar'});
+  if(!ok) return;
+  rev.forEach(v=>ccMarcarRevisada(v.id, true, true));
+  saveVentas();
+  ccRefrescar();
+  mcNotificar({tipo:'confirmar', titulo:'Cuentas en orden', texto:`${rev.length} ventas marcadas como pagadas`});
+}
+
+// Texto de la cuenta de cobro, listo para pegar en WhatsApp o en un correo
+async function ccCopiar(id){
+  const v = ventas.find(x=>x.id === id); if(!v) return;
+  const k = ccCuenta(v);
+  const l = [`CUENTA DE COBRO — ${FP_FINANCIERA.toUpperCase()}`, `Fecha: ${mcFechaCorta(hoyLocal())}`, '',
+    `Vehículo: ${v.motoNombre||''}${v.motoModelo ? ' · Modelo '+v.motoModelo : ''}${v.motoPlaca ? ' · Placa '+v.motoPlaca : ''}`,
+    `Cliente: ${v.comprador||'—'}${v.compradorCC ? ' · CC '+v.compradorCC : ''}`,
+    `Fecha de venta: ${mcFechaCorta(v.fecha)}`, '',
+    `Valor de la venta: ${fmt(k.precio)}`];
+  if(k.retoma) l.push(`Retoma recibida (${k.retoma.nombre}${k.retoma.placa ? ', placa '+k.retoma.placa : ''}): −${fmt(k.rv)}`);
+  if(k.inicial) l.push(`Cuota inicial en efectivo: −${fmt(k.inicial)}`);
+  l.push(`Saldo financiado: ${fmt(k.saldo)}`);
+  if(k.pagado) l.push(`Abonos recibidos: −${fmt(k.pagado)}`);
+  l.push('', `SALDO A COBRAR: ${fmt(k.falta)}`);
+  const texto = l.join('\n');
+  let ok = false;
+  try { await navigator.clipboard.writeText(texto); ok = true; } catch(e){
+    try { const ta = document.createElement('textarea'); ta.value = texto; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch(x){}
+  }
+  if(ok) mcNotificar({tipo:'ok', titulo:'Cuenta de cobro copiada', texto:`Pégala en WhatsApp o en un correo para ${FP_FINANCIERA}`});
+  else toast('No se pudo copiar en este navegador', 'err');
+}
+
 // ── PAPELERA ─────────────────────────────────────────────────────────────────
 // Lo eliminado (motos, carros y ventas) se guarda completo en cfgData.papelera,
 // que se sincroniza con la nube: se ve y se restaura desde cualquier dispositivo.
@@ -3021,7 +3645,7 @@ function vaciarPapelera(){
 
 // ── INTERFAZ DEL IPHONE ──────────────────────────────────────────────────────
 // Barra de pestañas abajo, botón "+" y menú "Más". En el Mac no se ve.
-const MC_TAB_DE = {resumen:'resumen', motos:'motos', 'nueva-moto':'motos', ventas:'ventas', 'nueva-venta':'ventas'};
+const MC_TAB_DE = {resumen:'resumen', motos:'motos', 'nueva-moto':'motos', ventas:'ventas', 'nueva-venta':'ventas', cobros:'ventas'};
 function mcTabActiva(page){
   const tab = MC_TAB_DE[page] || 'mas';
   document.querySelectorAll('#mc-tabs .mtab[data-tab]').forEach(b=>b.classList.toggle('activa', b.dataset.tab === tab));
@@ -3378,7 +4002,7 @@ function renderMotos(){
       }
     }
 
-    return `<div class="moto-card" style="${diasInv>=100?'border-color:rgba(255,69,96,.4)':''}">
+    return `<div class="moto-card${mo.retoma?' veh-retoma':''}" style="${diasInv>=100?'border-color:rgba(255,69,96,.4)':''}">
       <div class="moto-card-hd">
         <div class="moto-card-top">
           <div style="display:flex;gap:11px;align-items:flex-start">
@@ -3408,12 +4032,14 @@ function renderMotos(){
           </div>
         </div>
         <div class="moto-badges">
+          ${mo.retoma?`<span class="badge badge-retoma">🔁 Retoma</span>`:''}
           ${mo.nota?`<span class="badge badge-nota" title="${escPap(mo.nota)}">📝 Tiene nota</span>`:''}
           <span class="badge badge-gray">📋 ${mo.placa||'Sin placa'}</span>
           ${mo.color?`<span class="badge badge-gray">🎨 ${mo.color}</span>`:''}
           ${mo.fechaCompra?`<span class="badge badge-blue">📅 ${new Date(mo.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</span>`:''}
           ${diasInv!==null?`<span class="badge ${diasInv>=100?'badge-red':'badge-gray'}">⏱ ${diasInv}d en inventario</span>`:''}
         </div>
+        ${ccSelloRetoma(mo)}
         ${mo.vendedorNombre||mo.vendedorCC?`<div style="margin-top:.5rem;font-size:11px;color:var(--text3)">Comprado a: <strong style="color:var(--text2)">${mo.vendedorNombre||'—'}</strong>${mo.vendedorCC?' · CC: '+mo.vendedorCC:''}${mo.vendedorTel?' · 📞 '+mo.vendedorTel:''}</div>`:''}
         ${alertaInvHtml}
       </div>
@@ -3617,10 +4243,13 @@ function populateVentaSelect(){
   ['vp-inversion','vp-gastos','vp-total'].forEach(id=>document.getElementById(id).textContent='$0');
   document.getElementById('vp-ganancia').textContent='—';
   const avisoC = document.getElementById('vp-aviso-compra'); if(avisoC) avisoC.style.display='none';
+  ccPrepararForm('vta');
   if(!document.getElementById('vta-moto').value) elegirFormaPago('vta', '');
+  ccResumenForm('vta');
 }
 
 function calcularVenta(){
+  ccResumenForm('vta');
   const sel=document.getElementById('vta-moto').value;
   const precio=parseFloat(document.getElementById('vta-precio').value)||0;
   if(!sel){
@@ -3669,6 +4298,15 @@ async function guardarVenta(){
     return;
   }
   const entidadFin = formaPago==='financiado' ? FP_FINANCIERA : '';
+  // Parte de pago: vehículo recibido en retoma y cuota inicial en efectivo
+  const pp = ccLeerForm('vta', precio, formaPago);
+  if(pp.error){ toast(pp.error, 'err'); if(pp.campo){ const c = document.getElementById(pp.campo); if(c){ c.focus(); c.scrollIntoView({block:'center', behavior:'smooth'}); } } return; }
+  if(pp.retoma && pp.retoma.placa){
+    _mcGuardandoVenta = true;
+    const seguirPlaca = await confirmarPlacaRepetida(pp.retoma.placa, '');
+    _mcGuardandoVenta = false;
+    if(!seguirPlaca) return;
+  }
   const [tipoV,vid]=sel.split(':');
   const esCarro = tipoV==='carro';
   if(!(esCarro ? carros : motos).some(x=>x.id===vid)){ toast('Ese vehículo ya no está en el inventario','err'); populateVentaSelect(); return; }
@@ -3696,8 +4334,10 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
   if(vehiculo && !vehiculo.tecnoTiene)    papelesFaltantes.push('Tecnomecánica');
   if(vehiculo && !vehiculo.impuestoPago && vehiculo.impuesto!=='pagado')  papelesFaltantes.push('Impuesto gubernamental');
   const gastosPrevios = vehiculo ? (vehiculo.gastos||[]).map(g=>({...g})) : [];
+  const idVenta = uid();
+  const retomaId = pp.retoma ? uid() : '';
   ventas.push({
-    id:uid(), vehiculoId:vid, tipoVehiculo: esCarro ? 'carro' : 'moto',
+    id:idVenta, vehiculoId:vid, tipoVehiculo: esCarro ? 'carro' : 'moto',
     motoNombre: vehiculo?vehiculo.nombre:'',
     motoModelo: vehiculo?vehiculo.modelo||'':'',
     motoPlaca:  vehiculo?vehiculo.placa||'':'',
@@ -3720,6 +4360,8 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
     // Copia completa del vehículo tal como estaba al venderlo, para poder devolverlo
     // al inventario sin perder nada (la foto va aparte, en fotoVehiculo)
     vehiculoOriginal: vehiculo ? mcCopiaVehiculo(vehiculo) : null,
+    // Cuenta de la venta: lo que se recibió en parte de pago y los pagos de la financiera
+    cobro: {retoma: pp.retoma ? {...pp.retoma, vehiculoId: retomaId} : null, inicial: pp.inicial, pagos: [], creada: new Date().toISOString()},
   });
   if(esCarro){
     carros = carros.filter(c=>c.id!==vid);
@@ -3729,15 +4371,20 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
     movimientos = movimientos.filter(m=>m.motoId!==vid);
     saveMotos(); saveMovs();
   }
+  const ventaNueva = ventas.find(x=>x.id===idVenta);
+  if(pp.retoma) ccCrearVehiculoRetoma(ventaNueva, retomaId);
   saveVentas();
   ['vta-moto','vta-precio','vta-fecha','vta-comprador','vta-cc','vta-celular']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   elegirFormaPago('vta', '');
+  ccLimpiarForm('vta');
   const diasParado = vehiculo?.fechaCompra ? diasEnInventario(vehiculo.fechaCompra) : 0;
   mostrarCelebracion(gananciaNeta, vehiculo?vehiculo.nombre:'', fecha, diasParado);
+  ccAvisarVentaNueva(ventaNueva);
 }
 
 function renderVentas(){
+  ccBannerVentas();
   const cont = document.getElementById('tabla-ventas');
   const alertCont = document.getElementById('alertas-papeles');
 
@@ -3840,7 +4487,7 @@ function renderVentas(){
       const fpCls = v.formaPago === 'contado' ? 'c' : v.formaPago === 'financiado' ? 'f' : 'nd';
       const fpCinta = fpCls === 'c' ? '💵 De contado' : fpCls === 'f' ? `🏦 Financiado · ${FP_FINANCIERA}` : '❔ Sin definir · Toca para marcar';
       return `
-        <div class="vta-item vta-fp-${fpCls}">
+        <div class="vta-item vta-fp-${fpCls}" id="vta-${v.id}">
           <div class="vta-cinta"${fpCls === 'nd' ? ` onclick="abrirEditVenta('${v.id}')" title="Toca para definir si fue de contado o financiada"` : ''}>${fpCinta}</div>
 
           <!-- CABECERA: nombre vehículo + números financieros + acciones -->
@@ -3850,6 +4497,7 @@ function renderVentas(){
               <div style="font-size:11px;color:var(--text3)">${v.motoModelo||''} ${v.motoPlaca?'· '+v.motoPlaca:''}</div>
               <div style="margin-top:4px;font-size:11px;color:var(--text2)">📅 Vendido el ${new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO')}</div>
               ${mcEtiquetaTraspaso(v)}
+              ${ccEtiquetasVenta(v)}
               ${Number(v.inversionCompra) > 0 ? '' : `<div onclick="abrirEditVenta('${v.id}')" title="Toca para corregir" style="cursor:pointer;margin-top:4px;display:inline-block;font-size:11px;font-weight:600;color:var(--amber);background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:6px;padding:2px 8px">⚠️ Sin precio de compra · la ganancia puede estar inflada · Corregir</div>`}
               ${v.fechaCompra?`<div style="font-size:11px;color:var(--text3)">🛒 Comprado el ${new Date(v.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</div>`:''}
             </div>
@@ -4009,7 +4657,7 @@ function confirmarDevolverInventario(id){
   const nv=nomVeh(v.tipoVehiculo,'singular');
   confirm2(
     `↩ Devolver ${nv} al inventario`,
-    `¿Devolver "${v.motoNombre}" (${v.motoModelo||'sin modelo'}) al inventario activo? Esto cancela la venta y ${nomVeh(v.tipoVehiculo,'articulo')} vuelve a "Mis ${nomVeh(v.tipoVehiculo,'plural')}" con su foto, nota, precio de compra, papeles y gastos. El costo automático del trámite de Traspasos no se pasa al inventario.`,
+    `¿Devolver "${v.motoNombre}" (${v.motoModelo||'sin modelo'}) al inventario activo? Esto cancela la venta y ${nomVeh(v.tipoVehiculo,'articulo')} vuelve a "Mis ${nomVeh(v.tipoVehiculo,'plural')}" con su foto, nota, precio de compra, papeles y gastos. El costo automático del trámite de Traspasos no se pasa al inventario.${ccAvisoDevolver(v)}`,
     ()=>devolverAlInventario(id)
   );
 }
@@ -5880,7 +6528,7 @@ function renderCarros(){
       }
     }
 
-    return `<div class="moto-card" style="${diasInvC>=100?'border-color:rgba(255,69,96,.4)':''}">
+    return `<div class="moto-card${ca.retoma?' veh-retoma':''}" style="${diasInvC>=100?'border-color:rgba(255,69,96,.4)':''}">
       <div class="moto-card-hd">
         <div class="moto-card-top">
           <div style="display:flex;gap:11px;align-items:flex-start">
@@ -5910,6 +6558,7 @@ function renderCarros(){
           </div>
         </div>
         <div class="moto-badges">
+          ${ca.retoma?`<span class="badge badge-retoma">🔁 Retoma</span>`:''}
           ${ca.nota?`<span class="badge badge-nota" title="${escPap(ca.nota)}">📝 Tiene nota</span>`:''}
           <span class="badge badge-gray">📋 ${ca.placa||'Sin placa'}</span>
           ${ca.color?`<span class="badge badge-gray">🎨 ${ca.color}</span>`:''}
@@ -5918,6 +6567,7 @@ function renderCarros(){
           ${ca.fechaCompra?`<span class="badge badge-blue">📅 ${new Date(ca.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</span>`:''}
           ${diasInvC!==null?`<span class="badge ${diasInvC>=100?'badge-red':'badge-gray'}">⏱ ${diasInvC}d en inventario</span>`:''}
         </div>
+        ${ccSelloRetoma(ca)}
         ${ca.vendedorNombre||ca.vendedorCC?`<div style="margin-top:.5rem;font-size:11px;color:var(--text3)">Comprado a: <strong style="color:var(--text2)">${ca.vendedorNombre||'—'}</strong>${ca.vendedorCC?' · CC: '+ca.vendedorCC:''}${ca.vendedorTel?' · 📞 '+ca.vendedorTel:''}</div>`:''}
         ${alertaInvHtmlC}
       </div>
@@ -6253,7 +6903,8 @@ function mcMostrarAviso(){
     dato(ventasMes.length, ventasMes.length === 1 ? 'venta este mes' : 'ventas este mes') +
     dato(fmt(ganMes), 'ganancia del mes') +
     dato(inventario.length, inventario.length === 1 ? 'vehículo en inventario' : 'vehículos en inventario') +
-    (papeles ? dato(papeles, papeles === 1 ? 'papel pendiente' : 'papeles pendientes') : '');
+    (papeles ? dato(papeles, papeles === 1 ? 'papel pendiente' : 'papeles pendientes') : '') +
+    (ccTotales().falta > 0 ? dato(fmt(ccTotales().falta), 'te debe ' + FP_FINANCIERA) : '');
   document.getElementById('mc-aviso-extra').innerHTML = quieto && diasEnInventario(quieto.fechaCompra) >= 30
     ? `${nomVeh(quieto._t,'ico')} <strong>${quieto.nombre}</strong> lleva <strong>${diasEnInventario(quieto.fechaCompra)} días</strong> en el inventario: es el que más capital tiene quieto.`
     : '';
