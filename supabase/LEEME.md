@@ -21,6 +21,7 @@ Esta guía te lleva paso a paso para configurar tu proyecto de Supabase.
 | `05_cerrar_tabla_antigua.sql` | Quita el acceso público a `mc_datos` | **Solo al final.** No borra datos |
 | `06_traspasos.sql` | Amplía la lista de colecciones permitidas | Permite guardar Traspasos de Vehículos en la nube (FASE 8). No borra datos |
 | `07_fotos.sql` | Crea el bucket privado `fotos` y sus reglas | Guarda las fotos de motos y carros como archivos en Supabase Storage (FASE 9). No toca ninguna tabla ni dato |
+| `08_respaldos.sql` | Crea el bucket privado `respaldos` y sus reglas | Respaldo semanal automático de tus datos en la nube, aparte de la sincronización (FASE 10). No toca ninguna tabla ni dato |
 
 Ningún archivo borra la tabla `mc_datos` ni tus datos. Los archivos 01 a 05 se pueden volver a ejecutar sin problema: no duplican ni pisan nada.
 
@@ -255,6 +256,29 @@ Antes, cada foto se guardaba **dentro** de los datos de la moto. Eso llenaba el 
 - Quitar o cambiar una foto **no borra el archivo** de Storage, por seguridad: se puede recuperar desde el historial.
 - Las versiones antiguas guardadas en `mc_historial` conservan la foto como estaba. No se borran.
 - El plan gratis de Supabase incluye 1 GB de Storage, suficiente para miles de fotos de ~150 KB.
+
+
+---
+
+## FASE 10: Respaldo semanal automático en la nube
+
+La sincronización copia al instante lo que haces: si borras algo por error, el borrado también se sincroniza. Por eso, además, la app guarda **una vez por semana** una copia completa de tus datos (motos, carros, ventas, cuentas por cobrar, contactos, metas, ajustes y papelera) como un archivo aparte en Supabase Storage. Las fotos no van dentro: ya están guardadas en el bucket `fotos`.
+
+**Paso 1: ejecutar el SQL (una sola vez)**
+1. En Supabase abre **SQL Editor → New query**.
+2. Abre el archivo `08_respaldos.sql`, copia **todo su contenido** (no el nombre del archivo) y pégalo en el editor. Pulsa **Run**.
+3. Al final debe mostrar el bucket `respaldos` con `public = false` y 4 políticas (`mc_respaldos_ver`, `mc_respaldos_subir`, `mc_respaldos_cambiar`, `mc_respaldos_borrar`).
+
+**Paso 2: abrir MotoContable**
+1. Recarga MotoContable (en el Mac **Cmd + Opción + R**).
+2. Al entrar con tu sesión, si no hay un respaldo de los últimos 7 días, la app lo hace sola.
+3. Para verlo, ve a **Ajustes → Respaldo semanal en la nube**.
+
+**Cómo funciona:**
+- Se guardan los **últimos 12 respaldos** (unos 3 meses). Los más viejos se borran solos.
+- **Recuperar lo borrado** compara un respaldo con lo que tienes hoy y te muestra lo que falta (por ejemplo, una moto que se borró). Solo **agrega** lo que falta: nunca cambia ni borra lo que ya tienes.
+- **Descargar** baja el archivo del respaldo a tu dispositivo.
+- Lo que está en la Papelera se restaura desde la Papelera, no desde el respaldo.
 
 ---
 

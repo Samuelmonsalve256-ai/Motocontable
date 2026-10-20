@@ -581,6 +581,10 @@ textarea{resize:vertical;min-height:65px}
   html .cc-tile strong{font-size:19px}
   html .cc-lista{grid-template-columns:1fr}
   html .cc-mes-datos{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  html .resp-acc{width:100%}
+  html .resp-acc .btn{flex:1;justify-content:center}
+  html .sep-acc{display:grid;grid-template-columns:1fr 1fr}
+  html .sep-acc .btn-primary{grid-column:1/-1;order:-1}
   html .cc-modal-fondo{align-items:flex-end;padding:0}
   html .cc-modal{max-width:none;border-radius:22px 22px 0 0;max-height:92vh;padding:1.2rem 1rem calc(1.2rem + env(safe-area-inset-bottom))}
   html .cc-modal-acc .btn{flex:1;justify-content:center;min-height:44px}
@@ -717,6 +721,43 @@ textarea{resize:vertical;min-height:65px}
 .cc-alerta{margin-top:.6rem;font-size:12px;color:var(--red);background:rgba(255,69,96,.08);border:1px solid rgba(255,69,96,.3);border-radius:10px;padding:.5rem .7rem}
 .cc-acc{display:flex;gap:6px;flex-wrap:wrap;margin-top:.8rem}
 .cc-acc .btn{flex:1;justify-content:center;min-width:110px}
+.badge-sep{background:rgba(45,212,191,.14);color:#4fe0cc;border:1px solid rgba(45,212,191,.4)}
+.moto-card.veh-separada{border-color:rgba(45,212,191,.55);box-shadow:0 0 0 1px rgba(45,212,191,.18)}
+.btn-sep.activo{border-color:rgba(45,212,191,.55);background:rgba(45,212,191,.14)}
+.sep-cinta{margin-top:.6rem;border-radius:12px;padding:.6rem .8rem;background:linear-gradient(90deg,rgba(45,212,191,.16),rgba(45,212,191,.05));border:1px solid rgba(45,212,191,.45);cursor:pointer}
+.sep-cinta-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.sep-cinta-top strong{font-size:11.5px;letter-spacing:.1em;color:#4fe0cc}
+.sep-cinta-top span{font-size:11px;color:var(--text3)}
+.sep-cinta-txt{font-size:12.5px;color:var(--text2);margin-top:3px;line-height:1.45}
+.sep-cinta-txt b{color:var(--text)}
+.sep-cinta.sep-vencida{border-color:rgba(255,69,96,.5);background:linear-gradient(90deg,rgba(255,69,96,.14),rgba(255,69,96,.04))}
+.sep-cinta.sep-vencida .sep-cinta-top span{color:var(--red)}
+.sep-resumen{margin-bottom:1rem;padding:.75rem 1rem;border-radius:14px;border:1px solid rgba(45,212,191,.4);background:rgba(45,212,191,.07)}
+.sep-resumen-tit{font-size:13.5px;color:var(--text2);margin-bottom:.5rem}
+.sep-resumen-tit b{color:#4fe0cc}
+.sep-chips{display:flex;gap:6px;flex-wrap:wrap}
+.sep-chip{border:1px solid rgba(45,212,191,.4);background:var(--bg2);color:var(--text);font:600 12px 'Inter',sans-serif;padding:5px 10px;border-radius:20px;cursor:pointer}
+.sep-chip.sep-vencida{border-color:rgba(255,69,96,.5);color:var(--red)}
+.sep-tabla .cc-fila:not(.cc-total) b{font-family:inherit}
+.sep-opciones{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sep-opciones .btn{justify-content:center;min-height:44px}
+.sep-aviso{margin:-2px 0 12px;padding:.65rem .85rem;border-radius:12px;border:1px solid rgba(45,212,191,.45);background:rgba(45,212,191,.08);font-size:13px;color:var(--text2)}
+.sep-aviso[hidden]{display:none}
+.sep-aviso b{color:var(--text)}
+.sep-aviso-chk{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12.5px;cursor:pointer;color:var(--text)}
+.sep-aviso-chk input{width:auto;accent-color:#2dd4bf}
+.resp-estado{font-size:13px;color:var(--text2);line-height:1.5;padding:.6rem .8rem;border-radius:10px;background:var(--bg3)}
+.resp-estado.ok{color:var(--text);background:rgba(14,163,114,.08);border:1px solid rgba(14,163,114,.3)}
+.resp-estado.mal{color:var(--amber);background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.35)}
+.resp-lista{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.resp-fila{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:.6rem .85rem;border-bottom:1px solid var(--border)}
+.resp-fila:last-child{border-bottom:none}
+.resp-info strong{display:block;font-size:13px}
+.resp-info span{display:block;font-size:11.5px;color:var(--text3)}
+.resp-acc{display:flex;gap:6px;flex-wrap:wrap}
+.resp-grupo{padding:.55rem 0;border-bottom:1px dashed var(--border);font-size:13px}
+.resp-grupo strong{display:block;margin-bottom:2px}
+.resp-grupo span{color:var(--text2);line-height:1.5}
 .cc-meses{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin:-.25rem 0 1rem;scrollbar-width:none}
 .cc-meses::-webkit-scrollbar{display:none}
 .cc-mes{flex-shrink:0;display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);font:600 12.5px 'Inter',sans-serif;padding:7px 12px;border-radius:20px;cursor:pointer;white-space:nowrap}
@@ -1068,6 +1109,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
     <div><div class="page-title">Mis motos</div><div class="page-sub">Fichas con gastos, documentos y finanzas por vehículo</div></div>
     <button class="btn btn-primary" onclick="go('nueva-moto')">+ Nueva moto</button>
   </div>
+  <div id="sep-resumen-motos"></div>
   <div id="alertas-inventario-motos"></div>
   <div class="motos-grid" id="lista-motos"></div>
 </div>
@@ -1078,6 +1120,7 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
     <div><div class="page-title">Mis carros</div><div class="page-sub">Fichas con gastos, documentos y finanzas por vehículo</div></div>
     <button class="btn btn-primary" onclick="go('nuevo-carro')">+ Nuevo carro</button>
   </div>
+  <div id="sep-resumen-carros"></div>
   <div id="alertas-inventario-carros"></div>
   <div class="motos-grid" id="lista-carros"></div>
 </div>
@@ -1366,6 +1409,8 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
           <div class="form-group"><label class="form-label" id="lbl-vta-tipo">Vehículo <span>*</span></label><select id="vta-moto" onchange="calcularVenta()"><option value="">Seleccionar vehículo…</option></select></div>
           <div class="form-group"><label class="form-label">Fecha de venta <span>*</span></label><input type="date" id="vta-fecha"></div>
         </div>
+        <div class="sep-aviso" id="vta-sep-aviso" hidden></div>
+        <input type="hidden" id="vta-anticipo">
         <div class="form-grid" style="margin-bottom:12px">
           <div class="form-group"><label class="form-label">Precio de venta ($) <span>*</span></label><input type="number" id="vta-precio" placeholder="0" min="0" oninput="calcularVenta()"></div>
           <div class="form-group"><label class="form-label">Nombre del comprador</label><input type="text" id="vta-comprador" placeholder="Nombre completo"></div>
@@ -1557,6 +1602,15 @@ img[data-sbfoto]{background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(
         <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('borrar')">Eliminar</button>
         <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('restaurar')">Restaurar</button>
       </div>
+    </div>
+  </div>
+
+  <!-- RESPALDO SEMANAL -->
+  <div class="card">
+    <div class="card-head"><span class="card-head-title">☁️ Respaldo semanal en la nube</span></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:.5rem">Aparte de la sincronización, cada semana se guarda sola una copia completa de tus datos en la nube. Si algo se borra por error, desde aquí lo recuperas sin tocar lo demás.</p>
+      <div id="resp-contenido"></div>
     </div>
   </div>
 
@@ -2530,6 +2584,7 @@ async function mcConSesion(session){
   mcSubirFotosPendientes();
   mcHidratarFotos();
   setTimeout(mcRevisarAviso, 2500);
+  setTimeout(mcRespaldoSemanal, 8000);
 }
 function mcSuscribirTiempoReal(uid){
   if(_mcCanal || !_supa.channel) return;
@@ -2551,7 +2606,7 @@ function mcRegistrarEventos(){
   });
   window.addEventListener('pagehide', mcEnvioDeEmergencia);
   window.addEventListener('pageshow', e=>{ if(e.persisted) mcSincronizar('pageshow'); });
-  setInterval(()=>{ if(document.visibilityState==='visible'){ mcSincronizar('periodico'); mcSubirFotosPendientes(); } }, 60000);
+  setInterval(()=>{ if(document.visibilityState==='visible'){ mcSincronizar('periodico'); mcSubirFotosPendientes(); mcRespaldoSemanal(); } }, 60000);
 }
 async function mcIniciar(){
   try { if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
@@ -2682,7 +2737,7 @@ function go(page){
   mcContadorPapelera();
   ccContador();
   if(typeof mcTabActiva === 'function') mcTabActiva(page);
-  if(page==='ajustes')    { renderPaletaColores(); renderPanelesEditor();
+  if(page==='ajustes')    { renderPaletaColores(); renderPanelesEditor(); mcRenderRespaldos();
     document.getElementById('cfg-appname').value=cfgData.appName||'';
     document.getElementById('cfg-appicon').value=cfgData.appIcon||'';
     if(cfgData.fontSize) document.getElementById('cfg-fontsize').value=cfgData.fontSize;
@@ -3078,7 +3133,8 @@ function ccCuenta(v){
   const retoma = c && c.retoma ? c.retoma : null;
   const rv = retoma ? ccNum(retoma.valor) : 0;
   const inicial = c ? ccNum(c.inicial) : 0;
-  const saldo = Math.max(0, precio - rv - inicial);
+  const anticipo = c ? ccNum(c.anticipo) : 0;   // anticipo de la separación
+  const saldo = Math.max(0, precio - rv - inicial - anticipo);
   const pagos = c && Array.isArray(c.pagos) ? c.pagos : [];
   const pagado = pagos.reduce((a,p)=>a+ccNum(p.monto), 0);
   const falta = Math.max(0, saldo - pagado);
@@ -3086,7 +3142,7 @@ function ccCuenta(v){
   const estado = !financiado ? 'no' : !c ? 'revisar' : falta > 0 ? 'pendiente' : 'cobrada';
   const ultimo = pagos.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)))[0] || null;
   const dias = v.fecha ? Math.max(0, Math.round((new Date(hoyLocal()+'T00:00:00') - new Date(v.fecha+'T00:00:00')) / 86400000)) : 0;
-  return {precio, retoma, rv, inicial, saldo, pagos, pagado, falta, deMas: Math.max(0, pagado - saldo), estado, ultimo, dias,
+  return {precio, retoma, rv, inicial, anticipo, saldo, pagos, pagado, falta, deMas: Math.max(0, pagado - saldo), estado, ultimo, dias,
           efectivo: financiado ? inicial : Math.max(0, precio - rv)};
 }
 // Mes en que entró un pago. Las ventas de antes marcadas "Ya me pagó" no tienen la
@@ -3129,6 +3185,7 @@ function ccEtiquetasVenta(v){
   else if(k.estado === 'cobrada') h += `<div class="cc-tag cc-ok" onclick="ccIr('${v.id}')">✅ Cobrada a ${FP_FINANCIERA}${k.ultimo && !k.ultimo.antes ? ' el '+mcFechaCorta(k.ultimo.fecha) : ''}</div>`;
   else if(k.estado === 'revisar') h += `<div class="cc-tag cc-rev" onclick="ccIr('${v.id}')">❔ ¿${FP_FINANCIERA} ya te pagó esta venta? · Revisar</div>`;
   else if(k.retoma) h += `<div class="cc-tag cc-efe">💵 El cliente pagó en efectivo ${fmt(k.efectivo)}</div>`;
+  if(v.separacion) h += `<div class="cc-tag cc-efe">📌 Estaba separada por ${ccEsc(v.separacion.cliente)} · anticipo ${fmt(ccNum(v.separacion.valor))}${k.anticipo ? ' (descontado)' : ''}</div>`;
   const orig = v.vehiculoOriginal && v.vehiculoOriginal.retoma;
   if(orig) h += `<div class="cc-tag cc-rt">🔁 ${nomVeh(v.tipoVehiculo,'articulo').replace(/^./, c=>c.toUpperCase())} la habías recibido en retoma por ${ccEsc(orig.vendido)}</div>`;
   return h;
@@ -3209,11 +3266,12 @@ function ccElegirRetoma(pre, si){
 function ccLimpiarForm(pre){
   ['rt-nombre','rt-modelo','rt-placa','rt-valor','inicial'].forEach(c=>{ const el = document.getElementById(pre+'-'+c); if(el) el.value = ''; });
   const t = document.getElementById(pre+'-rt-tipo'); if(t){ t.value = 'moto'; t.disabled = false; }
+  if(pre === 'vta'){ const a = document.getElementById('vta-anticipo'); if(a) a.value = ''; sepFormVenta(); }
   ccElegirRetoma(pre, false);
 }
 let _ccAj = null;   // cuenta que se está ajustando en el modal
 function ccDatosForm(pre){
-  if(pre === 'vta') return {precio: ccNum(document.getElementById('vta-precio')?.value), fp: document.getElementById('vta-forma-pago')?.value || '', pagado: 0};
+  if(pre === 'vta') return {precio: ccNum(document.getElementById('vta-precio')?.value), fp: document.getElementById('vta-forma-pago')?.value || '', pagado: 0, anticipo: ccNum(document.getElementById('vta-anticipo')?.value)};
   return _ccAj || {precio:0, fp:'', pagado:0};
 }
 function ccLeerForm(pre, precio, fp){
@@ -3226,9 +3284,10 @@ function ccLeerForm(pre, precio, fp){
     retoma = {tipo: val('rt-tipo') === 'carro' ? 'carro' : 'moto', nombre, modelo: val('rt-modelo'), placa: val('rt-placa').toUpperCase(), valor};
   }
   const inicial = fp === 'financiado' ? Math.max(0, ccNum(val('inicial'))) : 0;
-  if((retoma ? retoma.valor : 0) + inicial > precio)
-    return {error:'La retoma y la cuota inicial suman más que el precio de venta', campo: retoma ? pre+'-rt-valor' : pre+'-inicial'};
-  return {retoma, inicial};
+  const anticipo = ccNum(ccDatosForm(pre).anticipo);
+  if((retoma ? retoma.valor : 0) + inicial + anticipo > precio)
+    return {error: anticipo ? 'La retoma, la cuota inicial y el anticipo suman más que el precio de venta' : 'La retoma y la cuota inicial suman más que el precio de venta', campo: retoma ? pre+'-rt-valor' : pre+'-inicial'};
+  return {retoma, inicial, anticipo};
 }
 // "Cuentas de esta venta" en vivo, mientras se llena el formulario
 function ccResumenForm(pre){
@@ -3240,17 +3299,19 @@ function ccResumenForm(pre){
   const rv = si ? ccNum(document.getElementById(pre+'-rt-valor')?.value) : 0;
   const nom = (document.getElementById(pre+'-rt-nombre')?.value || '').trim() || 'vehículo recibido';
   const ini = d.fp === 'financiado' ? ccNum(document.getElementById(pre+'-inicial')?.value) : 0;
-  const saldo = d.precio - rv - ini;
+  const ant = ccNum(d.anticipo);
+  const saldo = d.precio - rv - ini - ant;
   let h = `<div class="cc-cuentas-tit">🧾 Cuentas de esta venta</div>
     <div class="cc-fila"><span>Precio de venta</span><b>${fmt(d.precio)}</b></div>`;
   if(si) h += `<div class="cc-fila cc-menos"><span>🔁 Recibiste en retoma: ${ccEsc(nom)}</span><b>− ${fmt(rv)}</b></div>`;
+  if(ant) h += `<div class="cc-fila cc-menos"><span>📌 Anticipo de la separación</span><b>− ${fmt(ant)}</b></div>`;
   if(ini) h += `<div class="cc-fila cc-menos"><span>💵 Cuota inicial en efectivo</span><b>− ${fmt(ini)}</b></div>`;
-  if(saldo < 0){ box.innerHTML = h + `<div class="cc-mal">⚠️ La retoma y la cuota inicial suman más que el precio de venta.</div>`; box.hidden = false; return; }
+  if(saldo < 0){ box.innerHTML = h + `<div class="cc-mal">⚠️ ${ant ? 'La retoma, la cuota inicial y el anticipo suman' : 'La retoma y la cuota inicial suman'} más que el precio de venta.</div>`; box.hidden = false; return; }
   if(d.fp === 'financiado'){
     h += `<div class="cc-fila cc-total"><span>${FP_FINANCIERA} te debe</span><b>${fmt(saldo)}</b></div>`;
     if(d.pagado) h += `<div class="cc-fila cc-pago"><span>✅ Pagos ya registrados</span><b>− ${fmt(d.pagado)}</b></div><div class="cc-fila cc-total"><span>Falta por cobrar</span><b>${fmt(Math.max(0, saldo - d.pagado))}</b></div>`;
   } else {
-    h += `<div class="cc-fila cc-total cc-efectivo"><span>El cliente te paga en efectivo</span><b>${fmt(saldo)}</b></div>`;
+    h += `<div class="cc-fila cc-total cc-efectivo"><span>${ant ? 'Falta que el cliente te pague en efectivo' : 'El cliente te paga en efectivo'}</span><b>${fmt(saldo)}</b></div>`;
   }
   box.innerHTML = h; box.hidden = false;
 }
@@ -3396,6 +3457,7 @@ function ccTarjeta(v, k){
   const dTxt = !pend ? `✅ Cobrada${k.ultimo && !k.ultimo.antes ? ' el '+mcFechaCorta(k.ultimo.fecha) : ''}` : k.dias === 0 ? '⏳ Vendida hoy' : `⏳ Hace ${k.dias} día${k.dias!==1?'s':''}`;
   let filas = `<div class="cc-fila"><span>Precio de venta · ${mcFechaCorta(v.fecha)}</span><b>${fmt(k.precio)}</b></div>`;
   if(k.retoma) filas += `<div class="cc-fila cc-menos"><span>🔁 Retoma: ${nomVeh(k.retoma.tipo,'ico')} ${ccEsc(k.retoma.nombre)}${k.retoma.placa ? ' · '+ccEsc(k.retoma.placa) : ''}</span><b>− ${fmt(k.rv)}</b></div>`;
+  if(k.anticipo) filas += `<div class="cc-fila cc-menos"><span>📌 Anticipo de la separación${v.separacion ? ' ('+ccEsc(v.separacion.cliente)+')' : ''}</span><b>− ${fmt(k.anticipo)}</b></div>`;
   if(k.inicial) filas += `<div class="cc-fila cc-menos"><span>💵 Cuota inicial en efectivo</span><b>− ${fmt(k.inicial)}</b></div>`;
   filas += `<div class="cc-fila cc-total"><span>Saldo que te debe ${FP_FINANCIERA}</span><b>${fmt(k.saldo)}</b></div>`;
   k.pagos.slice().sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha))).forEach(p=>{
@@ -3524,7 +3586,7 @@ async function ccDeshacerPago(id){
 function ccAbrirAjustar(id){
   const v = ventas.find(x=>x.id === id); if(!v) return;
   const k = ccCuenta(v);
-  _ccAj = {id, precio: k.precio, fp: v.formaPago, pagado: k.pagado};
+  _ccAj = {id, precio: k.precio, fp: v.formaPago, pagado: k.pagado, anticipo: k.anticipo};
   ccAbrirModal('✏️ Ajustar cuenta', `
     <div class="cc-pista" style="margin:0 0 4px">${nomVeh(v.tipoVehiculo,'ico')} <b>${ccEsc(v.motoNombre||'Venta')}</b> · vendida en ${fmt(k.precio)} el ${mcFechaCorta(v.fecha)}. Si el precio está mal, corrígelo en Ventas con ✏️.</div>
     ${ccCamposHTML('cb')}
@@ -3613,6 +3675,7 @@ async function ccCopiar(id){
     `Fecha de venta: ${mcFechaCorta(v.fecha)}`, '',
     `Valor de la venta: ${fmt(k.precio)}`];
   if(k.retoma) l.push(`Retoma recibida (${k.retoma.nombre}${k.retoma.placa ? ', placa '+k.retoma.placa : ''}): −${fmt(k.rv)}`);
+  if(k.anticipo) l.push(`Anticipo de separación: −${fmt(k.anticipo)}`);
   if(k.inicial) l.push(`Cuota inicial en efectivo: −${fmt(k.inicial)}`);
   l.push(`Saldo financiado: ${fmt(k.saldo)}`);
   if(k.pagado) l.push(`Abonos recibidos: −${fmt(k.pagado)}`);
@@ -3624,6 +3687,346 @@ async function ccCopiar(id){
   }
   if(ok) mcNotificar({tipo:'ok', titulo:'Cuenta de cobro copiada', texto:`Pégala en WhatsApp o en un correo para ${FP_FINANCIERA}`});
   else toast('No se pudo copiar en este navegador', 'err');
+}
+
+// ── RESPALDO SEMANAL EN LA NUBE ──────────────────────────────────────────────
+// Aparte de la sincronización: una vez por semana se guarda una copia completa de
+// los datos como archivo en el bucket privado 'respaldos' (supabase/08_respaldos.sql),
+// en la carpeta del usuario. Se guardan los últimos 12. "Recuperar lo borrado" solo
+// agrega lo que falta hoy; nunca cambia ni borra lo que ya existe.
+const MC_RESP_BUCKET = 'respaldos';
+const MC_RESP_DIAS = 7;
+const MC_RESP_GUARDAR = 12;
+const MC_RESP_REVISADO_KEY = 'mc_resp_revisado';
+let _mcRespNube = null;          // null: no se sabe · false: falta el bucket · true: funciona
+let _mcRespaldando = null;
+let _mcRespLista = null;         // última lista leída de la nube
+function mcRespDisponible(){ return !!(_supa && _supa.storage && _mcSesion && _mcEstadoListo && navigator.onLine); }
+const mcRespCarpeta = () => _mcSesion.user.id + '/respaldos';
+const mcRespSinBucket = e => /bucket not found/i.test((e && e.message) || '') || String(e && e.statusCode) === '404';
+function mcDatosRespaldo(){
+  return {version:'1.0', fecha: new Date().toISOString(), app:'MotoContable', origen:'respaldo-semanal',
+    motos, movimientos, ventas, carros, contactos, metas,
+    config: JSON.parse(localStorage.getItem('mc_config') || '{}'),
+    configApp: cfgData};
+}
+async function mcListarRespaldos(){
+  const {data, error} = await _supa.storage.from(MC_RESP_BUCKET).list(mcRespCarpeta(), {limit: 100, sortBy: {column: 'name', order: 'desc'}});
+  if(error){ if(mcRespSinBucket(error)) _mcRespNube = false; throw error; }
+  _mcRespNube = true;
+  _mcRespLista = (data || []).filter(f=>/\.json$/.test(f.name)).sort((a,b)=>b.name.localeCompare(a.name));
+  return _mcRespLista;
+}
+// Nombre: AAAA-MM-DD_HHMM_auto|manual.json (hora de Colombia), así se ordenan solos
+function mcRespNombre(tipo){
+  const d = new Date();
+  return `${hoyLocal(d)}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}_${tipo}.json`;
+}
+function mcRespInfo(nombre){
+  const m = String(nombre).match(/^(\d{4}-\d{2}-\d{2})_(\d{2})(\d{2})_(auto|manual)/);
+  if(!m) return {fecha:'', hora:'', tipo:'', dias: 9999};
+  const dias = Math.round((new Date(hoyLocal()+'T00:00:00') - new Date(m[1]+'T00:00:00')) / 86400000);
+  const h = Number(m[2]), hora = `${h % 12 || 12}:${m[3]} ${h < 12 ? 'a. m.' : 'p. m.'}`;
+  return {fecha: m[1], hora, tipo: m[4], dias};
+}
+function mcHacerRespaldo(tipo){
+  if(_mcRespaldando) return _mcRespaldando;
+  _mcRespaldando = (async ()=>{
+    if(!mcRespDisponible()) throw new Error('sin-sesion');
+    const datos = mcDatosRespaldo();
+    const total = ['motos','carros','ventas','contactos','metas'].reduce((a,k)=>a + (datos[k]||[]).length, 0);
+    if(!total) throw new Error('vacio');   // nunca guardar un respaldo vacío
+    const blob = new Blob([JSON.stringify(datos)], {type: 'application/json'});
+    const {error} = await _supa.storage.from(MC_RESP_BUCKET)
+      .upload(mcRespCarpeta() + '/' + mcRespNombre(tipo), blob, {contentType: 'application/json', upsert: true});
+    if(error){ if(mcRespSinBucket(error)) _mcRespNube = false; throw error; }
+    _mcRespNube = true;
+    try { localStorage.setItem(MC_RESP_REVISADO_KEY, String(Date.now())); } catch(e){}
+    // Se quedan los últimos 12; los más viejos se borran
+    try {
+      const lista = await mcListarRespaldos();
+      const viejos = lista.slice(MC_RESP_GUARDAR).map(f=>mcRespCarpeta() + '/' + f.name);
+      if(viejos.length){ await _supa.storage.from(MC_RESP_BUCKET).remove(viejos); await mcListarRespaldos(); }
+    } catch(e){ console.log('No se pudo ordenar los respaldos:', e && e.message); }
+    return true;
+  })().finally(()=>{ _mcRespaldando = null; });
+  return _mcRespaldando;
+}
+// Al abrir la app (y cada pocas horas): si el último respaldo tiene 7 días o más, se hace uno
+async function mcRespaldoSemanal(){
+  if(!mcRespDisponible() || _mcRespNube === false) return;
+  let rev = 0; try { rev = Number(localStorage.getItem(MC_RESP_REVISADO_KEY)) || 0; } catch(e){}
+  if(Date.now() - rev < 6 * 3600 * 1000) return;
+  try {
+    const lista = await mcListarRespaldos();
+    try { localStorage.setItem(MC_RESP_REVISADO_KEY, String(Date.now())); } catch(e){}
+    const ultimo = lista[0] ? mcRespInfo(lista[0].name) : null;
+    if(!ultimo || ultimo.dias >= MC_RESP_DIAS){
+      await mcHacerRespaldo('auto');
+      if((document.querySelector('.page.active')||{}).id === 'page-ajustes') mcRenderRespaldos();
+    }
+  } catch(e){ console.log('Respaldo semanal pendiente:', e && e.message); }
+}
+async function respaldarAhora(){
+  if(!mcRespDisponible()){ toast(_mcSesion ? 'Sin conexión: el respaldo se hará cuando vuelva internet' : 'Inicia sesión para guardar respaldos en la nube', 'err'); return; }
+  const b = document.getElementById('btn-respaldar'); if(b){ b.disabled = true; b.textContent = '⏳ Guardando…'; }
+  try {
+    await mcHacerRespaldo('manual');
+    mcNotificar({tipo:'confirmar', titulo:'Respaldo guardado en la nube', texto:'Copia completa de tus datos de hoy'});
+  } catch(e){
+    toast(_mcRespNube === false ? 'Falta activar los respaldos: ejecuta supabase/08_respaldos.sql en Supabase' : e && e.message === 'vacio' ? 'No hay datos para respaldar todavía' : 'No se pudo guardar el respaldo. Intenta de nuevo.', 'err');
+  } finally { mcRenderRespaldos(); }
+}
+// Tarjeta en Ajustes
+async function mcRenderRespaldos(){
+  const el = document.getElementById('resp-contenido'); if(!el) return;
+  const pintar = (estado, lista) => {
+    const b = `<button class="btn btn-primary" id="btn-respaldar" onclick="respaldarAhora()" ${mcRespDisponible() && _mcRespNube !== false ? '' : 'disabled'}>☁️ Hacer respaldo ahora</button>`;
+    let filas = '';
+    if(lista && lista.length){
+      filas = `<div class="resp-lista">${lista.map(f=>{ const i = mcRespInfo(f.name), kb = f.metadata && f.metadata.size ? Math.max(1, Math.round(f.metadata.size/1024)) : 0;
+        return `<div class="resp-fila">
+          <div class="resp-info"><strong>${mcFechaCorta(i.fecha)} · ${i.hora}</strong><span>${i.tipo === 'auto' ? '🔁 Semanal automático' : '👆 Hecho a mano'}${kb ? ' · '+kb+' KB' : ''}${i.dias === 0 ? ' · hoy' : i.dias === 1 ? ' · ayer' : ' · hace '+i.dias+' días'}</span></div>
+          <div class="resp-acc"><button class="btn btn-ghost btn-sm" onclick="mcRecuperarRespaldo('${f.name}')">↩ Recuperar lo borrado</button><button class="btn btn-ghost btn-sm" onclick="mcDescargarRespaldo('${f.name}')">⬇️ Descargar</button></div>
+        </div>`; }).join('')}</div>`;
+    }
+    el.innerHTML = `<div class="resp-estado ${estado.cls||''}">${estado.txt}</div><div style="margin:.75rem 0">${b}</div>${filas}`;
+  };
+  if(!_mcSesion){ pintar({txt:'Inicia sesión para guardar respaldos en la nube.'}); return; }
+  if(!navigator.onLine){ pintar({txt:'Sin conexión. Los respaldos se ven cuando vuelva internet.'}, _mcRespLista); return; }
+  pintar({txt:'Revisando tus respaldos…'}, _mcRespLista);
+  try {
+    const lista = await mcListarRespaldos();
+    if(!lista.length){ pintar({txt:'Todavía no hay respaldos. El primero se hace solo al abrir la app, o tócalo abajo.'}, lista); return; }
+    const u = mcRespInfo(lista[0].name), prox = new Date(u.fecha+'T00:00:00'); prox.setDate(prox.getDate() + MC_RESP_DIAS);
+    const cuando = u.dias === 0 ? 'hoy' : u.dias === 1 ? 'ayer' : `hace ${u.dias} días`;
+    pintar({cls:'ok', txt:`✅ Último respaldo: <b>${cuando}</b> (${mcFechaCorta(u.fecha)} · ${u.hora}). El próximo automático: ${u.dias >= MC_RESP_DIAS ? 'al abrir la app' : mcFechaCorta(hoyLocal(prox))}. Se guardan los últimos ${MC_RESP_GUARDAR}.`}, lista);
+  } catch(e){
+    pintar(_mcRespNube === false
+      ? {cls:'mal', txt:'⚠️ Falta activar los respaldos en Supabase: ejecuta una sola vez el archivo <b>supabase/08_respaldos.sql</b> (SQL Editor → pegar el contenido → Run).'}
+      : {cls:'mal', txt:'No se pudieron leer los respaldos. Intenta de nuevo en un momento.'}, _mcRespLista);
+  }
+}
+async function mcBajarRespaldo(nombre){
+  const {data, error} = await _supa.storage.from(MC_RESP_BUCKET).download(mcRespCarpeta() + '/' + nombre);
+  if(error || !data) throw error || new Error('vacío');
+  const d = JSON.parse(await data.text());
+  if(!d || d.app !== 'MotoContable') throw new Error('no es un respaldo de MotoContable');
+  return d;
+}
+async function mcDescargarRespaldo(nombre){
+  if(!mcRespDisponible()){ toast('Necesitas conexión y sesión iniciada', 'err'); return; }
+  try {
+    const d = await mcBajarRespaldo(nombre);
+    const url = URL.createObjectURL(new Blob([JSON.stringify(d, null, 2)], {type:'application/json'}));
+    const a = document.createElement('a'); a.href = url; a.download = 'MotoContable_respaldo_' + nombre.replace(/_(auto|manual)\.json$/, '') + '.json';
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    toast('✅ Respaldo descargado');
+  } catch(e){ toast('No se pudo descargar el respaldo', 'err'); }
+}
+// Lo que está en el respaldo y ya no está hoy (sin lo que está en la papelera,
+// lo vendido después ni las ventas devueltas al inventario)
+function mcFaltantesDeRespaldo(d){
+  const ids = arr => new Set((arr||[]).map(x=>x && x.id).filter(Boolean));
+  const enPapelera = col => new Set((cfgData.papelera||[]).filter(e=>e.col === col).map(e=>e.item && e.item.id));
+  const vendidos = new Set(ventas.map(v=>v.vehiculoId).filter(Boolean));
+  const enInventario = new Set([...motos, ...carros].map(x=>x.id));
+  const f = {};
+  f.motos  = (d.motos||[]).filter(x=>x && x.id && !ids(motos).has(x.id) && !enPapelera('motos').has(x.id) && !vendidos.has(x.id));
+  f.carros = (d.carros||[]).filter(x=>x && x.id && !ids(carros).has(x.id) && !enPapelera('carros').has(x.id) && !vendidos.has(x.id));
+  f.ventas = (d.ventas||[]).filter(x=>x && x.id && !ids(ventas).has(x.id) && !enPapelera('ventas').has(x.id) && !enInventario.has(x.vehiculoId));
+  f.contactos = (d.contactos||[]).filter(x=>x && x.id && !ids(contactos).has(x.id));
+  f.metas = (d.metas||[]).filter(x=>x && x.id && !ids(metas).has(x.id));
+  const motosVuelven = new Set(f.motos.map(m=>m.id));
+  f.movimientos = (d.movimientos||[]).filter(m=>m && motosVuelven.has(m.motoId));
+  return f;
+}
+let _mcRespFaltan = null;
+async function mcRecuperarRespaldo(nombre){
+  if(!mcRespDisponible()){ toast('Necesitas conexión y sesión iniciada', 'err'); return; }
+  let d;
+  try { d = await mcBajarRespaldo(nombre); } catch(e){ toast('No se pudo abrir el respaldo', 'err'); return; }
+  const f = mcFaltantesDeRespaldo(d), i = mcRespInfo(nombre);
+  const grupos = [['motos','🏍️ Motos', x=>x.nombre], ['carros','🚗 Carros', x=>x.nombre], ['ventas','🤝 Ventas', x=>`${x.motoNombre||'Venta'} · ${mcFechaCorta(x.fecha)}`],
+                  ['contactos','👥 Contactos', x=>x.nombre], ['metas','🎯 Metas', x=>x.nombre]];
+  const n = grupos.reduce((a,[k])=>a + f[k].length, 0);
+  _mcRespFaltan = n ? f : null;
+  ccAbrirModal('↩ Recuperar lo borrado', `
+    <div class="cc-pista" style="margin:0 0 12px">Respaldo del <b>${mcFechaCorta(i.fecha)} · ${i.hora}</b>. Se compara con lo que tienes hoy: solo se <b>agrega</b> lo que falta, nada se cambia ni se borra.</div>
+    ${n ? grupos.filter(([k])=>f[k].length).map(([k, t, nom])=>`<div class="resp-grupo"><strong>${t} (${f[k].length})</strong><span>${f[k].map(x=>ccEsc(nom(x)||'—')).join(' · ')}</span></div>`).join('')
+        : `<div class="cc-vacio" style="padding:1.4rem 1rem"><div class="grande">✅</div><strong>No falta nada.</strong><br>Todo lo de este respaldo sigue en tu sistema.</div>`}
+    <div class="cc-modal-acc">
+      <button class="btn btn-ghost" onclick="ccCerrarModal()">${n ? 'Cancelar' : 'Cerrar'}</button>
+      ${n ? `<button class="btn btn-primary" onclick="mcAplicarRecuperacion()">↩ Recuperar ${n} ${n === 1 ? 'cosa' : 'cosas'}</button>` : ''}
+    </div>`);
+}
+function mcAplicarRecuperacion(){
+  const f = _mcRespFaltan; if(!f) return;
+  _mcRespFaltan = null;
+  // Se vuelve a revisar contra lo de este momento, por si algo cambió mientras tanto
+  const ya = (arr, x) => arr.some(y=>y.id === x.id);
+  let n = 0;
+  f.motos.forEach(x=>{ if(!ya(motos, x)){ motos.unshift(JSON.parse(JSON.stringify(x))); n++; } });
+  f.carros.forEach(x=>{ if(!ya(carros, x)){ carros.unshift(JSON.parse(JSON.stringify(x))); n++; } });
+  f.ventas.forEach(x=>{ if(!ya(ventas, x)){ ventas.push(JSON.parse(JSON.stringify(x))); n++; } });
+  f.contactos.forEach(x=>{ if(!ya(contactos, x)){ contactos.unshift(JSON.parse(JSON.stringify(x))); n++; } });
+  f.metas.forEach(x=>{ if(!ya(metas, x)){ metas.unshift(JSON.parse(JSON.stringify(x))); n++; } });
+  if(f.movimientos.length) movimientos.push(...f.movimientos.map(m=>JSON.parse(JSON.stringify(m))));
+  if(f.motos.length){ saveMotos(); saveMovs(); }
+  if(f.carros.length) saveCarros();
+  if(f.ventas.length) saveVentas();
+  if(f.contactos.length) saveContactos();
+  if(f.metas.length) saveMetas();
+  ccCerrarModal();
+  ccContador();
+  mcNotificar({tipo:'restaurar', titulo:'Recuperado del respaldo', texto:`${n} ${n === 1 ? 'cosa volvió' : 'cosas volvieron'} a tu sistema`});
+}
+
+// ── SEPARAR UN VEHÍCULO ──────────────────────────────────────────────────────
+// Un cliente deja un anticipo para apartar una moto o un carro del inventario.
+// Queda en vehiculo.separacion; al venderlo, el anticipo se descuenta en las
+// cuentas de la venta. Si se cancela, pasa al historial (separacionesAnteriores).
+const sepLista = tipo => tipo === 'carro' ? carros : motos;
+const sepVeh = (tipo, id) => sepLista(tipo).find(x=>x.id === id);
+const sepGuardarLista = tipo => tipo === 'carro' ? saveCarros() : saveMotos();
+const sepDias = s => s && s.fecha ? Math.max(0, Math.round((new Date(hoyLocal()+'T00:00:00') - new Date(s.fecha+'T00:00:00')) / 86400000)) : 0;
+const sepVencida = s => !!(s && s.hasta && s.hasta < hoyLocal());
+const sepHace = d => d === 0 ? 'hoy' : d === 1 ? 'ayer' : `hace ${d} días`;
+// Cinta en la ficha del vehículo
+function sepCinta(tipo, veh){
+  const s = veh && veh.separacion; if(!s) return '';
+  const venc = sepVencida(s);
+  return `<div class="sep-cinta${venc ? ' sep-vencida' : ''}" onclick="sepAbrir('${tipo}','${veh.id}')" role="button" title="Ver la separación">
+    <div class="sep-cinta-top"><strong>📌 SEPARADA</strong><span>${sepHace(sepDias(s))}${s.hasta ? (venc ? ' · ⚠️ venció el '+mcFechaCorta(s.hasta) : ' · hasta el '+mcFechaCorta(s.hasta)) : ''}</span></div>
+    <div class="sep-cinta-txt">Por <b>${ccEsc(s.cliente)}</b>${s.cel ? ' · '+ccEsc(s.cel) : ''} · anticipo <b>${fmt(ccNum(s.valor))}</b></div>
+  </div>`;
+}
+// Resumen arriba de Mis motos / Mis carros
+function sepResumen(tipo){
+  const el = document.getElementById('sep-resumen-' + (tipo === 'carro' ? 'carros' : 'motos')); if(!el) return;
+  const sep = sepLista(tipo).filter(x=>x.separacion);
+  if(!sep.length){ el.innerHTML = ''; return; }
+  const total = sep.reduce((a,x)=>a + ccNum(x.separacion.valor), 0);
+  el.innerHTML = `<div class="sep-resumen">
+    <div class="sep-resumen-tit">📌 ${sep.length} ${tipo === 'carro' ? 'carro' : 'moto'}${sep.length !== 1 ? 's' : ''} separad${tipo === 'carro' ? 'o' : 'a'}${sep.length !== 1 ? 's' : ''} · <b>${fmt(total)}</b> en anticipos</div>
+    <div class="sep-chips">${sep.map(x=>`<button class="sep-chip${sepVencida(x.separacion) ? ' sep-vencida' : ''}" onclick="sepIrA('${tipo}','${x.id}')">${ccEsc(x.nombre)} · ${ccEsc(x.separacion.cliente)} · ${fmt(ccNum(x.separacion.valor))}</button>`).join('')}</div>
+  </div>`;
+}
+function sepIrA(tipo, id){ ccResaltar(document.getElementById(`veh-${tipo}-${id}`)); }
+// Modal: separar, ver, editar, cancelar
+function sepAbrir(tipo, id, modo){
+  const veh = sepVeh(tipo, id); if(!veh) return;
+  const s = veh.separacion;
+  const nom = `${nomVeh(tipo,'ico')} <b>${ccEsc(veh.nombre)}</b>${veh.modelo ? ' · '+ccEsc(veh.modelo) : ''}${veh.placa ? ' · '+ccEsc(veh.placa) : ''}`;
+  if(s && modo !== 'editar'){
+    if(modo === 'cancelar'){
+      ccAbrirModal('✕ Cancelar separación', `
+        <div class="cc-pista" style="margin:0 0 12px">${nom} · separada por <b>${ccEsc(s.cliente)}</b> con <b>${fmt(ccNum(s.valor))}</b>. Vuelve a quedar libre en el inventario.</div>
+        <p style="font-size:13.5px;margin:0 0 10px">¿Qué pasó con el anticipo?</p>
+        <div class="sep-opciones">
+          <button class="btn btn-ghost" onclick="sepCancelar('${tipo}','${id}','devuelto')">💵 Se lo devolví</button>
+          <button class="btn btn-ghost" onclick="sepCancelar('${tipo}','${id}','retenido')">🔒 No se lo devolví</button>
+        </div>
+        <div class="cc-modal-acc"><button class="btn btn-ghost" onclick="sepAbrir('${tipo}','${id}')">← Volver</button></div>`);
+      return;
+    }
+    const venc = sepVencida(s);
+    ccAbrirModal('📌 Vehículo separado', `
+      <div class="cc-pista" style="margin:0 0 12px">${nom}</div>
+      <div class="cc-tabla sep-tabla">
+        <div class="cc-fila"><span>Separada por</span><b>${ccEsc(s.cliente)}</b></div>
+        ${s.cel ? `<div class="cc-fila"><span>Celular</span><b>${ccEsc(s.cel)}</b></div>` : ''}
+        ${s.cc ? `<div class="cc-fila"><span>CC</span><b>${ccEsc(s.cc)}</b></div>` : ''}
+        <div class="cc-fila cc-total"><span>Anticipo</span><b>${fmt(ccNum(s.valor))}</b></div>
+        <div class="cc-fila"><span>Fecha</span><b>${mcFechaCorta(s.fecha)} · ${sepHace(sepDias(s))}</b></div>
+        ${s.hasta ? `<div class="cc-fila"><span>Separada hasta</span><b style="${venc ? 'color:var(--red)' : ''}">${mcFechaCorta(s.hasta)}${venc ? ' · venció' : ''}</b></div>` : ''}
+        ${s.nota ? `<div class="cc-fila"><span>Nota</span><b style="white-space:normal;text-align:right">${ccEsc(s.nota)}</b></div>` : ''}
+      </div>
+      <div class="cc-modal-acc sep-acc">
+        <button class="btn btn-ghost" onclick="sepAbrir('${tipo}','${id}','cancelar')">✕ Cancelar separación</button>
+        <button class="btn btn-ghost" onclick="sepAbrir('${tipo}','${id}','editar')">✏️ Editar</button>
+        <button class="btn btn-primary" onclick="sepVender('${tipo}','${id}')">💵 Vender</button>
+      </div>`);
+    return;
+  }
+  const e = s || {};
+  ccAbrirModal(s ? '✏️ Editar separación' : '📌 Separar vehículo', `
+    <div class="cc-pista" style="margin:0 0 12px">${nom}${Number(veh.precioCompra) > 0 ? '' : ''}</div>
+    <div class="form-grid" style="margin-bottom:10px">
+      <div class="form-group"><label class="form-label">¿Quién la separa? <span>*</span></label><input type="text" id="sep-cliente" placeholder="Nombre del cliente" value="${ccEsc(e.cliente||'')}"></div>
+      <div class="form-group"><label class="form-label">Anticipo que te dio ($) <span>*</span></label><input type="number" id="sep-valor" min="0" placeholder="Ej: 3000000" value="${e.valor||''}"></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:10px">
+      <div class="form-group"><label class="form-label">Celular</label><input type="text" id="sep-cel" placeholder="Ej: 3001234567" value="${ccEsc(e.cel||'')}"></div>
+      <div class="form-group"><label class="form-label">CC</label><input type="text" id="sep-cc" placeholder="Número de cédula" value="${ccEsc(e.cc||'')}"></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:10px">
+      <div class="form-group"><label class="form-label">Fecha</label><input type="date" id="sep-fecha" value="${e.fecha||hoyLocal()}"></div>
+      <div class="form-group"><label class="form-label">Separada hasta (opcional)</label><input type="date" id="sep-hasta" value="${e.hasta||''}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Nota (opcional)</label><input type="text" id="sep-nota" placeholder="Ej: paga el resto el viernes" value="${ccEsc(e.nota||'')}"></div>
+    <div class="cc-modal-acc">
+      <button class="btn btn-ghost" onclick="${s ? `sepAbrir('${tipo}','${id}')` : 'ccCerrarModal()'}">Cancelar</button>
+      <button class="btn btn-primary" onclick="sepGuardar('${tipo}','${id}')">📌 ${s ? 'Guardar cambios' : 'Separar'}</button>
+    </div>`);
+  setTimeout(()=>document.getElementById('sep-cliente')?.focus(), 50);
+}
+function sepGuardar(tipo, id){
+  const veh = sepVeh(tipo, id); if(!veh){ ccCerrarModal(); return; }
+  const v = c => (document.getElementById('sep-'+c)?.value || '').trim();
+  const cliente = v('cliente'), valor = ccNum(v('valor'));
+  if(!cliente){ toast('Escribe el nombre de quien la separa', 'err'); document.getElementById('sep-cliente').focus(); return; }
+  if(!(valor > 0)){ toast('Escribe el valor del anticipo', 'err'); document.getElementById('sep-valor').focus(); return; }
+  const fecha = v('fecha') || hoyLocal(), hasta = v('hasta');
+  if(hasta && hasta < fecha){ toast('La fecha "hasta" no puede ser antes de la fecha de separación', 'err'); return; }
+  const nueva = !veh.separacion;
+  veh.separacion = {...(veh.separacion||{}), id: (veh.separacion && veh.separacion.id) || uid(), cliente, cel: v('cel'), cc: v('cc'), valor, fecha, hasta, nota: v('nota')};
+  sepGuardarLista(tipo);
+  ccCerrarModal();
+  ccRefrescar();
+  sepResumen(tipo);
+  mcNotificar({tipo: nueva ? 'agregar' : 'guardar', titulo: nueva ? (tipo === 'carro' ? 'Carro separado' : 'Moto separada') : 'Separación actualizada', texto:`${veh.nombre} · ${cliente} · anticipo ${fmt(valor)}`});
+}
+function sepCancelar(tipo, id, anticipo){
+  const veh = sepVeh(tipo, id); if(!veh || !veh.separacion){ ccCerrarModal(); return; }
+  const s = veh.separacion;
+  veh.separacionesAnteriores = [...(veh.separacionesAnteriores||[]), {...s, cancelada: hoyLocal(), anticipo}];
+  delete veh.separacion;
+  sepGuardarLista(tipo);
+  ccCerrarModal();
+  ccRefrescar();
+  sepResumen(tipo);
+  mcNotificar({tipo:'borrar', titulo:'Separación cancelada', texto:`${veh.nombre} vuelve a estar libre · anticipo ${anticipo === 'devuelto' ? 'devuelto' : 'no devuelto'}`,
+    acciones:[{label:'Deshacer', fn:()=>{ const x = sepVeh(tipo, id); if(!x || x.separacion) return; x.separacion = s; x.separacionesAnteriores = (x.separacionesAnteriores||[]).filter(h=>h.id !== s.id); sepGuardarLista(tipo); ccRefrescar(); sepResumen(tipo); }}]});
+}
+function sepVender(tipo, id){
+  ccCerrarModal();
+  go('nueva-venta');
+  const sel = document.getElementById('vta-moto');
+  if(sel){ sel.value = tipo + ':' + id; calcularVenta(); }
+}
+// Formulario de venta: aviso del anticipo, cliente y descuento
+function sepFormVenta(){
+  const box = document.getElementById('vta-sep-aviso'), h = document.getElementById('vta-anticipo');
+  if(!box || !h) return;
+  const sel = document.getElementById('vta-moto')?.value || '';
+  const [tipo, id] = sel.split(':');
+  const veh = sel ? sepVeh(tipo, id) : null, s = veh && veh.separacion;
+  if(!s){ box.hidden = true; box.innerHTML = ''; h.value = ''; box.dataset.para = ''; return; }
+  if(box.dataset.para !== sel){
+    box.dataset.para = sel;
+    h.value = String(ccNum(s.valor));
+    const poner = (campo, val) => { const el = document.getElementById(campo); if(el && !el.value.trim() && val) el.value = val; };
+    poner('vta-comprador', s.cliente); poner('vta-celular', s.cel); poner('vta-cc', s.cc);
+  }
+  const usa = ccNum(h.value) > 0;
+  box.hidden = false;
+  box.innerHTML = `<div class="sep-aviso-txt">📌 <b>Separada por ${ccEsc(s.cliente)}</b> · anticipo de <b>${fmt(ccNum(s.valor))}</b> el ${mcFechaCorta(s.fecha)}.</div>
+    <label class="sep-aviso-chk"><input type="checkbox" ${usa ? 'checked' : ''} onchange="document.getElementById('vta-anticipo').value=this.checked?'${ccNum(s.valor)}':'';sepFormVenta();ccResumenForm('vta')"> Descontar el anticipo de esta venta</label>`;
+}
+function sepAvisoEliminar(veh){
+  const s = veh && veh.separacion;
+  return s ? ` Ojo: está separada por ${s.cliente} con un anticipo de ${fmt(ccNum(s.valor))}.` : '';
 }
 
 // ── PAPELERA ─────────────────────────────────────────────────────────────────
@@ -4038,6 +4441,7 @@ function renderMotos(){
   motos = motos.filter(m=>{ if(vistos.has(m.id)) return false; vistos.add(m.id); return true; });
   saveMotos();
   renderAlertasInventario(motos, 'moto', 'alertas-inventario-motos');
+  sepResumen('moto');
   const cont = document.getElementById('lista-motos');
   if(!motos.length){
     cont.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🏍️</div><div class="empty-title">No hay motos registradas</div><div class="empty-sub">Clic en "+ Nueva moto".</div></div>`;
@@ -4083,7 +4487,7 @@ function renderMotos(){
       }
     }
 
-    return `<div class="moto-card${mo.retoma?' veh-retoma':''}" style="${diasInv>=100?'border-color:rgba(255,69,96,.4)':''}">
+    return `<div class="moto-card${mo.retoma?' veh-retoma':''}${mo.separacion?' veh-separada':''}" id="veh-moto-${mo.id}" style="${diasInv>=100?'border-color:rgba(255,69,96,.4)':''}">
       <div class="moto-card-hd">
         <div class="moto-card-top">
           <div style="display:flex;gap:11px;align-items:flex-start">
@@ -4108,11 +4512,13 @@ function renderMotos(){
             <div><div class="moto-name">${mo.nombre}</div><div class="moto-modelo">${mo.modelo||'Sin modelo'}</div></div>
           </div>
           <div class="moto-card-actions">
+            <button class="btn btn-ghost btn-sm btn-icon btn-sep${mo.separacion?' activo':''}" onclick="sepAbrir('moto','${mo.id}')" title="${mo.separacion?'Ver separación':'Separar'}">📌</button>
             <button class="btn btn-ghost btn-sm btn-icon" onclick="editarMoto('${mo.id}')" title="Editar">✏️</button>
             <button class="btn btn-danger btn-sm btn-icon" onclick="confirmarElimMoto('${mo.id}')" title="Eliminar">🗑</button>
           </div>
         </div>
         <div class="moto-badges">
+          ${mo.separacion?`<span class="badge badge-sep">📌 Separada</span>`:''}
           ${mo.retoma?`<span class="badge badge-retoma">🔁 Retoma</span>`:''}
           ${mo.nota?`<span class="badge badge-nota" title="${escPap(mo.nota)}">📝 Tiene nota</span>`:''}
           <span class="badge badge-gray">📋 ${mo.placa||'Sin placa'}</span>
@@ -4120,6 +4526,7 @@ function renderMotos(){
           ${mo.fechaCompra?`<span class="badge badge-blue">📅 ${new Date(mo.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</span>`:''}
           ${diasInv!==null?`<span class="badge ${diasInv>=100?'badge-red':'badge-gray'}">⏱ ${diasInv}d en inventario</span>`:''}
         </div>
+        ${sepCinta('moto', mo)}
         ${ccSelloRetoma(mo)}
         ${mo.vendedorNombre||mo.vendedorCC?`<div style="margin-top:.5rem;font-size:11px;color:var(--text3)">Comprado a: <strong style="color:var(--text2)">${mo.vendedorNombre||'—'}</strong>${mo.vendedorCC?' · CC: '+mo.vendedorCC:''}${mo.vendedorTel?' · 📞 '+mo.vendedorTel:''}</div>`:''}
         ${alertaInvHtml}
@@ -4305,7 +4712,7 @@ function editarMoto(id){
 function confirmarElimMoto(id){
   const mo=motos.find(m=>m.id===id);
   if(!mo) return;
-  confirm2('Eliminar moto',`¿Eliminar "${mo.nombre}"? Se moverá a la papelera con su foto, gastos y datos, y podrás restaurarla cuando quieras.`,()=>{
+  confirm2('Eliminar moto',`¿Eliminar "${mo.nombre}"? Se moverá a la papelera con su foto, gastos y datos, y podrás restaurarla cuando quieras.${sepAvisoEliminar(mo)}`,()=>{
     if(!motos.some(m=>m.id===id)) return;
     const pid = mcEnviarAPapelera('motos', mo, {movs: movimientos.filter(m=>m.motoId===id)});
     motos=motos.filter(m=>m.id!==id);
@@ -4318,18 +4725,21 @@ function confirmarElimMoto(id){
 
 // ── VENTAS ────────────────────────────────────────────────────────────────────
 function populateVentaSelect(){
-  const optsMotos = motos.map(m=>`<option value="moto:${m.id}">🏍️ ${m.nombre} – ${m.modelo||''}</option>`).join('');
-  const optsCarros= carros.map(c=>`<option value="carro:${c.id}">🚗 ${c.nombre} – ${c.modelo||''}</option>`).join('');
+  const sepTxt = x => x.separacion ? ` · 📌 separada (${x.separacion.cliente})` : '';
+  const optsMotos = motos.map(m=>`<option value="moto:${m.id}">🏍️ ${m.nombre} – ${m.modelo||''}${sepTxt(m)}</option>`).join('');
+  const optsCarros= carros.map(c=>`<option value="carro:${c.id}">🚗 ${c.nombre} – ${c.modelo||''}${sepTxt(c)}</option>`).join('');
   document.getElementById('vta-moto').innerHTML = '<option value="">Seleccionar vehículo…</option>'+optsMotos+optsCarros;
   ['vp-inversion','vp-gastos','vp-total'].forEach(id=>document.getElementById(id).textContent='$0');
   document.getElementById('vp-ganancia').textContent='—';
   const avisoC = document.getElementById('vp-aviso-compra'); if(avisoC) avisoC.style.display='none';
   ccPrepararForm('vta');
+  sepFormVenta();
   if(!document.getElementById('vta-moto').value) elegirFormaPago('vta', '');
   ccResumenForm('vta');
 }
 
 function calcularVenta(){
+  sepFormVenta();
   ccResumenForm('vta');
   const sel=document.getElementById('vta-moto').value;
   const precio=parseFloat(document.getElementById('vta-precio').value)||0;
@@ -4442,7 +4852,8 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
     // al inventario sin perder nada (la foto va aparte, en fotoVehiculo)
     vehiculoOriginal: vehiculo ? mcCopiaVehiculo(vehiculo) : null,
     // Cuenta de la venta: lo que se recibió en parte de pago y los pagos de la financiera
-    cobro: {retoma: pp.retoma ? {...pp.retoma, vehiculoId: retomaId} : null, inicial: pp.inicial, pagos: [], creada: new Date().toISOString()},
+    cobro: {retoma: pp.retoma ? {...pp.retoma, vehiculoId: retomaId} : null, inicial: pp.inicial, anticipo: pp.anticipo, pagos: [], creada: new Date().toISOString()},
+    ...(vehiculo && vehiculo.separacion ? {separacion: {...vehiculo.separacion}} : {}),
   });
   if(esCarro){
     carros = carros.filter(c=>c.id!==vid);
@@ -6565,6 +6976,7 @@ function renderCarros(){
   carros = carros.filter(c=>{ if(vistos.has(c.id)) return false; vistos.add(c.id); return true; });
   saveCarros();
   renderAlertasInventario(carros, 'carro', 'alertas-inventario-carros');
+  sepResumen('carro');
   const cont = document.getElementById('lista-carros');
   if(!carros.length){
     cont.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🚗</div><div class="empty-title">No hay carros registrados</div><div class="empty-sub">Clic en "+ Nuevo carro".</div></div>`;
@@ -6609,7 +7021,7 @@ function renderCarros(){
       }
     }
 
-    return `<div class="moto-card${ca.retoma?' veh-retoma':''}" style="${diasInvC>=100?'border-color:rgba(255,69,96,.4)':''}">
+    return `<div class="moto-card${ca.retoma?' veh-retoma':''}${ca.separacion?' veh-separada':''}" id="veh-carro-${ca.id}" style="${diasInvC>=100?'border-color:rgba(255,69,96,.4)':''}">
       <div class="moto-card-hd">
         <div class="moto-card-top">
           <div style="display:flex;gap:11px;align-items:flex-start">
@@ -6634,11 +7046,13 @@ function renderCarros(){
             <div><div class="moto-name">${ca.nombre}</div><div class="moto-modelo">${ca.modelo||'Sin modelo'}</div></div>
           </div>
           <div class="moto-card-actions">
+            <button class="btn btn-ghost btn-sm btn-icon btn-sep${ca.separacion?' activo':''}" onclick="sepAbrir('carro','${ca.id}')" title="${ca.separacion?'Ver separación':'Separar'}">📌</button>
             <button class="btn btn-ghost btn-sm btn-icon" onclick="editarCarro('${ca.id}')" title="Editar">✏️</button>
             <button class="btn btn-danger btn-sm btn-icon" onclick="confirmarElimCarro('${ca.id}')" title="Eliminar">🗑</button>
           </div>
         </div>
         <div class="moto-badges">
+          ${ca.separacion?`<span class="badge badge-sep">📌 Separada</span>`:''}
           ${ca.retoma?`<span class="badge badge-retoma">🔁 Retoma</span>`:''}
           ${ca.nota?`<span class="badge badge-nota" title="${escPap(ca.nota)}">📝 Tiene nota</span>`:''}
           <span class="badge badge-gray">📋 ${ca.placa||'Sin placa'}</span>
@@ -6648,6 +7062,7 @@ function renderCarros(){
           ${ca.fechaCompra?`<span class="badge badge-blue">📅 ${new Date(ca.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</span>`:''}
           ${diasInvC!==null?`<span class="badge ${diasInvC>=100?'badge-red':'badge-gray'}">⏱ ${diasInvC}d en inventario</span>`:''}
         </div>
+        ${sepCinta('carro', ca)}
         ${ccSelloRetoma(ca)}
         ${ca.vendedorNombre||ca.vendedorCC?`<div style="margin-top:.5rem;font-size:11px;color:var(--text3)">Comprado a: <strong style="color:var(--text2)">${ca.vendedorNombre||'—'}</strong>${ca.vendedorCC?' · CC: '+ca.vendedorCC:''}${ca.vendedorTel?' · 📞 '+ca.vendedorTel:''}</div>`:''}
         ${alertaInvHtmlC}
@@ -6804,7 +7219,7 @@ function editarCarro(id){
 function confirmarElimCarro(id){
   const ca=carros.find(c=>c.id===id);
   if(!ca) return;
-  confirm2('Eliminar carro',`¿Eliminar "${ca.nombre}"? Se moverá a la papelera con su foto, gastos y datos, y podrás restaurarlo cuando quieras.`,()=>{
+  confirm2('Eliminar carro',`¿Eliminar "${ca.nombre}"? Se moverá a la papelera con su foto, gastos y datos, y podrás restaurarlo cuando quieras.${sepAvisoEliminar(ca)}`,()=>{
     if(!carros.some(c=>c.id===id)) return;
     const pid = mcEnviarAPapelera('carros', ca);
     carros=carros.filter(c=>c.id!==id);
