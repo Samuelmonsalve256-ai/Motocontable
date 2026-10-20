@@ -3075,7 +3075,12 @@ function ccTotales(){
     if(k.estado === 'pendiente'){ t.falta += k.falta; t.pendientes++; t.masVieja = Math.max(t.masVieja, k.dias); }
     if(k.estado === 'revisar') t.revisar++;
     if(k.estado === 'cobrada') t.cobradas++;
-    if(k.estado !== 'no') k.pagos.forEach(p=>{ if(!p.antes && String(p.fecha||'').startsWith(mes)) t.cobradoMes += ccNum(p.monto); });
+    // Las ventas de antes marcadas "Ya me pagó" no tienen la fecha real del pago: cuentan
+    // en este mes solo si la venta es de este mes (entonces el pago también lo fue).
+    if(k.estado !== 'no') k.pagos.forEach(p=>{
+      const delMes = p.antes ? String(v.fecha||'').startsWith(mes) : String(p.fecha||'').startsWith(mes);
+      if(delMes) t.cobradoMes += ccNum(p.monto);
+    });
   });
   return t;
 }
@@ -3101,7 +3106,7 @@ function ccEtiquetasVenta(v){
   let h = '';
   if(k.retoma) h += `<div class="cc-tag cc-rt">🔁 Recibiste en parte de pago: ${nomVeh(k.retoma.tipo,'ico')} ${ccEsc(k.retoma.nombre)}${k.retoma.placa ? ' · '+ccEsc(k.retoma.placa) : ''} por ${fmt(k.rv)}</div>`;
   if(k.estado === 'pendiente') h += `<div class="cc-tag cc-pend" onclick="ccIr('${v.id}')" title="Ver la cuenta por cobrar">💰 ${FP_FINANCIERA} te debe ${fmt(k.falta)}${k.pagado ? ` · ya abonó ${fmt(k.pagado)}` : ''} · Ver cuenta</div>`;
-  else if(k.estado === 'cobrada') h += `<div class="cc-tag cc-ok" onclick="ccIr('${v.id}')">✅ Cobrada a ${FP_FINANCIERA}${k.ultimo ? ' el '+mcFechaCorta(k.ultimo.fecha) : ''}</div>`;
+  else if(k.estado === 'cobrada') h += `<div class="cc-tag cc-ok" onclick="ccIr('${v.id}')">✅ Cobrada a ${FP_FINANCIERA}${k.ultimo && !k.ultimo.antes ? ' el '+mcFechaCorta(k.ultimo.fecha) : ''}</div>`;
   else if(k.estado === 'revisar') h += `<div class="cc-tag cc-rev" onclick="ccIr('${v.id}')">❔ ¿${FP_FINANCIERA} ya te pagó esta venta? · Revisar</div>`;
   else if(k.retoma) h += `<div class="cc-tag cc-efe">💵 El cliente pagó en efectivo ${fmt(k.efectivo)}</div>`;
   const orig = v.vehiculoOriginal && v.vehiculoOriginal.retoma;
@@ -3312,7 +3317,7 @@ function ccRenderLista(){
 function ccTarjeta(v, k){
   const pend = k.estado === 'pendiente';
   const dCls = !pend ? 'cc-d-ok' : k.dias > 30 ? 'cc-d-alta' : k.dias > 15 ? 'cc-d-med' : '';
-  const dTxt = !pend ? `✅ Cobrada${k.ultimo ? ' el '+mcFechaCorta(k.ultimo.fecha) : ''}` : k.dias === 0 ? '⏳ Vendida hoy' : `⏳ Hace ${k.dias} día${k.dias!==1?'s':''}`;
+  const dTxt = !pend ? `✅ Cobrada${k.ultimo && !k.ultimo.antes ? ' el '+mcFechaCorta(k.ultimo.fecha) : ''}` : k.dias === 0 ? '⏳ Vendida hoy' : `⏳ Hace ${k.dias} día${k.dias!==1?'s':''}`;
   let filas = `<div class="cc-fila"><span>Precio de venta · ${mcFechaCorta(v.fecha)}</span><b>${fmt(k.precio)}</b></div>`;
   if(k.retoma) filas += `<div class="cc-fila cc-menos"><span>🔁 Retoma: ${nomVeh(k.retoma.tipo,'ico')} ${ccEsc(k.retoma.nombre)}${k.retoma.placa ? ' · '+ccEsc(k.retoma.placa) : ''}</span><b>− ${fmt(k.rv)}</b></div>`;
   if(k.inicial) filas += `<div class="cc-fila cc-menos"><span>💵 Cuota inicial en efectivo</span><b>− ${fmt(k.inicial)}</b></div>`;
