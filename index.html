@@ -580,6 +580,7 @@ textarea{resize:vertical;min-height:65px}
   html .cc-resumen .cc-t-debe{grid-column:1/-1}
   html .cc-tile strong{font-size:19px}
   html .cc-lista{grid-template-columns:1fr}
+  html .cc-mes-datos{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   html .cc-modal-fondo{align-items:flex-end;padding:0}
   html .cc-modal{max-width:none;border-radius:22px 22px 0 0;max-height:92vh;padding:1.2rem 1rem calc(1.2rem + env(safe-area-inset-bottom))}
   html .cc-modal-acc .btn{flex:1;justify-content:center;min-height:44px}
@@ -716,6 +717,27 @@ textarea{resize:vertical;min-height:65px}
 .cc-alerta{margin-top:.6rem;font-size:12px;color:var(--red);background:rgba(255,69,96,.08);border:1px solid rgba(255,69,96,.3);border-radius:10px;padding:.5rem .7rem}
 .cc-acc{display:flex;gap:6px;flex-wrap:wrap;margin-top:.8rem}
 .cc-acc .btn{flex:1;justify-content:center;min-width:110px}
+.cc-meses{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin:-.25rem 0 1rem;scrollbar-width:none}
+.cc-meses::-webkit-scrollbar{display:none}
+.cc-mes{flex-shrink:0;display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);font:600 12.5px 'Inter',sans-serif;padding:7px 12px;border-radius:20px;cursor:pointer;white-space:nowrap}
+.cc-mes:hover{color:var(--text)}
+.cc-mes.activo{background:var(--bg4);color:var(--text);border-color:var(--border2);box-shadow:inset 0 0 0 1px var(--border2)}
+.cc-mes i{font-style:normal;font-size:10.5px;font-weight:800;color:var(--amber);background:rgba(245,166,35,.16);border-radius:10px;padding:0 6px;line-height:16px}
+.cc-mes-res{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:1rem 1.1rem;margin-bottom:1rem}
+.cc-mes-tit{font-size:15px;font-weight:700;margin-bottom:.7rem}
+.cc-mes-datos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.cc-mes-datos div{background:var(--bg3);border-radius:12px;padding:.65rem .8rem;min-width:0}
+.cc-mes-datos small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.cc-mes-datos strong{display:block;font-family:'JetBrains Mono',monospace;font-size:16px;overflow-wrap:anywhere}
+.cc-mes-datos span{display:block;font-size:11.5px;color:var(--text3);margin-top:3px}
+.cc-c-ok{color:#3fd3a0}
+.cc-c-debe{color:var(--amber)}
+.cc-mes-pct{font-size:11.5px;color:var(--text3);margin-top:5px}
+.cc-grupo-tit{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:1.2rem 0 .6rem;cursor:pointer}
+.cc-grupo-tit:first-child{margin-top:0}
+.cc-grupo-tit strong{font-size:15px}
+.cc-grupo-tit span{font-size:12.5px;color:var(--text2)}
+.cc-grupo-tit em{margin-left:auto;font-style:normal;font-size:12px;color:var(--accent)}
 .cc-vacio{text-align:center;padding:2.2rem 1rem;color:var(--text2);font-size:13.5px;background:var(--bg2);border:1px dashed var(--border2);border-radius:16px}
 .cc-vacio .grande{font-size:34px;margin-bottom:.4rem}
 /* Formulario: parte de pago */
@@ -3067,6 +3089,9 @@ function ccCuenta(v){
   return {precio, retoma, rv, inicial, saldo, pagos, pagado, falta, deMas: Math.max(0, pagado - saldo), estado, ultimo, dias,
           efectivo: financiado ? inicial : Math.max(0, precio - rv)};
 }
+// Mes en que entró un pago. Las ventas de antes marcadas "Ya me pagó" no tienen la
+// fecha real del pago: se toman en el mes de la venta.
+const ccMesDePago = (v, p) => String((p.antes ? v.fecha : p.fecha) || '').slice(0,7);
 function ccTotales(){
   const mes = hoyLocal().slice(0,7);
   const t = {falta:0, pendientes:0, revisar:0, cobradas:0, cobradoMes:0, masVieja:0};
@@ -3075,12 +3100,7 @@ function ccTotales(){
     if(k.estado === 'pendiente'){ t.falta += k.falta; t.pendientes++; t.masVieja = Math.max(t.masVieja, k.dias); }
     if(k.estado === 'revisar') t.revisar++;
     if(k.estado === 'cobrada') t.cobradas++;
-    // Las ventas de antes marcadas "Ya me pagó" no tienen la fecha real del pago: cuentan
-    // en este mes solo si la venta es de este mes (entonces el pago también lo fue).
-    if(k.estado !== 'no') k.pagos.forEach(p=>{
-      const delMes = p.antes ? String(v.fecha||'').startsWith(mes) : String(p.fecha||'').startsWith(mes);
-      if(delMes) t.cobradoMes += ccNum(p.monto);
-    });
+    if(k.estado !== 'no') k.pagos.forEach(p=>{ if(ccMesDePago(v, p) === mes) t.cobradoMes += ccNum(p.monto); });
   });
   return t;
 }
@@ -3131,7 +3151,7 @@ function ccIr(id){
   if(!v){ toast('Esa venta ya no existe (puede estar en la papelera)', 'err'); return; }
   if(v.formaPago === 'financiado'){
     const k = ccCuenta(v);
-    _ccFiltro = k.estado === 'cobrada' ? 'cobradas' : 'pendientes'; _ccBuscar = '';
+    _ccFiltro = k.estado === 'cobrada' ? 'cobradas' : 'pendientes'; _ccBuscar = ''; _ccMes = '';
     go('cobros');
     const el = document.getElementById('cc-'+id) || document.getElementById('ccr-'+id);
     ccResaltar(el);
@@ -3259,7 +3279,26 @@ function ccAvisarVentaNueva(v){
 }
 
 // ── Página "Cuentas por cobrar" ───────────────────────────────────────────────
-let _ccFiltro = 'pendientes', _ccBuscar = '';
+let _ccFiltro = 'pendientes', _ccBuscar = '', _ccMes = '';   // _ccMes: '' = todos los meses, o 'AAAA-MM'
+// Cuentas (por cobrar o cobradas) agrupadas por el mes de la venta
+function ccCuentasPorMes(){
+  const g = {};
+  ventas.forEach(v=>{
+    const k = ccCuenta(v);
+    if(k.estado !== 'pendiente' && k.estado !== 'cobrada') return;
+    const m = String(v.fecha||'').slice(0,7);
+    if(!/^\d{4}-\d{2}$/.test(m)) return;
+    (g[m] = g[m] || []).push({v, k});
+  });
+  return g;
+}
+function ccResumenMes(m, items){
+  const r = {n: items.length, saldo:0, cobrado:0, falta:0, pendientes:0, entro:0};
+  items.forEach(({k})=>{ r.saldo += k.saldo; r.cobrado += Math.min(k.pagado, k.saldo); r.falta += k.falta; if(k.estado === 'pendiente') r.pendientes++; });
+  ventas.forEach(v=>{ const k = ccCuenta(v); if(k.estado !== 'no') k.pagos.forEach(p=>{ if(ccMesDePago(v, p) === m) r.entro += ccNum(p.monto); }); });
+  return r;
+}
+function ccElegirMes(m){ _ccMes = m; renderCobros(); }
 function renderCobros(){
   const cont = document.getElementById('cc-contenido'); if(!cont) return;
   const t = ccTotales();
@@ -3287,6 +3326,16 @@ function renderCobros(){
       <button class="fp-chip ${_ccFiltro==='todas'?'activo':''}" onclick="ccFiltrar('todas')">Todas</button>
     </div>
     <input type="text" id="cc-buscar" placeholder="Buscar por vehículo, placa o cliente…" value="${ccEsc(_ccBuscar)}" oninput="_ccBuscar=this.value;ccRenderLista()">
+  </div>`;
+  // Meses: todos, o uno solo para revisarlo
+  const grupos = ccCuentasPorMes(), hoyM = hoyLocal().slice(0,7);
+  const meses = Object.keys(grupos); if(!meses.includes(hoyM)) meses.push(hoyM);
+  meses.sort().reverse();
+  if(_ccMes && !meses.includes(_ccMes)) _ccMes = '';
+  h += `<div class="cc-meses" role="tablist" aria-label="Ver por mes">
+    <button class="cc-mes ${!_ccMes ? 'activo' : ''}" onclick="ccElegirMes('')">📅 Todos los meses</button>
+    ${meses.map(m=>{ const pend = (grupos[m]||[]).filter(x=>x.k.estado === 'pendiente').length;
+      return `<button class="cc-mes ${_ccMes === m ? 'activo' : ''}" onclick="ccElegirMes('${m}')">${fpMesNombre(m)}${pend ? `<i title="${pend} por cobrar">${pend}</i>` : ''}</button>`; }).join('')}
   </div>
   <div id="cc-lista-wrap"></div>`;
   cont.innerHTML = h;
@@ -3297,6 +3346,22 @@ function ccRenderLista(){
   const wrap = document.getElementById('cc-lista-wrap'); if(!wrap) return;
   const q = _ccBuscar.trim().toLowerCase();
   let lista = ventas.filter(v=>v.formaPago === 'financiado').map(v=>({v, k: ccCuenta(v)})).filter(x=>x.k.estado === 'pendiente' || x.k.estado === 'cobrada');
+  let cabMes = '';
+  if(_ccMes){
+    const delMes = lista.filter(x=>String(x.v.fecha||'').startsWith(_ccMes));
+    const r = ccResumenMes(_ccMes, delMes), pct = r.saldo ? Math.round(r.cobrado / r.saldo * 100) : 0;
+    cabMes = `<div class="cc-mes-res">
+      <div class="cc-mes-tit">📅 ${fpMesNombre(_ccMes)}</div>
+      <div class="cc-mes-datos">
+        <div><small>Ventas financiadas</small><strong>${r.n}</strong><span>${fmt(r.saldo)} en total</span></div>
+        <div><small>Ya cobrado</small><strong class="cc-c-ok">${fmt(r.cobrado)}</strong><span>${r.n - r.pendientes} cuenta${r.n - r.pendientes !== 1 ? 's' : ''} completa${r.n - r.pendientes !== 1 ? 's' : ''}</span></div>
+        <div><small>Falta por cobrar</small><strong class="${r.falta ? 'cc-c-debe' : 'cc-c-ok'}">${fmt(r.falta)}</strong><span>${r.pendientes ? `${r.pendientes} cuenta${r.pendientes!==1?'s':''} pendiente${r.pendientes!==1?'s':''}` : 'Todo cobrado ✅'}</span></div>
+        <div><small>Pagos que entraron</small><strong>${fmt(r.entro)}</strong><span>en ${fpMesSolo(_ccMes)}, de cualquier venta</span></div>
+      </div>
+      ${r.saldo ? `<div class="cc-prog" title="${pct}% cobrado"><i style="width:${pct}%"></i></div><div class="cc-mes-pct">${pct}% cobrado de las ventas de ${fpMesSolo(_ccMes)}</div>` : ''}
+    </div>`;
+    lista = delMes;
+  }
   if(_ccFiltro === 'pendientes') lista = lista.filter(x=>x.k.estado === 'pendiente');
   if(_ccFiltro === 'cobradas') lista = lista.filter(x=>x.k.estado === 'cobrada');
   if(q) lista = lista.filter(({v, k})=>[v.motoNombre, v.motoModelo, v.motoPlaca, v.comprador, v.compradorCC, k.retoma && k.retoma.nombre, k.retoma && k.retoma.placa]
@@ -3306,13 +3371,24 @@ function ccRenderLista(){
     : a.k.estado === 'pendiente' ? String(a.v.fecha).localeCompare(String(b.v.fecha))
     : String((b.k.ultimo||{}).fecha||b.v.fecha).localeCompare(String((a.k.ultimo||{}).fecha||a.v.fecha)));
   if(!lista.length){
-    wrap.innerHTML = `<div class="cc-vacio"><div class="grande">${q ? '🔍' : _ccFiltro === 'cobradas' ? '🧾' : '🎉'}</div>${
+    const enMes = _ccMes ? ' en ' + fpMesSolo(_ccMes) : '';
+    wrap.innerHTML = cabMes + `<div class="cc-vacio"><div class="grande">${q ? '🔍' : _ccFiltro === 'cobradas' ? '🧾' : '🎉'}</div>${
       q ? 'Ninguna cuenta coincide con la búsqueda.'
+      : _ccMes ? (_ccFiltro === 'cobradas' ? `No hay cuentas cobradas de ventas${enMes}.` : _ccFiltro === 'pendientes' ? `<strong>Nada pendiente de las ventas${enMes}.</strong>` : `No hay ventas financiadas${enMes}.`)
       : _ccFiltro === 'cobradas' ? 'Todavía no hay cuentas cobradas.'
       : `<strong>Nada pendiente por cobrar.</strong><br>Cuando registres una venta financiada, su cuenta aparece aquí sola.`}</div>`;
     return;
   }
-  wrap.innerHTML = `<div class="cc-lista">${lista.map(({v, k})=>ccTarjeta(v, k)).join('')}</div>`;
+  if(_ccMes){ wrap.innerHTML = cabMes + `<div class="cc-lista">${lista.map(({v, k})=>ccTarjeta(v, k)).join('')}</div>`; return; }
+  // Todos los meses: separadas por el mes de la venta (por cobrar: el más viejo primero)
+  const porMes = {};
+  lista.forEach(x=>{ const m = String(x.v.fecha||'').slice(0,7); (porMes[m] = porMes[m] || []).push(x); });
+  const orden = Object.keys(porMes).sort(); if(_ccFiltro !== 'pendientes') orden.reverse();
+  wrap.innerHTML = orden.map(m=>{
+    const it = porMes[m], falta = it.reduce((a,x)=>a+x.k.falta, 0);
+    return `<div class="cc-grupo-tit" onclick="ccElegirMes('${m}')" title="Ver solo ${fpMesNombre(m)}"><strong>${fpMesNombre(m)}</strong><span>${it.length} cuenta${it.length!==1?'s':''}${falta ? ' · falta '+fmt(falta) : ' · todo cobrado'}</span><em>Ver mes →</em></div>
+      <div class="cc-lista">${it.map(({v, k})=>ccTarjeta(v, k)).join('')}</div>`;
+  }).join('');
 }
 function ccTarjeta(v, k){
   const pend = k.estado === 'pendiente';
