@@ -1917,6 +1917,20 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .cel-frase .cel-msg{font-size:.95rem}
 }
 @media (prefers-reduced-motion:reduce){ .cel-frase{animation:none!important;opacity:1} }
+/* Envío de cuentas cobradas */
+.cc-envios-ban{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:12px 16px;border-radius:16px;background:linear-gradient(90deg,rgba(245,196,81,.12),rgba(255,255,255,.02));border:1px solid rgba(245,196,81,.35)}
+.cc-envios-ban.ok{background:rgba(0,214,143,.06);border-color:rgba(0,214,143,.25)}
+.cc-envios-ban > i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;color:#f5c451;background:rgba(245,196,81,.14)}
+.cc-envios-ban.ok > i{color:#00d68f;background:rgba(0,214,143,.12)}
+.cc-envios-ban > span{flex:1;min-width:200px;display:flex;flex-direction:column;gap:2px}
+.cc-envios-ban b{color:#fff;font-size:14px}
+.cc-envios-ban em{font-style:normal;font-size:12px;color:#9a9ab8}
+.cc-envio{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;padding:8px 12px;border-radius:12px;font-size:12.5px}
+.cc-envio span{flex:1}
+.cc-envio.ok{color:#9ae6c6;background:rgba(0,214,143,.07);border:1px solid rgba(0,214,143,.22)}
+.cc-envio.pend{color:#f5c451;background:rgba(245,196,81,.08);border:1px dashed rgba(245,196,81,.4)}
+.cc-envio button{background:none;border:0;color:#8a8aa6;font:500 11.5px 'Inter',sans-serif;cursor:pointer;text-decoration:underline}
+@media (max-width:760px){ html .cc-envios-ban .btn{flex:1} }
 </style>
 </head>
 <body>
@@ -4254,6 +4268,16 @@ function renderCobros(){
       ${rev.length > 1 ? `<div style="padding-top:.6rem;border-top:1px solid var(--border)"><button class="btn btn-ghost btn-sm" onclick="ccTodasPagadas()">${mcIco('check',14)}Ya me pagó todas estas</button></div>` : ''}
     </div>`;
   }
+  // Cuentas cobradas que falta enviar en PDF a quien paga
+  const sinEnv = ccSinEnviar();
+  if(t.cobradas) ccCargarPdf().catch(()=>{});
+  h += `<div class="cc-envios-ban${sinEnv.length ? '' : ' ok'}">
+    <i>${mcIco(sinEnv.length ? 'recibo' : 'check',18)}</i>
+    <span><b>${sinEnv.length ? `${sinEnv.length} cuenta${sinEnv.length!==1?'s':''} cobrada${sinEnv.length!==1?'s':''} sin enviar a ${ccEsc(ccPagadorCorto())}` : `Todas las cuentas cobradas ya se enviaron${ccPagador() ? ' a ' + ccEsc(ccPagadorCorto()) : ''}`}</b>
+      <em>${ccPagador() ? `${ccEsc(ccPagador().nombre)}${ccPagador().cc ? ' · C.C. ' + ccEsc(ccPagador().cc) : ''}` : `Configura a quién le envías las cuentas en ${FP_FINANCIERA}`}</em></span>
+    ${sinEnv.length ? `<button class="btn btn-primary btn-sm" onclick="ccFiltrar('cobradas')">Ver cuáles</button>` : ''}
+    <button class="btn btn-ghost btn-sm" onclick="ccConfigPagador()">${ccPagador() ? 'Cambiar datos' : 'Configurar'}</button>
+  </div>`;
   const nP = t.pendientes, nC = t.cobradas;
   h += `<div class="cc-barra">
     <div class="fp-chips" role="tablist" aria-label="Qué cuentas ver">
@@ -4305,6 +4329,7 @@ function ccRenderLista(){
   // Por cobrar: la más vieja primero. Cobradas: la del pago más reciente primero.
   lista.sort((a,b)=> a.k.estado !== b.k.estado ? (a.k.estado === 'pendiente' ? -1 : 1)
     : a.k.estado === 'pendiente' ? String(a.v.fecha).localeCompare(String(b.v.fecha))
+    : (!ccEnvios(a.v).length && a.k.pagos.some(p=>!p.antes)) !== (!ccEnvios(b.v).length && b.k.pagos.some(p=>!p.antes)) ? ((!ccEnvios(a.v).length && a.k.pagos.some(p=>!p.antes)) ? -1 : 1)
     : String((b.k.ultimo||{}).fecha||b.v.fecha).localeCompare(String((a.k.ultimo||{}).fecha||a.v.fecha)));
   if(!lista.length){
     const enMes = _ccMes ? ' en ' + fpMesSolo(_ccMes) : '';
@@ -4348,15 +4373,181 @@ function ccTarjeta(v, k){
     </div>
     <div class="cc-tabla">${filas}</div>
     ${pend ? `<div class="cc-falta"><span>Falta por cobrar</span><strong>${fmt(k.falta)}</strong></div>${k.pagado ? `<div class="cc-prog" title="${pct}% cobrado"><i style="width:${pct}%"></i></div>` : ''}`
-           : `<div class="cc-sello">${mcIco('check',16)}COBRADA${k.saldo === 0 ? ' · no quedó saldo por cobrar' : ''}</div>`}
+           : `<div class="cc-sello">${mcIco('check',16)}COBRADA${k.saldo === 0 ? ' · no quedó saldo por cobrar' : ''}</div>${ccEnvioHtml(v, k)}`}
     ${k.deMas ? `<div class="cc-alerta">⚠️ Hay ${fmt(k.deMas)} registrados de más. Revisa si un pago quedó repetido y quítalo con "Deshacer último pago".</div>` : ''}
     <div class="cc-acc">
-      ${pend ? `<button class="btn btn-primary btn-sm" onclick="ccAbrirPago('${v.id}')">${mcIco('check',14)}Registrar pago</button>` : ''}
+      ${pend ? `<button class="btn btn-primary btn-sm" onclick="ccAbrirPago('${v.id}')">${mcIco('check',14)}Registrar pago</button>`
+             : `<button class="btn ${ccEnvios(v).length ? 'btn-ghost' : 'btn-primary'} btn-sm" onclick="ccEnviarCobrada('${v.id}')">${mcIco('recibo',14)}${ccEnvios(v).length ? 'Reenviar PDF' : 'Enviar a ' + ccEsc(ccPagadorCorto()) + ' (PDF)'}</button>`}
       <button class="btn btn-ghost btn-sm" onclick="ccCopiar('${v.id}')">${mcIco('recibo',14)}Copiar cuenta</button>
       <button class="btn btn-ghost btn-sm" onclick="ccAbrirAjustar('${v.id}')">${mcIco('lapiz',14)}Ajustar</button>
       ${k.pagos.length ? `<button class="btn btn-ghost btn-sm" onclick="ccDeshacerPago('${v.id}')">${mcIco('retoma',14)}Deshacer último pago</button>` : ''}
     </div>
   </div>`;
+}
+// ── CUENTA COBRADA EN PDF PARA QUIEN PAGA EN YAMABOY ─────────────────────────
+// Cuando una cuenta queda cobrada se puede enviar en PDF a la persona que paga en
+// la financiera. Sus datos se escriben una vez (Configuración, se sincroniza) y
+// cada envío queda anotado en la venta para llevar el orden.
+const CC_JSPDF = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+let _ccPdfLib = null;
+function ccCargarPdf(){
+  if(window.jspdf) return Promise.resolve(window.jspdf);
+  if(_ccPdfLib) return _ccPdfLib;
+  _ccPdfLib = new Promise((res, rej)=>{
+    const s = document.createElement('script'); s.src = CC_JSPDF; s.async = true;
+    s.onload = ()=>window.jspdf ? res(window.jspdf) : rej(new Error('pdf'));
+    s.onerror = ()=>{ _ccPdfLib = null; rej(new Error('pdf')); };
+    document.head.appendChild(s);
+  });
+  return _ccPdfLib;
+}
+const ccPagador = () => (cfgData.cobroPagador && cfgData.cobroPagador.nombre) ? cfgData.cobroPagador : null;
+const ccPagadorCorto = () => { const p = ccPagador(); return p ? String(p.nombre).trim().split(/\s+/)[0] : 'la financiera'; };
+const ccEnvios = v => (v.cobro && Array.isArray(v.cobro.envios)) ? v.cobro.envios : [];
+// Cobradas con pagos reales (no las de antes marcadas "Ya me pagó") que aún no se enviaron
+const ccSinEnviar = () => ventas.filter(v=>{ const k = ccCuenta(v); return k.estado === 'cobrada' && !ccEnvios(v).length && k.pagos.some(p=>!p.antes); });
+
+function ccConfigPagador(idPendiente){
+  const p = cfgData.cobroPagador || {}, e = cfgData.cobroEmisor || {};
+  ccAbrirModal('Datos para las cuentas cobradas', `
+    <p class="cc-pista" style="margin-top:0">Se guardan una sola vez y se usan en cada PDF. Puedes cambiarlos cuando quieras.</p>
+    <div class="form-section-title" style="margin-top:.4rem">Quién te paga en ${FP_FINANCIERA}</div>
+    <div class="form-group"><label>Nombre completo</label><input type="text" id="ccp-nombre" value="${ccEsc(p.nombre||'')}" placeholder="Nombre de quien paga"></div>
+    <div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+      <div class="form-group"><label>Cédula</label><input type="text" inputmode="numeric" id="ccp-cc" value="${ccEsc(p.cc||'')}" placeholder="Número de cédula"></div>
+      <div class="form-group"><label>WhatsApp (opcional)</label><input type="text" inputmode="tel" id="ccp-cel" value="${ccEsc(p.cel||'')}" placeholder="300 000 0000"></div>
+    </div>
+    <div class="form-section-title" style="margin-top:.4rem">Tus datos en la cuenta (opcional)</div>
+    <div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+      <div class="form-group"><label>Tu nombre o negocio</label><input type="text" id="ccp-enom" value="${ccEsc(e.nombre||'')}" placeholder="Quién cobra"></div>
+      <div class="form-group"><label>Cédula o NIT</label><input type="text" id="ccp-edoc" value="${ccEsc(e.doc||'')}" placeholder="Documento"></div>
+    </div>
+    <div class="cc-modal-acc" style="display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="ccCerrarModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="ccGuardarPagador('${idPendiente||''}')">Guardar${idPendiente ? ' y enviar' : ''}</button>
+    </div>`);
+  setTimeout(()=>{ const i = document.getElementById('ccp-nombre'); if(i && !i.value) i.focus(); }, 60);
+}
+function ccGuardarPagador(idPendiente){
+  const val = id => (document.getElementById(id)||{}).value || '';
+  const nombre = val('ccp-nombre').trim(), cc = val('ccp-cc').replace(/[^\d]/g,''), cel = val('ccp-cel').replace(/[^\d]/g,'');
+  if(!nombre){ mcMarcarFalta && mcMarcarFalta('ccp-nombre'); toast('Escribe el nombre de quien te paga', 'err'); return; }
+  cfgData.cobroPagador = {nombre, cc, cel};
+  cfgData.cobroEmisor = {nombre: val('ccp-enom').trim(), doc: val('ccp-edoc').trim()};
+  saveCfg(); ccCerrarModal();
+  mcNotificar({tipo:'guardar', titulo:'Datos guardados', texto:`Las cuentas cobradas irán a nombre de ${nombre}`});
+  if(idPendiente) ccEnviarCobrada(idPendiente); else ccRefrescar();
+}
+
+// Arma el PDF de la cuenta ya cobrada
+function ccPdfCuenta(jsPDF, v, k, numero){
+  const doc = new jsPDF({unit:'mm', format:'a4'});
+  const p = ccPagador() || {}, e = cfgData.cobroEmisor || {};
+  const W = 210, M = 18, ink = [24,24,36], gris = [110,110,130], linea = [225,225,235], verde = [0,150,100];
+  const num = String(numero).padStart(4,'0');
+  // Encabezado
+  doc.setFillColor(20,20,31); doc.rect(0, 0, W, 40, 'F');
+  doc.setFillColor(42,127,255); doc.rect(0, 40, W, 1.6, 'F');
+  doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(21); doc.text('CUENTA DE COBRO', M, 19);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(190,190,210); doc.text(`N.º ${num}  ·  ${FP_FINANCIERA}`, M, 28);
+  doc.setFontSize(9); doc.text('Fecha de emisión', W - M, 16, {align:'right'});
+  doc.setFont('helvetica','bold'); doc.setFontSize(11.5); doc.setTextColor(255,255,255); doc.text(mcFechaCorta(hoyLocal()), W - M, 23, {align:'right'});
+  // Para / De
+  let y = 54;
+  const bloque = (x, titulo, lineas) => {
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...gris); doc.text(titulo, x, y);
+    lineas.filter(Boolean).forEach((l, i)=>{ doc.setFont('helvetica', i ? 'normal' : 'bold'); doc.setFontSize(i ? 10 : 11.5); doc.setTextColor(...(i ? gris : ink)); doc.text(String(l), x, y + 6.5 + i*5.6); });
+  };
+  bloque(M, 'PARA', [p.nombre, p.cc ? `C.C. ${Number(p.cc).toLocaleString('es-CO')}` : '', FP_FINANCIERA]);
+  if(e.nombre || e.doc) bloque(W/2 + 6, 'DE', [e.nombre || '—', e.doc ? `C.C. / NIT ${e.doc}` : '']);
+  y += 30;
+  // Vehículo
+  const titulo = t => { doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...gris); doc.text(t, M, y); y += 3; doc.setDrawColor(...linea); doc.setLineWidth(.3); doc.line(M, y, W - M, y); y += 6; };
+  titulo('VEHÍCULO VENDIDO');
+  const dato = (x, label, valor) => { doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(...gris); doc.text(label, x, y); doc.setFont('helvetica','bold'); doc.setFontSize(10.5); doc.setTextColor(...ink); doc.text(String(valor || '—'), x, y + 5.2); };
+  const c3 = (W - 2*M) / 3;
+  dato(M, 'Vehículo', v.motoNombre); dato(M + c3, 'Modelo', v.motoModelo); dato(M + 2*c3, 'Placa', v.motoPlaca ? String(v.motoPlaca).toUpperCase() : '');
+  y += 13;
+  dato(M, 'Cliente', v.comprador); dato(M + c3, 'C.C. del cliente', v.compradorCC); dato(M + 2*c3, 'Fecha de venta', mcFechaCorta(v.fecha));
+  y += 18;
+  // Liquidación
+  titulo('LIQUIDACIÓN');
+  const fila = (label, valor, opt = {}) => {
+    doc.setFont('helvetica', opt.bold ? 'bold' : 'normal'); doc.setFontSize(opt.big ? 12 : 10.5); doc.setTextColor(...(opt.color || (opt.suave ? gris : ink)));
+    doc.text(label, M + (opt.sangria ? 5 : 0), y); doc.text(valor, W - M, y, {align:'right'}); y += opt.big ? 8 : 6.6;
+  };
+  fila('Valor de la venta', fmt(k.precio));
+  if(k.retoma) fila(`Retoma recibida: ${k.retoma.nombre}${k.retoma.placa ? ' (placa ' + String(k.retoma.placa).toUpperCase() + ')' : ''}`, '- ' + fmt(k.rv), {suave:true});
+  if(k.anticipo) fila('Anticipo de la separación', '- ' + fmt(k.anticipo), {suave:true});
+  if(k.inicial) fila('Cuota inicial en efectivo', '- ' + fmt(k.inicial), {suave:true});
+  doc.setDrawColor(...linea); doc.line(M, y - 3.2, W - M, y - 3.2); y += 1.5;
+  fila(`Valor financiado por ${FP_FINANCIERA}`, fmt(k.saldo), {bold:true, big:true});
+  y += 2;
+  doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...gris); doc.text('PAGOS RECIBIDOS', M, y); y += 6;
+  k.pagos.slice().sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha))).forEach(pg=>{
+    fila(`${pg.antes ? 'Pago registrado' : 'Pago del ' + mcFechaCorta(pg.fecha)}${pg.nota && !pg.antes ? ' · ' + pg.nota : ''}`, fmt(ccNum(pg.monto)), {sangria:true});
+  });
+  doc.setDrawColor(...linea); doc.line(M, y - 3.2, W - M, y - 3.2); y += 1.5;
+  fila('Total pagado', fmt(k.pagado), {bold:true});
+  fila('Saldo pendiente', fmt(k.falta), {bold:true, color: verde});
+  // Sello de pagada
+  y += 6;
+  doc.setDrawColor(...verde); doc.setFillColor(232,248,241); doc.setLineWidth(.7); doc.roundedRect(M, y, W - 2*M, 22, 3, 3, 'FD');
+  doc.setTextColor(...verde); doc.setFont('helvetica','bold'); doc.setFontSize(17); doc.text('PAGADA', M + 8, y + 10);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10);
+  const ult = k.ultimo && !k.ultimo.antes ? `Último pago recibido el ${mcFechaCorta(k.ultimo.fecha)}.` : 'Cuenta pagada en su totalidad.';
+  doc.text(`${ult} ${FP_FINANCIERA} no tiene saldo pendiente por esta venta.`, M + 8, y + 16.5);
+  // Pie
+  doc.setDrawColor(...linea); doc.setLineWidth(.3); doc.line(M, 280, W - M, 280);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...gris);
+  doc.text(`Cuenta de cobro N.º ${num} · generada el ${mcFechaCorta(hoyLocal())}`, M, 285);
+  doc.text('MotoContable', W - M, 285, {align:'right'});
+  return doc;
+}
+
+async function ccEnviarCobrada(id){
+  const v = ventas.find(x=>x.id === id); if(!v || !v.cobro) return;
+  const k = ccCuenta(v);
+  if(k.estado !== 'cobrada'){ toast('Esta cuenta todavía no está cobrada', 'err'); return; }
+  const p = ccPagador();
+  if(!p){ ccConfigPagador(id); return; }
+  let lib;
+  try { lib = await ccCargarPdf(); } catch(e){ toast('No se pudo preparar el PDF. Revisa la conexión a internet e inténtalo otra vez', 'err'); return; }
+  // Número consecutivo: se asigna la primera vez y se conserva
+  if(!v.cobro.numero){ const n = (Number(cfgData.ccConsecutivo) || 0) + 1; cfgData.ccConsecutivo = n; v.cobro.numero = n; saveCfg(); saveVentas(); }
+  const num = String(v.cobro.numero).padStart(4,'0');
+  const doc = ccPdfCuenta(lib.jsPDF, v, k, v.cobro.numero);
+  const archivo = `Cuenta-cobro-${num}-${String(v.motoPlaca || v.motoNombre || 'venta').replace(/[^\w-]+/g,'')}.pdf`;
+  const blob = doc.output('blob');
+  const corto = ccPagadorCorto();
+  const texto = `Hola ${corto}, te envío la cuenta de cobro N.º ${num} ya pagada: ${ccNombreVendido(v)}${v.motoPlaca ? ' (placa ' + String(v.motoPlaca).toUpperCase() + ')' : ''} por ${fmt(k.saldo)}. ¡Gracias!`;
+  let via = '';
+  try {
+    const file = new File([blob], archivo, {type:'application/pdf'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:`Cuenta de cobro ${num}`, text:texto}); via = 'compartir'; }
+  } catch(e){ if(e && e.name === 'AbortError') return; }
+  if(!via){
+    // Sin menú de compartir: se descarga el PDF y se abre WhatsApp con el mensaje
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = archivo; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 60000);
+    via = 'descarga';
+    if(p.cel){ const tel = p.cel.length === 10 ? '57' + p.cel : p.cel; window.open(`https://wa.me/${tel}?text=${encodeURIComponent(texto + ' Te adjunto el PDF.')}`, '_blank'); }
+  }
+  v.cobro.envios = [...ccEnvios(v), {fecha: hoyLocal(), a: p.nombre, numero: v.cobro.numero, via, registrado: new Date().toISOString()}];
+  saveVentas(); ccRefrescar();
+  mcNotificar({tipo:'confirmar', titulo: via === 'descarga' ? `PDF listo para ${corto}` : `Cuenta enviada a ${corto}`,
+    texto: via === 'descarga' ? `N.º ${num} descargada${p.cel ? ': adjúntala en el chat de WhatsApp que se abrió' : ''}` : `N.º ${num} · ${ccNombreVendido(v)}`});
+}
+function ccQuitarEnvio(id){
+  const v = ventas.find(x=>x.id === id); if(!v || !v.cobro) return;
+  v.cobro.envios = []; saveVentas(); ccRefrescar();
+  mcNotificar({tipo:'borrar', titulo:'Marcada como no enviada', texto: ccNombreVendido(v)});
+}
+function ccEnvioHtml(v, k){
+  const env = ccEnvios(v), ult = env[env.length-1];
+  if(ult) return `<div class="cc-envio ok">${mcIco('check',14)}<span>Enviada a ${ccEsc(String(ult.a||'').split(/\s+/)[0])} el ${mcFechaCorta(ult.fecha)} · N.º ${String(ult.numero||v.cobro.numero||'').padStart(4,'0')}${env.length > 1 ? ` · ${env.length} envíos` : ''}</span><button onclick="ccQuitarEnvio('${v.id}')">Marcar como no enviada</button></div>`;
+  if(k.pagos.some(p=>!p.antes)) return `<div class="cc-envio pend">${mcIco('reloj',14)}<span>Falta enviarla en PDF a ${ccEsc(ccPagadorCorto())}</span></div>`;
+  return '';
 }
 function ccRefrescar(){
   const activa = (document.querySelector('.page.active')||{}).id || '';
@@ -4443,7 +4634,9 @@ async function ccGuardarPago(id){
   ccCerrarModal();
   ccRefrescar();
   const k2 = ccCuenta(v);
-  if(k2.estado === 'cobrada') mcNotificar({tipo:'confirmar', titulo:'¡Cuenta cobrada!', texto:`${v.motoNombre||'Venta'} · ${FP_FINANCIERA} pagó todo (${fmt(k2.pagado)})`});
+  if(k2.estado === 'cobrada'){ ccCargarPdf().catch(()=>{});
+    mcNotificar({tipo:'confirmar', titulo:'¡Cuenta cobrada!', texto:`${v.motoNombre||'Venta'} · ${FP_FINANCIERA} pagó todo (${fmt(k2.pagado)})`, ms: 9000,
+      acciones:[{label:`Enviar PDF a ${ccPagadorCorto()}`, fn:()=>ccEnviarCobrada(v.id)}]}); }
   else mcNotificar({tipo:'guardar', titulo:'Abono registrado', texto:`${v.motoNombre||'Venta'} · ${fmt(m)} · faltan ${fmt(k2.falta)}`});
 }
 async function ccDeshacerPago(id){
