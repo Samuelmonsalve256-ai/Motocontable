@@ -1478,6 +1478,87 @@ input:focus,select:focus,textarea:focus{border-color:rgba(var(--accent-rgb),.75)
   html .ct-seg button{flex:1;justify-content:center}
   html #lista-contactos{grid-template-columns:1fr}
 }
+
+/* ── FORMULARIOS POR PASOS ── */
+.page .card-body,[id^="modal-"]>div{counter-reset:paso}
+.form-section{padding:20px 22px;border-radius:18px;background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.06);margin-bottom:14px}
+.form-section-title{counter-increment:paso;font:700 14.5px 'Space Grotesk',sans-serif;letter-spacing:-.1px;text-transform:none;color:var(--text);margin-bottom:16px;gap:12px}
+.form-section-title::before{content:counter(paso);width:28px;height:28px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font:800 13px 'Space Grotesk',sans-serif;color:#fff;background:var(--grad);box-shadow:0 6px 16px -6px rgba(var(--accent-rgb),.85)}
+.form-section-title::after{background:linear-gradient(90deg,rgba(255,255,255,.08),transparent)}
+.card:has(> .card-body > .form-section),.form-pasos{background:transparent;border:none;box-shadow:none;overflow:visible}
+.card:has(> .card-body > .form-section) > .card-body,.form-pasos > .card-body{padding:0}
+.form-label{color:#a3a3c2}
+input[type=text],input[type=number],input[type=date],input[type=email],input[type=password],select{min-height:42px}
+.radio-group{gap:8px}
+.radio-opt{padding:9px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.025);transition:border-color .18s,background .18s,color .18s}
+.radio-opt:hover{border-color:rgba(255,255,255,.18)}
+.radio-opt:has(input:checked){border-color:rgba(var(--accent-rgb),.6);background:rgba(var(--accent-rgb),.14);color:#fff}
+.btn svg{flex-shrink:0}
+.fp-sel b svg{color:var(--text)}
+.monto-eco{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-top:2px;min-height:0}
+.monto-eco:empty{display:none}
+.campo-falta{border-color:var(--red)!important;box-shadow:0 0 0 4px rgba(255,61,107,.2)!important;animation:fpSacudir .45s}
+.fx-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.fx-resumen{background:radial-gradient(320px 180px at 0 0,rgba(var(--accent-rgb),.16),transparent 70%),rgba(255,255,255,.03);border-color:rgba(var(--accent-rgb),.22)}
+.vp-metricas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vp-metricas .metric-value{font-size:17px}
+.vp-metricas .metric-card{padding:.85rem .9rem .8rem}
+.fx-botones{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.fx-botones .btn{justify-content:center;min-height:46px}
+.fx-botones .btn-primary{font-size:14.5px}
+/* Ventanas */
+#modal-edit-venta,#modal-contacto,#modal-meta,#modal-cc,#mc-pregunta,#modal-overlay{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#modal-edit-venta>div,#modal-contacto>div,#modal-meta>div,.cc-modal{border-radius:24px!important;background:linear-gradient(180deg,rgba(255,255,255,.05),transparent 160px),var(--bg2)!important;border:1px solid rgba(255,255,255,.1)!important;box-shadow:0 40px 80px -30px rgba(0,0,0,.95),0 0 0 1px rgba(var(--accent-rgb),.08)!important;animation:mcModal .22s var(--ease)}
+@keyframes mcModal{from{opacity:0;transform:translateY(10px) scale(.985)}}
+/* ── POR COBRAR ── */
+.cc-hero{position:relative;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:28px;align-items:center;padding:26px 30px;margin-bottom:1.4rem;border-radius:24px;overflow:hidden;
+  background:radial-gradient(620px 260px at 0% 0%,rgba(255,155,74,.22),transparent 70%),linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.012)),var(--bg2);border:1px solid rgba(255,155,74,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 30px 60px -30px rgba(0,0,0,.9)}
+.cc-hero-k{display:flex;align-items:center;gap:8px;font:700 11.5px 'Space Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ffb27a}
+.cc-hero-v{font:700 46px/1.05 'Space Grotesk',sans-serif;letter-spacing:-1.6px;margin-top:10px;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,#fff 10%,#ffc08a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cc-hero-s{font-size:13px;color:#a3a3c2;margin-top:8px}
+.cc-edad{display:flex;gap:3px;height:10px;border-radius:8px;overflow:hidden;margin-top:18px}
+.cc-edad i,.cc-edad-ley i{display:block;border-radius:3px}
+.cc-edad .e0,.cc-edad-ley .e0{background:#ffc08a}
+.cc-edad .e1,.cc-edad-ley .e1{background:#ff8c3c}
+.cc-edad .e2,.cc-edad-ley .e2{background:#ff3d6b}
+.cc-edad-ley{display:flex;gap:14px;flex-wrap:wrap;margin-top:9px;font-size:11.5px;color:#9a9ab8}
+.cc-edad-ley span{display:inline-flex;align-items:center;gap:6px}
+.cc-edad-ley i{width:9px;height:9px}
+.cc-hero-der{display:flex;flex-direction:column;gap:10px}
+.cc-kpi{padding:13px 16px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07)}
+.cc-kpi small{display:block;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#7a7a98}
+.cc-kpi b{display:block;font:700 22px 'Space Grotesk',sans-serif;margin-top:3px;font-variant-numeric:tabular-nums}
+.cc-kpi b.ok{color:#2ee6a6}
+.cc-kpi span{font-size:11.5px;color:#8a8aa8}
+.cc-revisar{border:1px dashed rgba(255,181,71,.4);background:linear-gradient(90deg,rgba(255,181,71,.07),transparent 60%),var(--bg2);border-radius:18px}
+.cc-revisar h3{display:flex;align-items:center;gap:8px;color:#ffd38a}
+.cc-item{border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent 120px),var(--bg2);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 20px 44px -28px rgba(0,0,0,.9);transition:transform .2s var(--ease),box-shadow .2s}
+.cc-item:hover{transform:translateY(-2px)}
+.cc-item.cc-pendiente{border-color:rgba(255,155,74,.4)}
+.cc-item .cc-top{position:relative;margin:0 -1.1rem .9rem;padding:0 1.1rem 14px;border-bottom:1.5px dashed rgba(255,255,255,.1)}
+.cc-item .cc-top::before,.cc-item .cc-top::after{content:'';position:absolute;bottom:-9px;width:18px;height:18px;border-radius:50%;background:var(--bg)}
+.cc-item .cc-top::before{left:-9px}.cc-item .cc-top::after{right:-9px}
+.cc-veh .cc-placa{display:inline-flex;width:auto;align-items:center;margin-right:8px;padding:1px 6px;border-radius:5px;background:#f7d117;color:#111;font:700 11px 'JetBrains Mono',monospace;letter-spacing:.04em;vertical-align:2px;border:1px solid #111}
+.cc-tabla{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.04)}
+.cc-falta strong{font-size:24px;background:linear-gradient(135deg,#ffd2a6,#ff8c3c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cc-prog{height:7px;border-radius:7px}
+.cc-prog i{background:linear-gradient(90deg,#0ea372,#2ee6a6);box-shadow:0 0 10px rgba(0,214,143,.5)}
+.cc-sello{display:flex;align-items:center;justify-content:center;gap:8px;border-style:dashed;background:linear-gradient(90deg,rgba(14,163,114,.12),rgba(14,163,114,.04))}
+.cc-acc .btn-primary{flex:1.4}
+.cc-acc .btn,.cc-rev-acc .btn{gap:6px}
+.cc-dias{display:inline-flex;align-items:center;gap:5px}
+.cc-dias::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.8}
+@media (max-width:760px){
+  html .fx-grid{grid-template-columns:1fr}
+  html .form-section{padding:16px 14px;border-radius:16px}
+  html .cc-hero{grid-template-columns:1fr;padding:20px 18px;gap:16px;border-radius:20px}
+  html .cc-hero-v{font-size:36px}
+  html .cc-hero-der{flex-direction:row}
+  html .cc-kpi{flex:1;min-width:0}
+  html .cc-kpi b{font-size:18px}
+  html #modal-edit-venta,html #modal-contacto,html #modal-meta{align-items:flex-end!important;padding:0!important}
+  html #modal-edit-venta>div,html #modal-contacto>div,html #modal-meta>div{max-width:none!important;border-radius:24px 24px 0 0!important;max-height:92vh!important;padding-bottom:calc(1.4rem + env(safe-area-inset-bottom))!important}
+}
 </style>
 </head>
 <body>
@@ -1598,8 +1679,8 @@ input:focus,select:focus,textarea:focus{border-color:rgba(var(--accent-rgb),.75)
         </div>
         <div style="display:flex;gap:8px;align-items:flex-end">
           <div class="form-group" style="flex:1;margin:0"><label class="form-label">Teléfono de quien me vendió</label><input type="text" id="nc-vendedor-tel" placeholder="Ej: 3001234567"></div>
-          <button type="button" onclick="abrirBuscarContacto('vendedor','carro')" class="btn btn-ghost btn-sm" style="height:36px;flex-shrink:0" title="Buscar en contactos">🔍 Buscar</button>
-          <button type="button" onclick="guardarContactoDesdeForm('carro')" class="btn btn-ghost btn-sm" style="height:36px;flex-shrink:0" title="Guardar como contacto">💾 Guardar</button>
+          <button type="button" onclick="abrirBuscarContacto('vendedor','carro')" class="btn btn-ghost btn-sm" style="height:36px;flex-shrink:0" title="Buscar en contactos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>Buscar</button>
+          <button type="button" onclick="guardarContactoDesdeForm('carro')" class="btn btn-ghost btn-sm" style="height:36px;flex-shrink:0" title="Guardar como contacto"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>Guardar</button>
         </div>
       </div>
       <div class="form-section">
@@ -1760,8 +1841,8 @@ input:focus,select:focus,textarea:focus{border-color:rgba(var(--accent-rgb),.75)
         </div>
         <div style="display:flex;gap:8px;align-items:flex-end">
           <div class="form-group" style="flex:1;margin:0"><label class="form-label">Teléfono de quien me vendió</label><input type="text" id="nm-vendedor-tel" placeholder="Ej: 3001234567"></div>
-          <button type="button" onclick="abrirBuscarContacto('vendedor','moto')" class="btn btn-ghost btn-sm" style="height:36px;flex-shrink:0" title="Buscar en contactos">🔍 Buscar</button>
-          <button type="button" onclick="guardarContactoDesdeForm('moto')" class="btn btn-ghost btn-sm" style="height:36px;flex-shrink:0" title="Guardar como contacto">💾 Guardar</button>
+          <button type="button" onclick="abrirBuscarContacto('vendedor','moto')" class="btn btn-ghost btn-sm" style="height:36px;flex-shrink:0" title="Buscar en contactos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>Buscar</button>
+          <button type="button" onclick="guardarContactoDesdeForm('moto')" class="btn btn-ghost btn-sm" style="height:36px;flex-shrink:0" title="Guardar como contacto"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>Guardar</button>
         </div>
       </div>
 
@@ -1814,53 +1895,61 @@ input:focus,select:focus,textarea:focus{border-color:rgba(var(--accent-rgb),.75)
 <!-- REGISTRAR VENTA -->
 <div class="page" id="page-nueva-venta">
   <div class="page-header"><div class="page-title">Registrar venta de moto</div><div class="page-sub">La ganancia se calcula descontando compra y gastos automáticamente</div></div>
-  <div class="card">
-    <div class="card-body">
-      <div class="form-section">
-        <div class="form-section-title">Datos de la venta</div>
-        <div class="form-grid" style="margin-bottom:12px">
-          <div class="form-group"><label class="form-label" id="lbl-vta-tipo">Vehículo <span>*</span></label><select id="vta-moto" onchange="calcularVenta()"><option value="">Seleccionar vehículo…</option></select></div>
-          <div class="form-group"><label class="form-label">Fecha de venta <span>*</span></label><input type="date" id="vta-fecha"></div>
-        </div>
-        <div class="sep-aviso" id="vta-sep-aviso" hidden></div>
-        <input type="hidden" id="vta-anticipo">
-        <div class="form-grid" style="margin-bottom:12px">
-          <div class="form-group"><label class="form-label">Precio de venta ($) <span>*</span></label><input type="number" id="vta-precio" placeholder="0" min="0" oninput="calcularVenta()"></div>
-          <div class="form-group"><label class="form-label">Nombre del comprador</label><input type="text" id="vta-comprador" placeholder="Nombre completo"></div>
-        </div>
-        <div class="form-group fp-grupo">
-          <label class="form-label">Forma de pago <span>*</span></label>
-          <div class="fp-sel" id="vta-fp">
-            <button type="button" data-fp="contado" onclick="elegirFormaPago('vta','contado')"><b>💵</b><span><strong>De contado</strong><small>Pagó el total</small></span></button>
-            <button type="button" data-fp="financiado" onclick="elegirFormaPago('vta','financiado')"><b>🏦</b><span><strong>Financiado</strong><small>Yamaboy S.A.S.</small></span></button>
+  <div class="card form-pasos">
+    <div class="card-body fx-grid">
+      <div class="fx-main">
+        <div class="form-section">
+          <div class="form-section-title">El vehículo y el precio</div>
+          <div class="form-group" style="margin-bottom:12px"><label class="form-label" id="lbl-vta-tipo">Vehículo <span>*</span></label><select id="vta-moto" onchange="calcularVenta()"><option value="">Seleccionar vehículo…</option></select></div>
+          <div class="sep-aviso" id="vta-sep-aviso" hidden></div>
+          <input type="hidden" id="vta-anticipo">
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Precio de venta ($) <span>*</span></label><input type="number" id="vta-precio" placeholder="0" min="0" oninput="calcularVenta()"></div>
+            <div class="form-group"><label class="form-label">Fecha de venta <span>*</span></label><input type="date" id="vta-fecha"></div>
           </div>
-          <input type="hidden" id="vta-forma-pago">
         </div>
-        <div id="vta-cc-campos"></div>
-        <div class="form-grid" style="margin-bottom:8px">
-          <div class="form-group"><label class="form-label">CC del comprador</label><input type="text" id="vta-cc" placeholder="Número de cédula"></div>
-          <div class="form-group"><label class="form-label">Celular del comprador</label><input type="text" id="vta-celular" placeholder="Ej: 3001234567"></div>
+        <div class="form-section">
+          <div class="form-section-title">Cómo te pagaron</div>
+          <div class="form-group fp-grupo">
+            <label class="form-label">Forma de pago <span>*</span></label>
+            <div class="fp-sel" id="vta-fp">
+              <button type="button" data-fp="contado" onclick="elegirFormaPago('vta','contado')"><b><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="12" cy="12" r="2.4"/><path d="M6.5 10v4M17.5 10v4"/></svg></b><span><strong>De contado</strong><small>Pagó el total</small></span></button>
+              <button type="button" data-fp="financiado" onclick="elegirFormaPago('vta','financiado')"><b><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 9.5L12 4.6l8.5 4.9"/><path d="M5 10h14M6.6 10v7M10.2 10v7M13.8 10v7M17.4 10v7M4 19.5h16"/></svg></b><span><strong>Financiado</strong><small>Yamaboy S.A.S.</small></span></button>
+            </div>
+            <input type="hidden" id="vta-forma-pago">
+          </div>
+          <div id="vta-cc-campos"></div>
         </div>
-        <div style="display:flex;gap:8px">
-          <button type="button" onclick="abrirBuscarContacto('comprador','venta')" class="btn btn-ghost btn-sm" title="Buscar comprador en contactos">🔍 Buscar comprador</button>
-          <button type="button" onclick="guardarContactoDesdeForm('venta')" class="btn btn-ghost btn-sm" title="Guardar comprador en contactos">💾 Guardar comprador</button>
+        <div class="form-section">
+          <div class="form-section-title">El comprador</div>
+          <div class="form-group" style="margin-bottom:12px"><label class="form-label">Nombre del comprador</label><input type="text" id="vta-comprador" placeholder="Nombre completo"></div>
+          <div class="form-grid" style="margin-bottom:12px">
+            <div class="form-group"><label class="form-label">CC del comprador</label><input type="text" id="vta-cc" placeholder="Número de cédula"></div>
+            <div class="form-group"><label class="form-label">Celular del comprador</label><input type="text" id="vta-celular" placeholder="Ej: 3001234567"></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" onclick="abrirBuscarContacto('comprador','venta')" class="btn btn-ghost btn-sm" title="Buscar comprador en contactos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>Buscar comprador</button>
+            <button type="button" onclick="guardarContactoDesdeForm('venta')" class="btn btn-ghost btn-sm" title="Guardar comprador en contactos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>Guardar comprador</button>
+          </div>
         </div>
       </div>
-      <div class="form-section">
-        <div class="form-section-title">Resumen financiero automático</div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:.75rem">
-          <div class="metric-card blue"><div class="metric-label">Precio de compra</div><div class="metric-value blue" id="vp-inversion">$0</div></div>
-          <div class="metric-card amber"><div class="metric-label" id="lbl-vp-gastos">Gastos del vehículo</div><div class="metric-value amber" id="vp-gastos">$0</div></div>
-          <div class="metric-card blue"><div class="metric-label">Total invertido</div><div class="metric-value blue" id="vp-total">$0</div></div>
-          <div class="metric-card green"><div class="metric-label">Ganancia neta</div><div class="metric-value green" id="vp-ganancia">—</div></div>
+      <aside class="fx-aside">
+        <div class="form-section fx-resumen">
+          <div class="form-section-title">Resumen de la venta</div>
+          <div class="vp-metricas">
+            <div class="metric-card blue"><div class="metric-label">Precio de compra</div><div class="metric-value blue" id="vp-inversion">$0</div></div>
+            <div class="metric-card amber"><div class="metric-label" id="lbl-vp-gastos">Gastos del vehículo</div><div class="metric-value amber" id="vp-gastos">$0</div></div>
+            <div class="metric-card blue"><div class="metric-label">Total invertido</div><div class="metric-value blue" id="vp-total">$0</div></div>
+            <div class="metric-card green"><div class="metric-label">Ganancia neta</div><div class="metric-value green" id="vp-ganancia">—</div></div>
+          </div>
+          <p style="font-size:11px;color:var(--text3);margin-top:10px">Ganancia = Precio venta − Precio de compra − Gastos del vehículo</p>
+          <div id="vp-aviso-compra" style="display:none;margin-top:.6rem;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.35);border-radius:10px;padding:.6rem .85rem;font-size:12.5px;color:var(--amber);line-height:1.5"></div>
+          <div class="fx-botones">
+            <button class="btn btn-primary" onclick="guardarVenta()">✓ Registrar venta</button>
+            <button class="btn btn-ghost" onclick="go('ventas')">Cancelar</button>
+          </div>
         </div>
-        <p style="font-size:11px;color:var(--text3)">Ganancia = Precio venta − Precio de compra − Gastos del vehículo</p>
-        <div id="vp-aviso-compra" style="display:none;margin-top:.6rem;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.35);border-radius:8px;padding:.6rem .85rem;font-size:12.5px;color:var(--amber);line-height:1.5"></div>
-      </div>
-      <div style="display:flex;gap:10px">
-        <button class="btn btn-primary" onclick="guardarVenta()">✓ Registrar venta</button>
-        <button class="btn btn-ghost" onclick="go('ventas')">Cancelar</button>
-      </div>
+      </aside>
     </div>
   </div>
 </div>
@@ -3646,8 +3735,8 @@ function ccCamposHTML(pre){
   <div class="form-group" style="margin-top:12px">
     <label class="form-label">¿Recibiste un vehículo en parte de pago?</label>
     <div class="fp-sel rt-sel" id="${pre}-rt-sel">
-      <button type="button" data-rt="no" onclick="ccElegirRetoma('${pre}',false)"><b>✋</b><span><strong>No</strong><small>Sin retoma</small></span></button>
-      <button type="button" data-rt="si" onclick="ccElegirRetoma('${pre}',true)"><b>🔁</b><span><strong>Sí, recibí uno</strong><small>Entra a tu inventario</small></span></button>
+      <button type="button" data-rt="no" onclick="ccElegirRetoma('${pre}',false)"><b>${mcIco('no',20)}</b><span><strong>No</strong><small>Sin retoma</small></span></button>
+      <button type="button" data-rt="si" onclick="ccElegirRetoma('${pre}',true)"><b>${mcIco('retoma',20)}</b><span><strong>Sí, recibí uno</strong><small>Entra a tu inventario</small></span></button>
     </div>
     <input type="hidden" id="${pre}-rt" value="no">
     <div class="rt-campos" id="${pre}-rt-campos" hidden>
@@ -3780,19 +3869,30 @@ function renderCobros(){
   const cont = document.getElementById('cc-contenido'); if(!cont) return;
   const t = ccTotales();
   const rev = ventas.filter(v=>ccCuenta(v).estado === 'revisar').sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
-  let h = `<div class="cc-resumen">
-    <div class="cc-tile cc-t-debe"><small>💰 Te deben</small><strong>${fmt(t.falta)}</strong><span>${t.pendientes ? `${t.pendientes} cuenta${t.pendientes!==1?'s':''} por cobrar a ${FP_FINANCIERA}` : 'No tienes cuentas pendientes'}</span></div>
-    <div class="cc-tile cc-t-ok"><small>✅ Cobrado este mes</small><strong>${fmt(t.cobradoMes)}</strong><span>${t.cobradas} cuenta${t.cobradas!==1?'s':''} cobrada${t.cobradas!==1?'s':''} en total</span></div>
-    <div class="cc-tile"><small>⏳ La más antigua</small><strong style="color:${t.masVieja>30?'var(--red)':t.masVieja>15?'var(--amber)':'var(--text)'}">${t.pendientes ? t.masVieja + ' día' + (t.masVieja!==1?'s':'') : '—'}</strong><span>${t.pendientes ? 'esperando el pago' : 'Todo al día'}</span></div>
+  const edad = [0,0,0];
+  ventas.forEach(v=>{ const k = ccCuenta(v); if(k.estado === 'pendiente') edad[k.dias > 30 ? 2 : k.dias > 15 ? 1 : 0] += k.falta; });
+  const edadTot = edad[0] + edad[1] + edad[2];
+  let h = `<div class="cc-hero">
+    <div class="cc-hero-izq cc-t-debe">
+      <div class="cc-hero-k">${mcIco('recibo',16)}Te debe ${FP_FINANCIERA}</div>
+      <div class="cc-hero-v">${fmt(t.falta)}</div>
+      <div class="cc-hero-s">${t.pendientes ? `${t.pendientes} cuenta${t.pendientes!==1?'s':''} por cobrar · la más antigua lleva ${t.masVieja} día${t.masVieja!==1?'s':''}` : 'No tienes cuentas pendientes: todo al día'}</div>
+      ${edadTot ? `<div class="cc-edad" role="img" aria-label="Edad de la cartera">${[0,1,2].map(i=>edad[i] ? `<i class="e${i}" style="flex:${edad[i]}"></i>` : '').join('')}</div>
+      <div class="cc-edad-ley"><span><i class="e0"></i>0 a 15 días · ${fmt(edad[0])}</span><span><i class="e1"></i>16 a 30 · ${fmt(edad[1])}</span><span><i class="e2"></i>Más de 30 · ${fmt(edad[2])}</span></div>` : ''}
+    </div>
+    <div class="cc-hero-der">
+      <div class="cc-kpi"><small>Cobrado este mes</small><b class="ok">${fmt(t.cobradoMes)}</b><span>${t.cobradas} cuenta${t.cobradas!==1?'s':''} cobrada${t.cobradas!==1?'s':''} en total</span></div>
+      <div class="cc-kpi"><small>La más antigua</small><b style="color:${t.masVieja>30?'#ff6b8d':t.masVieja>15?'var(--amber)':'inherit'}">${t.pendientes ? t.masVieja + ' día' + (t.masVieja!==1?'s':'') : '—'}</b><span>${t.pendientes ? 'esperando el pago' : 'Todo al día'}</span></div>
+    </div>
   </div>`;
   if(rev.length){
-    h += `<div class="cc-revisar"><h3>❔ ${rev.length} venta${rev.length!==1?'s':''} financiada${rev.length!==1?'s':''} de antes</h3>
-      <p>Se registraron antes de tener cuentas por cobrar. Dime si ${FP_FINANCIERA} ya te las pagó para que tus cuentas queden en orden. Si te debe, después puedes agregar la retoma o la cuota inicial con ✏️ Ajustar.</p>
+    h += `<div class="cc-revisar"><h3>${mcIco('reloj',17)}${rev.length} venta${rev.length!==1?'s':''} financiada${rev.length!==1?'s':''} de antes</h3>
+      <p>Se registraron antes de tener cuentas por cobrar. Dime si ${FP_FINANCIERA} ya te las pagó para que tus cuentas queden en orden. Si te debe, después puedes agregar la retoma o la cuota inicial con Ajustar.</p>
       ${rev.map(v=>`<div class="cc-rev-fila" id="ccr-${v.id}">
         <div class="cc-rev-info"><strong>${nomVeh(v.tipoVehiculo,'ico')} ${ccEsc(v.motoNombre||'Venta')}</strong><span>${mcFechaCorta(v.fecha)} · ${fmt(ccNum(v.precioVenta))}${v.comprador ? ' · '+ccEsc(v.comprador) : ''}</span></div>
-        <div class="cc-rev-acc"><button class="btn btn-ghost btn-sm" onclick="ccMarcarRevisada('${v.id}',true)">✅ Ya me pagó</button><button class="btn btn-ghost btn-sm" style="color:var(--amber);border-color:rgba(245,166,35,.4)" onclick="ccMarcarRevisada('${v.id}',false)">⏳ Todavía me debe</button></div>
+        <div class="cc-rev-acc"><button class="btn btn-ghost btn-sm" onclick="ccMarcarRevisada('${v.id}',true)">${mcIco('check',14)}Ya me pagó</button><button class="btn btn-ghost btn-sm" style="color:var(--amber);border-color:rgba(245,166,35,.4)" onclick="ccMarcarRevisada('${v.id}',false)">${mcIco('reloj',14)}Todavía me debe</button></div>
       </div>`).join('')}
-      ${rev.length > 1 ? `<div style="padding-top:.6rem;border-top:1px solid var(--border)"><button class="btn btn-ghost btn-sm" onclick="ccTodasPagadas()">✅ Ya me pagó todas estas</button></div>` : ''}
+      ${rev.length > 1 ? `<div style="padding-top:.6rem;border-top:1px solid var(--border)"><button class="btn btn-ghost btn-sm" onclick="ccTodasPagadas()">${mcIco('check',14)}Ya me pagó todas estas</button></div>` : ''}
     </div>`;
   }
   const nP = t.pendientes, nC = t.cobradas;
@@ -3870,32 +3970,32 @@ function ccRenderLista(){
 function ccTarjeta(v, k){
   const pend = k.estado === 'pendiente';
   const dCls = !pend ? 'cc-d-ok' : k.dias > 30 ? 'cc-d-alta' : k.dias > 15 ? 'cc-d-med' : '';
-  const dTxt = !pend ? `✅ Cobrada${k.ultimo && !k.ultimo.antes ? ' el '+mcFechaCorta(k.ultimo.fecha) : ''}` : k.dias === 0 ? '⏳ Vendida hoy' : `⏳ Hace ${k.dias} día${k.dias!==1?'s':''}`;
+  const dTxt = !pend ? `Cobrada${k.ultimo && !k.ultimo.antes ? ' el '+mcFechaCorta(k.ultimo.fecha) : ''}` : k.dias === 0 ? 'Vendida hoy' : `Hace ${k.dias} día${k.dias!==1?'s':''}`;
   let filas = `<div class="cc-fila"><span>Precio de venta · ${mcFechaCorta(v.fecha)}</span><b>${fmt(k.precio)}</b></div>`;
   if(k.retoma) filas += `<div class="cc-fila cc-menos"><span>🔁 Retoma: ${nomVeh(k.retoma.tipo,'ico')} ${ccEsc(k.retoma.nombre)}${k.retoma.placa ? ' · '+ccEsc(k.retoma.placa) : ''}</span><b>− ${fmt(k.rv)}</b></div>`;
   if(k.anticipo) filas += `<div class="cc-fila cc-menos"><span>📌 Anticipo de la separación${v.separacion ? ' ('+ccEsc(v.separacion.cliente)+')' : ''}</span><b>− ${fmt(k.anticipo)}</b></div>`;
   if(k.inicial) filas += `<div class="cc-fila cc-menos"><span>💵 Cuota inicial en efectivo</span><b>− ${fmt(k.inicial)}</b></div>`;
   filas += `<div class="cc-fila cc-total"><span>Saldo que te debe ${FP_FINANCIERA}</span><b>${fmt(k.saldo)}</b></div>`;
   k.pagos.slice().sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha))).forEach(p=>{
-    filas += `<div class="cc-fila cc-pago"><span>✅ ${p.antes ? 'Ya estaba pagada' : 'Pago del '+mcFechaCorta(p.fecha)}${p.nota && !p.antes ? ' · '+ccEsc(p.nota) : ''}</span><b>− ${fmt(ccNum(p.monto))}</b></div>`;
+    filas += `<div class="cc-fila cc-pago"><span>${p.antes ? 'Ya estaba pagada' : 'Pago del '+mcFechaCorta(p.fecha)}${p.nota && !p.antes ? ' · '+ccEsc(p.nota) : ''}</span><b>− ${fmt(ccNum(p.monto))}</b></div>`;
   });
   const pct = k.saldo ? Math.min(100, Math.round(k.pagado / k.saldo * 100)) : 100;
   return `<div class="cc-item cc-${k.estado}" id="cc-${v.id}">
     <div class="cc-top">
-      <div class="cc-veh"><strong>${nomVeh(v.tipoVehiculo,'ico')} ${ccEsc(v.motoNombre||'Venta')}</strong>
+      <div class="cc-veh"><strong>${v.motoPlaca ? `<span class="cc-placa">${ccEsc(String(v.motoPlaca).toUpperCase())}</span>` : ''}${ccEsc(v.motoNombre||'Venta')}</strong>
         <span>${[v.motoModelo, v.motoPlaca].filter(Boolean).map(ccEsc).join(' · ') || 'Sin modelo'}</span>
         ${v.comprador || v.compradorCC ? `<span>Cliente: ${ccEsc(v.comprador||'—')}${v.compradorCC ? ' · CC '+ccEsc(v.compradorCC) : ''}</span>` : ''}</div>
       <span class="cc-dias ${dCls}">${dTxt}</span>
     </div>
     <div class="cc-tabla">${filas}</div>
     ${pend ? `<div class="cc-falta"><span>Falta por cobrar</span><strong>${fmt(k.falta)}</strong></div>${k.pagado ? `<div class="cc-prog" title="${pct}% cobrado"><i style="width:${pct}%"></i></div>` : ''}`
-           : `<div class="cc-sello">✅ COBRADA${k.saldo === 0 ? ' · no quedó saldo por cobrar' : ''}</div>`}
+           : `<div class="cc-sello">${mcIco('check',16)}COBRADA${k.saldo === 0 ? ' · no quedó saldo por cobrar' : ''}</div>`}
     ${k.deMas ? `<div class="cc-alerta">⚠️ Hay ${fmt(k.deMas)} registrados de más. Revisa si un pago quedó repetido y quítalo con "Deshacer último pago".</div>` : ''}
     <div class="cc-acc">
-      ${pend ? `<button class="btn btn-primary btn-sm" onclick="ccAbrirPago('${v.id}')">✅ Registrar pago</button>` : ''}
-      <button class="btn btn-ghost btn-sm" onclick="ccCopiar('${v.id}')">📋 Copiar cuenta</button>
-      <button class="btn btn-ghost btn-sm" onclick="ccAbrirAjustar('${v.id}')">✏️ Ajustar</button>
-      ${k.pagos.length ? `<button class="btn btn-ghost btn-sm" onclick="ccDeshacerPago('${v.id}')">↩ Deshacer último pago</button>` : ''}
+      ${pend ? `<button class="btn btn-primary btn-sm" onclick="ccAbrirPago('${v.id}')">${mcIco('check',14)}Registrar pago</button>` : ''}
+      <button class="btn btn-ghost btn-sm" onclick="ccCopiar('${v.id}')">${mcIco('recibo',14)}Copiar cuenta</button>
+      <button class="btn btn-ghost btn-sm" onclick="ccAbrirAjustar('${v.id}')">${mcIco('lapiz',14)}Ajustar</button>
+      ${k.pagos.length ? `<button class="btn btn-ghost btn-sm" onclick="ccDeshacerPago('${v.id}')">${mcIco('retoma',14)}Deshacer último pago</button>` : ''}
     </div>
   </div>`;
 }
@@ -3913,6 +4013,7 @@ function ccAbrirModal(titulo, html){
   document.getElementById('cc-modal-titulo').textContent = titulo;
   document.getElementById('cc-modal-cuerpo').innerHTML = html;
   document.getElementById('modal-cc').classList.remove('modal-hidden');
+  mcEcoMontos(document.getElementById('cc-modal-cuerpo'));
 }
 function ccCerrarModal(){
   document.getElementById('modal-cc').classList.add('modal-hidden');
@@ -4997,6 +5098,31 @@ function renderContactos(){
     </div>`; }).join('');
 }
 
+
+// ── FORMULARIOS: montos con puntos de miles, campo que falta ─────────────────
+Object.assign(MC_ICONOS, {
+  no:     '<circle cx="12" cy="12" r="8.5"/><path d="M6 18L18 6"/>',
+  retoma: '<path d="M4 12a8 8 0 0 1 13.7-5.7L19.6 8"/><path d="M19.6 4.3V8h-3.7"/><path d="M20 12a8 8 0 0 1-13.7 5.7L4.4 16"/><path d="M4.4 19.7V16h3.7"/>'
+});
+const MC_MONTOS = new Set(['vta-precio','nm-compra','nc-compra','vta-rt-valor','vta-inicial','ev-precio','ev-compra','ev-gastos','m-objetivo','sep-valor','cc-pago-monto','cb-rt-valor','cb-inicial']);
+function mcEcoMonto(t){
+  if(!t || t.type !== 'number' || !MC_MONTOS.has(t.id)) return;
+  let eco = t.nextElementSibling;
+  if(!eco || !eco.classList.contains('monto-eco')){ eco = document.createElement('div'); eco.className = 'monto-eco'; eco.setAttribute('aria-hidden','true'); t.after(eco); }
+  const v = Number(t.value), unidades = t.id === 'm-objetivo' && (document.getElementById('m-tipo-val')||{}).value === 'unidades';
+  eco.textContent = v > 0 && !unidades ? fmt(v) : '';
+}
+function mcEcoMontos(cont){ (cont || document).querySelectorAll('input[type=number]').forEach(mcEcoMonto); }
+document.addEventListener('input', e=>mcEcoMonto(e.target));
+document.addEventListener('focusin', e=>mcEcoMonto(e.target));
+function mcMarcarFalta(id){
+  const el = document.getElementById(id); if(!el) return;
+  el.classList.remove('campo-falta'); void el.offsetWidth; el.classList.add('campo-falta');
+  try { el.focus({preventScroll:true}); } catch(e){}
+  el.scrollIntoView({block:'center', behavior: mcMovReducido() ? 'auto' : 'smooth'});
+  setTimeout(()=>el.classList.remove('campo-falta'), 2200);
+}
+
 // ── PAPELERA ─────────────────────────────────────────────────────────────────
 // Lo eliminado (motos, carros y ventas) se guarda completo en cfgData.papelera,
 // que se sincroniza con la nube: se ve y se restaura desde cualquier dispositivo.
@@ -5606,8 +5732,8 @@ async function confirmarPlacaRepetida(placa, excluirId){
 async function guardarMoto(){
   const nombre = document.getElementById('nm-nombre').value.trim();
   const modelo = document.getElementById('nm-modelo').value.trim();
-  if(!nombre){ toast('El nombre es obligatorio','err'); return; }
-  if(!modelo){ toast('El modelo es obligatorio','err'); return; }
+  if(!nombre){ toast('El nombre es obligatorio','err'); mcMarcarFalta('nm-nombre'); return; }
+  if(!modelo){ toast('El modelo es obligatorio','err'); mcMarcarFalta('nm-modelo'); return; }
   const editId    = document.getElementById('nm-edit-id').value;
   if(!await confirmarPlacaRepetida(document.getElementById('nm-placa').value, editId)) return;
   const soatV     = document.querySelector('input[name="soat-tipo"]:checked').value;
@@ -5740,9 +5866,9 @@ async function guardarVenta(){
   const sel=document.getElementById('vta-moto').value;
   const precio=parseFloat(document.getElementById('vta-precio').value);
   const fecha=document.getElementById('vta-fecha').value;
-  if(!sel){toast('Selecciona un vehículo','err');return;}
-  if(!precio||precio<=0){toast('El precio debe ser mayor a 0','err');return;}
-  if(!fecha){toast('La fecha es obligatoria','err');return;}
+  if(!sel){toast('Selecciona un vehículo','err');mcMarcarFalta('vta-moto');return;}
+  if(!precio||precio<=0){toast('El precio debe ser mayor a 0','err');mcMarcarFalta('vta-precio');return;}
+  if(!fecha){toast('La fecha es obligatoria','err');mcMarcarFalta('vta-fecha');return;}
   const formaPago = document.getElementById('vta-forma-pago').value;
   if(!formaPago){
     toast('Elige si la venta fue de contado o financiada','err');
@@ -7843,8 +7969,8 @@ function initFormCarro(){
 async function guardarCarro(){
   const nombre=document.getElementById('nc-nombre').value.trim();
   const modelo=document.getElementById('nc-modelo').value.trim();
-  if(!nombre){toast('El nombre es obligatorio','err');return;}
-  if(!modelo){toast('El modelo es obligatorio','err');return;}
+  if(!nombre){toast('El nombre es obligatorio','err');mcMarcarFalta('nc-nombre');return;}
+  if(!modelo){toast('El modelo es obligatorio','err');mcMarcarFalta('nc-modelo');return;}
   const editId=document.getElementById('nc-edit-id').value;
   if(!await confirmarPlacaRepetida(document.getElementById('nc-placa').value, editId)) return;
   const soatV =document.querySelector('input[name="c-soat-tipo"]:checked').value;
