@@ -1903,6 +1903,20 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .cel-pie .cel-acc .btn{width:100%}
 }
 @media (prefers-reduced-motion:reduce){ .cel-sello{animation:none!important;opacity:.85} }
+/* Lo que más importa en la celebración: la ganancia y el mensaje */
+.cel-gan{font-size:4rem;margin:.2rem 0 .3rem}
+.cel-frase{margin-top:.9rem;padding:.2rem 0 .2rem 1rem;border-left:3px solid var(--c1);opacity:0;animation:celFrase .6s .55s cubic-bezier(.2,.9,.3,1) forwards}
+@keyframes celFrase{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:none}}
+.cel-frase .cel-t{margin:0;font:800 1.6rem/1.2 'Space Grotesk',sans-serif;letter-spacing:-.01em;color:#fff}
+.cel-frase .cel-msg{margin:.5rem 0 0;max-width:none;font-size:1.04rem;line-height:1.6;color:#e4e4f2}
+.cel-pie .cel-sub{font-size:.95rem;color:#d8d8ea;font-weight:600}
+.cel-perdida .cel-frase{border-left-color:#7a7a98}
+@media (max-width:760px){
+  html .cel-gan{font-size:2.9rem}
+  html .cel-frase .cel-t{font-size:1.3rem}
+  html .cel-frase .cel-msg{font-size:.95rem}
+}
+@media (prefers-reduced-motion:reduce){ .cel-frase{animation:none!important;opacity:1} }
 </style>
 </head>
 <body>
@@ -7942,11 +7956,10 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
           <div class="cel-top"><div class="cel-medalla">${mcIco('rayo',30)}</div><div><div class="cel-k">Venta #${nMes} de ${nomMes.toLowerCase()}</div><div class="cel-rango">Venta con pérdida</div></div></div>
           <div class="cel-veh">${plac}${ccEsc(nombreVehiculo||'Vehículo')}</div>
           <div class="cel-gan neg">−${fmt(Math.abs(ganancia))}</div>
-          ${celCifras(venta, ganancia)}
         </div>
         <div class="cel-der">
-          <div class="cel-t">${m.titulo}</div>
-          <p class="cel-msg">${m.msg}</p>
+          <div class="cel-frase"><div class="cel-t">${m.titulo}</div>
+          <p class="cel-msg">${m.msg}</p></div>
           <div class="cel-logros"><span class="cel-logro"><i>${mcIco('retoma',15)}</i><b>Capital de vuelta</b><em>${fmt(ccNum(venta && venta.precioVenta))} vuelven a moverse</em></span></div>
         </div>
       </div>
@@ -8030,9 +8043,10 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
           <div><div class="cel-k">Venta #${nMes} de ${nomMes.toLowerCase()}</div><div class="cel-rango">${record ? 'Nuevo récord' : rango.nombre}</div></div></div>
         <div class="cel-veh">${plac}${ccEsc(nombreVehiculo||'Vehículo')}</div>
         <div class="cel-gan" id="cel-ganancia">+$0</div>
-        ${celCifras(venta, ganancia)}
-        <div class="cel-t">${celSinEmoji(m.titulo)}</div>
-        <p class="cel-msg">${celSinEmoji(m.msg)}</p>
+        <div class="cel-frase">
+          <div class="cel-t">${celSinEmoji(m.titulo)}</div>
+          <p class="cel-msg">${celSinEmoji(m.msg)}</p>
+        </div>
       </div>
       <div class="cel-der">
         <div class="cel-barra"><div class="cel-barra-cab"><span>${mcIco('calendario',14)}Ganancia de ${nomMes.toLowerCase()}</span><b>${fmt(ganMes)}</b></div>
