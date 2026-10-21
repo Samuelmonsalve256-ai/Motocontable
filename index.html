@@ -1664,6 +1664,108 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
   .cel-logro{animation:none!important;opacity:1}
   .cel-pista .nue{transition:none}
 }
+/* ── LOGROS (pestaña en Ventas) ─────────────────────────────────────────── */
+#ventas-tabs{display:flex;flex-direction:column;gap:12px;margin-bottom:1.1rem}
+.vt-seg{display:inline-flex;align-self:flex-start;gap:4px;padding:4px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+.vt-seg button{display:flex;align-items:center;gap:8px;min-height:38px;padding:0 16px;border:none;border-radius:10px;background:transparent;color:#9a9ab8;font:600 13px 'Inter',sans-serif;cursor:pointer;transition:background .18s,color .18s}
+.vt-seg button svg{width:15px;height:15px}
+.vt-seg button.on{color:#fff;background:linear-gradient(135deg,rgba(var(--accent-rgb),.3),rgba(var(--accent-rgb),.12));box-shadow:inset 0 0 0 1px rgba(var(--accent-rgb),.45)}
+.vt-n{font-size:11px;padding:1px 7px;border-radius:999px;background:rgba(255,255,255,.08);font-variant-numeric:tabular-nums}
+.vt-nuevo{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:999px;color:#1a1200;background:linear-gradient(135deg,#f5c451,#ff8c3c);animation:lgLatir 1.8s ease-in-out infinite}
+@keyframes lgLatir{0%,100%{box-shadow:0 0 0 0 rgba(245,196,81,.55)}50%{box-shadow:0 0 0 6px rgba(245,196,81,0)}}
+.lg-tira{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;row-gap:7px;align-items:center;width:100%;text-align:left;padding:10px 14px;border-radius:14px;cursor:pointer;color:inherit;font:inherit;
+  background:linear-gradient(90deg,rgba(var(--accent-rgb),.1),rgba(255,255,255,.02));border:1px solid rgba(var(--accent-rgb),.25);transition:transform .18s var(--ease,ease),border-color .18s}
+.lg-tira:hover{transform:translateY(-1px);border-color:rgba(var(--accent-rgb),.5)}
+.lg-tira .lg-med{grid-row:1/3}
+.lg-tira-t{display:flex;flex-wrap:wrap;gap:2px 10px;align-items:baseline}
+.lg-tira-t b{font-size:13.5px;color:#fff}
+.lg-tira-t em{font-style:normal;font-size:12px;color:#9a9ab8}
+.lg-tira-bar,.lg-prox-bar,.lg-it-bar,.cel-prox-bar{display:block;height:6px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+.lg-tira-bar i,.lg-prox-bar i,.lg-it-bar i,.cel-prox-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ta,var(--accent)),var(--tb,var(--accent-b)))}
+.lg-tira-bar i{background:var(--grad,linear-gradient(90deg,var(--accent),var(--accent-b)))}
+.lg-med{flex:none;display:grid;place-items:center;border-radius:50%;color:#fff;position:relative;
+  background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.45),transparent 45%),linear-gradient(135deg,var(--ta),var(--tb));box-shadow:0 0 0 3px rgba(255,255,255,.06),0 6px 18px -6px var(--ta)}
+.lg-med svg{filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.lg-med.bloq{background:rgba(255,255,255,.05);color:#5e5e78;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.1)}
+.lg-nivel{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;padding:18px 20px;border-radius:20px;position:relative;overflow:hidden;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(var(--accent-rgb),.28),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015));border:1px solid rgba(var(--accent-rgb),.3)}
+.lg-nivel-n{width:74px;height:74px;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--grad,linear-gradient(135deg,var(--accent),var(--accent-b)));box-shadow:0 12px 30px -10px rgba(var(--accent-rgb),.8);color:#fff}
+.lg-nivel-n span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;font-weight:700}
+.lg-nivel-n b{font:800 30px/1 'Space Grotesk',sans-serif}
+.lg-nivel-nom{font:800 22px 'Space Grotesk',sans-serif;color:#fff;letter-spacing:-.01em}
+.lg-nivel-bar{height:10px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin:8px 0 6px}
+.lg-nivel-bar i{display:block;height:100%;border-radius:99px;background:var(--grad,linear-gradient(90deg,var(--accent),var(--accent-b)));box-shadow:0 0 14px rgba(var(--accent-rgb),.7);transition:width 1s cubic-bezier(.2,.9,.3,1)}
+.lg-nivel-pie{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#9a9ab8;font-variant-numeric:tabular-nums}
+.lg-nivel-cnt{text-align:center;padding-left:18px;border-left:1px solid rgba(255,255,255,.08)}
+.lg-nivel-cnt b{display:block;font:800 28px/1 'Space Grotesk',sans-serif;color:#fff}
+.lg-nivel-cnt span{font-size:11.5px;color:#9a9ab8}
+.lg-ayuda{font-size:12px;color:#7e7e9a;margin:8px 4px 4px}
+#ventas-logros .mc-sec{margin:22px 0 12px}
+#ventas-logros .mc-sec span{display:inline-flex;align-items:center;gap:8px}
+.lg-prox{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.lg-prox-c{display:flex;gap:12px;align-items:center;padding:14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+.lg-prox-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.lg-prox-t b{font-size:13.5px;color:#fff}
+.lg-prox-t em{font-style:normal;font-size:12px;color:var(--ta)}
+.lg-prox-t small{font-size:11px;color:#7e7e9a}
+.lg-rec{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.lg-rec-c{display:flex;flex-direction:column;gap:3px;padding:14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+.lg-rec-c i{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;margin-bottom:4px;color:var(--accent);background:rgba(var(--accent-rgb),.14)}
+.lg-rec-c span{font-size:11.5px;color:#9a9ab8}
+.lg-rec-c b{font:800 19px 'Space Grotesk',sans-serif;color:#fff;font-variant-numeric:tabular-nums}
+.lg-rec-c em{font-style:normal;font-size:11.5px;color:#7e7e9a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-ult{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.lg-ult-c{display:flex;gap:10px;align-items:center;padding:12px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+.lg-ult-c b{display:block;font-size:13px;color:#fff}
+.lg-ult-c em{font-style:normal;font-size:11.5px;color:#9a9ab8}
+.lg-ult-c.nuevo{border-color:rgba(245,196,81,.45);background:linear-gradient(90deg,rgba(245,196,81,.1),rgba(255,255,255,.02))}
+.lg-fams{display:flex;flex-direction:column;gap:14px}
+.lg-fam{padding:14px 16px 16px;border-radius:18px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)}
+.lg-fam-cab{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:700;color:#e4e4f2}
+.lg-fam-cab span{display:inline-flex;align-items:center;gap:8px}
+.lg-fam-cab svg{width:15px;height:15px;color:var(--accent)}
+.lg-fam-cab b{font-size:12px;color:#9a9ab8;font-variant-numeric:tabular-nums}
+.lg-fam-nota{font-size:11.5px;color:#7e7e9a;margin-top:2px}
+.lg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px;margin-top:12px}
+.lg-it{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;padding:14px 8px 12px;border-radius:14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);transition:transform .18s var(--ease,ease)}
+.lg-it b{font-size:12px;line-height:1.25;color:#8a8aa6;font-weight:700}
+.lg-it em{font-style:normal;font-size:11px;color:#6e6e8a;font-variant-numeric:tabular-nums}
+.lg-it small{font-size:10.5px;color:var(--ta);font-weight:700}
+.lg-it .lg-it-bar{width:80%;margin-top:2px}
+.lg-it.ok{background:linear-gradient(180deg,color-mix(in srgb,var(--ta) 12%,transparent),rgba(255,255,255,.02));border-color:color-mix(in srgb,var(--ta) 35%,transparent)}
+.lg-it.ok b{color:#fff}
+.lg-it.ok em{color:#a9a9c2}
+.lg-it.ok:hover{transform:translateY(-2px)}
+.lg-it.nuevo{animation:lgBrilla 2.2s ease-in-out infinite}
+@keyframes lgBrilla{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ta) 0%,transparent)}50%{box-shadow:0 0 22px -2px var(--ta)}}
+.lg-badge{position:absolute;top:6px;right:6px;font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:99px;color:#1a1200;background:linear-gradient(135deg,#f5c451,#ff8c3c)}
+/* En la celebración */
+.cel-logro.lgx i{background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.45),transparent 50%),linear-gradient(135deg,var(--ta),var(--tb));box-shadow:0 0 16px -3px var(--ta)}
+.cel-prox{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;width:100%;margin-top:.7rem;padding:.6rem .75rem;border-radius:13px;text-align:left;cursor:pointer;font:inherit;color:inherit;
+  background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.14);opacity:0;animation:celLogro .5s cubic-bezier(.2,1.5,.4,1) forwards}
+.cel-prox-t{font-size:.75rem;color:#b9b9d0}
+.cel-prox-t b{color:#fff}
+.cel-prox-v{grid-row:1/3;grid-column:2;font-size:.74rem;font-weight:800;color:var(--c1);white-space:nowrap}
+.cel-prox-bar i{background:linear-gradient(90deg,var(--c1),var(--c2))}
+@media (max-width:760px){
+  html .vt-seg{align-self:stretch}
+  html .vt-seg button{flex:1;justify-content:center;padding:0 8px}
+  html .lg-nivel{grid-template-columns:auto 1fr;gap:14px;padding:16px}
+  html .lg-nivel-n{width:62px;height:62px;border-radius:18px}
+  html .lg-nivel-n b{font-size:25px}
+  html .lg-nivel-nom{font-size:19px}
+  html .lg-nivel-cnt{grid-column:1/-1;display:flex;align-items:baseline;gap:8px;justify-content:center;border-left:0;padding:10px 0 0;border-top:1px solid rgba(255,255,255,.08)}
+  html .lg-nivel-cnt b{display:inline;font-size:20px}
+  html .lg-prox{grid-template-columns:1fr}
+  html .lg-rec,html .lg-ult{grid-template-columns:1fr 1fr}
+  html .lg-grid{grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px}
+  html .lg-fam{padding:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  .vt-nuevo,.lg-it.nuevo{animation:none!important}
+  .cel-prox{animation:none!important;opacity:1}
+  .lg-nivel-bar i{transition:none}
+}
 </style>
 </head>
 <body>
@@ -1836,9 +1938,11 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
     <div><div class="page-title">Ventas de motos</div><div class="page-sub">Precio compra, precio venta y ganancia neta por vehículo</div></div>
     <button class="btn btn-primary" onclick="go('nueva-venta')">+ Registrar venta</button>
   </div>
+  <div id="ventas-tabs"></div>
   <div id="ventas-cobros-banner"></div>
   <div id="alertas-papeles"></div>
   <div id="tabla-ventas"></div>
+  <div id="ventas-logros" style="display:none"></div>
 </div>
 
 <!-- INVENTARIO -->
@@ -6063,6 +6167,7 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
 
 function renderVentas(){
   ccBannerVentas();
+  try { lgCabeceraVentas(); } catch(e){ console.warn('logros', e); }
   const cont = document.getElementById('tabla-ventas');
   const alertCont = document.getElementById('alertas-papeles');
 
@@ -7634,7 +7739,7 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
     const mejorMes = Object.entries(porMesP).filter(x=>x[1] > 0).sort((a,b)=>b[1]-a[1])[0], nomMejor = mejorMes ? MESES[Number(mejorMes[0].slice(5,7))-1].toLowerCase() : null;
     const msgs = [
       {titulo:'Esto también es el camino', msg:`No todas las jugadas salen perfectas: así es el negocio. ${nomMejor?`${nomMejor.charAt(0).toUpperCase()+nomMejor.slice(1)} fue un mes fuerte, `:''}sigue trabajando para superarlo.`, sub:'Los grandes también tienen días difíciles. Lo que importa es no parar.'},
-      {titulo:'Aprende y sigue adelante', msg:`Esta venta no salió como esperabas. Analiza qué pasó, ajusta y vuelve más fuerte. ${nomMejor?`Ya lo demostraste en ${nomMejor}.`:'El mejor mes aún está por venir.'}`, sub:'Tu Porsche GT3 sigue esperándote.'},
+      {titulo:'Aprende y sigue adelante', msg:`Esta venta no salió como esperabas. Analiza qué pasó, ajusta y vuelve más fuerte. ${nomMejor?`Ya lo demostraste en ${nomMejor}.`:'El mejor mes aún está por venir.'}`, sub:'Tu Porsche GT3 RS sigue esperándote.'},
       {titulo:'Hoy no, mañana sí', msg:'Los negocios tienen altos y bajos: lo que importa es que sigues en movimiento.', sub:'Tú puedes. Ya lo has demostrado antes.'},
     ];
     const m = msgs[Math.floor(Math.random()*msgs.length)];
@@ -7667,12 +7772,17 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
   if(record) logros.push({ico:'trofeo', t:'Nuevo récord', d:`Tu mayor ganancia en una sola venta (antes ${fmt(maxAntes)})`, oro:true});
   if(mejorOtro && ganMesAntes <= mejorOtro[1] && ganMes > mejorOtro[1]) logros.push({ico:'bandera', t:`¡Superaste a ${MESES[Number(mejorOtro[0].slice(5,7))-1].toLowerCase()}!`, d:`${nomMes} ya es tu mejor mes`, oro:true});
   if(nMes === 1) logros.push({ico:'rayo', t:`Primera venta de ${nomMes.toLowerCase()}`, d:'El mes ya arrancó'});
-  if([3,5,10,15,20,25,30,40,50].includes(nMes)) logros.push({ico:'fuego', t:`${nMes} ventas en ${nomMes.toLowerCase()}`, d:'Vas imparable'});
-  if([10,25,50,75,100,150,200,300,500,750,1000].includes(total)) logros.push({ico:'llave', t:`Venta número ${total}`, d:'Un hito en tu historia', oro: total >= 50});
-  if(racha >= 2) logros.push({ico:'fuego', t:`Racha de ${racha} días`, d:'Días seguidos vendiendo'});
-  const hitos = [10e6, 25e6, 50e6, 100e6, 250e6, 500e6, 1e9];
-  const hito = hitos.find(x=>ganTotalAntes < x && ganTotal >= x);
-  if(hito) logros.push({ico:'objetivo', t:`${fmt(hito)} en ganancias`, d:'Acumuladas desde que empezaste', oro:true});
+  // Logros de la vitrina que se ganaron con esta venta, y si subió de nivel
+  let L = null, celProx = null;
+  try {
+    L = mcLogros();
+    const conEsta = venta ? L.items.filter(x=>x.ventaId === venta.id) : [];
+    const ptsAntes = L.puntos - conEsta.reduce((a,x)=>a + x.pts, 0) - 2;
+    let nAntes = 0; LG_NIVELES.forEach((n,i)=>{ if(ptsAntes >= n[0]) nAntes = i; });
+    if(L.nivel.n - 1 > nAntes) logros.push({ico:'flecha', t:`¡Subiste a nivel ${L.nivel.n}!`, d:`Ahora eres ${L.nivel.nombre}`, oro:true});
+    conEsta.sort((a,b)=>b.pts - a.pts).forEach(x=>logros.push({ico:x.fam.ico, t:x.nombre, d:`Logro desbloqueado · ${x.tier.nombre} +${x.pts}`, tier:x.tier, oro:x.pts >= 50}));
+    celProx = lgProximos(L, 1)[0] || null;
+  } catch(e){}
   // Meta en foco: cuánto la movió esta venta
   let metaHtml = '';
   try {
@@ -7706,7 +7816,10 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
     {titulo:'¡Puro fuego!', msg:'Así se construye un imperio desde cero: venta por venta.', sub:'No se detiene quien tiene claro para dónde va.'},
     {titulo:'¡Mente de campeón!', msg:`"${nombreVehiculo}" cerrado. El Lamborghini SVJ no se compra esperando: se compra trabajando como lo estás haciendo ahora.`, sub:'Sigue en ese nivel.'},
   ];
-  const pool = capitalLiberado ? msgsCapital : msgsNormal, m = pool[Math.floor(Math.random()*pool.length)];
+  // Frase de los sueños (van rotando venta a venta); si liberó capital, se dice primero eso
+  let m;
+  try { m = mcFraseSueno(mcDatosSueno(nombreVehiculo, ganancia, mes)); } catch(e){ m = msgsNormal[Math.floor(Math.random()*msgsNormal.length)]; }
+  if(capitalLiberado){ const c = msgsCapital[Math.floor(Math.random()*msgsCapital.length)]; m = {titulo:c.titulo, msg:c.msg, sub:m.sub}; }
   card.className = `cel-card cel-${rango.id}${record ? ' cel-record' : ''}`;
   card.style.setProperty('--c1', rango.c1); card.style.setProperty('--c2', rango.c2);
   card.innerHTML = `
@@ -7721,7 +7834,8 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
     <div class="cel-barra"><div class="cel-barra-cab"><span>${mcIco('calendario',14)}Ganancia de ${nomMes.toLowerCase()}</span><b>${fmt(ganMes)}</b></div>
       <div class="cel-pista"><i class="ant" style="width:${pAntes}%"></i><i class="nue" data-w="${pAhora}" style="width:${pAntes}%"></i></div><div class="cel-barra-pie">${objTxt}</div></div>
     ${metaHtml}
-    ${logros.length ? `<div class="cel-logros">${logros.slice(0,4).map((l,i)=>`<span class="cel-logro${l.oro?' oro':''}" style="animation-delay:${1.15 + i*.22}s"><i>${mcIco(l.ico,15)}</i><b>${l.t}</b><em>${l.d}</em></span>`).join('')}</div>` : ''}
+    ${logros.length ? `<div class="cel-logros">${logros.slice(0,5).map((l,i)=>`<span class="cel-logro${l.oro?' oro':''}${l.tier?' lgx':''}" style="animation-delay:${1.15 + i*.22}s${l.tier?`;--ta:${l.tier.a};--tb:${l.tier.b}`:''}"><i>${mcIco(l.ico,15)}</i><b>${l.t}</b><em>${l.d}</em></span>`).join('')}</div>` : ''}
+    ${celProx ? `<button class="cel-prox" onclick="celVerLogros()" style="animation-delay:${1.3 + Math.min(5,logros.length)*.22}s"><span class="cel-prox-t">Próximo logro: <b>${celProx.nombre}</b> · ${lgFalta(celProx)}</span><span class="cel-prox-bar"><i style="width:${celProx.pct}%"></i></span><span class="cel-prox-v">Ver mis logros ›</span></button>` : ''}
     <div class="cel-sub">${celSinEmoji(m.sub)}</div>
     <div class="cel-acc">
       <button class="btn btn-primary" onclick="cerrarCelebracion()">¡A por la siguiente!</button>
@@ -7745,7 +7859,244 @@ function celCerrar(){
 }
 function cerrarCelebracion(){ celCerrar(); go('ventas'); }
 function celOtraVenta(){ celCerrar(); go('nueva-venta'); }
+function celVerLogros(){ celCerrar(); verLogros(); }
 document.addEventListener('keydown', e=>{ if(e.key === 'Escape'){ const m = document.getElementById('modal-celebracion'); if(m && !m.classList.contains('modal-hidden')) cerrarCelebracion(); } });
+
+// ── LOGROS ───────────────────────────────────────────────────────────────────
+// Todo sale de las ventas: no se guarda nada aparte en la nube. Cada familia
+// tiene escalones (bronce, plata, oro, diamante); cada escalón da puntos y los
+// puntos suben el nivel de vendedor.
+const LG_TIER = [
+  {id:'bronce',   nombre:'Bronce',   pts:10,  a:'#d08a52', b:'#8a4d22'},
+  {id:'plata',    nombre:'Plata',    pts:25,  a:'#e6ecf5', b:'#8e9ab0'},
+  {id:'oro',      nombre:'Oro',      pts:50,  a:'#f5c451', b:'#ff8c3c'},
+  {id:'diamante', nombre:'Diamante', pts:100, a:'#7df3ff', b:'#a78bfa'},
+];
+const LG_M = 1e6;
+const LG_FAMILIAS = [
+  {id:'ventas', nombre:'Ventas totales', ico:'llave', clave:'total', fmt:n=>n, pasos:[
+    [1,'Primera venta','El primer negocio de todos',0],[10,'Venta número 10','Ya no es suerte',0],[25,'Venta número 25','Te volviste comerciante',1],
+    [50,'Venta número 50','Medio centenar de negocios',1],[100,'Venta número 100','Tres cifras de ventas',2],[250,'Venta número 250','Un negocio de verdad',2],
+    [500,'Venta número 500','Pocos llegan aquí',3],[1000,'Venta número 1.000','Leyenda de la compra y venta',3]]},
+  {id:'ganancia', nombre:'Ganancias acumuladas', ico:'billete', clave:'ganTotal', fmt:n=>fmt(n), pasos:[
+    [1*LG_M,'Primer millón','El primer millón limpio',0],[5*LG_M,'5 millones','El capital empieza a crecer',0],[10*LG_M,'10 millones','Dos cifras de millones',1],
+    [25*LG_M,'25 millones','Un cuarto de los 100',1],[50*LG_M,'50 millones','Medio camino al regalo de mamá',2],[100*LG_M,'Los 100 de mamá','Los 100 millones para tu mamá',3],
+    [250*LG_M,'250 millones','Un cuarto de los mil millones',2],[500*LG_M,'500 millones','La mitad de los mil millones',3],[1000*LG_M,'Los mil millones','El capital que soñaste',3]]},
+  {id:'mes', nombre:'Ventas en un mes', ico:'calendario', clave:'maxMesN', fmt:n=>n, pasos:[
+    [3,'Mes con 3 ventas','El mes se movió',0],[5,'Mes con 5 ventas','Ritmo constante',0],[10,'Mes con 10 ventas','Mes de fuego',1],
+    [15,'Mes con 15 ventas','Imparable',2],[20,'Mes con 20 ventas','Máquina de vender',2],[30,'Mes con 30 ventas','Una venta por día',3]]},
+  {id:'mesgan', nombre:'Ganancia en un mes', ico:'barras', clave:'maxMesGan', fmt:n=>fmt(n), pasos:[
+    [2*LG_M,'Mes de 2 millones','Un mes que rinde',0],[5*LG_M,'Mes de 5 millones','Mes fuerte',1],[10*LG_M,'Mes de 10 millones','Mes de campeón',2],
+    [20*LG_M,'Mes de 20 millones','Mes histórico',2],[50*LG_M,'Mes de 50 millones','Mes de magnate',3]]},
+  {id:'racha', nombre:'Rachas de días', ico:'fuego', clave:'maxRacha', fmt:n=>n+' días', pasos:[
+    [2,'Dos días seguidos','La racha arrancó',0],[3,'Tres días seguidos','En racha',1],[5,'Cinco días seguidos','Racha de fuego',2],[7,'Una semana entera','Siete días vendiendo',3]]},
+  {id:'constancia', nombre:'Meses seguidos vendiendo', ico:'objetivo', clave:'maxMesesSeg', fmt:n=>n+' meses', pasos:[
+    [3,'Tres meses seguidos','Constancia',0],[6,'Medio año sin parar','Disciplina',1],[12,'Un año sin parar','Todos los meses del año',2],[24,'Dos años sin parar','Nada te detiene',3]]},
+  {id:'epica', nombre:'Ventas épicas', ico:'trofeo', clave:'nEpicas', fmt:n=>n, nota:'Ganancia de $1.500.000 o más', pasos:[
+    [1,'Primera venta épica','Ganaste $1,5 M o más en una venta',0],[5,'5 ventas épicas','Sabes negociar',1],[25,'25 ventas épicas','Negociador de élite',2],[100,'100 ventas épicas','Tiburón',3]]},
+  {id:'legendaria', nombre:'Ventas legendarias', ico:'rayo', clave:'nLegend', fmt:n=>n, nota:'Ganancia de $3.000.000 o más', pasos:[
+    [1,'Primera venta legendaria','Ganaste $3 M o más en una venta',1],[5,'5 ventas legendarias','Negocios grandes',2],[20,'20 ventas legendarias','Juegas en otra liga',3]]},
+  {id:'rapida', nombre:'Ventas relámpago', ico:'reloj', clave:'nRapidas', fmt:n=>n, nota:'Vendido 7 días o menos después de comprarlo', pasos:[
+    [1,'Venta relámpago','Comprado y vendido en una semana',0],[10,'10 relámpago','Rotación rápida',1],[50,'50 relámpago','El capital nunca duerme',3]]},
+  {id:'capital', nombre:'Capital liberado', ico:'retoma', clave:'nLiberado', fmt:n=>n, nota:'Vender algo con 100 días o más en inventario', pasos:[
+    [1,'Capital liberado','Moviste algo que llevaba 100 días quieto',0],[5,'5 capitales liberados','Nada se queda quieto',1],[20,'Limpieza total','Inventario siempre en movimiento',2]]},
+  {id:'carros', nombre:'Carros vendidos', ico:'carro', clave:'nCarros', fmt:n=>n, pasos:[
+    [1,'Primer carro vendido','Subiste de categoría',0],[10,'10 carros','Ya eres de carros también',1],[50,'50 carros','Concesionario',3]]},
+];
+const LG_NIVELES = [
+  [0,'Novato'],[40,'Vendedor'],[120,'Comerciante'],[250,'Negociante'],[450,'Experto'],[700,'Maestro'],[1000,'Magnate'],[1400,'Tiburón'],[2000,'Leyenda'],
+];
+const lgDias = (a, b) => (a && b) ? Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / 864e5) : null;
+const lgMesNum = k => Number(k.slice(0,4))*12 + Number(k.slice(5,7));
+// Recorre las ventas en orden y anota cuándo (y con qué venta) se ganó cada escalón
+function mcLogros(){
+  const lista = ventas.map((v,i)=>({v,i})).filter(x=>x.v && x.v.fecha)
+    .sort((a,b)=>String(a.v.fecha).localeCompare(String(b.v.fecha)) || a.i - b.i).map(x=>x.v);
+  const st = {total:0, ganTotal:0, maxMesN:0, maxMesGan:0, maxRacha:0, maxMesesSeg:0, nEpicas:0, nLegend:0, nRapidas:0, nLiberado:0, nCarros:0};
+  const porMesN = {}, porMesG = {}, dias = new Set(), meses = new Set();
+  const ganados = {};   // 'familia:i' -> {fecha, venta}
+  const revisar = v => LG_FAMILIAS.forEach(f=>f.pasos.forEach((p,i)=>{ const k = f.id+':'+i; if(!ganados[k] && st[f.clave] >= p[0]) ganados[k] = {fecha:v.fecha, ventaId:v.id, veh:v.motoNombre||''}; }));
+  let mayor = null, mejorRapida = null;
+  lista.forEach(v=>{
+    const g = mcGanVenta(v), mes = String(v.fecha).slice(0,7);
+    st.total++; st.ganTotal += g;
+    porMesN[mes] = (porMesN[mes]||0) + 1; porMesG[mes] = (porMesG[mes]||0) + g;
+    st.maxMesN = Math.max(st.maxMesN, porMesN[mes]); st.maxMesGan = Math.max(st.maxMesGan, porMesG[mes]);
+    dias.add(v.fecha); { let r = 0; const d = new Date(v.fecha+'T00:00:00'); while(dias.has(hoyLocal(d))){ r++; d.setDate(d.getDate()-1); } st.maxRacha = Math.max(st.maxRacha, r); }
+    meses.add(mes); { let r = 0, n = lgMesNum(mes); while(meses.has(`${Math.floor((n-1)/12)}-${String((n-1)%12+1).padStart(2,'0')}`)){ r++; n--; } st.maxMesesSeg = Math.max(st.maxMesesSeg, r); }
+    if(g >= 1500000) st.nEpicas++;
+    if(g >= 3000000) st.nLegend++;
+    const d = lgDias(v.fechaCompra, v.fecha);
+    if(d !== null && d >= 0 && d <= 7){ st.nRapidas++; if(!mejorRapida || d < mejorRapida.d) mejorRapida = {d, v}; }
+    if(d !== null && d >= DIAS_ALERTA) st.nLiberado++;
+    if(v.tipoVehiculo === 'carro') st.nCarros++;
+    if(!mayor || g > mayor.g) mayor = {g, v};
+    revisar(v);
+  });
+  const items = [];
+  LG_FAMILIAS.forEach(f=>f.pasos.forEach((p,i)=>{
+    const k = f.id+':'+i, t = LG_TIER[p[3]], gan = ganados[k];
+    items.push({k, fam:f, i, meta:p[0], nombre:p[1], desc:p[2], tier:t, pts:t.pts, ganado:!!gan, fecha:gan&&gan.fecha, ventaId:gan&&gan.ventaId, veh:gan&&gan.veh,
+      actual:Math.min(st[f.clave], p[0]), pct:Math.max(0, Math.min(100, st[f.clave] / p[0] * 100))});
+  }));
+  const puntos = items.filter(x=>x.ganado).reduce((a,x)=>a + x.pts, 0) + st.total * 2;
+  let ni = 0; LG_NIVELES.forEach((n,i)=>{ if(puntos >= n[0]) ni = i; });
+  const sig = LG_NIVELES[ni+1];
+  const mejorMes = Object.entries(porMesG).sort((a,b)=>b[1]-a[1])[0];
+  return {items, st, puntos, nivel:{n:ni+1, nombre:LG_NIVELES[ni][1], desde:LG_NIVELES[ni][0], hasta:sig?sig[0]:null, sig:sig?sig[1]:null},
+    records:{mayor, mejorMes, racha:st.maxRacha, rapida:mejorRapida}};
+}
+function lgVistos(){ try { return JSON.parse(localStorage.getItem('mc_logros_vistos')||'null'); } catch(e){ return null; } }
+function lgMarcarVistos(L){ try { localStorage.setItem('mc_logros_vistos', JSON.stringify(L.items.filter(x=>x.ganado).map(x=>x.k))); } catch(e){} }
+// Logros "nuevos" = ganados y aún no vistos en la vitrina. La primera vez no
+// marca nada como nuevo (todo lo que ya tenías cuenta como visto).
+function lgNuevos(L){
+  const v = lgVistos(); if(!v){ lgMarcarVistos(L); return []; }
+  return L.items.filter(x=>x.ganado && !v.includes(x.k));
+}
+// Los que están más cerca: el siguiente escalón de cada familia, ordenado por avance
+function lgProximos(L, n){
+  const vistos = new Set(), out = [];
+  L.items.forEach(x=>{ if(x.ganado || vistos.has(x.fam.id)) return; vistos.add(x.fam.id); if(x.actual > 0 || x.i === 0) out.push(x); });
+  return out.sort((a,b)=>b.pct - a.pct).slice(0, n);
+}
+const lgFalta = x => { const f = x.meta - x.actual; return x.fam.clave === 'ganTotal' || x.fam.clave === 'maxMesGan' ? `faltan ${fmt(f)}` : x.fam.clave === 'maxRacha' ? `te falta${f!==1?'n':''} ${f} día${f!==1?'s':''} seguido${f!==1?'s':''}` : x.fam.clave === 'maxMesesSeg' ? `te falta${f!==1?'n':''} ${f} mes${f!==1?'es':''}` : `te falta${f!==1?'n':''} ${f}`; };
+function lgMedalla(x, tam){
+  const t = x.tier;
+  return `<span class="lg-med${x.ganado?'':' bloq'}" style="--ta:${t.a};--tb:${t.b};width:${tam}px;height:${tam}px">${x.ganado ? mcIco(x.fam.ico, Math.round(tam*.44)) : `<svg viewBox="0 0 24 24" width="${Math.round(tam*.4)}" height="${Math.round(tam*.4)}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`}</span>`;
+}
+let vtTab = 'historial';
+function setVtTab(t){ vtTab = t; renderVentas(); window.scrollTo({top:0, behavior: mcMovReducido() ? 'auto' : 'smooth'}); }
+function verLogros(){ vtTab = 'logros'; go('ventas'); }
+// Pestañas Historial | Logros arriba de Ventas, y la tira del próximo logro
+function lgCabeceraVentas(){
+  const box = document.getElementById('ventas-tabs'); if(!box) return;
+  const L = mcLogros(), ganados = L.items.filter(x=>x.ganado).length, nuevos = vtTab === 'logros' ? [] : lgNuevos(L), prox = lgProximos(L, 1)[0];
+  box.innerHTML = `<div class="vt-seg" role="tablist">
+      <button class="${vtTab==='historial'?'on':''}" onclick="setVtTab('historial')">${mcIco('recibo',15)}Historial</button>
+      <button class="${vtTab==='logros'?'on':''}" onclick="setVtTab('logros')">${mcIco('trofeo',15)}Logros <span class="vt-n">${ganados}/${L.items.length}</span>${nuevos.length?`<span class="vt-nuevo">${nuevos.length} nuevo${nuevos.length!==1?'s':''}</span>`:''}</button>
+    </div>
+    ${vtTab==='historial' && prox ? `<button class="lg-tira" onclick="setVtTab('logros')">
+      ${lgMedalla(prox, 34)}<span class="lg-tira-t"><b>Próximo logro: ${prox.nombre}</b><em>${lgFalta(prox)} · nivel ${L.nivel.n} ${L.nivel.nombre}</em></span>
+      <span class="lg-tira-bar"><i style="width:${prox.pct}%"></i></span></button>` : ''}`;
+  const hist = vtTab === 'historial';
+  ['tabla-ventas','alertas-papeles','ventas-cobros-banner'].forEach(id=>{ const el = document.getElementById(id); if(el) el.style.display = hist ? '' : 'none'; });
+  const lg = document.getElementById('ventas-logros'); if(lg){ lg.style.display = hist ? 'none' : ''; if(!hist) renderLogros(L); }
+}
+function renderLogros(L){
+  const box = document.getElementById('ventas-logros'); if(!box) return;
+  L = L || mcLogros();
+  const nuevos = new Set(lgNuevos(L).map(x=>x.k));
+  const ganados = L.items.filter(x=>x.ganado), niv = L.nivel;
+  const pctNiv = niv.hasta ? Math.max(0, Math.min(100, (L.puntos - niv.desde) / (niv.hasta - niv.desde) * 100)) : 100;
+  const R = L.records, ultimos = ganados.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)) || b.pts - a.pts).slice(0, 4);
+  const rec = [
+    R.mayor ? {ico:'trofeo', t:'Mayor ganancia en una venta', v:fmt(R.mayor.g), d:ccEsc(R.mayor.v.motoNombre||'')} : null,
+    R.mejorMes ? {ico:'calendario', t:'Tu mejor mes', v:fmt(R.mejorMes[1]), d:`${MESES[Number(R.mejorMes[0].slice(5,7))-1]} ${R.mejorMes[0].slice(0,4)}`} : null,
+    {ico:'fuego', t:'Racha más larga', v:`${R.racha} día${R.racha!==1?'s':''}`, d:'Días seguidos vendiendo'},
+    R.rapida ? {ico:'reloj', t:'Venta más rápida', v:R.rapida.d === 0 ? 'El mismo día' : `${R.rapida.d} día${R.rapida.d!==1?'s':''}`, d:ccEsc(R.rapida.v.motoNombre||'')} : null,
+  ].filter(Boolean);
+  box.innerHTML = `
+    <div class="lg-nivel">
+      <div class="lg-nivel-n"><span>Nivel</span><b>${niv.n}</b></div>
+      <div class="lg-nivel-info">
+        <div class="lg-nivel-nom">${niv.nombre}</div>
+        <div class="lg-nivel-bar"><i data-w="${pctNiv}" style="width:0"></i></div>
+        <div class="lg-nivel-pie"><span>${L.puntos.toLocaleString('es-CO')} puntos</span><span>${niv.hasta ? `${(niv.hasta - L.puntos).toLocaleString('es-CO')} para ${niv.sig}` : 'Nivel máximo'}</span></div>
+      </div>
+      <div class="lg-nivel-cnt"><b>${ganados.length}</b><span>de ${L.items.length} logros</span></div>
+    </div>
+    <div class="lg-ayuda">Cada venta suma 2 puntos y cada logro suma según su medalla: bronce 10, plata 25, oro 50, diamante 100.</div>
+    ${(()=>{ const p = lgProximos(L, 3); return p.length ? `<div class="mc-sec"><span>${mcIco('objetivo',15)}Casi lo tienes</span></div>
+      <div class="lg-prox">${p.map(x=>`<div class="lg-prox-c" style="--ta:${x.tier.a};--tb:${x.tier.b}">${lgMedalla(x, 42)}<div class="lg-prox-t"><b>${x.nombre}</b><em>${lgFalta(x)}</em>
+        <span class="lg-prox-bar"><i style="width:${x.pct}%"></i></span><small>${x.fam.fmt(x.actual)} de ${x.fam.fmt(x.meta)} · ${x.tier.nombre} +${x.pts}</small></div></div>`).join('')}</div>` : ''; })()}
+    <div class="mc-sec"><span>${mcIco('bandera',15)}Tus récords</span></div>
+    <div class="lg-rec">${rec.map(r=>`<div class="lg-rec-c"><i>${mcIco(r.ico,16)}</i><span>${r.t}</span><b>${r.v}</b><em>${r.d}</em></div>`).join('')}</div>
+    ${ultimos.length ? `<div class="mc-sec"><span>${mcIco('historia',15)}Últimos ganados</span></div>
+      <div class="lg-ult">${ultimos.map(x=>`<div class="lg-ult-c${nuevos.has(x.k)?' nuevo':''}" style="--ta:${x.tier.a};--tb:${x.tier.b}">${lgMedalla(x, 38)}<div><b>${x.nombre}</b><em>${fechaCorta(x.fecha)}${x.veh?` · ${ccEsc(x.veh)}`:''}</em></div></div>`).join('')}</div>` : ''}
+    <div class="mc-sec"><span>${mcIco('trofeo',15)}Vitrina</span></div>
+    <div class="lg-fams">${LG_FAMILIAS.map(f=>{
+      const its = L.items.filter(x=>x.fam === f), n = its.filter(x=>x.ganado).length;
+      return `<div class="lg-fam"><div class="lg-fam-cab"><span>${mcIco(f.ico,15)}${f.nombre}</span><b>${n}/${its.length}</b></div>${f.nota?`<div class="lg-fam-nota">${f.nota}</div>`:''}
+        <div class="lg-grid">${its.map(x=>`<div class="lg-it${x.ganado?' ok':''}${nuevos.has(x.k)?' nuevo':''}" style="--ta:${x.tier.a};--tb:${x.tier.b}" title="${ccEsc(x.desc)}">
+          ${nuevos.has(x.k)?'<span class="lg-badge">Nuevo</span>':''}${lgMedalla(x, 46)}<b>${x.nombre}</b>
+          <em>${x.ganado ? fechaCorta(x.fecha) : `${x.fam.fmt(x.actual)} / ${x.fam.fmt(x.meta)}`}</em>
+          ${x.ganado ? `<small>${x.tier.nombre} · +${x.pts}</small>` : `<span class="lg-it-bar"><i style="width:${x.pct}%"></i></span>`}</div>`).join('')}</div></div>`;
+    }).join('')}</div>`;
+  requestAnimationFrame(()=>setTimeout(()=>box.querySelectorAll('.lg-nivel-bar i').forEach(b=>{ b.style.width = b.dataset.w + '%'; }), 60));
+  lgMarcarVistos(L);
+}
+function fechaCorta(f){ if(!f) return ''; const d = new Date(f+'T00:00:00'); return `${d.getDate()} ${MESES[d.getMonth()].slice(0,3).toLowerCase()} ${d.getFullYear()}`; }
+
+// ── FRASES DE LOS SUEÑOS ─────────────────────────────────────────────────────
+// Van rotando: cada venta toca un sueño distinto y no se repite una frase hasta
+// haber pasado por todas las de ese sueño.
+const MC_SUENOS = {
+  svj: [
+    {t:'El SVJ ya tiene tu nombre', m:'Cada venta como esta es una pieza más del Lamborghini SVJ. Un día vas a escuchar ese V12 y te vas a acordar de este negocio.', s:'Lamborghini SVJ: no es un sueño, es un plan.'},
+    {t:'Rumbo al Aventador SVJ', m:'"{veh}" vendido. Los que manejan un SVJ empezaron exactamente así: un negocio a la vez, sin parar.', s:'770 caballos te están esperando.'},
+    {t:'Las puertas tijera se ganan', m:'Las puertas del SVJ se abren hacia arriba, igual que tu negocio. Hoy sumaste {gan} más al camino.', s:'Sigue subiendo.'},
+    {t:'Huele a Lamborghini', m:'Comprar bien, vender mejor y repetir. Así se llega al garaje con un SVJ adentro.', s:'El toro ya te está mirando.'},
+    {t:'Un paso más al SVJ', m:'Imagínate saliendo del garaje en el SVJ un domingo en la mañana. Esta venta te acercó a ese día.', s:'Visualízalo. Trabájalo. Manéjalo.'},
+    {t:'Modo SVJ activado', m:'Negociaste como los grandes. El Lamborghini no se compra esperando: se compra cerrando negocios como este.', s:'Tu SVJ va tomando forma.'},
+  ],
+  gt3: [
+    {t:'Tu GT3 RS se acerca', m:'"{veh}" cerrado con {gan}. El Porsche GT3 RS no es suerte: es la suma de ventas como esta.', s:'Porsche GT3 RS: cada venta cuenta.'},
+    {t:'Aerodinámica de campeón', m:'El alerón del GT3 RS está hecho para ir rápido. Igual que tú: hoy vendiste y ya vas por la siguiente.', s:'Rápido y preciso, como un RS.'},
+    {t:'9.000 vueltas de motor', m:'El motor del GT3 RS sube hasta 9.000 rpm. Tu negocio también tiene que estar siempre acelerado. Hoy aceleraste.', s:'No le bajes el ritmo.'},
+    {t:'Pista despejada', m:'Cada negocio bien hecho es una vuelta rápida en la pista. Un día la vas a dar en tu propio GT3 RS.', s:'La pista ya te está esperando.'},
+    {t:'Porsche en construcción', m:'{mes} va sumando: llevas {ganMes} este mes. Así se arma, mes a mes, el Porsche GT3 RS.', s:'Tu GT3 RS se gana en días como hoy.'},
+    {t:'Disciplina de piloto', m:'Los pilotos ganan por constancia, no por una sola vuelta. Tú vas venta por venta hacia ese GT3 RS.', s:'Constancia = GT3 RS.'},
+  ],
+  mil: [
+    {t:'Rumbo a los mil millones', m:'Llevas {total} en ganancias. Ese es el {pctMil} de los mil millones. Hoy sumaste {gan}.', s:'Mil millones: un negocio a la vez.'},
+    {t:'El capital crece', m:'El capital que trabaja se multiplica. Cada venta como esta acerca los mil millones que te propusiste.', s:'Dinero en movimiento es dinero que crece.'},
+    {t:'Mil millones no es un número', m:'Es libertad. Es tranquilidad para tu familia. Y hoy, con "{veh}", te acercaste un poco más.', s:'Faltan {faltaMil}. Vas por ellos.'},
+    {t:'Mentalidad de mil millones', m:'Los que llegan a mil millones no paran por una buena venta: celebran y van por la siguiente. Eso eres tú.', s:'Celebra hoy, cierra otra mañana.'},
+    {t:'Ladrillo a ladrillo', m:'Cada venta es un ladrillo del imperio. Ya van {totalVentas} ladrillos y el edificio de los mil millones sigue creciendo.', s:'Construye sin parar.'},
+    {t:'Capital de campeón', m:'Comprar con criterio y vender con margen: esa es la fórmula de los mil millones, y hoy la aplicaste.', s:'Mil millones. Lo dijiste, lo vas a hacer.'},
+  ],
+  mama: [
+    {t:'Esta va por tu mamá', m:'Cada venta acerca el día en que le entregues los 100 millones a tu mamá. Hoy sumaste {gan} a ese regalo.', s:'Ella va a estar orgullosa.'},
+    {t:'El regalo de mamá', m:'Imagínate su cara cuando le des los 100 millones. Ventas como "{veh}" hacen que ese día llegue antes.', s:'Por ella, todo vale la pena.'},
+    {t:'100 millones de gratitud', m:'Llevas {total} en ganancias. {mamaTxt}', s:'Lo que tu mamá hizo por ti no tiene precio. Pero este regalo va a ser enorme.'},
+    {t:'Por quien siempre creyó', m:'Tu mamá siempre creyó en ti. Cada negocio cerrado es una forma de devolverle todo lo que te dio.', s:'Los 100 millones de mamá ya están en camino.'},
+    {t:'Una promesa en marcha', m:'Le prometiste 100 millones y estás cumpliendo, venta por venta. Hoy fue un paso más.', s:'Las promesas a mamá se cumplen.'},
+    {t:'El orgullo de la casa', m:'Cuando tu mamá sepa todo lo que construiste con estas ventas, va a llorar de felicidad.', s:'Sigue así. Ella lo merece.'},
+  ],
+  garaje: [
+    {t:'El garaje de tus sueños', m:'Un SVJ, un GT3 RS y espacio para más. Cada venta llena un poco ese garaje que ya tienes en la cabeza.', s:'El garaje se llena venta por venta.'},
+    {t:'Luces del garaje encendidas', m:'Imagínate llegar a casa, abrir el garaje y ver tus carros alineados. "{veh}" te acercó a esa imagen.', s:'Ese garaje es tuyo. Solo falta llenarlo.'},
+    {t:'Un espacio más ocupado', m:'Cada negocio es un espacio menos vacío en el garaje de tus sueños. Hoy sumaste {gan}.', s:'Sigue llenando el garaje.'},
+    {t:'Colección en camino', m:'Los grandes coleccionistas empezaron con un primer negocio. Tú ya llevas {totalVentas} ventas: la colección va en serio.', s:'El garaje de los sueños se construye hoy.'},
+    {t:'Tu garaje, tu historia', m:'Cada carro de tu garaje va a tener detrás ventas como esta. Vas a mirar atrás y acordarte de hoy.', s:'Cada venta, un recuerdo en el garaje.'},
+    {t:'Garaje de campeón', m:'Porsche, Lamborghini y lo que venga. Todo empieza aquí, cerrando negocios bien hechos como este.', s:'Sueña grande, vende más.'},
+  ],
+};
+const MC_SUENO_TEMAS = Object.keys(MC_SUENOS);
+function mcFraseSueno(datos){
+  let e; try { e = JSON.parse(localStorage.getItem('mc_frases_suenos')||'null'); } catch(_){}
+  if(!e || !Array.isArray(e.orden) || e.orden.length !== MC_SUENO_TEMAS.length) e = {orden:[], i:0, usadas:{}};
+  if(e.i >= e.orden.length){
+    const ultimo = e.orden[e.orden.length-1], o = MC_SUENO_TEMAS.slice().sort(()=>Math.random()-.5);
+    if(o[0] === ultimo) o.push(o.shift());
+    e.orden = o; e.i = 0;
+  }
+  const tema = e.orden[e.i++], pool = MC_SUENOS[tema];
+  let us = (e.usadas[tema]||[]).filter(n=>n < pool.length); if(us.length >= pool.length) us = [];
+  const libres = pool.map((_,n)=>n).filter(n=>!us.includes(n)), n = libres[Math.floor(Math.random()*libres.length)];
+  us.push(n); e.usadas[tema] = us;
+  try { localStorage.setItem('mc_frases_suenos', JSON.stringify(e)); } catch(_){}
+  const f = pool[n], rep = s => s.replace(/\{(\w+)\}/g, (_,k)=>datos[k] !== undefined ? datos[k] : '');
+  return {tema, titulo:rep(f.t), msg:rep(f.m), sub:rep(f.s)};
+}
+function mcDatosSueno(nombreVehiculo, ganancia, mes){
+  const total = ventas.reduce((a,v)=>a + mcGanVenta(v), 0), ganMes = ventas.filter(v=>String(v.fecha||'').startsWith(mes)).reduce((a,v)=>a + mcGanVenta(v), 0);
+  const pct = Math.max(0, total / 1e9 * 100);
+  return {veh: nombreVehiculo || 'el vehículo', gan: fmt(ganancia), total: fmt(total), ganMes: fmt(ganMes), mes: MESES[Number(mes.slice(5,7))-1],
+    pctMil: (pct < 10 ? pct.toFixed(1) : Math.round(pct)).toString().replace('.', ',') + '%', faltaMil: fmt(Math.max(0, 1e9 - total)), totalVentas: ventas.length,
+    mamaTxt: total >= 1e8 ? 'Ya pasaste los 100 millones: el regalo de mamá está listo.' : `Te faltan ${fmt(1e8 - total)} para los 100 millones de mamá.`};
+}
 
 // ── NOTAS DE VEHÍCULO ─────────────────────────────────────────────────────────
 function guardarNota(tipo, id, texto){
