@@ -4410,7 +4410,7 @@ function ccTarjeta(v, k){
     <div class="cc-acc">
       ${pend ? `<button class="btn btn-primary btn-sm" onclick="ccAbrirPago('${v.id}')">${mcIco('check',14)}Registrar pago</button>`
              : `<button class="btn ${ccEnvios(v).length ? 'btn-ghost' : 'btn-primary'} btn-sm" onclick="ccEnviarCobrada('${v.id}')">${mcIco('recibo',14)}${ccEnvios(v).length ? 'Reenviar PDF' : 'Enviar a ' + ccEsc(ccPagadorCorto()) + ' (PDF)'}</button>`}
-      <button class="btn btn-ghost btn-sm" onclick="ccCopiar('${v.id}')">${mcIco('recibo',14)}Copiar cuenta</button>
+      ${pend ? `<button class="btn btn-ghost btn-sm" onclick="ccCopiar('${v.id}')">${mcIco('recibo',14)}Copiar cuenta</button>` : ''}
       <button class="btn btn-ghost btn-sm" onclick="ccAbrirAjustar('${v.id}')">${mcIco('lapiz',14)}Ajustar</button>
       ${k.pagos.length ? `<button class="btn btn-ghost btn-sm" onclick="ccDeshacerPago('${v.id}')">${mcIco('retoma',14)}Deshacer último pago</button>` : ''}
     </div>
