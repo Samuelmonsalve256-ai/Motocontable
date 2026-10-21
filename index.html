@@ -7620,42 +7620,53 @@ async function mcEnviarATraspasosNube(traspaso){
 
 // ── CELEBRACIÓN ───────────────────────────────────────────────────────────────
 // ── SONIDOS DE CELEBRACIÓN ────────────────────────────────────────────────────
-function playBombazoFinal(){
-  try{
-    const ac=new(window.AudioContext||window.webkitAudioContext)();
-    // Golpe de bombo
-    const buf=ac.createBuffer(1,ac.sampleRate*0.3,ac.sampleRate);
-    const d=buf.getChannelData(0);
-    for(let j=0;j<d.length;j++) d[j]=(Math.random()*2-1)*Math.exp(-j/3000);
-    const src=ac.createBufferSource(),gb=ac.createGain();
-    src.buffer=buf;src.connect(gb);gb.connect(ac.destination);
-    gb.gain.value=0.7;src.start();
-    // Escala triunfal
-    [130,196,261,349,523,784,1047].forEach((f,i)=>{
-      const o=ac.createOscillator(),g=ac.createGain();
-      o.connect(g);g.connect(ac.destination);
-      o.type='triangle';o.frequency.value=f;
-      const t=ac.currentTime+i*0.07;
-      g.gain.setValueAtTime(0.15,t);
-      g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
-      o.start(t);o.stop(t+0.3);
-    });
-  }catch(e){}
+// Todos los sonidos grandes usan el mismo parlante que ya quedó desbloqueado con
+// el primer toque (Safari bloquea los que se crean después de esperar la nube).
+function mcAudioTocar(fn){
+  if(typeof mcSonidosActivos === 'function' && !mcSonidosActivos()) return;
+  const ac = mcAudioAviso(); if(!ac) return;
+  const ir = ()=>{ try { fn(ac, ac.currentTime + .02); } catch(e){} };
+  if(ac.state === 'running') ir(); else ac.resume().then(ir).catch(()=>{});
 }
-
+function mcNota(ac, f, t, d, tipo, vol){
+  const o = ac.createOscillator(), g = ac.createGain(); o.type = tipo||'triangle'; o.frequency.value = f; o.connect(g); g.connect(ac.destination);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol||.13, t+.015); g.gain.exponentialRampToValueAtTime(.0008, t+d); o.start(t); o.stop(t+d+.02);
+}
+function playBombazoFinal(){
+  mcAudioTocar((ac, t0)=>{
+    // Golpe de bombo
+    const buf = ac.createBuffer(1, ac.sampleRate*0.3, ac.sampleRate), d = buf.getChannelData(0);
+    for(let j = 0; j < d.length; j++) d[j] = (Math.random()*2-1)*Math.exp(-j/3000);
+    const src = ac.createBufferSource(), gb = ac.createGain();
+    src.buffer = buf; src.connect(gb); gb.connect(ac.destination); gb.gain.value = 0.7; src.start(t0);
+    // Escala triunfal
+    [130,196,261,349,523,784,1047].forEach((f,i)=>mcNota(ac, f, t0 + i*0.07, .3, 'triangle', .15));
+  });
+}
 function playPianoTriste(){
-  try{
-    const ac=new(window.AudioContext||window.webkitAudioContext)();
-    [[523,0],[494,0.3],[440,0.6],[392,0.9]].forEach(([f,t])=>{
-      const o=ac.createOscillator(),g=ac.createGain();
-      o.connect(g);g.connect(ac.destination);
-      o.type='triangle';o.frequency.value=f;
-      const st=ac.currentTime+t;
-      g.gain.setValueAtTime(0.2,st);
-      g.gain.exponentialRampToValueAtTime(0.001,st+0.4);
-      o.start(st);o.stop(st+0.4);
-    });
-  }catch(e){}
+  mcAudioTocar((ac, t0)=>{ [[523,0],[494,0.3],[440,0.6],[392,0.9]].forEach(([f,t])=>mcNota(ac, f, t0+t, .4, 'triangle', .2)); });
+}
+// Campanita de logro desbloqueado: más brillante y larga según la medalla
+// (0 bronce, 1 plata, 2 oro, 3 diamante; -1 = logro sin medalla)
+function mcSonidoLogro(tier){
+  mcAudioTocar((ac, t0)=>{
+    const k = Math.max(0, tier);
+    const notas = [[1568,0],[2093,.06],[2637,.12]].concat(k >= 1 ? [[3136,.18]] : [], k >= 3 ? [[4186,.24],[5274,.3]] : []);
+    notas.forEach(([f,t])=>{ mcNota(ac, f, t0+t, .5 + k*.15, 'sine', .07 + k*.012); mcNota(ac, f*2, t0+t, .25, 'sine', .015); });
+    if(k >= 2) mcNota(ac, 784, t0, .9, 'triangle', .06);
+  });
+}
+// Fanfarria de subir de nivel
+function mcSonidoNivel(){
+  mcAudioTocar((ac, t0)=>{
+    [[523.3,0],[659.3,.11],[784,.22],[1046.5,.33]].forEach(([f,t])=>mcNota(ac, f, t0+t, .32, 'square', .045));
+    [523.3,659.3,784,1046.5,1318.5].forEach(f=>mcNota(ac, f, t0+.5, 1.3, 'triangle', .06));
+    [2093,2637,3136].forEach((f,i)=>mcNota(ac, f, t0+.55+i*.07, .6, 'sine', .04));
+  });
+}
+// Brillo suave al abrir la vitrina con logros nuevos
+function mcSonidoBrillo(){
+  mcAudioTocar((ac, t0)=>{ [2349,2793,3520,4186].forEach((f,i)=>mcNota(ac, f, t0 + i*.05, .7, 'sine', .035)); });
 }
 
 // ── CELEBRACIÓN DE CADA VENTA ────────────────────────────────────────────────
@@ -7671,11 +7682,8 @@ const CEL_RANGOS = [
 const celSinEmoji = t => String(t||'').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]️?/gu,'').replace(/\s{2,}/g,' ').trim();
 let _celAnim = null, _celTimers = [];
 function celSonido(rango, record){
-  if(typeof mcSonidosActivos === 'function' && !mcSonidosActivos()) return;
-  try {
-    const ac = new (window.AudioContext||window.webkitAudioContext)(), t0 = ac.currentTime + .02;
-    const nota = (f, t, d, tipo, vol) => { const o = ac.createOscillator(), g = ac.createGain(); o.type = tipo||'triangle'; o.frequency.value = f; o.connect(g); g.connect(ac.destination);
-      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol||.13, t+.015); g.gain.exponentialRampToValueAtTime(.0008, t+d); o.start(t); o.stop(t+d+.02); };
+  mcAudioTocar((ac, t0)=>{
+    const nota = (f, t, d, tipo, vol)=>mcNota(ac, f, t, d, tipo, vol);
     // Arpegio que sube: más largo cuanto mejor la venta
     const esc = [523.3, 659.3, 784, 1046.5, 1318.5, 1568, 2093];
     for(let i = 0; i < rango.notas; i++) nota(esc[i], t0 + i*.075, .38, 'triangle', .12);
@@ -7686,7 +7694,7 @@ function celSonido(rango, record){
     const tc = t0 + 1.0;
     nota(1975.5, tc, .16, 'square', .045); nota(2637, tc+.08, .5, 'sine', .09); nota(3951, tc+.1, .35, 'sine', .035);
     if(record){ [784, 987.8, 1174.7, 1568].forEach((f,i)=>nota(f, tc+.45+i*.09, .5, 'triangle', .1)); }
-  } catch(e){}
+  });
 }
 function celConfeti(cantidad, colores){
   if(mcMovReducido()) return;
@@ -7756,7 +7764,7 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
       <div class="cel-sub">${m.sub}</div>
       <div class="cel-acc"><button class="btn btn-primary" onclick="cerrarCelebracion()">Seguir adelante</button></div>`;
     modal.classList.remove('modal-hidden'); modal.style.display = 'flex';
-    if(typeof mcSonidosActivos !== 'function' || mcSonidosActivos()) playPianoTriste();
+    playPianoTriste();
     return;
   }
 
@@ -7780,8 +7788,8 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
     const conEsta = venta ? L.items.filter(x=>x.ventaId === venta.id) : [];
     const ptsAntes = L.puntos - conEsta.reduce((a,x)=>a + x.pts, 0) - 2;
     let nAntes = 0; LG_NIVELES.forEach((n,i)=>{ if(ptsAntes >= n[0]) nAntes = i; });
-    if(L.nivel.n - 1 > nAntes) logros.push({ico:'flecha', t:`¡Subiste a nivel ${L.nivel.n}!`, d:`Ahora eres ${L.nivel.nombre}`, oro:true});
-    conEsta.sort((a,b)=>b.pts - a.pts).forEach(x=>logros.push({ico:x.fam.ico, t:x.nombre, d:`Logro desbloqueado · ${x.tier.nombre} +${x.pts}`, tier:x.tier, oro:x.pts >= 50}));
+    if(L.nivel.n - 1 > nAntes) logros.push({nivel:true, ico:'flecha', t:`¡Subiste a nivel ${L.nivel.n}!`, d:`Ahora eres ${L.nivel.nombre}`, oro:true});
+    conEsta.sort((a,b)=>b.pts - a.pts).forEach(x=>logros.push({ico:x.fam.ico, t:x.nombre, d:`Logro desbloqueado · ${x.tier.nombre} +${x.pts}`, tier:x.tier, tierN:LG_TIER.indexOf(x.tier), oro:x.pts >= 50}));
     celProx = lgProximos(L, 1)[0] || null;
   } catch(e){}
   // Meta en foco: cuánto la movió esta venta
@@ -7849,6 +7857,8 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
   const colores = [mcCss('--accent') || '#2a7fff', mcCss('--accent-b') || '#7c5cff', '#00d68f', '#f5c451', '#ffffff', '#ff8c3c'];
   celConfeti(rango.confeti + (record ? 120 : 0), colores);
   celSonido(rango, record);
+  // Cada logro suena justo cuando aparece en la tarjeta
+  logros.slice(0,5).forEach((l,i)=>_celTimers.push(setTimeout(()=>{ if(l.nivel) mcSonidoNivel(); else mcSonidoLogro(l.tier ? l.tierN : (l.oro ? 2 : 0)); }, (1.15 + i*.22)*1000 + 150)));
   try { if(navigator.vibrate) navigator.vibrate(record ? [30, 60, 30, 60, 90] : [25, 50, 60]); } catch(e){}
 }
 function celCerrar(){
@@ -8024,6 +8034,7 @@ function renderLogros(L){
           <em>${x.ganado ? fechaCorta(x.fecha) : `${x.fam.fmt(x.actual)} / ${x.fam.fmt(x.meta)}`}</em>
           ${x.ganado ? `<small>${x.tier.nombre} · +${x.pts}</small>` : `<span class="lg-it-bar"><i style="width:${x.pct}%"></i></span>`}</div>`).join('')}</div></div>`;
     }).join('')}</div>`;
+  if(nuevos.size) setTimeout(mcSonidoBrillo, 250);
   requestAnimationFrame(()=>setTimeout(()=>box.querySelectorAll('.lg-nivel-bar i').forEach(b=>{ b.style.width = b.dataset.w + '%'; }), 60));
   lgMarcarVistos(L);
 }
