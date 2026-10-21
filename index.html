@@ -1766,6 +1766,18 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
   .cel-prox{animation:none!important;opacity:1}
   .lg-nivel-bar i{transition:none}
 }
+/* ── RENDIMIENTO ─────────────────────────────────────────────────────────
+   El fondo con luz ya no se repinta en cada scroll (capa fija aparte) y el
+   menú lateral no difumina lo de atrás: se ve igual y se mueve más fluido. */
+body{background:var(--bg);background-attachment:scroll}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(1100px 560px at 88% -12%,rgba(var(--accent-rgb),.11),transparent 62%),radial-gradient(900px 520px at -12% 112%,rgba(var(--accent-rgb),.06),transparent 60%)}
+.sidebar{backdrop-filter:none;-webkit-backdrop-filter:none;background:linear-gradient(180deg,#11111e,#09090f)}
+.mes-grupo{contain:layout paint}
+@media (max-width:760px){
+  html #mc-top{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  html #mc-tabs{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+}
 </style>
 </head>
 <body>
@@ -3922,8 +3934,8 @@ function ccIr(id){
     ccResaltar(el);
   } else {
     go('ventas');
+    vmAbrirMesDeVenta(v);
     const el = document.getElementById('vta-'+id);
-    if(el){ const b = el.closest('[id^="mes-body-"]'); if(b) b.style.display = ''; }
     ccResaltar(el);
   }
 }
@@ -4813,7 +4825,10 @@ const MC_PALETAS = [
 ];
 const mcHexRgb = h => { const n = parseInt(String(h).replace('#','').slice(0,6), 16) || 0; return [n >> 16, (n >> 8) & 255, n & 255]; };
 const mcMezclaHex = (h1, h2, t) => { const a = mcHexRgb(h1), b = mcHexRgb(h2); return '#' + a.map((c, i)=>Math.round(c + (b[i] - c) * t).toString(16).padStart(2, '0')).join(''); };
-const mcCss = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+// Las variables de color solo cambian con la paleta: se leen una vez y se guardan
+// (leerlas después de pintar obliga al navegador a recalcular toda la página)
+window._mcCssCache = {};
+const mcCss = n => (n in window._mcCssCache) ? window._mcCssCache[n] : (window._mcCssCache[n] = getComputedStyle(document.documentElement).getPropertyValue(n).trim());
 const mcMovReducido = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 function aplicarPaleta(id, save){
   const p = MC_PALETAS.find(x=>x.id === id) || MC_PALETAS[0];
@@ -5609,7 +5624,10 @@ function renderResumen(){
       <td style="font-weight:600;font-family:'DM Mono',monospace;color:var(--text3)">Pendiente venta</td>
     </tr>`;
   }).join('');
-  const rowsV = ventas.map(v=>{
+  // Con muchas ventas, la tabla muestra las más recientes y el resto con un toque
+  const RES_MAX = 40, recientes = new Set([...ventas].sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||''))).slice(0, RES_MAX));
+  const ventasTabla = _resTodas || ventas.length <= RES_MAX ? ventas : ventas.filter(v=>recientes.has(v));
+  const rowsV = ventasTabla.map(v=>{
     const gastosExtra = (v.gastosList||[]).reduce((a,g)=>a+g.monto,0);
     const totalGastos = v.gastos + gastosExtra;
     const totalInv    = v.inversionCompra + totalGastos;
@@ -5629,8 +5647,10 @@ function renderResumen(){
 
   document.getElementById('resumen-tabla').innerHTML=`
     <table><thead><tr><th>Vehículo</th><th>Estado</th><th>Ingresos</th><th>Gastos</th><th>Compra</th><th>💰 Total invertido</th><th>Precio venta</th><th>Ganancia neta</th></tr></thead>
-    <tbody>${rowsA}${rowsCA}${rowsV}</tbody></table>`;
+    <tbody>${rowsA}${rowsCA}${rowsV}</tbody></table>
+    ${ventas.length > RES_MAX ? `<div style="text-align:center;padding:.8rem"><button class="btn btn-ghost" onclick="_resTodas=!_resTodas;renderResumen()">${_resTodas ? 'Mostrar solo las ' + RES_MAX + ' ventas más recientes' : 'Ver todas las ventas (' + ventas.length + ')'}</button></div>` : ''}`;
 }
+var _resTodas = false;
 
 // ── ALERTAS DE CAPITAL DORMIDO ────────────────────────────────────────────────
 const DIAS_ALERTA = 100;
@@ -6212,6 +6232,7 @@ function renderVentas(){
     grupos[key].items.push(v);
   });
 
+  _vmPendiente = {};
   const html = Object.keys(grupos).sort().reverse().map(key=>{
     const g       = grupos[key];
     const tVenta  = g.items.reduce((a,v)=>a+v.precioVenta,0);
@@ -6377,15 +6398,29 @@ function renderVentas(){
           </div>
         </div>
         <!-- CONTENIDO DEL MES -->
-        <div id="mes-body-${safeKey}" style="display:${inicialAbierto?'':'none'}">${ventasHtml}</div>
+        <div id="mes-body-${safeKey}" style="display:${inicialAbierto?'':'none'}">${inicialAbierto ? ventasHtml : (_vmPendiente[safeKey] = ventasHtml, '')}</div>
       </div>`;
   }).join('');
 
   cont.innerHTML = html;
 }
 
+// Los meses cerrados no se dibujan hasta abrirlos: con muchas ventas la página
+// pesaba miles de elementos escondidos y todo se movía más lento
+var _vmPendiente = {};
+function vmLlenarMes(key){
+  const body = document.getElementById('mes-body-'+key);
+  if(body && _vmPendiente[key] !== undefined){ body.innerHTML = _vmPendiente[key]; delete _vmPendiente[key]; }
+  return body;
+}
+function vmAbrirMesDeVenta(v){
+  if(!v || !v.fecha) return;
+  const key = String(v.fecha).slice(0,7).replace('-','_'), body = vmLlenarMes(key), ch = document.getElementById('chevron-'+key);
+  if(body) body.style.display = '';
+  if(ch) ch.style.transform = 'rotate(0deg)';
+}
 function toggleMes(key){
-  const body    = document.getElementById('mes-body-'+key);
+  const body    = vmLlenarMes(key);
   const chevron = document.getElementById('chevron-'+key);
   if(!body) return;
   const abierto = body.style.display !== 'none';
@@ -6621,6 +6656,7 @@ function switchInv(tab, btn){
   btn.classList.add('active');
   document.getElementById('inv-activas').style.display =tab==='activas' ?'':'none';
   document.getElementById('inv-vendidas').style.display=tab==='vendidas'?'':'none';
+  if(tab==='vendidas' && _invVendidasHtml !== null){ document.getElementById('inv-vendidas').innerHTML = _invVendidasHtml; _invVendidasHtml = null; }
 }
 
 function renderInventario(){
@@ -6704,8 +6740,11 @@ function renderInventario(){
       <table><thead><tr><th>Fecha</th><th>Moto</th><th>Inversión</th><th>Gastos</th><th>Precio venta</th><th>Ganancia</th><th>Comprador</th></tr></thead><tbody>${rows}</tbody></table>
     </div>`;
   }).join('');
-  document.getElementById('inv-vendidas').innerHTML=html;
+  // "Vendidas por mes" se dibuja cuando se abre esa pestaña
+  const caja = document.getElementById('inv-vendidas');
+  if(caja.style.display === 'none'){ _invVendidasHtml = html; caja.innerHTML = ''; } else { _invVendidasHtml = null; caja.innerHTML = html; }
 }
+var _invVendidasHtml = null;
 
 // ── ANÁLISIS MENSUAL ──────────────────────────────────────────────────────────
 function initAnalisis(){
@@ -8172,6 +8211,7 @@ function aplicarConfigInicial(){
 }
 
 function _aplicarAccent(hex, hex2){
+  window._mcCssCache = {};
   const st=document.documentElement.style;
   st.setProperty('--accent',hex);
   // Calcular variante más clara
