@@ -1849,6 +1849,60 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   .lgf-card,.lgf-rayos,.lgf-corona,.lg-liga-ban{animation:none!important}
   .lgf-stats div{animation:none!important;opacity:1}
 }
+/* ── CELEBRACIÓN v2: más ancha y más baja, en dos columnas ─────────────── */
+.cel-card{max-width:880px;padding:0;text-align:left}
+.cel-grid{display:grid;grid-template-columns:1.08fr 1fr}
+.cel-izq{position:relative;overflow:hidden;padding:1.5rem 1.6rem 1.3rem;isolation:isolate;
+  background:radial-gradient(120% 90% at 0% 0%,color-mix(in srgb,var(--c1) 26%,transparent),transparent 60%),radial-gradient(90% 80% at 100% 100%,color-mix(in srgb,var(--c2) 14%,transparent),transparent 65%)}
+.cel-der{padding:1.4rem 1.5rem 1.2rem;border-left:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.015);display:flex;flex-direction:column;gap:.55rem}
+.cel-der .cel-barra{margin-top:0}
+.cel-der .cel-logros{margin-top:.1rem;gap:.4rem}
+.cel-der .cel-logro{padding:.45rem .6rem}
+.cel-der .cel-prox{margin-top:.1rem}
+.cel-rayos{left:-130px;top:-170px;margin-left:0;width:380px;height:380px;opacity:.2}
+.cel-top{display:flex;align-items:center;gap:.9rem}
+.cel-top .cel-medalla{width:60px;height:60px;margin:0;flex:none}
+.cel-top .cel-medalla svg{width:30px;height:30px}
+.cel-top .cel-rango{margin-top:.1rem;font-size:1.25rem}
+.cel-veh{justify-content:flex-start;margin-top:1rem;font-size:.95rem}
+.cel-gan{margin:.25rem 0 .55rem;font-size:3.4rem;text-align:left}
+.cel-gan.neg{font-size:2.8rem}
+.cel-cifras{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:0;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.22)}
+.cel-cifras span{padding:.5rem .6rem;border-left:1px solid rgba(255,255,255,.06);min-width:0}
+.cel-cifras span:first-child{border-left:0}
+.cel-cifras small{display:block;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:#8a8aa6;font-weight:700;white-space:nowrap}
+.cel-cifras b{display:block;font:700 .86rem 'Space Grotesk',sans-serif;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cel-cifras b.pos{color:#00d68f}.cel-cifras b.neg{color:#ff8a8a}
+.cel-izq .cel-t{margin-top:.9rem;font-size:1.05rem}
+.cel-izq .cel-msg{margin:.3rem 0 0;max-width:none;font-size:.84rem}
+.cel-sello{position:absolute;top:1.1rem;right:1.1rem;padding:.3rem .75rem;border:2.5px solid var(--c1);border-radius:10px;color:var(--c1);font:800 .82rem 'Space Grotesk',sans-serif;letter-spacing:.18em;text-transform:uppercase;
+  transform:rotate(9deg);opacity:0;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c1) 35%,transparent);animation:celSello .45s 1.05s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes celSello{0%{opacity:0;transform:rotate(9deg) scale(2.4)}60%{opacity:.95;transform:rotate(9deg) scale(.92)}100%{opacity:.85;transform:rotate(9deg) scale(1)}}
+.cel-pie{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1.5rem;border-top:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.18)}
+.cel-pie .cel-sub{margin:0;text-align:left}
+.cel-pie .cel-acc{flex-direction:row;margin:0;flex:none}
+.cel-pie .cel-acc .btn{width:auto;padding:.75rem 1.3rem}
+.cel-perdida .cel-izq{background:radial-gradient(120% 90% at 0% 0%,rgba(122,122,152,.18),transparent 60%)}
+.cel-perdida .cel-der{justify-content:center}
+.cel-der .cel-t{margin-top:0}
+.cel-der .cel-msg{margin:.1rem 0 .3rem;max-width:none}
+.cel-perdida .cel-rango{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:#b4b4c8}
+@media (max-width:760px){
+  html .cel-card{max-width:440px;border-radius:22px;padding:0}
+  html .cel-grid{grid-template-columns:1fr}
+  html .cel-izq{padding:1.15rem 1.05rem 1rem}
+  html .cel-der{padding:.9rem 1.05rem 1rem;border-left:0;border-top:1px solid rgba(255,255,255,.06)}
+  html .cel-gan{font-size:2.5rem}
+  html .cel-top .cel-medalla{width:52px;height:52px}
+  html .cel-sello{top:4.9rem;right:1rem;font-size:.68rem;padding:.25rem .6rem}
+  html .cel-cifras span{padding:.4rem .45rem}
+  html .cel-cifras b{font-size:.78rem}
+  html .cel-pie{flex-direction:column;align-items:stretch;padding:.8rem 1.05rem 1rem}
+  html .cel-pie .cel-sub{text-align:center}
+  html .cel-pie .cel-acc{flex-direction:column-reverse}
+  html .cel-pie .cel-acc .btn{width:100%}
+}
+@media (prefers-reduced-motion:reduce){ .cel-sello{animation:none!important;opacity:.85} }
 </style>
 </head>
 <body>
@@ -7837,6 +7891,18 @@ function celConfeti(cantidad, colores, lienzo){
   };
   _celAnim = requestAnimationFrame(paso);
 }
+// Los números de la venta en una franja: precio, inversión, rentabilidad y días
+function celCifras(v, ganancia){
+  if(!v) return '';
+  const pv = ccNum(v.precioVenta), inv = pv - ganancia, rent = inv > 0 ? ganancia / inv * 100 : 0, dias = lgDias(v.fechaCompra, v.fecha);
+  const r = Math.abs(rent) < 10 ? rent.toFixed(1).replace('.', ',').replace(',0','') : Math.round(rent);
+  return `<div class="cel-cifras">
+    <span><small>Vendida en</small><b>${fmt(pv)}</b></span>
+    <span><small>Invertido</small><b>${fmt(inv)}</b></span>
+    <span><small>Rentabilidad</small><b class="${rent >= 0 ? 'pos' : 'neg'}">${rent >= 0 ? '+' : ''}${r}%</b></span>
+    ${dias !== null && dias >= 0 ? `<span><small>En inventario</small><b>${dias === 0 ? 'Mismo día' : dias + ' día' + (dias !== 1 ? 's' : '')}</b></span>` : ''}
+  </div>`;
+}
 function celContar(el, hasta, ms){
   if(!el) return;
   if(mcMovReducido()){ el.textContent = '+' + fmt(hasta); return; }
@@ -7869,16 +7935,22 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
     ];
     const m = msgs[Math.floor(Math.random()*msgs.length)];
     card.className = 'cel-card cel-perdida';
+    card.style.removeProperty('--c1'); card.style.removeProperty('--c2');
     card.innerHTML = `
-      <div class="cel-medalla" style="--c1:#7a7a98;--c2:#3a3a52">${mcIco('rayo',34)}</div>
-      <div class="cel-k">Venta #${nMes} de ${nomMes.toLowerCase()}</div>
-      <div class="cel-veh">${plac}${ccEsc(nombreVehiculo||'Vehículo')}</div>
-      <div class="cel-gan neg">−${fmt(Math.abs(ganancia))}</div>
-      <div class="cel-t">${m.titulo}</div>
-      <p class="cel-msg">${m.msg}</p>
-      <div class="cel-logros"><span class="cel-logro"><i>${mcIco('retoma',15)}</i><b>Capital de vuelta</b><em>${fmt(ccNum(venta && venta.precioVenta))} vuelven a moverse</em></span></div>
-      <div class="cel-sub">${m.sub}</div>
-      <div class="cel-acc"><button class="btn btn-primary" onclick="cerrarCelebracion()">Seguir adelante</button></div>`;
+      <div class="cel-grid">
+        <div class="cel-izq">
+          <div class="cel-top"><div class="cel-medalla">${mcIco('rayo',30)}</div><div><div class="cel-k">Venta #${nMes} de ${nomMes.toLowerCase()}</div><div class="cel-rango">Venta con pérdida</div></div></div>
+          <div class="cel-veh">${plac}${ccEsc(nombreVehiculo||'Vehículo')}</div>
+          <div class="cel-gan neg">−${fmt(Math.abs(ganancia))}</div>
+          ${celCifras(venta, ganancia)}
+        </div>
+        <div class="cel-der">
+          <div class="cel-t">${m.titulo}</div>
+          <p class="cel-msg">${m.msg}</p>
+          <div class="cel-logros"><span class="cel-logro"><i>${mcIco('retoma',15)}</i><b>Capital de vuelta</b><em>${fmt(ccNum(venta && venta.precioVenta))} vuelven a moverse</em></span></div>
+        </div>
+      </div>
+      <div class="cel-pie"><div class="cel-sub">${m.sub}</div><div class="cel-acc"><button class="btn btn-primary" onclick="cerrarCelebracion()">Seguir adelante</button></div></div>`;
     modal.classList.remove('modal-hidden'); modal.style.display = 'flex';
     playPianoTriste();
     return;
@@ -7950,23 +8022,32 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
   card.className = `cel-card cel-${rango.id}${record ? ' cel-record' : ''}`;
   card.style.setProperty('--c1', rango.c1); card.style.setProperty('--c2', rango.c2);
   card.innerHTML = `
-    <div class="cel-rayos" aria-hidden="true"></div>
-    <div class="cel-medalla">${mcIco(record ? 'trofeo' : rango.id === 'legendaria' ? 'rayo' : rango.id === 'epica' ? 'fuego' : 'llave', 36)}</div>
-    <div class="cel-k">Venta #${nMes} de ${nomMes.toLowerCase()}</div>
-    <div class="cel-rango">${record ? 'Nuevo récord' : rango.nombre}</div>
-    <div class="cel-veh">${plac}${ccEsc(nombreVehiculo||'Vehículo')}</div>
-    <div class="cel-gan" id="cel-ganancia">+$0</div>
-    <div class="cel-t">${celSinEmoji(m.titulo)}</div>
-    <p class="cel-msg">${celSinEmoji(m.msg)}</p>
-    <div class="cel-barra"><div class="cel-barra-cab"><span>${mcIco('calendario',14)}Ganancia de ${nomMes.toLowerCase()}</span><b>${fmt(ganMes)}</b></div>
-      <div class="cel-pista"><i class="ant" style="width:${pAntes}%"></i><i class="nue" data-w="${pAhora}" style="width:${pAntes}%"></i></div><div class="cel-barra-pie">${objTxt}</div></div>
-    ${metaHtml}
+    <div class="cel-grid">
+      <div class="cel-izq">
+        <div class="cel-rayos" aria-hidden="true"></div>
+        <div class="cel-sello" aria-hidden="true">Vendida</div>
+        <div class="cel-top"><div class="cel-medalla">${mcIco(record ? 'trofeo' : rango.id === 'legendaria' ? 'rayo' : rango.id === 'epica' ? 'fuego' : 'llave', 30)}</div>
+          <div><div class="cel-k">Venta #${nMes} de ${nomMes.toLowerCase()}</div><div class="cel-rango">${record ? 'Nuevo récord' : rango.nombre}</div></div></div>
+        <div class="cel-veh">${plac}${ccEsc(nombreVehiculo||'Vehículo')}</div>
+        <div class="cel-gan" id="cel-ganancia">+$0</div>
+        ${celCifras(venta, ganancia)}
+        <div class="cel-t">${celSinEmoji(m.titulo)}</div>
+        <p class="cel-msg">${celSinEmoji(m.msg)}</p>
+      </div>
+      <div class="cel-der">
+        <div class="cel-barra"><div class="cel-barra-cab"><span>${mcIco('calendario',14)}Ganancia de ${nomMes.toLowerCase()}</span><b>${fmt(ganMes)}</b></div>
+          <div class="cel-pista"><i class="ant" style="width:${pAntes}%"></i><i class="nue" data-w="${pAhora}" style="width:${pAntes}%"></i></div><div class="cel-barra-pie">${objTxt}</div></div>
+        ${metaHtml}
     ${logros.length ? `<div class="cel-logros">${logros.slice(0,5).map((l,i)=>`<span class="cel-logro${l.oro?' oro':''}${l.tier?' lgx':''}" style="animation-delay:${1.15 + i*.22}s${l.tier?`;--ta:${l.tier.a};--tb:${l.tier.b}`:''}"><i>${mcIco(l.ico,15)}</i><b>${l.t}</b><em>${l.d}</em></span>`).join('')}</div>` : ''}
-    ${celProx ? `<button class="cel-prox" onclick="celVerLogros()" style="animation-delay:${1.3 + Math.min(5,logros.length)*.22}s"><span class="cel-prox-t">Próximo logro: <b>${celProx.nombre}</b> · ${lgFalta(celProx)}</span><span class="cel-prox-bar"><i style="width:${celProx.pct}%"></i></span><span class="cel-prox-v">Ver mis logros ›</span></button>` : ''}
-    <div class="cel-sub">${celSinEmoji(m.sub)}</div>
-    <div class="cel-acc">
-      <button class="btn btn-primary" onclick="cerrarCelebracion()">¡A por la siguiente!</button>
-      <button class="btn btn-ghost" onclick="celOtraVenta()">Registrar otra venta</button>
+        ${celProx ? `<button class="cel-prox" onclick="celVerLogros()" style="animation-delay:${1.3 + Math.min(5,logros.length)*.22}s"><span class="cel-prox-t">Próximo logro: <b>${celProx.nombre}</b> · ${lgFalta(celProx)}</span><span class="cel-prox-bar"><i style="width:${celProx.pct}%"></i></span><span class="cel-prox-v">Ver mis logros ›</span></button>` : ''}
+      </div>
+    </div>
+    <div class="cel-pie">
+      <div class="cel-sub">${celSinEmoji(m.sub)}</div>
+      <div class="cel-acc">
+        <button class="btn btn-ghost" onclick="celOtraVenta()">Registrar otra venta</button>
+        <button class="btn btn-primary" onclick="cerrarCelebracion()">¡A por la siguiente!</button>
+      </div>
     </div>`;
   modal.classList.remove('modal-hidden'); modal.style.display = 'flex';
   // Animaciones: conteo, barras que avanzan, confeti y sonido
