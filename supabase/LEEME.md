@@ -22,6 +22,7 @@ Esta guía te lleva paso a paso para configurar tu proyecto de Supabase.
 | `06_traspasos.sql` | Amplía la lista de colecciones permitidas | Permite guardar Traspasos de Vehículos en la nube (FASE 8). No borra datos |
 | `07_fotos.sql` | Crea el bucket privado `fotos` y sus reglas | Guarda las fotos de motos y carros como archivos en Supabase Storage (FASE 9). No toca ninguna tabla ni dato |
 | `08_respaldos.sql` | Crea el bucket privado `respaldos` y sus reglas | Respaldo semanal automático de tus datos en la nube, aparte de la sincronización (FASE 10). No toca ninguna tabla ni dato |
+| `09_aprobaciones.sql` | Crea la tabla `mc_aprobaciones` y 4 funciones | Quien paga en la financiera aprueba las cuentas cobradas desde un enlace, con su cédula (FASE 11). No toca ninguna tabla ni dato existente |
 
 Ningún archivo borra la tabla `mc_datos` ni tus datos. Los archivos 01 a 05 se pueden volver a ejecutar sin problema: no duplican ni pisan nada.
 
@@ -332,3 +333,33 @@ Tus dispositivos lo recibirán en la próxima sincronización.
 - **La versión anterior de la app sigue en `main`** hasta que se haga el merge.
 - **`mc_datos` y `mc_datos_respaldo_pre_migracion` conservan tus datos originales.**
 - **Los backups JSON de la FASE 0** se pueden restaurar desde la app.
+
+---
+
+## FASE 11: Aprobación de las cuentas cobradas
+
+Cuando envías en PDF una cuenta ya cobrada, el mensaje y el PDF llevan un **enlace único**. La persona que paga en la financiera lo abre en su celular, sin cuenta ni contraseña, ve el resumen de esa cuenta y la **aprueba escribiendo su cédula**, o deja una **observación** si algo no cuadra. La respuesta se guarda en Supabase y MotoContable la trae sola.
+
+**Paso 1: ejecutar el SQL (una sola vez)**
+1. En Supabase abre **SQL Editor → New query**.
+2. Abre el archivo `09_aprobaciones.sql`, copia **todo su contenido** (no el nombre del archivo) y pégalo en el editor. Pulsa **Run**.
+3. Al final debe mostrar la tabla `mc_aprobaciones` con `relrowsecurity = true` y 4 funciones: `mc_aprobacion_crear`, `mc_aprobacion_responder`, `mc_aprobacion_ver` y `mc_aprobaciones_estado`.
+
+**Paso 2: datos de quien paga**
+1. Recarga MotoContable (en el Mac **Cmd + Opción + R**).
+2. Ve a **Por cobrar** y pulsa **Configurar** (o **Cambiar datos**) en el aviso de arriba.
+3. Escribe el nombre completo, la **cédula** (con ella se verifica la aprobación) y el WhatsApp.
+
+**Cómo funciona:**
+- En una cuenta cobrada pulsa **Enviar a … (PDF)**. El enlace se crea solo y va en el mensaje y dentro del PDF.
+- La cuenta muestra **Esperando aprobación**; si pasan 3 días sin respuesta se pone en amarillo. Con **Copiar enlace** lo puedes volver a mandar.
+- Cuando ella aprueba, te llega el aviso y la cuenta queda **Aprobada por … el día a la hora**, con su cédula. Una vez respondida, el enlace ya no se puede cambiar.
+- Si deja una observación, la ves en la cuenta. Corrige lo necesario y pulsa **Reenviar PDF**: se crea un enlace nuevo y el anterior queda sin efecto.
+- **Marcar aprobada** registra la aprobación a mano (por ejemplo, si te respondió por WhatsApp), con fecha, cómo la aprobó, una nota y, si quieres, un pantallazo como prueba.
+
+**Seguridad:**
+- Cada enlace es para una sola cuenta y lleva un código aleatorio imposible de adivinar.
+- La página solo muestra el resumen de esa cuenta: nada más de tu negocio, y nunca la cédula guardada.
+- Si escriben mal la cédula 5 veces, el enlace se bloquea.
+- Solo tú, con tu sesión, puedes ver la lista de aprobaciones.
+

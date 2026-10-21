@@ -1931,6 +1931,22 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .cc-envio.pend{color:#f5c451;background:rgba(245,196,81,.08);border:1px dashed rgba(245,196,81,.4)}
 .cc-envio button{background:none;border:0;color:#8a8aa6;font:500 11.5px 'Inter',sans-serif;cursor:pointer;text-decoration:underline}
 @media (max-width:760px){ html .cc-envios-ban .btn{flex:1} }
+/* Aprobación de cuentas cobradas */
+.cc-aprob{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;padding:9px 12px;border-radius:12px;font-size:12.5px}
+.cc-aprob > svg{flex:none}
+.cc-aprob span{flex:1;min-width:150px}
+.cc-aprob em{display:block;font-style:normal;font-size:11.5px;opacity:.85;margin-top:1px}
+.cc-aprob small{opacity:.7}
+.cc-aprob button{background:none;border:0;color:inherit;opacity:.85;font:600 11.5px 'Inter',sans-serif;cursor:pointer;text-decoration:underline}
+.cc-aprob.ok{color:#9ae6c6;background:linear-gradient(90deg,rgba(0,214,143,.14),rgba(0,214,143,.04));border:1px solid rgba(0,214,143,.4)}
+.cc-aprob.ok b{color:#fff}
+.cc-aprob.pend{color:#c9c9e0;background:rgba(var(--accent-rgb),.08);border:1px solid rgba(var(--accent-rgb),.3)}
+.cc-aprob.pend.tarde{color:#f5c451;background:rgba(245,196,81,.08);border-color:rgba(245,196,81,.4)}
+.cc-aprob.obs{color:#ffb3c4;background:rgba(255,107,141,.08);border:1px solid rgba(255,107,141,.4)}
+.cc-aprob.sin{color:#9a9ab8;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.14)}
+.cc-aprob-foto{width:40px;height:40px;border-radius:8px;object-fit:cover;cursor:zoom-in;border:1px solid rgba(255,255,255,.15)}
+.cc-ban-ap{color:#c9c9e0!important}
+.cc-ban-ap .obs{color:#ff8aa5}
 </style>
 </head>
 <body>
@@ -3484,7 +3500,7 @@ function mcRegistrarEventos(){
   });
   window.addEventListener('pagehide', mcEnvioDeEmergencia);
   window.addEventListener('pageshow', e=>{ if(e.persisted) mcSincronizar('pageshow'); });
-  setInterval(()=>{ if(document.visibilityState==='visible'){ mcSincronizar('periodico'); mcSubirFotosPendientes(); mcRespaldoSemanal(); } }, 60000);
+  setInterval(()=>{ if(document.visibilityState==='visible'){ mcSincronizar('periodico'); mcSubirFotosPendientes(); mcRespaldoSemanal(); try { ccRevisarAprobaciones(); } catch(e){} } }, 60000);
 }
 async function mcIniciar(){
   try { if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
@@ -4271,10 +4287,14 @@ function renderCobros(){
   // Cuentas cobradas que falta enviar en PDF a quien paga
   const sinEnv = ccSinEnviar();
   if(t.cobradas) ccCargarPdf().catch(()=>{});
+  ccRevisarAprobaciones();
+  const esperando = ventas.filter(v=>v.cobro && v.cobro.aprobacion && v.cobro.aprobacion.estado === 'pendiente' && ccEnvios(v).length).length;
+  const conObs = ventas.filter(v=>v.cobro && v.cobro.aprobacion && v.cobro.aprobacion.estado === 'observacion').length;
   h += `<div class="cc-envios-ban${sinEnv.length ? '' : ' ok'}">
     <i>${mcIco(sinEnv.length ? 'recibo' : 'check',18)}</i>
     <span><b>${sinEnv.length ? `${sinEnv.length} cuenta${sinEnv.length!==1?'s':''} cobrada${sinEnv.length!==1?'s':''} sin enviar a ${ccEsc(ccPagadorCorto())}` : `Todas las cuentas cobradas ya se enviaron${ccPagador() ? ' a ' + ccEsc(ccPagadorCorto()) : ''}`}</b>
-      <em>${ccPagador() ? `${ccEsc(ccPagador().nombre)}${ccPagador().cc ? ' · C.C. ' + ccEsc(ccPagador().cc) : ''}` : `Configura a quién le envías las cuentas en ${FP_FINANCIERA}`}</em></span>
+      <em>${ccPagador() ? `${ccEsc(ccPagador().nombre)}${ccPagador().cc ? ' · C.C. ' + ccEsc(ccPagador().cc) : ''}` : `Configura a quién le envías las cuentas en ${FP_FINANCIERA}`}</em>
+      ${esperando || conObs ? `<em class="cc-ban-ap">${esperando ? `${esperando} esperando aprobación` : ''}${esperando && conObs ? ' · ' : ''}${conObs ? `<b class="obs">${conObs} con observación</b>` : ''}</em>` : ''}</span>
     ${sinEnv.length ? `<button class="btn btn-primary btn-sm" onclick="ccFiltrar('cobradas')">Ver cuáles</button>` : ''}
     <button class="btn btn-ghost btn-sm" onclick="ccConfigPagador()">${ccPagador() ? 'Cambiar datos' : 'Configurar'}</button>
   </div>`;
@@ -4300,6 +4320,7 @@ function renderCobros(){
   <div id="cc-lista-wrap"></div>`;
   cont.innerHTML = h;
   ccRenderLista();
+  try { mcHidratarFotos(); } catch(e){}
 }
 function ccFiltrar(f){ _ccFiltro = f; renderCobros(); }
 function ccRenderLista(){
@@ -4440,7 +4461,7 @@ function ccGuardarPagador(idPendiente){
 }
 
 // Arma el PDF de la cuenta ya cobrada
-function ccPdfCuenta(jsPDF, v, k, numero){
+function ccPdfCuenta(jsPDF, v, k, numero, enlace){
   const doc = new jsPDF({unit:'mm', format:'a4'});
   const p = ccPagador() || {}, e = cfgData.cobroEmisor || {};
   const W = 210, M = 18, ink = [24,24,36], gris = [110,110,130], linea = [225,225,235], verde = [0,150,100];
@@ -4497,6 +4518,17 @@ function ccPdfCuenta(jsPDF, v, k, numero){
   doc.setFont('helvetica','normal'); doc.setFontSize(10);
   const ult = k.ultimo && !k.ultimo.antes ? `Último pago recibido el ${mcFechaCorta(k.ultimo.fecha)}.` : 'Cuenta pagada en su totalidad.';
   doc.text(`${ult} ${FP_FINANCIERA} no tiene saldo pendiente por esta venta.`, M + 8, y + 16.5);
+  const apr = v.cobro && v.cobro.aprobacion;
+  if(apr && apr.estado === 'aprobada'){
+    doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text(`APROBADA por ${apr.nombre || 'quien paga'} el ${mcFechaCorta(String(apr.fecha||'').slice(0,10))}${apr.manual && apr.via ? ' (' + apr.via + ')' : ''}`, W - M - 8, y + 10, {align:'right'});
+  }
+  y += 30;
+  if(enlace){
+    doc.setDrawColor(...linea); doc.setFillColor(244,247,255); doc.setLineWidth(.4); doc.roundedRect(M, y, W - 2*M, 20, 3, 3, 'FD');
+    doc.setTextColor(...ink); doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text('Aprueba esta cuenta', M + 8, y + 8);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(42,127,255);
+    doc.textWithLink('Toca aquí para aprobarla con tu cédula', M + 8, y + 14.5, {url: enlace});
+  }
   // Pie
   doc.setDrawColor(...linea); doc.setLineWidth(.3); doc.line(M, 280, W - M, 280);
   doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...gris);
@@ -4516,27 +4548,161 @@ async function ccEnviarCobrada(id){
   // Número consecutivo: se asigna la primera vez y se conserva
   if(!v.cobro.numero){ const n = (Number(cfgData.ccConsecutivo) || 0) + 1; cfgData.ccConsecutivo = n; v.cobro.numero = n; saveCfg(); saveVentas(); }
   const num = String(v.cobro.numero).padStart(4,'0');
-  const doc = ccPdfCuenta(lib.jsPDF, v, k, v.cobro.numero);
+  // Enlace de aprobación (si la cuenta no está aprobada ya)
+  let enlace = '';
+  const ap = v.cobro.aprobacion;
+  if(!(ap && ap.estado === 'aprobada')){
+    const r = await ccCrearAprobacion(v, k, p);
+    if(r.token){ v.cobro.aprobacion = {token: r.token, estado: 'pendiente', creada: new Date().toISOString(), numero: v.cobro.numero}; enlace = ccEnlaceAprobacion(r.token); }
+    else if(r.aviso) mcNotificar({tipo:'ok', titulo:'El PDF va sin enlace de aprobación', texto:r.aviso, sonido:false, ms:7000});
+  }
+  const doc = ccPdfCuenta(lib.jsPDF, v, k, v.cobro.numero, enlace);
   const archivo = `Cuenta-cobro-${num}-${String(v.motoPlaca || v.motoNombre || 'venta').replace(/[^\w-]+/g,'')}.pdf`;
   const blob = doc.output('blob');
   const corto = ccPagadorCorto();
-  const texto = `Hola ${corto}, te envío la cuenta de cobro N.º ${num} ya pagada: ${ccNombreVendido(v)}${v.motoPlaca ? ' (placa ' + String(v.motoPlaca).toUpperCase() + ')' : ''} por ${fmt(k.saldo)}. ¡Gracias!`;
-  let via = '';
-  try {
-    const file = new File([blob], archivo, {type:'application/pdf'});
-    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:`Cuenta de cobro ${num}`, text:texto}); via = 'compartir'; }
-  } catch(e){ if(e && e.name === 'AbortError') return; }
-  if(!via){
-    // Sin menú de compartir: se descarga el PDF y se abre WhatsApp con el mensaje
+  const texto = `Hola ${corto}, te envío la cuenta de cobro N.º ${num} ya pagada: ${ccNombreVendido(v)}${v.motoPlaca ? ' (placa ' + String(v.motoPlaca).toUpperCase() + ')' : ''} por ${fmt(k.saldo)}.`
+    + (enlace ? `\n\nPor favor apruébala aquí: ${enlace}` : '') + '\n\n¡Gracias!';
+  const anotar = via => {
+    v.cobro.envios = [...ccEnvios(v), {fecha: hoyLocal(), a: p.nombre, numero: v.cobro.numero, via, registrado: new Date().toISOString()}];
+    saveVentas(); ccRefrescar();
+    mcNotificar({tipo:'confirmar', titulo: via === 'descarga' ? `PDF listo para ${corto}` : `Cuenta enviada a ${corto}`,
+      texto: via === 'descarga' ? `N.º ${num} descargada${p.cel ? ': adjúntala en el chat de WhatsApp que se abrió' : ''}` : `N.º ${num}${enlace ? ' · esperando su aprobación' : ''}`});
+  };
+  const descargar = () => {
     const url = URL.createObjectURL(blob), a = document.createElement('a');
     a.href = url; a.download = archivo; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 60000);
-    via = 'descarga';
-    if(p.cel){ const tel = p.cel.length === 10 ? '57' + p.cel : p.cel; window.open(`https://wa.me/${tel}?text=${encodeURIComponent(texto + ' Te adjunto el PDF.')}`, '_blank'); }
+    if(p.cel){ const tel = p.cel.length === 10 ? '57' + p.cel : p.cel; window.open(`https://wa.me/${tel}?text=${encodeURIComponent(texto + '\n(Te adjunto el PDF.)')}`, '_blank'); }
+    anotar('descarga');
+  };
+  let file = null;
+  try { file = new File([blob], archivo, {type:'application/pdf'}); } catch(e){}
+  const puedeCompartir = file && navigator.canShare && navigator.canShare({files:[file]});
+  if(!puedeCompartir){ saveVentas(); descargar(); return; }
+  const compartir = async () => {
+    try { await navigator.share({files:[file], title:`Cuenta de cobro ${num}`, text:texto}); anotar('compartir'); return true; }
+    catch(e){ if(e && e.name === 'AbortError') return true; if(e && e.name === 'NotAllowedError') return false; descargar(); return true; }
+  };
+  if(await compartir()) return;
+  // Safari pide un toque nuevo para abrir el menú de compartir (la preparación tomó tiempo)
+  saveVentas();
+  window._ccCompartirListo = async () => { ccCerrarModal(); if(!(await compartir())) descargar(); };
+  window._ccDescargarListo = () => { ccCerrarModal(); descargar(); };
+  ccAbrirModal('PDF listo', `<p class="cc-pista" style="margin-top:0">La cuenta N.º ${num} está lista${enlace ? ' con su enlace de aprobación' : ''}.</p>
+    <div style="display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem;flex-wrap:wrap">
+      <button class="btn btn-ghost" onclick="_ccDescargarListo()">Descargar</button>
+      <button class="btn btn-primary" onclick="_ccCompartirListo()">${mcIco('recibo',14)}Compartir con ${ccEsc(corto)}</button>
+    </div>`);
+}
+
+// ── APROBACIÓN DE LAS CUENTAS COBRADAS ───────────────────────────────────────
+// Con 09_aprobaciones.sql: cada envío lleva un enlace (aprobar.html) donde quien
+// paga aprueba con su cédula o deja una observación. La respuesta se guarda en
+// Supabase y la app la trae sola. También se puede marcar aprobada a mano.
+function ccToken(){
+  const b = new Uint8Array(24); crypto.getRandomValues(b);
+  return btoa(String.fromCharCode(...b)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+const ccEnlaceAprobacion = t => new URL('aprobar.html?c=' + encodeURIComponent(t), location.href).href;
+async function ccCrearAprobacion(v, k, p){
+  if(!_supa || !_mcSesion) return {aviso:'Inicia sesión para que la cuenta lleve el enlace de aprobación.'};
+  if(!navigator.onLine) return {aviso:'Sin conexión: se envía sin enlace. Puedes marcarla aprobada a mano.'};
+  if(!p.cc) return {aviso:'Falta la cédula de quien aprueba (Cambiar datos en Por cobrar).'};
+  const e = cfgData.cobroEmisor || {}, token = ccToken();
+  const resumen = {vehiculo: v.motoNombre || '', modelo: v.motoModelo || '', placa: v.motoPlaca ? String(v.motoPlaca).toUpperCase() : '', cliente: v.comprador || '',
+    fecha_venta: v.fecha || '', precio: k.precio, retoma: k.retoma ? {nombre: k.retoma.nombre || '', placa: k.retoma.placa ? String(k.retoma.placa).toUpperCase() : '', valor: k.rv} : null,
+    anticipo: k.anticipo, inicial: k.inicial, financiado: k.saldo, pagado: k.pagado, entidad: FP_FINANCIERA,
+    pagos: k.pagos.slice().sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha))).map(pg=>({fecha: pg.antes ? '' : pg.fecha, monto: ccNum(pg.monto)})),
+    emisor: e.nombre ? {nombre: e.nombre} : null};
+  try {
+    const {error} = await _supa.rpc('mc_aprobacion_crear', {p_token: token, p_venta_id: v.id, p_numero: v.cobro.numero, p_resumen: resumen, p_nombre: p.nombre, p_cc: p.cc});
+    if(error){
+      if(/mc_aprobacion_crear|function|PGRST202|42883|schema cache/i.test((error.message||'') + (error.code||''))) return {aviso:'Falta activar las aprobaciones: ejecuta supabase/09_aprobaciones.sql (ver LEEME, FASE 11).'};
+      return {aviso:'No se pudo crear el enlace de aprobación (' + (error.message || 'error') + ').'};
+    }
+    return {token};
+  } catch(err){ return {aviso:'No se pudo crear el enlace de aprobación. Revisa la conexión.'}; }
+}
+let _ccRevisandoAp = 0;
+async function ccRevisarAprobaciones(forzar){
+  if(!_supa || !_mcSesion || !navigator.onLine) return;
+  if(!forzar && Date.now() - _ccRevisandoAp < 90000) return;
+  _ccRevisandoAp = Date.now();
+  const pend = ventas.filter(v=>v.cobro && v.cobro.aprobacion && v.cobro.aprobacion.estado === 'pendiente' && v.cobro.aprobacion.token);
+  if(!pend.length) return;
+  let filas;
+  try { const {data, error} = await _supa.rpc('mc_aprobaciones_estado', {p_tokens: pend.map(v=>v.cobro.aprobacion.token)}); if(error) return; filas = data || []; } catch(e){ return; }
+  let cambio = false;
+  filas.forEach(f=>{
+    if(!f || f.estado === 'pendiente') return;
+    const v = pend.find(x=>x.cobro.aprobacion.token === f.token); if(!v) return;
+    const a = v.cobro.aprobacion;
+    if(f.estado === 'anulada'){ return; }
+    v.cobro.aprobacion = {...a, estado: f.estado, fecha: f.respondida_en, nombre: f.pagador_nombre, cc: f.respuesta_cc || '', observacion: f.observacion || ''};
+    cambio = true;
+    const num = String(v.cobro.numero || '').padStart(4,'0'), corto = String(f.pagador_nombre || '').split(/\s+/)[0] || 'Quien paga';
+    if(f.estado === 'aprobada'){
+      mcNotificar({tipo:'confirmar', titulo:`¡${corto} aprobó la cuenta N.º ${num}!`, texto:`${ccNombreVendido(v)} · ${mcFechaHora(f.respondida_en)}`, ms:9000, acciones:[{label:'Ver', fn:()=>ccIr(v.id)}]});
+      try { mcSonidoLogro(1); } catch(e){}
+    } else {
+      mcNotificar({tipo:'borrar', titulo:`${corto} dejó una observación (N.º ${num})`, texto: f.observacion || '', ms:12000, acciones:[{label:'Ver', fn:()=>ccIr(v.id)}]});
+    }
+  });
+  if(cambio){ saveVentas(); ccRefrescar(); }
+}
+const mcFechaHora = iso => { if(!iso) return ''; const d = new Date(iso); return `${mcFechaCorta(hoyLocal(d))} a las ${d.toLocaleTimeString('es-CO', {hour:'numeric', minute:'2-digit'})}`; };
+function ccCopiarEnlace(id){
+  const v = ventas.find(x=>x.id === id), a = v && v.cobro && v.cobro.aprobacion; if(!a || !a.token) return;
+  const url = ccEnlaceAprobacion(a.token);
+  const listo = () => mcNotificar({tipo:'ok', titulo:'Enlace copiado', texto:'Pégalo en el chat para que apruebe la cuenta'});
+  try { navigator.clipboard.writeText(url).then(listo, ()=>prompt('Copia el enlace:', url)); } catch(e){ prompt('Copia el enlace:', url); }
+}
+// Aprobación a mano: fecha, cómo la aprobó, nota y una foto de prueba opcional
+function ccAbrirAprobarManual(id){
+  const v = ventas.find(x=>x.id === id); if(!v) return;
+  ccAbrirModal(`Marcar aprobada por ${ccPagadorCorto()}`, `
+    <p class="cc-pista" style="margin-top:0">Úsalo si te aprobó por otro medio (por ejemplo, te respondió "Aprobado" por WhatsApp).</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+      <div class="form-group"><label>Fecha</label><input type="date" id="cca-fecha" value="${hoyLocal()}"></div>
+      <div class="form-group"><label>¿Cómo la aprobó?</label><select id="cca-via"><option>WhatsApp</option><option>Llamada</option><option>En persona</option><option>Correo</option><option>Otro</option></select></div>
+    </div>
+    <div class="form-group"><label>Nota (opcional)</label><input type="text" id="cca-nota" placeholder="Ej.: respondió Aprobado a las 3 pm"></div>
+    <div class="form-group"><label>Prueba (opcional)</label><input type="file" id="cca-foto" accept="image/*"><small class="cc-pista" style="display:block;margin-top:4px">Un pantallazo de su mensaje. Se guarda en tu nube privada.</small></div>
+    <div style="display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="ccCerrarModal()">Cancelar</button>
+      <button class="btn btn-primary" id="cca-ok" onclick="ccGuardarAprobarManual('${v.id}')">${mcIco('check',14)}Marcar aprobada</button>
+    </div>`);
+}
+async function ccGuardarAprobarManual(id){
+  const v = ventas.find(x=>x.id === id); if(!v || !v.cobro) return;
+  const fecha = (document.getElementById('cca-fecha')||{}).value || hoyLocal();
+  const via = (document.getElementById('cca-via')||{}).value || '';
+  const nota = ((document.getElementById('cca-nota')||{}).value || '').trim();
+  const archivo = (document.getElementById('cca-foto')||{}).files && document.getElementById('cca-foto').files[0];
+  const b = document.getElementById('cca-ok'); if(b) b.disabled = true;
+  let foto = '';
+  if(archivo){
+    try {
+      const img = await new Promise((ok, mal)=>{ const i = new Image(); i.onload = ()=>ok(i); i.onerror = mal; i.src = URL.createObjectURL(archivo); });
+      const blob = await mcComprimirFoto(img, 1200, 0.78);
+      let ref = null;
+      if(mcFotosNubeDisponible()){ try { ref = await mcSubirFotoBlob(blob); if(ref) _mcFotoLocal[ref] = URL.createObjectURL(blob); } catch(e){ ref = null; } }
+      foto = ref || await new Promise(ok=>{ const r = new FileReader(); r.onload = ()=>ok(r.result); r.readAsDataURL(blob); });
+    } catch(e){ toast('No se pudo leer la foto; se guarda sin prueba', 'err'); }
   }
-  v.cobro.envios = [...ccEnvios(v), {fecha: hoyLocal(), a: p.nombre, numero: v.cobro.numero, via, registrado: new Date().toISOString()}];
+  const prev = v.cobro.aprobacion || {};
+  v.cobro.aprobacion = {...prev, estado: 'aprobada', manual: true, fecha: fecha + 'T12:00:00', via, nota, foto, nombre: (ccPagador() || {}).nombre || '', registrado: new Date().toISOString()};
+  saveVentas(); ccCerrarModal(); ccRefrescar();
+  mcNotificar({tipo:'confirmar', titulo:'Cuenta marcada como aprobada', texto:`${ccNombreVendido(v)} · ${via}${foto ? ' · con prueba' : ''}`});
+}
+async function ccQuitarAprobacion(id){
+  const v = ventas.find(x=>x.id === id); if(!v || !v.cobro || !v.cobro.aprobacion) return;
+  const ok = await mcPreguntar({titulo:'Quitar aprobación', texto:'¿Quitar la aprobación registrada a mano? La cuenta vuelve a quedar sin aprobar.', si:'Quitar', no:'Cancelar'});
+  if(!ok) return;
+  const a = v.cobro.aprobacion;
+  v.cobro.aprobacion = a.token ? {token: a.token, estado: 'pendiente', creada: a.creada, numero: a.numero} : null;
+  if(!v.cobro.aprobacion) delete v.cobro.aprobacion;
   saveVentas(); ccRefrescar();
-  mcNotificar({tipo:'confirmar', titulo: via === 'descarga' ? `PDF listo para ${corto}` : `Cuenta enviada a ${corto}`,
-    texto: via === 'descarga' ? `N.º ${num} descargada${p.cel ? ': adjúntala en el chat de WhatsApp que se abrió' : ''}` : `N.º ${num} · ${ccNombreVendido(v)}`});
+  mcNotificar({tipo:'borrar', titulo:'Aprobación quitada', texto: ccNombreVendido(v)});
 }
 function ccQuitarEnvio(id){
   const v = ventas.find(x=>x.id === id); if(!v || !v.cobro) return;
@@ -4544,8 +4710,17 @@ function ccQuitarEnvio(id){
   mcNotificar({tipo:'borrar', titulo:'Marcada como no enviada', texto: ccNombreVendido(v)});
 }
 function ccEnvioHtml(v, k){
-  const env = ccEnvios(v), ult = env[env.length-1];
-  if(ult) return `<div class="cc-envio ok">${mcIco('check',14)}<span>Enviada a ${ccEsc(String(ult.a||'').split(/\s+/)[0])} el ${mcFechaCorta(ult.fecha)} · N.º ${String(ult.numero||v.cobro.numero||'').padStart(4,'0')}${env.length > 1 ? ` · ${env.length} envíos` : ''}</span><button onclick="ccQuitarEnvio('${v.id}')">Marcar como no enviada</button></div>`;
+  const env = ccEnvios(v), ult = env[env.length-1], ap = v.cobro && v.cobro.aprobacion;
+  let apHtml = '';
+  if(ap && ap.estado === 'aprobada') apHtml = ap.manual
+    ? `<div class="cc-aprob ok">${mcIco('check',15)}<span><b>Aprobada</b> el ${mcFechaCorta(String(ap.fecha||'').slice(0,10))}${ap.via ? ' · ' + ccEsc(ap.via) : ''} <small>(registrada a mano)</small>${ap.nota ? `<em>${ccEsc(ap.nota)}</em>` : ''}</span>${ap.foto ? `<img class="cc-aprob-foto" ${mcFotoAttr(ap.foto)} alt="Prueba" onclick="abrirVisor(this.src)">` : ''}<button onclick="ccQuitarAprobacion('${v.id}')">Quitar</button></div>`
+    : `<div class="cc-aprob ok">${mcIco('check',15)}<span><b>Aprobada por ${ccEsc(String(ap.nombre||'').split(/\s+/)[0] || 'quien paga')}</b> el ${mcFechaHora(ap.fecha)}<em>Con su cédula${ap.cc ? ' ' + ccEsc(ap.cc) : ''} · desde el enlace</em></span></div>`;
+  else if(ap && ap.estado === 'observacion') apHtml = `<div class="cc-aprob obs">${mcIco('chat',15)}<span><b>Observación de ${ccEsc(String(ap.nombre||'').split(/\s+/)[0] || 'quien paga')}</b> · ${mcFechaHora(ap.fecha)}<em>"${ccEsc(ap.observacion||'')}"</em></span><button onclick="ccAbrirAprobarManual('${v.id}')">Marcar aprobada</button></div>`;
+  else if(ap && ap.estado === 'pendiente' && ult){
+    const dias = Math.max(0, lgDias(String(ap.creada||'').slice(0,10) || hoyLocal(), hoyLocal()) || 0);
+    apHtml = `<div class="cc-aprob pend${dias >= 3 ? ' tarde' : ''}">${mcIco('reloj',15)}<span><b>Esperando aprobación</b>${dias ? ` · hace ${dias} día${dias!==1?'s':''}` : ' · enviada hoy'}</span><button onclick="ccCopiarEnlace('${v.id}')">Copiar enlace</button><button onclick="ccAbrirAprobarManual('${v.id}')">Marcar aprobada</button></div>`;
+  } else if(ult) apHtml = `<div class="cc-aprob sin">${mcIco('reloj',15)}<span>Sin aprobación registrada</span><button onclick="ccAbrirAprobarManual('${v.id}')">Marcar aprobada</button></div>`;
+  if(ult) return apHtml + `<div class="cc-envio ok">${mcIco('check',14)}<span>Enviada a ${ccEsc(String(ult.a||'').split(/\s+/)[0])} el ${mcFechaCorta(ult.fecha)} · N.º ${String(ult.numero||v.cobro.numero||'').padStart(4,'0')}${env.length > 1 ? ` · ${env.length} envíos` : ''}</span><button onclick="ccQuitarEnvio('${v.id}')">Marcar como no enviada</button></div>`;
   if(k.pagos.some(p=>!p.antes)) return `<div class="cc-envio pend">${mcIco('reloj',14)}<span>Falta enviarla en PDF a ${ccEsc(ccPagadorCorto())}</span></div>`;
   return '';
 }

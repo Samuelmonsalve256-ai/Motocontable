@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Aprobar cuenta de cobro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<style>
+:root{--bg:#0a0a12;--card:#13131f;--borde:rgba(255,255,255,.08);--txt:#f2f2f8;--suave:#9a9ab8;--acento:#2a7fff;--acento-b:#7c5cff;--verde:#00d68f;--ambar:#f5c451;--rojo:#ff6b8d}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:radial-gradient(900px 500px at 80% -10%,rgba(42,127,255,.14),transparent 60%),var(--bg);color:var(--txt);font:15px/1.5 'Inter',system-ui,sans-serif;padding:24px 16px 40px;-webkit-font-smoothing:antialiased}
+.caja{max-width:520px;margin:0 auto}
+.marca{display:flex;align-items:center;gap:10px;color:var(--suave);font-size:13px;margin-bottom:18px}
+.marca i{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--acento),var(--acento-b));color:#fff;font-style:normal}
+h1{font:700 26px/1.15 'Space Grotesk',sans-serif;letter-spacing:-.01em}
+.sub{color:var(--suave);margin-top:6px}
+.tarjeta{margin-top:18px;background:var(--card);border:1px solid var(--borde);border-radius:20px;overflow:hidden}
+.t-cab{padding:16px 18px;border-bottom:1px solid var(--borde);display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.t-cab b{display:block;font-size:17px}
+.t-cab small{color:var(--suave)}
+.placa{display:inline-block;padding:2px 8px;border-radius:6px;background:#f5c451;color:#1a1200;font:700 12px 'Space Grotesk',sans-serif;letter-spacing:.06em;white-space:nowrap}
+.filas{padding:8px 18px 14px}
+.fila{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed var(--borde);font-size:14px}
+.fila:last-child{border-bottom:0}
+.fila span{color:var(--suave)}
+.fila b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.fila.menos b{color:var(--suave)}
+.fila.total{font-size:15.5px}.fila.total span{color:var(--txt);font-weight:700}
+.fila.pago span{padding-left:10px}
+.fila.cero b{color:var(--verde)}
+.seccion{padding:6px 18px 0;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--suave);font-weight:700}
+.form{margin-top:18px;background:var(--card);border:1px solid var(--borde);border-radius:20px;padding:18px}
+.form h2{font:700 18px 'Space Grotesk',sans-serif}
+.form p{color:var(--suave);font-size:13.5px;margin-top:4px}
+label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px}
+input,textarea{width:100%;padding:13px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0e0e18;color:var(--txt);font:16px 'Inter',sans-serif;outline:none}
+input:focus,textarea:focus{border-color:var(--acento);box-shadow:0 0 0 3px rgba(42,127,255,.25)}
+textarea{min-height:90px;resize:vertical}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:15px;border-radius:14px;border:0;font:700 15.5px 'Inter',sans-serif;cursor:pointer;color:#fff}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn-ok{background:linear-gradient(135deg,#00c98a,#00a676);box-shadow:0 12px 30px -12px rgba(0,214,143,.8)}
+.btn-obs{background:transparent;border:1px solid rgba(255,255,255,.14);color:var(--txt)}
+.btn-enviar{background:linear-gradient(135deg,var(--ambar),#ff8c3c);color:#1d1100}
+.error{margin-top:12px;padding:10px 12px;border-radius:12px;background:rgba(255,107,141,.1);border:1px solid rgba(255,107,141,.35);color:#ffb3c4;font-size:13.5px}
+.estado{margin-top:18px;text-align:center;padding:30px 20px;background:var(--card);border:1px solid var(--borde);border-radius:20px}
+.estado .ico{width:76px;height:76px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;font-size:36px;color:#fff}
+.estado.ok .ico{background:linear-gradient(135deg,#00c98a,#00a676);box-shadow:0 0 0 10px rgba(0,214,143,.1);animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+.estado.obs .ico{background:linear-gradient(135deg,var(--ambar),#ff8c3c)}
+.estado.mal .ico{background:rgba(255,255,255,.08);color:var(--suave)}
+.estado h2{font:700 21px 'Space Grotesk',sans-serif}
+.estado p{color:var(--suave);margin-top:6px}
+@keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+.cargando{margin-top:40px;text-align:center;color:var(--suave)}
+.pie{margin-top:22px;text-align:center;font-size:12px;color:#6e6e8a}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="caja">
+  <div class="marca"><i>✓</i>Aprobación de cuenta de cobro</div>
+  <div id="cargando" class="cargando">Cargando la cuenta…</div>
+  <div id="contenido" hidden></div>
+  <div class="pie">Este enlace es solo para esta cuenta. No compartas tu cédula con nadie más.</div>
+</div>
+<script>
+const SUPA_URL = 'https://llyovzgwdqoeunvyczcy.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxseW92emd3ZHFvZXVudnljemN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MzUzNjcsImV4cCI6MjEwNjAxMTM2N30.g1DgUdTGPHDz8HEI1Kgv4SOJ13zyOwOfcAp8Ak2BRGQ';
+const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => '$' + Math.round(Number(n) || 0).toLocaleString('es-CO');
+const fecha = f => { if(!f) return ''; const d = new Date(String(f).length <= 10 ? f + 'T00:00:00' : f); return `${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`; };
+const fechaHora = f => { const d = new Date(f); return `${fecha(f)} a las ${d.toLocaleTimeString('es-CO', {hour:'numeric', minute:'2-digit'})}`; };
+const token = new URLSearchParams(location.search).get('c') || '';
+let supa = null, datos = null;
+try { supa = supabase.createClient(SUPA_URL, SUPA_KEY, {auth:{persistSession:false, autoRefreshToken:false, detectSessionInUrl:false, storageKey:'mc-aprobar'}}); } catch(e){}
+
+function mostrar(html){ document.getElementById('cargando').hidden = true; const c = document.getElementById('contenido'); c.innerHTML = html; c.hidden = false; window.scrollTo(0, 0); }
+function estado(clase, ico, titulo, texto){ return `<div class="estado ${clase}"><div class="ico">${ico}</div><h2>${titulo}</h2><p>${texto}</p></div>`; }
+
+function resumenHtml(d){
+  const r = d.resumen || {}, num = String(d.numero || '').padStart(4, '0');
+  let filas = `<div class="fila"><span>Valor de la venta</span><b>${fmt(r.precio)}</b></div>`;
+  if(r.retoma) filas += `<div class="fila menos"><span>Retoma: ${esc(r.retoma.nombre)}${r.retoma.placa ? ' (' + esc(r.retoma.placa) + ')' : ''}</span><b>- ${fmt(r.retoma.valor)}</b></div>`;
+  if(r.anticipo) filas += `<div class="fila menos"><span>Anticipo de separación</span><b>- ${fmt(r.anticipo)}</b></div>`;
+  if(r.inicial) filas += `<div class="fila menos"><span>Cuota inicial</span><b>- ${fmt(r.inicial)}</b></div>`;
+  filas += `<div class="fila total"><span>Valor financiado</span><b>${fmt(r.financiado)}</b></div>`;
+  const pagos = (r.pagos || []).map(p => `<div class="fila pago"><span>${p.fecha ? 'Pago del ' + fecha(p.fecha) : 'Pago registrado'}</span><b>${fmt(p.monto)}</b></div>`).join('');
+  return `<h1>Cuenta de cobro N.º ${esc(num)}</h1>
+    <p class="sub">${esc(d.pagador || '')}${r.emisor && r.emisor.nombre ? ', ' + esc(r.emisor.nombre) + ' te envía' : ', te envían'} esta cuenta ya pagada por ${esc(r.entidad || 'la financiera')} para que la apruebes.</p>
+    <div class="tarjeta">
+      <div class="t-cab"><div><b>${esc(r.vehiculo || 'Vehículo')}${r.modelo ? ' · ' + esc(r.modelo) : ''}</b><small>${r.cliente ? 'Cliente: ' + esc(r.cliente) + ' · ' : ''}Vendida el ${fecha(r.fecha_venta)}</small></div>${r.placa ? `<span class="placa">${esc(r.placa)}</span>` : ''}</div>
+      <div class="filas">${filas}</div>
+      <div class="seccion">Pagos recibidos</div>
+      <div class="filas">${pagos}<div class="fila total"><span>Total pagado</span><b>${fmt(r.pagado)}</b></div><div class="fila cero"><span>Saldo pendiente</span><b>${fmt(Math.max(0, (r.financiado || 0) - (r.pagado || 0)))}</b></div></div>
+    </div>`;
+}
+
+function formHtml(){
+  return `<div class="form" id="form">
+    <h2>¿Todo está en orden?</h2>
+    <p>Para confirmar que eres tú, escribe tu número de cédula.</p>
+    <label for="cc">Tu cédula</label>
+    <input id="cc" inputmode="numeric" autocomplete="off" placeholder="Número de cédula">
+    <div id="obs-caja" hidden><label for="obs">¿Qué no cuadra?</label><textarea id="obs" maxlength="1000" placeholder="Escribe aquí tu observación"></textarea></div>
+    <div id="err" class="error" hidden></div>
+    <button class="btn btn-ok" id="b-ok" onclick="responder('aprobada')">✓ Apruebo esta cuenta</button>
+    <button class="btn btn-obs" id="b-obs" onclick="abrirObs()">Tengo una observación</button>
+    <button class="btn btn-enviar" id="b-enviar" hidden onclick="responder('observacion')">Enviar observación</button>
+  </div>`;
+}
+function abrirObs(){ document.getElementById('obs-caja').hidden = false; document.getElementById('b-enviar').hidden = false; document.getElementById('b-obs').hidden = true; document.getElementById('obs').focus(); }
+function error(t){ const e = document.getElementById('err'); e.textContent = t; e.hidden = !t; }
+
+async function responder(decision){
+  const cc = document.getElementById('cc').value.replace(/\D/g, ''), obs = (document.getElementById('obs') || {}).value || '';
+  if(!cc){ error('Escribe tu número de cédula.'); document.getElementById('cc').focus(); return; }
+  if(decision === 'observacion' && !obs.trim()){ error('Escribe tu observación.'); document.getElementById('obs').focus(); return; }
+  error('');
+  const bts = [...document.querySelectorAll('#form .btn')]; bts.forEach(b => b.disabled = true);
+  let r;
+  try {
+    const {data, error: e} = await supa.rpc('mc_aprobacion_responder', {p_token: token, p_cc: cc, p_decision: decision, p_observacion: decision === 'observacion' ? obs : null, p_navegador: navigator.userAgent.slice(0, 300)});
+    if(e) throw e; r = data;
+  } catch(e){ bts.forEach(b => b.disabled = false); error('No se pudo enviar. Revisa tu conexión a internet e inténtalo otra vez.'); return; }
+  bts.forEach(b => b.disabled = false);
+  if(r && r.ok){
+    const num = String(datos.numero || '').padStart(4, '0');
+    mostrar(resumenHtml(datos) + (r.estado === 'aprobada'
+      ? estado('ok', '✓', '¡Cuenta aprobada!', `Aprobaste la cuenta N.º ${num} el ${fechaHora(r.respondida_en)}<br>Ya quedó registrada. ¡Gracias!`)
+      : estado('obs', '!', 'Observación enviada', 'Tu observación quedó registrada. Te contactarán para revisarla. ¡Gracias!')));
+    return;
+  }
+  const err = r && r.error;
+  if(err === 'cedula') error(r.quedan > 0 ? `La cédula no coincide. Te quedan ${r.quedan} intento${r.quedan !== 1 ? 's' : ''}.` : 'La cédula no coincide. El enlace quedó bloqueado; pide uno nuevo.');
+  else if(err === 'bloqueada') error('Este enlace quedó bloqueado por demasiados intentos. Pide uno nuevo.');
+  else if(err === 'respondida' || err === 'anulada') cargar();
+  else error('No se pudo registrar tu respuesta. Inténtalo otra vez.');
+}
+
+async function cargar(){
+  if(!token || !supa){ mostrar(estado('mal', '?', 'Enlace incompleto', 'Abre el enlace completo que te enviaron.')); return; }
+  let d;
+  try { const {data, error: e} = await supa.rpc('mc_aprobacion_ver', {p_token: token}); if(e) throw e; d = data; }
+  catch(e){ mostrar(estado('mal', '!', 'Sin conexión', 'No se pudo cargar la cuenta. Revisa tu conexión a internet y recarga la página.')); return; }
+  if(!d){ mostrar(estado('mal', '?', 'Enlace no encontrado', 'Este enlace no existe o ya no está disponible.')); return; }
+  datos = d;
+  if(d.estado === 'aprobada') return mostrar(resumenHtml(d) + estado('ok', '✓', 'Cuenta aprobada', `Esta cuenta ya fue aprobada el ${fechaHora(d.respondida_en)}<br>No tienes que hacer nada más.`));
+  if(d.estado === 'observacion') return mostrar(resumenHtml(d) + estado('obs', '!', 'Observación enviada', `Ya enviaste una observación el ${fechaHora(d.respondida_en)}<br>"${esc(d.observacion || '')}"`));
+  if(d.estado === 'anulada') return mostrar(estado('mal', '↻', 'Enlace reemplazado', 'Te enviaron una versión más nueva de esta cuenta. Usa el último enlace que recibiste.'));
+  if(d.bloqueada) return mostrar(resumenHtml(d) + estado('mal', '🔒', 'Enlace bloqueado', 'Se escribió una cédula incorrecta demasiadas veces. Pide que te envíen un enlace nuevo.'));
+  mostrar(resumenHtml(d) + formHtml());
+}
+cargar();
+</script>
+</body>
+</html>
