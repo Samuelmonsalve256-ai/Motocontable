@@ -1947,6 +1947,17 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .cc-aprob-foto{width:40px;height:40px;border-radius:8px;object-fit:cover;cursor:zoom-in;border:1px solid rgba(255,255,255,.15)}
 .cc-ban-ap{color:#c9c9e0!important}
 .cc-ban-ap .obs{color:#ff8aa5}
+/* Envío en dos pasos */
+.cce-paso{display:flex;gap:12px;padding:12px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);margin-bottom:10px;transition:border-color .2s,background .2s}
+.cce-paso.hecho{border-color:rgba(0,214,143,.45);background:rgba(0,214,143,.06)}
+.cce-n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;font:700 13px 'Space Grotesk',sans-serif;color:#fff;background:var(--grad,linear-gradient(135deg,var(--accent),var(--accent-b)))}
+.cce-paso.hecho .cce-n{background:#00b377;font-size:0}
+.cce-paso.hecho .cce-n::after{content:"✓";font-size:14px}
+.cce-info{flex:1;min-width:0}
+.cce-info b{display:block;color:#fff;font-size:14px}
+.cce-info small{display:block;color:#9a9ab8;font-size:12px;margin-top:2px}
+.cce-msg{margin-top:8px;padding:9px 11px;border-radius:10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);font-size:12px;line-height:1.5;color:#c9c9e0;word-break:break-all;max-height:130px;overflow:auto}
+.cce-acc{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
 </style>
 </head>
 <body>
@@ -4562,36 +4573,58 @@ async function ccEnviarCobrada(id){
   const corto = ccPagadorCorto();
   const texto = `Hola ${corto}, te envío la cuenta de cobro N.º ${num} ya pagada: ${ccNombreVendido(v)}${v.motoPlaca ? ' (placa ' + String(v.motoPlaca).toUpperCase() + ')' : ''} por ${fmt(k.saldo)}.`
     + (enlace ? `\n\nPor favor apruébala aquí: ${enlace}` : '') + '\n\n¡Gracias!';
-  const anotar = via => {
-    v.cobro.envios = [...ccEnvios(v), {fecha: hoyLocal(), a: p.nombre, numero: v.cobro.numero, via, registrado: new Date().toISOString()}];
-    saveVentas(); ccRefrescar();
-    mcNotificar({tipo:'confirmar', titulo: via === 'descarga' ? `PDF listo para ${corto}` : `Cuenta enviada a ${corto}`,
-      texto: via === 'descarga' ? `N.º ${num} descargada${p.cel ? ': adjúntala en el chat de WhatsApp que se abrió' : ''}` : `N.º ${num}${enlace ? ' · esperando su aprobación' : ''}`});
-  };
-  const descargar = () => {
-    const url = URL.createObjectURL(blob), a = document.createElement('a');
-    a.href = url; a.download = archivo; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 60000);
-    if(p.cel){ const tel = p.cel.length === 10 ? '57' + p.cel : p.cel; window.open(`https://wa.me/${tel}?text=${encodeURIComponent(texto + '\n(Te adjunto el PDF.)')}`, '_blank'); }
-    anotar('descarga');
-  };
+  // WhatsApp no deja pasar el texto junto con un archivo (sobre todo en el Mac):
+  // por eso se envía en dos pasos, el mensaje con el enlace y aparte el PDF.
+  saveVentas();
   let file = null;
   try { file = new File([blob], archivo, {type:'application/pdf'}); } catch(e){}
-  const puedeCompartir = file && navigator.canShare && navigator.canShare({files:[file]});
-  if(!puedeCompartir){ saveVentas(); descargar(); return; }
-  const compartir = async () => {
-    try { await navigator.share({files:[file], title:`Cuenta de cobro ${num}`, text:texto}); anotar('compartir'); return true; }
-    catch(e){ if(e && e.name === 'AbortError') return true; if(e && e.name === 'NotAllowedError') return false; descargar(); return true; }
+  const puedeCompartir = !!(file && navigator.canShare && navigator.canShare({files:[file]}));
+  const tel = p.cel ? (p.cel.length === 10 ? '57' + p.cel : p.cel) : '';
+  let anotado = false;
+  const anotar = via => {
+    if(anotado) return; anotado = true;
+    v.cobro.envios = [...ccEnvios(v), {fecha: hoyLocal(), a: p.nombre, numero: v.cobro.numero, via, registrado: new Date().toISOString()}];
+    saveVentas(); ccRefrescar();
   };
-  if(await compartir()) return;
-  // Safari pide un toque nuevo para abrir el menú de compartir (la preparación tomó tiempo)
-  saveVentas();
-  window._ccCompartirListo = async () => { ccCerrarModal(); if(!(await compartir())) descargar(); };
-  window._ccDescargarListo = () => { ccCerrarModal(); descargar(); };
-  ccAbrirModal('PDF listo', `<p class="cc-pista" style="margin-top:0">La cuenta N.º ${num} está lista${enlace ? ' con su enlace de aprobación' : ''}.</p>
-    <div style="display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem;flex-wrap:wrap">
-      <button class="btn btn-ghost" onclick="_ccDescargarListo()">Descargar</button>
-      <button class="btn btn-primary" onclick="_ccCompartirListo()">${mcIco('recibo',14)}Compartir con ${ccEsc(corto)}</button>
-    </div>`);
+  const marcar = id => { const el = document.getElementById(id); if(el) el.classList.add('hecho'); };
+  window._ccEnvio = {
+    whatsapp(){ window.open(`https://wa.me/${tel}?text=${encodeURIComponent(texto)}`, '_blank'); anotar('whatsapp'); marcar('cce-p1'); },
+    async copiar(){
+      try { await navigator.clipboard.writeText(texto); mcNotificar({tipo:'ok', titulo:'Mensaje copiado', texto:'Pégalo en el chat con ' + corto, sonido:false}); marcar('cce-p1'); anotar('copiado'); }
+      catch(e){ prompt('Copia el mensaje:', texto); }
+    },
+    async compartir(){
+      try { await navigator.share({files:[file], title:`Cuenta de cobro ${num}`}); marcar('cce-p2'); anotar('compartir'); }
+      catch(e){ if(!(e && e.name === 'AbortError')) window._ccEnvio.descargar(); }
+    },
+    descargar(){
+      const url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = archivo; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 60000);
+      marcar('cce-p2'); anotar('descarga');
+    },
+    listo(){
+      ccCerrarModal();
+      if(anotado) mcNotificar({tipo:'confirmar', titulo:`Cuenta enviada a ${corto}`, texto:`N.º ${num}${enlace ? ' · esperando su aprobación' : ''}`});
+    },
+  };
+  ccAbrirModal(`Enviar la cuenta N.º ${num} a ${corto}`, `
+    <div class="cce-paso" id="cce-p1">
+      <span class="cce-n">1</span>
+      <div class="cce-info"><b>${enlace ? 'El mensaje con el enlace para aprobar' : 'El mensaje'}</b>
+        <small>${tel ? `Abre el chat de ${ccEsc(corto)} con el mensaje ya escrito: solo pulsa Enviar.` : `Abre WhatsApp con el mensaje ya escrito y elige a ${ccEsc(corto)}.`}</small>
+        <div class="cce-msg">${ccEsc(texto).replace(/\n/g,'<br>')}</div>
+        <div class="cce-acc"><button class="btn btn-primary btn-sm" onclick="_ccEnvio.whatsapp()">${mcIco('chat',14)}Abrir WhatsApp${tel ? ' de ' + ccEsc(corto) : ''}</button><button class="btn btn-ghost btn-sm" onclick="_ccEnvio.copiar()">Copiar mensaje</button></div>
+      </div>
+    </div>
+    <div class="cce-paso" id="cce-p2">
+      <span class="cce-n">2</span>
+      <div class="cce-info"><b>El PDF de la cuenta</b>
+        <small>${puedeCompartir ? 'Compártelo en el mismo chat, o descárgalo y arrástralo a la conversación.' : 'Descárgalo y arrástralo (o adjúntalo) en el mismo chat.'}</small>
+        <div class="cce-acc">${puedeCompartir ? `<button class="btn btn-primary btn-sm" onclick="_ccEnvio.compartir()">${mcIco('recibo',14)}Compartir PDF</button>` : ''}<button class="btn ${puedeCompartir ? 'btn-ghost' : 'btn-primary'} btn-sm" onclick="_ccEnvio.descargar()">Descargar PDF</button></div>
+      </div>
+    </div>
+    ${enlace ? `<p class="cc-pista" style="margin:.2rem 0 0">El PDF también trae el enlace por dentro ("Toca aquí para aprobarla").</p>` : ''}
+    <div style="display:flex;justify-content:flex-end;margin-top:1rem"><button class="btn btn-ghost" onclick="_ccEnvio.listo()">Listo</button></div>`);
 }
 
 // ── APROBACIÓN DE LAS CUENTAS COBRADAS ───────────────────────────────────────
