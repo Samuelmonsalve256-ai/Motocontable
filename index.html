@@ -437,7 +437,8 @@ textarea{resize:vertical;min-height:65px}
   z-index:999;display:flex;align-items:center;gap:8px;
   box-shadow:0 12px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(42,127,255,.08);
 }
-#toast.show{transform:translateY(0);opacity:1}
+#toast{pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1;pointer-events:auto}
 
 /* ── MODALS ──────────────────────────────────────────── */
 #modal-overlay{
@@ -1558,6 +1559,39 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
   html .cc-kpi b{font-size:18px}
   html #modal-edit-venta,html #modal-contacto,html #modal-meta{align-items:flex-end!important;padding:0!important}
   html #modal-edit-venta>div,html #modal-contacto>div,html #modal-meta>div{max-width:none!important;border-radius:24px 24px 0 0!important;max-height:92vh!important;padding-bottom:calc(1.4rem + env(safe-area-inset-bottom))!important}
+}
+
+/* Buscador de contactos */
+#modal-buscar-contacto{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.bc-caja{width:100%;max-width:480px;max-height:86vh;display:flex;flex-direction:column;gap:12px;padding:20px;border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.05),transparent 160px),var(--bg2);border:1px solid rgba(255,255,255,.1);box-shadow:0 40px 80px -30px rgba(0,0,0,.95);animation:mcModal .22s var(--ease)}
+.bc-cab{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.bc-tit{font:700 18px 'Space Grotesk',sans-serif}
+.bc-sub{font-size:12.5px;color:#8a8aa8;margin-top:2px}
+.bc-buscar{min-width:0}
+.bc-seg{width:100%}
+.bc-seg button{flex:1;justify-content:center}
+.bc-lista{overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin:0 -4px;padding:0 4px 4px;min-height:120px}
+.bc-grupo{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#7a7a98;margin:8px 2px 2px}
+.bc-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.025);color:var(--text);font:inherit;cursor:pointer;transition:border-color .18s,background .18s,transform .15s var(--ease)}
+.bc-item:hover,.bc-item:focus-visible{border-color:rgba(var(--accent-rgb),.5);background:rgba(var(--accent-rgb),.08);outline:none}
+.bc-item:active{transform:scale(.99)}
+.bc-item.bc-sug{border-style:dashed}
+.bc-av{width:40px;height:40px;border-radius:13px;font-size:14px}
+.bc-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.bc-info b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bc-info span{font-size:12px;color:#8a8aa8}
+.bc-info em{font-style:normal;font-size:11.5px;color:#b7b7d4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bc-flecha{color:#5b5b78;transition:color .18s,transform .18s var(--ease)}
+.bc-item:hover .bc-flecha{color:var(--accent);transform:translateX(2px)}
+.bc-item .ct-rol{font-style:normal}
+.bc-nuevo{color:#ffd38a;background:rgba(255,181,71,.12)}
+.bc-vacio{display:flex;flex-direction:column;align-items:center;gap:10px;padding:2rem 1rem;color:#7a7a98;text-align:center}
+.bc-vacio b{color:#d6d6ea}
+@media (max-width:760px){
+  html #modal-buscar-contacto{align-items:flex-end!important;padding:0!important}
+  html .bc-caja{max-width:none;border-radius:24px 24px 0 0;max-height:88vh;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+  html #modal-buscar-contacto,html #modal-edit-venta,html #modal-contacto,html #modal-meta{z-index:800!important}
+  html .bc-seg button{padding:0 8px;gap:5px;font-size:12.5px}
 }
 </style>
 </head>
@@ -8355,9 +8389,11 @@ function eliminarContacto(id){
     saveContactos(); renderContactos(); mcNotificar({tipo:'borrar', titulo:'Contacto eliminado', texto:c?.nombre||''});
   });
 }
+let _bcFiltro = 'comprador', _bcSug = [];
 function abrirBuscarContacto(tipo,form){
-  _buscarTipo=tipo; _buscarForm=form;
-  document.getElementById('buscar-contacto-title').textContent='🔍 Buscar contacto';
+  _buscarTipo=tipo; _buscarForm=form; _bcFiltro = tipo;
+  document.getElementById('buscar-contacto-title').textContent = tipo === 'comprador' ? 'Elegir comprador' : 'Elegir vendedor';
+  document.getElementById('buscar-contacto-sub').textContent = tipo === 'comprador' ? 'Toca un contacto y sus datos se llenan solos en la venta' : 'Toca un contacto y sus datos se llenan solos';
   document.getElementById('buscar-contacto-input').value='';
   renderBuscarContacto();
   const m=document.getElementById('modal-buscar-contacto');
@@ -8368,26 +8404,83 @@ function cerrarBuscarContacto(){
   const m=document.getElementById('modal-buscar-contacto');
   m.classList.add('modal-hidden'); m.style.display='none';
 }
-function renderBuscarContacto(){
-  const q=(document.getElementById('buscar-contacto-input')?.value||'').toLowerCase().trim();
-  // Mostrar vendedores Y compradores — sin filtrar por tipo
-  const lista=contactos.filter(c=>{
-    if(!q) return true;
-    return (c.nombre||'').toLowerCase().includes(q)||(c.cc||'').includes(q)||(c.tel||'').includes(q);
-  });
-  const cont=document.getElementById('lista-buscar-contacto'); if(!cont) return;
-  if(!lista.length){
-    cont.innerHTML='<div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px">Sin contactos guardados</div>';
-    return;
+function bcFiltrar(f){ _bcFiltro = f; renderBuscarContacto(); document.getElementById('buscar-contacto-input').focus(); }
+// Personas de tus ventas y compras que todavía no están guardadas como contacto
+function bcSugerencias(tipo){
+  const guardados = new Set(contactos.map(c=>mcSinTildes(c.nombre)));
+  const m = new Map();
+  const poner = (nombre, cc, tel, fecha, veh) => {
+    const k = mcSinTildes(nombre); if(!k || guardados.has(k)) return;
+    const a = m.get(k) || {nombre: String(nombre).trim(), cc:'', tel:'', n:0, ultima:'', veh:[]};
+    a.cc = a.cc || cc || ''; a.tel = a.tel || tel || ''; a.n++; if(fecha && fecha > a.ultima) a.ultima = fecha; if(veh) a.veh.push(veh);
+    m.set(k, a);
+  };
+  if(tipo === 'comprador') ventas.forEach(v=>poner(v.comprador, v.compradorCC, v.compradorCel, v.fecha, v.motoNombre));
+  else {
+    [...motos, ...carros].forEach(x=>poner(x.vendedorNombre, x.vendedorCC, x.vendedorTel, x.fechaCompra, x.nombre));
+    ventas.forEach(v=>poner(v.vendedorNombre, v.vendedorCC, v.vendedorTel, v.fechaCompra, v.motoNombre));
   }
-  cont.innerHTML=lista.map(c=>`
-    <div onclick="seleccionarContacto('${c.id}')" style="padding:.75rem 1rem;background:var(--bg3);border:1px solid var(--border);border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-      <span style="font-size:18px;flex-shrink:0">${c.tipo==='vendedor'?'📥':'📤'}</span>
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:600;font-size:13px">${c.nombre}</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">${c.tipo==='vendedor'?'Vendedor':'Comprador'}${c.cc?' · CC: '+c.cc:''}${c.tel?' · 📱 '+c.tel:''}${c.historial>0?' · '+c.historial+' op.':''}</div>
-      </div>
-    </div>`).join('');
+  return [...m.values()].sort((a,b)=>String(b.ultima).localeCompare(String(a.ultima)));
+}
+function renderBuscarContacto(){
+  const q = mcSinTildes(document.getElementById('buscar-contacto-input')?.value || '');
+  const cont = document.getElementById('lista-buscar-contacto'); if(!cont) return;
+  const coincide = (n, cc, tel) => !q || mcSinTildes(n).includes(q) || String(cc||'').includes(q) || String(tel||'').replace(/\D/g,'').includes(q.replace(/\D/g,'') || '\u0000');
+  const nC = contactos.filter(c=>c.tipo === 'comprador').length, nV = contactos.filter(c=>c.tipo === 'vendedor').length;
+  document.getElementById('bc-seg').innerHTML = `
+    <button class="${_bcFiltro==='comprador'?'activo':''}" onclick="bcFiltrar('comprador')">Compradores<i>${nC}</i></button>
+    <button class="${_bcFiltro==='vendedor'?'activo':''}" onclick="bcFiltrar('vendedor')">Vendedores<i>${nV}</i></button>
+    <button class="${_bcFiltro==='todos'?'activo':''}" onclick="bcFiltrar('todos')">Todos<i>${contactos.length}</i></button>`;
+  const lista = contactos.filter(c=>(_bcFiltro === 'todos' || c.tipo === _bcFiltro) && coincide(c.nombre, c.cc, c.tel))
+    .map(c=>({c, a: mcActividadContacto(c)}))
+    .sort((x,y)=>String(y.a.ultima).localeCompare(String(x.a.ultima)) || y.a.n - x.a.n || String(x.c.nombre).localeCompare(String(y.c.nombre)));
+  _bcSug = _bcFiltro === 'todos' ? [] : bcSugerencias(_bcFiltro).filter(x=>coincide(x.nombre, x.cc, x.tel)).slice(0, 8);
+  const item = (nombre, linea1, linea2, rol, onclick, extra) => {
+    const h = mcTonoNombre(nombre);
+    return `<button type="button" class="bc-item${extra||''}" onclick="${onclick}">
+      <span class="ct-av bc-av" style="background:linear-gradient(135deg,hsl(${h},72%,58%),hsl(${(h+50)%360},70%,42%))">${ccEsc(mcIniciales(nombre))}</span>
+      <span class="bc-info"><b>${ccEsc(nombre)}</b><span>${linea1}</span>${linea2 ? `<em>${linea2}</em>` : ''}</span>
+      ${rol}
+      <span class="bc-flecha">${mcIco('flecha',16)}</span>
+    </button>`;
+  };
+  let h = '';
+  if(lista.length){
+    h += `<div class="bc-grupo">Guardados</div>` + lista.map(({c, a})=>item(c.nombre,
+      [c.cc ? 'CC ' + ccEsc(c.cc) : 'Sin cédula', c.tel ? ccEsc(c.tel) : 'sin teléfono'].join(' · '),
+      a.n ? `${a.n} ${c.tipo === 'comprador' ? 'compra' : 'vehículo'}${a.n!==1?'s':''} · ${fmt(a.total)}${a.ultima ? ' · última ' + mcFechaCorta(a.ultima) : ''}` : '',
+      _bcFiltro === 'todos' ? `<i class="ct-rol ${c.tipo === 'vendedor' ? 'v' : 'c'}">${c.tipo === 'vendedor' ? 'Me vende' : 'Me compra'}</i>` : '',
+      `seleccionarContacto('${c.id}')`)).join('');
+  }
+  if(_bcSug.length){
+    h += `<div class="bc-grupo">De tus ${_bcFiltro === 'comprador' ? 'ventas' : 'compras'} · sin guardar</div>` + _bcSug.map((x, i)=>item(x.nombre,
+      [x.cc ? 'CC ' + ccEsc(x.cc) : 'Sin cédula', x.tel ? ccEsc(x.tel) : 'sin teléfono'].join(' · '),
+      `${x.veh.slice(0,2).map(ccEsc).join(', ')}${x.ultima ? ' · ' + mcFechaCorta(x.ultima) : ''}`,
+      '<i class="ct-rol bc-nuevo">Historial</i>', `bcElegirSugerencia(${i})`, ' bc-sug')).join('');
+  }
+  if(!h){
+    const texto = document.getElementById('buscar-contacto-input')?.value.trim() || '';
+    h = `<div class="bc-vacio">${mcIco(q ? 'buscar' : 'personas', 28)}<b>${q ? 'Nadie coincide con la búsqueda' : 'Todavía no tienes contactos aquí'}</b>
+      <button class="btn btn-primary btn-sm" onclick="bcCrear()">+ Crear ${texto ? '“' + ccEsc(texto) + '”' : 'contacto nuevo'}</button></div>`;
+  }
+  cont.innerHTML = h;
+}
+function bcLlenar(nombre, cc, tel){
+  const ids = {moto:['nm-vendedor-nombre','nm-vendedor-cc','nm-vendedor-tel'], carro:['nc-vendedor-nombre','nc-vendedor-cc','nc-vendedor-tel'], venta:['vta-comprador','vta-cc','vta-celular']}[_buscarForm];
+  if(!ids) return;
+  [nombre, cc, tel].forEach((v, i)=>{ const el = document.getElementById(ids[i]); if(el) el.value = v || ''; });
+}
+function bcElegirSugerencia(i){
+  const x = _bcSug[i]; if(!x) return;
+  bcLlenar(x.nombre, x.cc, x.tel);
+  cerrarBuscarContacto();
+  mcNotificar({tipo:'ok', titulo:'Datos cargados', texto:`${x.nombre} · si quieres, toca "Guardar" para tenerlo en Contactos`});
+}
+function bcCrear(){
+  const texto = document.getElementById('buscar-contacto-input')?.value.trim() || '';
+  cerrarBuscarContacto();
+  abrirModalContacto(_bcFiltro === 'todos' ? _buscarTipo : _bcFiltro);
+  if(texto) document.getElementById(/^\d[\d\s-]*$/.test(texto) ? (texto.replace(/\D/g,'').length >= 10 ? 'c-tel' : 'c-cc') : 'c-nombre').value = texto;
 }
 function guardarContactoDesdeForm(form){
   let nombre='',cc='',tel='',tipo='vendedor';
@@ -8422,23 +8515,11 @@ function guardarContactoDesdeForm(form){
 }
 function seleccionarContacto(id){
   const c=contactos.find(x=>x.id===id); if(!c) return;
-  if(_buscarForm==='moto'){
-    document.getElementById('nm-vendedor-nombre').value=c.nombre||'';
-    document.getElementById('nm-vendedor-cc').value=c.cc||'';
-    document.getElementById('nm-vendedor-tel').value=c.tel||'';
-  } else if(_buscarForm==='carro'){
-    document.getElementById('nc-vendedor-nombre').value=c.nombre||'';
-    document.getElementById('nc-vendedor-cc').value=c.cc||'';
-    document.getElementById('nc-vendedor-tel').value=c.tel||'';
-  } else if(_buscarForm==='venta'){
-    document.getElementById('vta-comprador').value=c.nombre||'';
-    document.getElementById('vta-cc').value=c.cc||'';
-    document.getElementById('vta-celular').value=c.tel||'';
-  }
+  bcLlenar(c.nombre, c.cc, c.tel);
   const idx=contactos.findIndex(x=>x.id===id);
   if(idx>-1){ contactos[idx].historial=(contactos[idx].historial||0)+1; saveContactos(); }
   cerrarBuscarContacto();
-  toast('✓ Datos de '+c.nombre+' cargados');
+  mcNotificar({tipo:'ok', titulo:'Datos cargados', texto:c.nombre||''});
 }
 
 
@@ -8611,14 +8692,15 @@ mcIniciar();
 </div>
 
 <!-- MINI BUSCADOR DE CONTACTOS -->
-<div id="modal-buscar-contacto" class="modal-hidden" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:300;padding:1rem">
-  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);padding:1.5rem;width:100%;max-width:400px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
-      <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700" id="buscar-contacto-title">Seleccionar contacto</div>
-      <button class="btn btn-ghost btn-sm" onclick="cerrarBuscarContacto()">✕</button>
+<div id="modal-buscar-contacto" class="modal-hidden" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:300;padding:1rem" onclick="if(event.target===this)cerrarBuscarContacto()">
+  <div class="bc-caja" role="dialog" aria-modal="true" aria-labelledby="buscar-contacto-title">
+    <div class="bc-cab">
+      <div><div class="bc-tit" id="buscar-contacto-title">Elegir contacto</div><div class="bc-sub" id="buscar-contacto-sub"></div></div>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarBuscarContacto()" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
-    <input type="text" id="buscar-contacto-input" placeholder="Buscar..." oninput="renderBuscarContacto()" style="width:100%;margin-bottom:.75rem">
-    <div id="lista-buscar-contacto" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:6px"></div>
+    <div class="ct-buscar bc-buscar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg><input type="text" id="buscar-contacto-input" placeholder="Nombre, cédula o teléfono…" oninput="renderBuscarContacto()" onkeydown="if(event.key==='Enter'){const b=document.querySelector('#lista-buscar-contacto .bc-item');if(b){event.preventDefault();b.click();}}" autocomplete="off"></div>
+    <div class="ct-seg bc-seg" role="tablist" aria-label="Qué contactos ver" id="bc-seg"></div>
+    <div id="lista-buscar-contacto" class="bc-lista"></div>
   </div>
 </div>
 
