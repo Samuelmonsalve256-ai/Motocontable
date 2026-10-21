@@ -1778,6 +1778,77 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html #mc-top{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
   html #mc-tabs{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 }
+/* ── GRANDES LIGAS y METAS SUGERIDAS ─────────────────────────────────────── */
+.lgf-card{position:relative;z-index:3;width:100%;max-width:560px;margin:auto;padding:2.2rem 1.8rem 1.6rem;border-radius:30px;text-align:center;overflow:hidden;isolation:isolate;
+  background:linear-gradient(180deg,rgba(26,22,12,.97),rgba(12,11,20,.98)) padding-box,linear-gradient(135deg,#f5c451,#ff8c3c 45%,#a78bfa 75%,#7df3ff) border-box;border:2px solid transparent;
+  box-shadow:0 40px 120px -20px rgba(0,0,0,.9),0 0 120px -10px rgba(245,196,81,.55);animation:lgfEntra .9s cubic-bezier(.2,1.25,.4,1) both}
+@keyframes lgfEntra{0%{opacity:0;transform:translateY(40px) scale(.7) rotateX(25deg)}100%{opacity:1;transform:none}}
+.lgf-rayos{position:absolute;left:50%;top:-220px;width:620px;height:620px;margin-left:-310px;z-index:-1;border-radius:50%;opacity:.3;pointer-events:none;
+  background:repeating-conic-gradient(from 0deg,#f5c451 0 7deg,transparent 7deg 18deg);-webkit-mask:radial-gradient(circle,#000 15%,transparent 60%);mask:radial-gradient(circle,#000 15%,transparent 60%);animation:celGira 22s linear infinite}
+.lgf-corona{width:108px;height:108px;margin:0 auto 1rem;border-radius:50%;display:grid;place-items:center;color:#2a1800;
+  background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.7),transparent 45%),linear-gradient(135deg,#ffe08a,#f5c451 40%,#ff8c3c);
+  box-shadow:0 0 0 8px rgba(245,196,81,.12),0 0 0 18px rgba(245,196,81,.05),0 18px 50px -8px rgba(245,196,81,.9);animation:celMedalla .9s .2s cubic-bezier(.2,1.6,.4,1) both,lgfLatido 2.6s 1.2s ease-in-out infinite}
+@keyframes lgfLatido{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.lgf-k{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:#f5c451;font-weight:800}
+.lgf-tit{margin:.35rem 0 .2rem;font:800 2.3rem/1.1 'Space Grotesk',sans-serif;letter-spacing:-.02em;background:linear-gradient(180deg,#fff 20%,#f5c451 120%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lgf-msg{font-size:.98rem;line-height:1.55;color:#ddd6c4;margin:.6rem auto 1rem;max-width:42ch}
+.lgf-msg b{color:#fff}
+.lgf-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin:.4rem 0 1rem}
+.lgf-stats div{padding:.7rem .4rem;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(245,196,81,.18);opacity:0;animation:celLogro .5s cubic-bezier(.2,1.5,.4,1) forwards}
+.lgf-stats div:nth-child(1){animation-delay:1.4s}.lgf-stats div:nth-child(2){animation-delay:1.6s}.lgf-stats div:nth-child(3){animation-delay:1.8s}.lgf-stats div:nth-child(4){animation-delay:2s}
+.lgf-stats b{display:block;font:800 1.02rem 'Space Grotesk',sans-serif;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lgf-stats span{font-size:.7rem;color:#b9b0a0}
+.lgf-sueno{font-size:.85rem;line-height:1.55;color:#b9b0a0;font-style:italic;margin:0 auto 1.1rem;max-width:44ch}
+.lgf-pregunta{font:800 1.15rem 'Space Grotesk',sans-serif;color:#fff;margin-bottom:.8rem}
+.lgf-pregunta small{display:block;font:400 .8rem 'Inter',sans-serif;color:#b9b0a0;margin-top:.3rem}
+.lgf-acc{display:flex;flex-direction:column;gap:.55rem}
+.lgf-acc .btn{width:100%;justify-content:center;padding:.95rem 1rem;font-weight:800}
+.lgf-acc .btn-primary{background:linear-gradient(135deg,#f5c451,#ff8c3c);color:#1d1100;border:0;box-shadow:0 14px 34px -12px rgba(245,196,81,.9)}
+.lg-liga-ban{display:flex;align-items:center;gap:14px;width:100%;margin-bottom:14px;padding:14px 18px;border-radius:18px;cursor:pointer;text-align:left;font:inherit;color:inherit;
+  background:linear-gradient(90deg,rgba(245,196,81,.18),rgba(255,140,60,.06));border:1px solid rgba(245,196,81,.5);animation:lgLatir 2s ease-in-out infinite}
+.lg-liga-ban i{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;flex:none;color:#2a1800;background:linear-gradient(135deg,#ffe08a,#ff8c3c)}
+.lg-liga-ban span{flex:1;display:flex;flex-direction:column;gap:2px}
+.lg-liga-ban b{color:#fff;font-size:15px}
+.lg-liga-ban em{font-style:normal;color:#d8cdb4;font-size:12.5px}
+.lg-liga-ban strong{color:#f5c451;font-size:13px;white-space:nowrap}
+.lg-temp{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px}
+.lg-temp span{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px}
+.lg-temp-on{color:#1d1100;background:linear-gradient(135deg,#f5c451,#ff8c3c)}
+.lg-temp-ok{color:#9ae6c6;background:rgba(0,214,143,.1);border:1px solid rgba(0,214,143,.3)}
+.lg-temp-ver{font:600 12px 'Inter',sans-serif;color:#f5c451;background:none;border:0;cursor:pointer;text-decoration:underline}
+.lg-cofre{display:flex;gap:14px;align-items:center;border-style:dashed;border-color:rgba(245,196,81,.35);background:linear-gradient(90deg,rgba(245,196,81,.06),transparent)}
+.lg-cofre-ico{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;flex:none;color:#f5c451;background:rgba(245,196,81,.08);border:1px solid rgba(245,196,81,.3)}
+.lg-cofre b{display:block;color:#fff;font-size:14px}
+.lg-cofre em{display:block;font-style:normal;font-size:12px;color:#a9a9c2;margin:2px 0 8px}
+.lg-cofre > div:last-child{flex:1}
+#metas-sugeridas .mc-sec{margin:22px 0 12px}
+#metas-sugeridas .mc-sec span{display:inline-flex;align-items:center;gap:8px}
+.ms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px}
+.ms-card{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:18px;background:linear-gradient(180deg,rgba(var(--accent-rgb),.09),rgba(255,255,255,.02));border:1px solid rgba(var(--accent-rgb),.28)}
+.ms-card.reto{background:linear-gradient(180deg,rgba(255,140,60,.1),rgba(255,255,255,.02));border-color:rgba(255,140,60,.32)}
+.ms-card.sueno{background:linear-gradient(180deg,rgba(167,139,250,.11),rgba(255,255,255,.02));border-color:rgba(167,139,250,.32)}
+.ms-cab{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9a9ab8}
+.ms-cab i{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;color:#fff;background:var(--grad,linear-gradient(135deg,var(--accent),var(--accent-b)))}
+.ms-card.reto .ms-cab i{background:linear-gradient(135deg,#f5c451,#ff8c3c)}
+.ms-card.sueno .ms-cab i{background:linear-gradient(135deg,#a78bfa,#22d3ee)}
+.ms-nom{font-size:15px;color:#fff;line-height:1.3}
+.ms-obj{font:800 22px 'Space Grotesk',sans-serif;color:#fff;font-variant-numeric:tabular-nums}
+.ms-obj small{display:block;font:500 11.5px 'Inter',sans-serif;color:#9a9ab8;margin-top:2px}
+.ms-porque{font-size:12.5px;line-height:1.45;color:#b9b9d0;margin:0;flex:1}
+.ms-acc{display:flex;gap:8px;margin-top:4px}
+.ms-acc .btn{flex:1;justify-content:center}
+@media (max-width:760px){
+  html .lgf-card{padding:1.6rem 1.1rem 1.2rem;border-radius:24px}
+  html .lgf-tit{font-size:1.75rem}
+  html .lgf-corona{width:88px;height:88px}
+  html .lgf-stats{grid-template-columns:1fr 1fr}
+  html .ms-grid{grid-template-columns:1fr}
+  html .lg-liga-ban strong{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .lgf-card,.lgf-rayos,.lgf-corona,.lg-liga-ban{animation:none!important}
+  .lgf-stats div{animation:none!important;opacity:1}
+}
 </style>
 </head>
 <body>
@@ -2190,6 +2261,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   <div id="metas-resumen" class="mt-resumen"></div>
   <div id="metas-foco"></div>
   <div id="metas-grid"></div>
+  <div id="metas-sugeridas"></div>
   <div id="metas-trofeos"></div>
   <div id="metas-logros" style="display:none"></div>
 </div>
@@ -2357,6 +2429,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 </div>
 
 <!-- MODALES - ocultos con clase modal-hidden -->
+<div id="mc-ligas" class="modal-hidden" style="position:fixed;inset:0;background:radial-gradient(120% 90% at 50% 0%,rgba(245,196,81,.18),rgba(4,4,10,.94) 60%);align-items:center;justify-content:center;z-index:980;padding:1rem;overflow-y:auto">
+  <canvas id="lgf-confeti" style="position:fixed;inset:0;pointer-events:none;z-index:2"></canvas>
+  <div id="mc-ligas-card" class="lgf-card"></div>
+</div>
 <div id="modal-celebracion" class="modal-hidden" style="position:fixed;inset:0;background:rgba(4,4,10,.82);align-items:center;justify-content:center;z-index:900;padding:1rem;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">
   <canvas id="cel-confeti" style="position:fixed;inset:0;pointer-events:none;z-index:2"></canvas>
   <div id="cel-card" class="cel-card"></div>
@@ -5166,6 +5242,7 @@ function mcAnillo(id, pct, tam, grosor, t){
 function renderMetas(){
   try { lgCabeceraMetas(); } catch(e){ console.warn('logros', e); }
   if(mtTab === 'logros') return;
+  mcRenderSugeridas();
   const grid = document.getElementById('metas-grid'), res = document.getElementById('metas-resumen'), foco = document.getElementById('metas-foco'), tro = document.getElementById('metas-trofeos');
   if(!grid) return;
   if(!metas.length){
@@ -7735,9 +7812,9 @@ function celSonido(rango, record){
     if(record){ [784, 987.8, 1174.7, 1568].forEach((f,i)=>nota(f, tc+.45+i*.09, .5, 'triangle', .1)); }
   });
 }
-function celConfeti(cantidad, colores){
+function celConfeti(cantidad, colores, lienzo){
   if(mcMovReducido()) return;
-  const cv = document.getElementById('cel-confeti'); if(!cv) return;
+  const cv = document.getElementById(lienzo || 'cel-confeti'); if(!cv) return;
   const ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1);
   const W = cv.width = innerWidth * dpr, H = cv.height = innerHeight * dpr;
   cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px';
@@ -7826,10 +7903,12 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
     L = mcLogros();
     const conEsta = venta ? L.items.filter(x=>x.ventaId === venta.id) : [];
     const ptsAntes = L.puntos - conEsta.reduce((a,x)=>a + x.pts, 0) - 2;
-    let nAntes = 0; LG_NIVELES.forEach((n,i)=>{ if(ptsAntes >= n[0]) nAntes = i; });
+    let nAntes = 0; L.niveles.forEach((n,i)=>{ if(ptsAntes >= n[0]) nAntes = i; });
     if(L.nivel.n - 1 > nAntes) logros.push({nivel:true, ico:'flecha', t:`¡Subiste a nivel ${L.nivel.n}!`, d:`Ahora eres ${L.nivel.nombre}`, oro:true});
     conEsta.sort((a,b)=>b.pts - a.pts).forEach(x=>logros.push({ico:x.fam.ico, t:x.nombre, d:`Logro desbloqueado · ${x.tier.nombre} +${x.pts}`, tier:x.tier, tierN:LG_TIER.indexOf(x.tier), oro:x.pts >= 50}));
     celProx = lgProximos(L, 1)[0] || null;
+    // ¿Con esta venta se completó la temporada? Al cerrar llega la ceremonia
+    if(conEsta.length && lgRevisarTope(L)){ _lgFinalPendiente = true; logros.unshift({ico:'trofeo', t:'¡Completaste todos los logros!', d:'Cierra esta ventana: tienes una sorpresa', oro:true}); }
   } catch(e){}
   // Meta en foco: cuánto la movió esta venta
   let metaHtml = '';
@@ -7906,6 +7985,7 @@ function celCerrar(){
   const cv = document.getElementById('cel-confeti'); if(cv) cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
   const modal = document.getElementById('modal-celebracion');
   modal.classList.add('modal-hidden'); modal.style.display = '';
+  if(_lgFinalPendiente){ _lgFinalPendiente = false; setTimeout(lgAbrirFinal, 350); }
 }
 function cerrarCelebracion(){ celCerrar(); go('ventas'); }
 function celOtraVenta(){ celCerrar(); go('nueva-venta'); }
@@ -7959,13 +8039,16 @@ const LG_NIVELES = [
 const lgDias = (a, b) => (a && b) ? Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / 864e5) : null;
 const lgMesNum = k => Number(k.slice(0,4))*12 + Number(k.slice(5,7));
 // Recorre las ventas en orden y anota cuándo (y con qué venta) se ganó cada escalón
-function mcLogros(){
-  const lista = ventas.map((v,i)=>({v,i})).filter(x=>x.v && x.v.fecha)
+function mcLogros(temp){
+  temp = temp || lgTemporada();
+  const FAMS = temp === 2 ? LG_FAMILIAS_T2 : LG_FAMILIAS, NIVS = temp === 2 ? LG_NIVELES_T2 : LG_NIVELES;
+  const inicioT2 = lgLigas().inicioT2 || '';
+  const lista = ventas.map((v,i)=>({v,i})).filter(x=>x.v && x.v.fecha && (temp !== 2 || String(x.v.fecha) >= inicioT2))
     .sort((a,b)=>String(a.v.fecha).localeCompare(String(b.v.fecha)) || a.i - b.i).map(x=>x.v);
   const st = {total:0, ganTotal:0, maxMesN:0, maxMesGan:0, maxRacha:0, maxMesesSeg:0, nEpicas:0, nLegend:0, nRapidas:0, nLiberado:0, nCarros:0};
   const porMesN = {}, porMesG = {}, dias = new Set(), meses = new Set();
   const ganados = {};   // 'familia:i' -> {fecha, venta}
-  const revisar = v => LG_FAMILIAS.forEach(f=>f.pasos.forEach((p,i)=>{ const k = f.id+':'+i; if(!ganados[k] && st[f.clave] >= p[0]) ganados[k] = {fecha:v.fecha, ventaId:v.id, veh:v.motoNombre||''}; }));
+  const revisar = v => FAMS.forEach(f=>f.pasos.forEach((p,i)=>{ const k = f.id+':'+i; if(!ganados[k] && st[f.clave] >= p[0]) ganados[k] = {fecha:v.fecha, ventaId:v.id, veh:v.motoNombre||''}; }));
   let mayor = null, mejorRapida = null;
   lista.forEach(v=>{
     const g = mcGanVenta(v), mes = String(v.fecha).slice(0,7);
@@ -7984,16 +8067,17 @@ function mcLogros(){
     revisar(v);
   });
   const items = [];
-  LG_FAMILIAS.forEach(f=>f.pasos.forEach((p,i)=>{
+  FAMS.forEach(f=>f.pasos.forEach((p,i)=>{
     const k = f.id+':'+i, t = LG_TIER[p[3]], gan = ganados[k];
     items.push({k, fam:f, i, meta:p[0], nombre:p[1], desc:p[2], tier:t, pts:t.pts, ganado:!!gan, fecha:gan&&gan.fecha, ventaId:gan&&gan.ventaId, veh:gan&&gan.veh,
       actual:Math.min(st[f.clave], p[0]), pct:Math.max(0, Math.min(100, st[f.clave] / p[0] * 100))});
   }));
+  // En las Grandes Ligas, las ventas suman puntos desde que empezó la temporada
   const puntos = items.filter(x=>x.ganado).reduce((a,x)=>a + x.pts, 0) + st.total * 2;
-  let ni = 0; LG_NIVELES.forEach((n,i)=>{ if(puntos >= n[0]) ni = i; });
-  const sig = LG_NIVELES[ni+1];
+  let ni = 0; NIVS.forEach((n,i)=>{ if(puntos >= n[0]) ni = i; });
+  const sig = NIVS[ni+1];
   const mejorMes = Object.entries(porMesG).sort((a,b)=>b[1]-a[1])[0];
-  return {items, st, puntos, nivel:{n:ni+1, nombre:LG_NIVELES[ni][1], desde:LG_NIVELES[ni][0], hasta:sig?sig[0]:null, sig:sig?sig[1]:null},
+  return {items, st, puntos, temporada:temp, niveles:NIVS, familias:FAMS, nivel:{n:ni+1, nombre:NIVS[ni][1], desde:NIVS[ni][0], hasta:sig?sig[0]:null, sig:sig?sig[1]:null},
     records:{mayor, mejorMes, racha:st.maxRacha, rapida:mejorRapida}};
 }
 function lgVistos(){ try { return JSON.parse(localStorage.getItem('mc_logros_vistos')||'null'); } catch(e){ return null; } }
@@ -8030,7 +8114,7 @@ function lgCabeceraMetas(){
       ${lgMedalla(prox, 34)}<span class="lg-tira-t"><b>Próximo logro: ${prox.nombre}</b><em>${lgFalta(prox)} · nivel ${L.nivel.n} ${L.nivel.nombre}</em></span>
       <span class="lg-tira-bar"><i style="width:${prox.pct}%"></i></span></button>` : ''}`;
   const hist = mtTab === 'metas';
-  ['metas-resumen','metas-foco','metas-grid','metas-trofeos'].forEach(id=>{ const el = document.getElementById(id); if(el) el.style.display = hist ? '' : 'none'; });
+  ['metas-resumen','metas-foco','metas-grid','metas-sugeridas','metas-trofeos'].forEach(id=>{ const el = document.getElementById(id); if(el) el.style.display = hist ? '' : 'none'; });
   const lg = document.getElementById('metas-logros'); if(lg){ lg.style.display = hist ? 'none' : ''; if(!hist) renderLogros(L); }
 }
 function renderLogros(L){
@@ -8046,7 +8130,11 @@ function renderLogros(L){
     {ico:'fuego', t:'Racha más larga', v:`${R.racha} día${R.racha!==1?'s':''}`, d:'Días seguidos vendiendo'},
     R.rapida ? {ico:'reloj', t:'Venta más rápida', v:R.rapida.d === 0 ? 'El mismo día' : `${R.rapida.d} día${R.rapida.d!==1?'s':''}`, d:ccEsc(R.rapida.v.motoNombre||'')} : null,
   ].filter(Boolean);
-  box.innerHTML = `
+  const completa = lgCompleta(L), T = L.temporada;
+  const tope = T === 1 && completa
+    ? `<button class="lg-liga-ban" onclick="lgAbrirFinal()"><i>${mcIco('trofeo',22)}</i><span><b>Completaste la temporada 1</b><em>Ya cumpliste todo lo que había. Las Grandes Ligas te esperan.</em></span><strong>Ver la ceremonia ›</strong></button>`
+    : T === 2 ? `<div class="lg-temp"><span class="lg-temp-on">${mcIco('trofeo',14)}Temporada 2 · Grandes Ligas</span><span class="lg-temp-ok">${mcIco('check',13)}Temporada 1 completada · 52/52</span>${completa ? `<button class="lg-temp-ver" onclick="lgAbrirFinal()">Ver la ceremonia</button>` : ''}</div>` : '';
+  box.innerHTML = `${tope}
     <div class="lg-nivel">
       <div class="lg-nivel-n"><span>Nivel</span><b>${niv.n}</b></div>
       <div class="lg-nivel-info">
@@ -8065,19 +8153,205 @@ function renderLogros(L){
     ${ultimos.length ? `<div class="mc-sec"><span>${mcIco('historia',15)}Últimos ganados</span></div>
       <div class="lg-ult">${ultimos.map(x=>`<div class="lg-ult-c${nuevos.has(x.k)?' nuevo':''}" style="--ta:${x.tier.a};--tb:${x.tier.b}">${lgMedalla(x, 38)}<div><b>${x.nombre}</b><em>${fechaCorta(x.fecha)}${x.veh?` · ${ccEsc(x.veh)}`:''}</em></div></div>`).join('')}</div>` : ''}
     <div class="mc-sec"><span>${mcIco('trofeo',15)}Vitrina</span></div>
-    <div class="lg-fams">${LG_FAMILIAS.map(f=>{
+    <div class="lg-fams">${L.familias.map(f=>{
       const its = L.items.filter(x=>x.fam === f), n = its.filter(x=>x.ganado).length;
       return `<div class="lg-fam"><div class="lg-fam-cab"><span>${mcIco(f.ico,15)}${f.nombre}</span><b>${n}/${its.length}</b></div>${f.nota?`<div class="lg-fam-nota">${f.nota}</div>`:''}
         <div class="lg-grid">${its.map(x=>`<div class="lg-it${x.ganado?' ok':''}${nuevos.has(x.k)?' nuevo':''}" style="--ta:${x.tier.a};--tb:${x.tier.b}" title="${ccEsc(x.desc)}">
           ${nuevos.has(x.k)?'<span class="lg-badge">Nuevo</span>':''}${lgMedalla(x, 46)}<b>${x.nombre}</b>
           <em>${x.ganado ? fechaCorta(x.fecha) : `${x.fam.fmt(x.actual)} / ${x.fam.fmt(x.meta)}`}</em>
           ${x.ganado ? `<small>${x.tier.nombre} · +${x.pts}</small>` : `<span class="lg-it-bar"><i style="width:${x.pct}%"></i></span>`}</div>`).join('')}</div></div>`;
-    }).join('')}</div>`;
+    }).join('')}
+    ${T === 1 && !completa ? `<div class="lg-fam lg-cofre"><div class="lg-cofre-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h18l-1.5-10-4.5 4-3-7-3 7-4.5-4z"/><path d="M5 21h14"/></svg></div>
+      <div><b>El tope: las Grandes Ligas</b><em>Completa los ${L.items.length} logros para descubrir lo que viene después. Llevas ${L.items.filter(x=>x.ganado).length}.</em>
+      <span class="lg-it-bar" style="--ta:#f5c451;--tb:#ff8c3c"><i style="width:${L.items.filter(x=>x.ganado).length / L.items.length * 100}%"></i></span></div></div>` : ''}
+    </div>`;
+  if(lgRevisarTope(L)) setTimeout(lgAbrirFinal, 500);
   if(nuevos.size) setTimeout(mcSonidoBrillo, 250);
   requestAnimationFrame(()=>setTimeout(()=>box.querySelectorAll('.lg-nivel-bar i').forEach(b=>{ b.style.width = b.dataset.w + '%'; }), 60));
   lgMarcarVistos(L);
 }
 function fechaCorta(f){ if(!f) return ''; const d = new Date(f+'T00:00:00'); return `${d.getDate()} ${MESES[d.getMonth()].slice(0,3).toLowerCase()} ${d.getFullYear()}`; }
+
+// ── GRANDES LIGAS ────────────────────────────────────────────────────────────
+// La temporada 1 tiene tope: 52 logros y 9 niveles. Al completarla llega una
+// ceremonia y la opción de pasar a la temporada 2, con logros y niveles más
+// grandes. El estado vive en la configuración (se sincroniza con la nube).
+const LG_FAMILIAS_T2 = [
+  {id:'g_ventas', nombre:'Ventas en las Grandes Ligas', ico:'llave', clave:'total', fmt:n=>n.toLocaleString('es-CO'), pasos:[
+    [100,'100 en las Grandes Ligas','Arrancó la temporada',0],[250,'250 en las Grandes Ligas','Ritmo de élite',1],[500,'500 en las Grandes Ligas','Medio millar más',2],[1000,'Otras 1.000 ventas','Lo hiciste dos veces',3]]},
+  {id:'g_ganancia', nombre:'Ganancias de la temporada', ico:'billete', clave:'ganTotal', fmt:n=>fmt(n), pasos:[
+    [100*LG_M,'100 millones más','La temporada rinde',1],[250*LG_M,'250 millones más','Capital de grandes ligas',2],[500*LG_M,'500 millones más','Medio camino al segundo mil',2],[1000*LG_M,'Otros mil millones','El sueño, dos veces',3]]},
+  {id:'g_mes', nombre:'Ventas en un mes', ico:'calendario', clave:'maxMesN', fmt:n=>n, pasos:[
+    [40,'Mes con 40 ventas','Más de una al día',1],[50,'Mes con 50 ventas','Máquina imparable',2],[75,'Mes con 75 ventas','Concesionario completo',3]]},
+  {id:'g_mesgan', nombre:'Ganancia en un mes', ico:'barras', clave:'maxMesGan', fmt:n=>fmt(n), pasos:[
+    [75*LG_M,'Mes de 75 millones','Mes de grandes ligas',1],[100*LG_M,'Mes de 100 millones','Cien millones en un mes',2],[200*LG_M,'Mes de 200 millones','Mes histórico',3]]},
+  {id:'g_racha', nombre:'Rachas de días', ico:'fuego', clave:'maxRacha', fmt:n=>n+' días', pasos:[
+    [10,'Diez días seguidos','Racha de élite',1],[14,'Dos semanas seguidas','Disciplina total',2],[30,'Un mes sin fallar','Todos los días vendiendo',3]]},
+  {id:'g_constancia', nombre:'Meses seguidos vendiendo', ico:'objetivo', clave:'maxMesesSeg', fmt:n=>n+' meses', pasos:[
+    [12,'Un año en las Grandes Ligas','Constancia de acero',1],[24,'Dos años en las Grandes Ligas','Nada te detiene',2],[60,'Cinco años sin parar','Una vida en el negocio',3]]},
+  {id:'g_epica', nombre:'Ventas épicas', ico:'trofeo', clave:'nEpicas', fmt:n=>n, nota:'Ganancia de $1.500.000 o más', pasos:[
+    [50,'50 épicas en la temporada','Negociador de élite',1],[150,'150 épicas en la temporada','Negociador legendario',2],[400,'400 épicas en la temporada','El mejor del gremio',3]]},
+  {id:'g_legendaria', nombre:'Ventas legendarias', ico:'rayo', clave:'nLegend', fmt:n=>n, nota:'Ganancia de $3.000.000 o más', pasos:[
+    [25,'25 legendarias en la temporada','Juegas en la liga mayor',2],[75,'75 legendarias en la temporada','Rey de los grandes negocios',3]]},
+  {id:'g_rapida', nombre:'Ventas relámpago', ico:'reloj', clave:'nRapidas', fmt:n=>n, nota:'Vendido 7 días o menos después de comprarlo', pasos:[
+    [25,'25 relámpago','Rotación de élite',1],[100,'100 relámpago','El capital vuela',3]]},
+  {id:'g_carros', nombre:'Carros vendidos', ico:'carro', clave:'nCarros', fmt:n=>n, pasos:[
+    [25,'25 carros en la temporada','Ya juegas con carros',1],[100,'100 carros en la temporada','Imperio de carros',3]]},
+];
+// La temporada 2 cuenta solo las ventas desde que entraste a las Grandes Ligas
+const LG_NIVELES_T2 = [[0,'Grandes Ligas'],[300,'Élite'],[700,'Titán'],[1200,'Imperio'],[2000,'Leyenda viva']];
+function lgLigas(){ return (cfgData && cfgData.ligas && typeof cfgData.ligas === 'object') ? cfgData.ligas : {}; }
+function lgTemporada(){ return lgLigas().temporada === 2 ? 2 : 1; }
+function lgGuardarLigas(cambios){ cfgData.ligas = {...lgLigas(), ...cambios}; saveCfg(); }
+const lgCompleta = L => L.items.length > 0 && L.items.every(x=>x.ganado);
+// Revisa si se acaba de completar la temporada (y la ceremonia aún no se vio)
+function lgRevisarTope(L){
+  L = L || mcLogros();
+  if(!lgCompleta(L)) return false;
+  const lig = lgLigas(), k = L.temporada === 2 ? 't2Completa' : 't1Completa';
+  if(lig[k]) return false;
+  lgGuardarLigas({[k]: hoyLocal()});
+  return true;
+}
+let _lgFinalPendiente = false;
+
+function mcSonidoGrandesLigas(){
+  mcAudioTocar((ac, t0)=>{
+    // Redoble
+    for(let i = 0; i < 14; i++){ const buf = ac.createBuffer(1, ac.sampleRate*.08, ac.sampleRate), d = buf.getChannelData(0);
+      for(let j = 0; j < d.length; j++) d[j] = (Math.random()*2-1)*Math.exp(-j/700);
+      const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = buf; s.connect(g); g.connect(ac.destination); g.gain.value = .12 + i*.02; s.start(t0 + i*.065); }
+    const t1 = t0 + .95;
+    // Golpe y fanfarria
+    const buf = ac.createBuffer(1, ac.sampleRate*.5, ac.sampleRate), d = buf.getChannelData(0);
+    for(let j = 0; j < d.length; j++) d[j] = (Math.random()*2-1)*Math.exp(-j/5000);
+    const s = ac.createBufferSource(), gb = ac.createGain(); s.buffer = buf; s.connect(gb); gb.connect(ac.destination); gb.gain.value = .5; s.start(t1);
+    [[392,0,.22],[523.3,.2,.22],[659.3,.4,.22],[784,.6,.5],[659.3,.95,.18],[784,1.12,1.4]].forEach(([f,t,dd])=>{ mcNota(ac, f, t1+t, dd, 'square', .05); mcNota(ac, f/2, t1+t, dd, 'triangle', .07); });
+    [392,523.3,659.3,784,1046.5,1318.5].forEach(f=>mcNota(ac, f, t1+1.12, 2.4, 'triangle', .055));
+    // Lluvia de brillo
+    for(let i = 0; i < 12; i++) mcNota(ac, [2093,2349,2637,3136,3520,4186][i%6] * (i > 5 ? 1.5 : 1), t1 + 1.3 + i*.11, .6, 'sine', .035);
+  });
+}
+// La ceremonia: se ve una vez al completar la temporada, y se puede volver a abrir
+function lgAbrirFinal(){
+  const L = mcLogros(), T = L.temporada, modal = document.getElementById('mc-ligas'), box = document.getElementById('mc-ligas-card');
+  if(!modal || !box) return;
+  const st = L.st, primera = ventas.map(v=>v.fecha).filter(Boolean).sort()[0];
+  const dias = primera ? Math.max(1, lgDias(primera, hoyLocal())) : 0;
+  const tiempo = dias >= 365 ? `${(dias/365).toFixed(1).replace('.', ',').replace(',0','')} años` : dias >= 60 ? `${Math.round(dias/30)} meses` : `${dias} días`;
+  const sigue = T === 1;
+  box.innerHTML = `
+    <div class="lgf-rayos" aria-hidden="true"></div>
+    <div class="lgf-corona"><svg viewBox="0 0 24 24" width="54" height="54" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h18l-1.5-10-4.5 4-3-7-3 7-4.5-4z"/><path d="M5 21h14"/></svg></div>
+    <div class="lgf-k">${sigue ? 'Temporada 1 completada' : 'Temporada 2 completada'}</div>
+    <h2 class="lgf-tit">${sigue ? 'Bienvenido a las Grandes Ligas' : 'Leyenda absoluta'}</h2>
+    <p class="lgf-msg">${sigue
+      ? `Lo lograste. Completaste los <b>${L.items.length} logros</b> y llegaste a <b>Leyenda</b>. Ya cumpliste todo lo que había: subiste a las grandes ligas de la compra y venta.`
+      : `Completaste también todos los logros de las Grandes Ligas. Llegaste a donde casi nadie llega en este negocio.`}</p>
+    <div class="lgf-stats">
+      <div><b>${st.total.toLocaleString('es-CO')}</b><span>ventas</span></div>
+      <div><b>${fmt(st.ganTotal)}</b><span>en ganancias</span></div>
+      <div><b>${tiempo}</b><span>de trabajo</span></div>
+      <div><b>${L.puntos.toLocaleString('es-CO')}</b><span>puntos</span></div>
+    </div>
+    <p class="lgf-sueno">Cada venta te acercó al Lamborghini SVJ, al Porsche GT3 RS, a los 100 millones de tu mamá y al garaje de tus sueños. El que llegó hasta aquí no se detiene: ahora toca soñar más grande.</p>
+    ${sigue ? `<div class="lgf-pregunta">¿Quieres pasar al siguiente nivel?<small>Nuevos logros, nuevos niveles y metas más grandes. Lo que ya ganaste se queda contigo.</small></div>
+      <div class="lgf-acc"><button class="btn btn-primary" onclick="lgSubirDeLiga()">Sí, quiero ir por más</button><button class="btn btn-ghost" onclick="lgCerrarFinal()">Todavía no, quiero disfrutarlo</button></div>`
+    : `<div class="lgf-acc"><button class="btn btn-primary" onclick="lgCerrarFinal()">Seguir haciendo historia</button></div>`}`;
+  modal.classList.remove('modal-hidden'); modal.style.display = 'flex';
+  const cols = ['#f5c451','#ff8c3c','#ffffff','#7df3ff','#a78bfa', mcCss('--accent') || '#2a7fff'];
+  celConfeti(380, cols, 'lgf-confeti');
+  _celTimers.push(setTimeout(()=>celConfeti(260, cols, 'lgf-confeti'), 2600));
+  mcSonidoGrandesLigas();
+  try { if(navigator.vibrate) navigator.vibrate([40, 60, 40, 60, 40, 120, 200]); } catch(e){}
+}
+function lgCerrarFinal(){
+  const modal = document.getElementById('mc-ligas'); if(!modal) return;
+  modal.classList.add('modal-hidden'); modal.style.display = '';
+  cancelAnimationFrame(_celAnim);
+  const cv = document.getElementById('lgf-confeti'); if(cv) cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+  if(((document.querySelector('.page.active')||{}).id||'') === 'page-metas') renderMetas();
+}
+function lgSubirDeLiga(){
+  lgGuardarLigas({temporada:2, inicioT2: hoyLocal()});
+  lgCerrarFinal();
+  mcNotificar({tipo:'confirmar', titulo:'Temporada 2: Grandes Ligas', texto:'Nuevos logros y niveles desbloqueados. A por más.'});
+  verLogros();
+}
+
+// ── METAS QUE PROPONE EL SISTEMA ─────────────────────────────────────────────
+// Salen de tus números (promedios, mejor mes, sueños). Tú decides: Aceptar crea
+// la meta; "No, gracias" la esconde para siempre.
+const mcRedondeo = (n, paso) => Math.ceil(n / paso) * paso;
+const mcFinDeMes = (a, m) => hoyLocal(new Date(a, m + 1, 0));
+function mcMetasSugeridas(){
+  const rech = new Set((cfgData.metasRechazadas)||[]), tomadas = new Set(metas.map(m=>m.sugerida).filter(Boolean));
+  const hoy = new Date(), a = hoy.getFullYear(), mi = hoy.getMonth(), mesAct = hoyLocal(hoy).slice(0,7), nomMes = MESES[mi];
+  const ini = `${mesAct}-01`, fin = mcFinDeMes(a, mi);
+  const porMes = {}; ventas.forEach(v=>{ const k = String(v.fecha||'').slice(0,7); if(!k) return; (porMes[k] = porMes[k] || {n:0, g:0}); porMes[k].n++; porMes[k].g += mcGanVenta(v); });
+  const ult3 = [1,2,3].map(k=>{ const d = new Date(a, mi - k, 1); return porMes[hoyLocal(d).slice(0,7)] || {n:0, g:0}; });
+  const conVentas = ult3.filter(x=>x.n > 0), out = [];
+  const activaEnMes = tipo => metas.some(m=>m.tipo === tipo && m.inicio && m.fin && m.inicio <= fin && m.fin >= ini && !calcularProgresoMeta(m).lograda);
+  if(conVentas.length){
+    const promG = conVentas.reduce((s,x)=>s + x.g, 0) / conVentas.length, promN = conVentas.reduce((s,x)=>s + x.n, 0) / conVentas.length;
+    if(promG > 0 && !activaEnMes('ganancia')) out.push({id:`gan-${mesAct}`, tipo:'ganancia', nombre:`Ganancia de ${nomMes.toLowerCase()}`, objetivo: mcRedondeo(promG * 1.15, 500000), inicio:ini, fin,
+      porque:`Tu promedio de los últimos meses es ${fmt(promG)}. Esta meta es un 15 % más.`, ico:'billete'});
+    if(promN > 0 && !activaEnMes('unidades')) out.push({id:`uni-${mesAct}`, tipo:'unidades', nombre:`Vender ${Math.max(2, Math.ceil(promN * 1.2))} vehículos en ${nomMes.toLowerCase()}`, objetivo: Math.max(2, Math.ceil(promN * 1.2)), inicio:ini, fin,
+      porque:`Vendes en promedio ${promN.toFixed(1).replace('.', ',').replace(',0','')} al mes. Súbele un poco al ritmo.`, ico:'llave'});
+    const mejor = Object.entries(porMes).filter(([k])=>k !== mesAct).sort((x,y)=>y[1].g - x[1].g)[0];
+    if(mejor && mejor[1].g > promG * 1.25) out.push({id:`rec-${mesAct}`, tipo:'ganancia', nombre:`Superar tu mejor mes en ${nomMes.toLowerCase()}`, objetivo: mcRedondeo(mejor[1].g + 1, 100000), inicio:ini, fin,
+      porque:`Tu récord es ${MESES[Number(mejor[0].slice(5,7))-1].toLowerCase()} de ${mejor[0].slice(0,4)} con ${fmt(mejor[1].g)}. ¿Lo rompes este mes?`, ico:'trofeo', reto:true});
+  }
+  // La meta cumplida propone la siguiente, un 20 % más grande
+  metas.filter(m=>m.inicio && m.fin && calcularProgresoMeta(m).lograda).forEach(m=>{
+    const di = new Date(m.inicio+'T00:00:00'), df = new Date(m.fin+'T00:00:00');
+    let ni, nf;
+    if(di.getDate() === 1 && hoyLocal(new Date(df.getFullYear(), df.getMonth()+1, 0)) === m.fin){
+      const meses = (df.getFullYear() - di.getFullYear())*12 + df.getMonth() - di.getMonth() + 1;
+      ni = hoyLocal(new Date(df.getFullYear(), df.getMonth()+1, 1)); nf = mcFinDeMes(df.getFullYear(), df.getMonth() + meses);
+    } else { const dur = Math.round((df - di)/864e5); const n0 = new Date(df); n0.setDate(n0.getDate()+1); const n1 = new Date(n0); n1.setDate(n1.getDate()+dur); ni = hoyLocal(n0); nf = hoyLocal(n1); }
+    const obj = m.tipo === 'unidades' ? Math.ceil(m.objetivo * 1.2) : mcRedondeo(m.objetivo * 1.2, 100000);
+    out.push({id:`sig-${m.id}`, tipo:m.tipo, nombre:`${m.nombre} · siguiente nivel`, objetivo:obj, inicio:ni, fin:nf,
+      porque:`Cumpliste "${m.nombre}". La siguiente es un 20 % más grande.`, ico:'flecha', reto:true});
+  });
+  // Los sueños grandes, sin fecha límite
+  const total = ventas.reduce((s,v)=>s + mcGanVenta(v), 0), desde = ventas.map(v=>v.fecha).filter(Boolean).sort()[0] || hoyLocal();
+  const tieneObj = o => metas.some(m=>m.tipo === 'ganancia' && !m.fin && Number(m.objetivo) === o);
+  if(total < 1e8 && !tieneObj(1e8)) out.push({id:'mama', tipo:'ganancia', nombre:'Los 100 millones de mamá', objetivo:1e8, inicio:desde, fin:'',
+    porque:`Llevas ${fmt(total)} en ganancias. Ponla en tus metas y mírala crecer con cada venta.`, ico:'objetivo', sueno:true});
+  if(total >= 2e7 && total < 1e9 && !tieneObj(1e9)) out.push({id:'mil', tipo:'ganancia', nombre:'Los mil millones', objetivo:1e9, inicio:desde, fin:'',
+    porque:`El capital que te propusiste. Ya vas en el ${(total/1e7).toFixed(1).replace('.', ',')} %.`, ico:'billete', sueno:true});
+  return out.filter(s=>!rech.has(s.id) && !tomadas.has(s.id)).slice(0, 3);
+}
+function mcRenderSugeridas(){
+  const box = document.getElementById('metas-sugeridas'); if(!box) return;
+  let sug = []; try { sug = mcMetasSugeridas(); } catch(e){ console.warn('sugeridas', e); }
+  _mcSugeridas = sug;
+  if(!sug.length){ box.innerHTML = ''; return; }
+  const per = s => s.fin ? `${mcFechaCorta(s.inicio)} – ${mcFechaCorta(s.fin)}` : 'Sin fecha límite';
+  box.innerHTML = `<div class="mc-sec"><span>${mcIco('rayo',15)}El sistema te propone</span></div>
+    <div class="ms-grid">${sug.map((s,i)=>`<div class="ms-card${s.reto?' reto':''}${s.sueno?' sueno':''}">
+      <div class="ms-cab"><i>${mcIco(s.ico,17)}</i><span>${s.sueno ? 'Sueño' : s.reto ? 'Reto' : 'Sugerida'}</span></div>
+      <b class="ms-nom">${ccEsc(s.nombre)}</b>
+      <div class="ms-obj">${s.tipo === 'unidades' ? `${s.objetivo} vehículos` : fmt(s.objetivo)}<small>${per(s)}</small></div>
+      <p class="ms-porque">${s.porque}</p>
+      <div class="ms-acc"><button class="btn btn-primary btn-sm" onclick="mcAceptarSugerida(${i})">Aceptar meta</button><button class="btn btn-ghost btn-sm" onclick="mcRechazarSugerida(${i})">No, gracias</button></div>
+    </div>`).join('')}</div>`;
+}
+var _mcSugeridas = [];
+function mcAceptarSugerida(i){
+  const s = _mcSugeridas[i]; if(!s) return;
+  metas.unshift({id:uid(), nombre:s.nombre, tipo:s.tipo, objetivo:s.objetivo, desc:s.porque, inicio:s.inicio, fin:s.fin, imagen:'', creadaEn:new Date().toISOString(), sugerida:s.id});
+  saveMetas();
+  mcNotificar({tipo:'agregar', titulo:'¡Meta aceptada!', texto:`${s.nombre} · a trabajar por ella`});
+  renderMetas();
+}
+function mcRechazarSugerida(i){
+  const s = _mcSugeridas[i]; if(!s) return;
+  cfgData.metasRechazadas = [...new Set([...(cfgData.metasRechazadas||[]), s.id])]; saveCfg();
+  mcNotificar({tipo:'ok', titulo:'Sugerencia descartada', texto:s.nombre, sonido:false});
+  mcRenderSugeridas();
+}
 
 // ── FRASES DE LOS SUEÑOS ─────────────────────────────────────────────────────
 // Van rotando: cada venta toca un sueño distinto y no se repite una frase hasta
