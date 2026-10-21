@@ -1593,6 +1593,77 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
   html #modal-buscar-contacto,html #modal-edit-venta,html #modal-contacto,html #modal-meta{z-index:800!important}
   html .bc-seg button{padding:0 8px;gap:5px;font-size:12.5px}
 }
+/* ── CELEBRACIÓN DE CADA VENTA ───────────────────────────────────────────── */
+#modal-celebracion{overflow-y:auto}
+.cel-card{--c1:var(--accent);--c2:var(--accent-b);position:relative;z-index:3;width:100%;max-width:440px;margin:auto;padding:1.6rem 1.4rem 1.3rem;border-radius:26px;text-align:center;overflow:hidden;isolation:isolate;
+  background:linear-gradient(180deg,rgba(20,20,34,.97),rgba(12,12,22,.98)) padding-box,linear-gradient(135deg,var(--c1),var(--c2) 60%,rgba(255,255,255,.15)) border-box;border:1.5px solid transparent;
+  box-shadow:0 30px 80px -20px rgba(0,0,0,.8),0 0 70px -18px var(--c1);animation:celEntra .55s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes celEntra{0%{opacity:0;transform:translateY(24px) scale(.86)}100%{opacity:1;transform:none}}
+.cel-rayos{position:absolute;left:50%;top:-140px;width:420px;height:420px;margin-left:-210px;z-index:-1;border-radius:50%;opacity:.22;pointer-events:none;
+  background:repeating-conic-gradient(from 0deg,var(--c1) 0 9deg,transparent 9deg 22deg);-webkit-mask:radial-gradient(circle,#000 18%,transparent 62%);mask:radial-gradient(circle,#000 18%,transparent 62%);animation:celGira 18s linear infinite}
+@keyframes celGira{to{transform:rotate(360deg)}}
+.cel-medalla{width:78px;height:78px;margin:.1rem auto .8rem;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--c1),var(--c2));
+  box-shadow:0 0 0 6px rgba(255,255,255,.04),0 12px 34px -6px var(--c1);animation:celMedalla .7s .1s cubic-bezier(.2,1.6,.4,1) both,celLatido 2.4s 1s ease-in-out infinite}
+.cel-medalla svg{width:36px;height:36px}
+@keyframes celMedalla{0%{transform:scale(0) rotate(-40deg)}100%{transform:none}}
+@keyframes celLatido{0%,100%{box-shadow:0 0 0 6px rgba(255,255,255,.04),0 12px 34px -6px var(--c1)}50%{box-shadow:0 0 0 12px rgba(255,255,255,.02),0 14px 46px -4px var(--c1)}}
+.cel-k{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted,#9a9ab8);font-weight:700}
+.cel-rango{margin-top:.2rem;font-family:'Space Grotesk',inherit;font-size:1.05rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cel-veh{margin-top:.55rem;display:flex;align-items:center;justify-content:center;gap:.45rem;flex-wrap:wrap;font-size:.92rem;color:#d8d8ea;font-weight:600}
+.cel-veh .cc-placa{display:inline-flex;width:auto}
+.cel-gan{margin:.5rem 0 .15rem;font-family:'Space Grotesk',inherit;font-size:2.9rem;line-height:1.05;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;
+  background:linear-gradient(180deg,#fff 10%,var(--c1) 120%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 22px rgba(0,0,0,.35))}
+.cel-gan.cel-pop{animation:celPop .45s cubic-bezier(.2,1.8,.4,1)}
+@keyframes celPop{0%{transform:scale(1)}40%{transform:scale(1.13)}100%{transform:scale(1)}}
+.cel-gan.neg{background:none;color:#ff8a8a;font-size:2.3rem}
+.cel-t{font-size:1.12rem;font-weight:800;color:#fff;margin-top:.35rem}
+.cel-msg{font-size:.85rem;line-height:1.5;color:#b9b9d0;margin:.35rem auto .9rem;max-width:36ch}
+.cel-barra{text-align:left;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:.65rem .8rem;margin-top:.55rem}
+.cel-barra-cab{display:flex;justify-content:space-between;align-items:center;gap:.6rem;font-size:.78rem;color:#c4c4da}
+.cel-barra-cab span{display:inline-flex;align-items:center;gap:.4rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cel-barra-cab svg{width:14px;height:14px;flex:none;color:var(--c1)}
+.cel-barra-cab b{color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cel-barra-cab em{font-style:normal;color:#00d68f;font-size:.72rem;margin-left:.2rem}
+.cel-pista{position:relative;height:9px;border-radius:99px;background:rgba(255,255,255,.07);margin-top:.5rem;overflow:hidden}
+.cel-pista i{position:absolute;left:0;top:0;bottom:0;border-radius:99px}
+.cel-pista .ant{background:rgba(255,255,255,.2)}
+.cel-pista .nue{background:linear-gradient(90deg,var(--c1),var(--c2));box-shadow:0 0 14px var(--c1);transition:width 1.1s cubic-bezier(.2,.9,.3,1);mix-blend-mode:normal}
+.cel-pista .nue::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:translateX(-100%);animation:celBrillo 1.6s 1.4s ease-out}
+@keyframes celBrillo{to{transform:translateX(100%)}}
+.cel-barra-pie{font-size:.72rem;color:var(--muted,#9a9ab8);margin-top:.4rem}
+.cel-logros{display:grid;gap:.45rem;margin-top:.8rem;text-align:left}
+.cel-logro{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:.65rem;align-items:center;padding:.55rem .7rem;border-radius:13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  opacity:0;animation:celLogro .5s cubic-bezier(.2,1.5,.4,1) forwards}
+.cel-logro i{grid-row:1/3;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--c1),var(--c2))}
+.cel-logro i svg{width:15px;height:15px}
+.cel-logro b{font-size:.82rem;color:#fff}
+.cel-logro em{font-style:normal;font-size:.72rem;color:#a9a9c2}
+.cel-logro.oro{background:linear-gradient(90deg,rgba(245,196,81,.14),rgba(255,140,60,.06));border-color:rgba(245,196,81,.35)}
+.cel-logro.oro i{background:linear-gradient(135deg,#f5c451,#ff8c3c);box-shadow:0 0 18px -2px rgba(245,196,81,.7)}
+@keyframes celLogro{0%{opacity:0;transform:translateX(-14px) scale(.94)}100%{opacity:1;transform:none}}
+.cel-sub{font-size:.75rem;color:var(--muted,#9a9ab8);margin-top:.85rem;font-style:italic}
+.cel-acc{display:flex;flex-direction:column;gap:.5rem;margin-top:1rem}
+.cel-acc .btn{width:100%;justify-content:center;padding:.85rem 1rem;font-weight:800}
+.cel-acc .btn-primary{background:linear-gradient(135deg,var(--c1),var(--c2));border:0;color:#fff;box-shadow:0 10px 26px -10px var(--c1)}
+.cel-record{box-shadow:0 30px 80px -20px rgba(0,0,0,.8),0 0 90px -10px #f5c451}
+.cel-record .cel-rango{background:linear-gradient(90deg,#f5c451,#ff8c3c);-webkit-background-clip:text;background-clip:text}
+.cel-record .cel-medalla{background:linear-gradient(135deg,#f5c451,#ff8c3c)}
+.cel-legendaria .cel-rayos{opacity:.32}
+.cel-perdida{--c1:#7a7a98;--c2:#3a3a52;box-shadow:0 30px 80px -20px rgba(0,0,0,.8)}
+.cel-perdida .cel-logro{animation-delay:.4s}
+@media (max-width:760px){
+  html .cel-card{padding:1.3rem 1.05rem 1.05rem;border-radius:22px}
+  html .cel-gan{font-size:2.45rem}
+  html .cel-medalla{width:66px;height:66px;margin-bottom:.6rem}
+  html .cel-msg{font-size:.8rem;margin-bottom:.7rem}
+  html .cel-logros{gap:.35rem}
+  html .cel-logro{padding:.45rem .6rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .cel-card,.cel-medalla,.cel-rayos,.cel-gan.cel-pop,.cel-pista .nue::after{animation:none!important}
+  .cel-logro{animation:none!important;opacity:1}
+  .cel-pista .nue{transition:none}
+}
 </style>
 </head>
 <body>
@@ -2170,15 +2241,9 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
 </div>
 
 <!-- MODALES - ocultos con clase modal-hidden -->
-<div id="modal-celebracion" class="modal-hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.85);align-items:center;justify-content:center;z-index:300;padding:1rem">
-  <div id="cel-card" style="background:var(--bg2);border:1px solid var(--border2);border-radius:24px;padding:2.5rem 2rem;width:100%;max-width:440px;text-align:center;position:relative">
-    <div id="cel-emoji" style="font-size:60px;margin-bottom:.75rem;line-height:1">🏆</div>
-    <div id="cel-titulo" style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:.6rem"></div>
-    <div id="cel-msg" style="font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:.5rem"></div>
-    <div id="cel-ganancia" style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin:1rem 0;letter-spacing:-.5px"></div>
-    <div id="cel-sub" style="font-size:12px;color:var(--text3);font-style:italic;margin-bottom:1.5rem"></div>
-    <button onclick="cerrarCelebracion()" class="btn btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:11px">¡A por más! 🚀</button>
-  </div>
+<div id="modal-celebracion" class="modal-hidden" style="position:fixed;inset:0;background:rgba(4,4,10,.82);align-items:center;justify-content:center;z-index:900;padding:1rem;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">
+  <canvas id="cel-confeti" style="position:fixed;inset:0;pointer-events:none;z-index:2"></canvas>
+  <div id="cel-card" class="cel-card"></div>
 </div>
 
 <div id="modal-edit-venta" class="modal-hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.75);align-items:center;justify-content:center;z-index:200;padding:1rem">
@@ -5992,7 +6057,7 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
   elegirFormaPago('vta', '');
   ccLimpiarForm('vta');
   const diasParado = vehiculo?.fechaCompra ? diasEnInventario(vehiculo.fechaCompra) : 0;
-  mostrarCelebracion(gananciaNeta, vehiculo?vehiculo.nombre:'', fecha, diasParado);
+  mostrarCelebracion(gananciaNeta, vehiculo?vehiculo.nombre:'', fecha, diasParado, ventaNueva);
   ccAvisarVentaNueva(ventaNueva);
 }
 
@@ -7487,82 +7552,200 @@ function playPianoTriste(){
   }catch(e){}
 }
 
-function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado){
-  const modal = document.getElementById('modal-celebracion');
-  const card  = document.getElementById('cel-card');
+// ── CELEBRACIÓN DE CADA VENTA ────────────────────────────────────────────────
+// Cada venta se siente como un premio: rango según la ganancia (buena, gran,
+// épica, legendaria), récords, logros que se desbloquean, la barra del mes que
+// avanza, la meta en foco, conteo de la ganancia, confeti y sonido a la medida.
+const CEL_RANGOS = [
+  {id:'buena',      nombre:'Buena venta',      desde:0,       c1:'var(--accent)', c2:'var(--accent-b)', confeti:110, notas:4},
+  {id:'gran',       nombre:'Gran venta',       desde:700000,  c1:'#00d68f',       c2:'#22d3ee',         confeti:160, notas:5},
+  {id:'epica',      nombre:'Venta épica',      desde:1500000, c1:'#f5c451',       c2:'#ff8c3c',         confeti:220, notas:6},
+  {id:'legendaria', nombre:'Venta legendaria', desde:3000000, c1:'#a78bfa',       c2:'#22d3ee',         confeti:300, notas:7},
+];
+const celSinEmoji = t => String(t||'').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]️?/gu,'').replace(/\s{2,}/g,' ').trim();
+let _celAnim = null, _celTimers = [];
+function celSonido(rango, record){
+  if(typeof mcSonidosActivos === 'function' && !mcSonidosActivos()) return;
+  try {
+    const ac = new (window.AudioContext||window.webkitAudioContext)(), t0 = ac.currentTime + .02;
+    const nota = (f, t, d, tipo, vol) => { const o = ac.createOscillator(), g = ac.createGain(); o.type = tipo||'triangle'; o.frequency.value = f; o.connect(g); g.connect(ac.destination);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol||.13, t+.015); g.gain.exponentialRampToValueAtTime(.0008, t+d); o.start(t); o.stop(t+d+.02); };
+    // Arpegio que sube: más largo cuanto mejor la venta
+    const esc = [523.3, 659.3, 784, 1046.5, 1318.5, 1568, 2093];
+    for(let i = 0; i < rango.notas; i++) nota(esc[i], t0 + i*.075, .38, 'triangle', .12);
+    // Acorde final con brillo
+    const tf = t0 + rango.notas*.075 + .05;
+    [523.3, 659.3, 784, 1046.5].forEach(f=>nota(f, tf, 1.1, 'sine', .07));
+    // "Cha-ching" al terminar el conteo de la ganancia
+    const tc = t0 + 1.0;
+    nota(1975.5, tc, .16, 'square', .045); nota(2637, tc+.08, .5, 'sine', .09); nota(3951, tc+.1, .35, 'sine', .035);
+    if(record){ [784, 987.8, 1174.7, 1568].forEach((f,i)=>nota(f, tc+.45+i*.09, .5, 'triangle', .1)); }
+  } catch(e){}
+}
+function celConfeti(cantidad, colores){
+  if(mcMovReducido()) return;
+  const cv = document.getElementById('cel-confeti'); if(!cv) return;
+  const ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1);
+  const W = cv.width = innerWidth * dpr, H = cv.height = innerHeight * dpr;
+  cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px';
+  const ps = [];
+  const rafaga = (n, x, y) => { for(let i = 0; i < n; i++){ const a = -Math.PI/2 + (Math.random()-.5)*Math.PI*.9, v = (6 + Math.random()*9) * dpr;
+    ps.push({x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v, r: (3 + Math.random()*4)*dpr, rot: Math.random()*6, vr: (Math.random()-.5)*.3, c: colores[i % colores.length], f: Math.random() < .35 ? 'c' : 'r', vida: 0}); } };
+  rafaga(Math.round(cantidad*.5), W*.5, H*.42);
+  _celTimers.push(setTimeout(()=>{ rafaga(Math.round(cantidad*.25), W*.15, H*.7); rafaga(Math.round(cantidad*.25), W*.85, H*.7); }, 950));
+  cancelAnimationFrame(_celAnim);
+  const inicio = performance.now();
+  const paso = ahora => {
+    ctx.clearRect(0, 0, W, H);
+    ps.forEach(p=>{ p.vida++; p.vy += .22*dpr; p.vx *= .992; p.vy *= .992; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      const alfa = Math.max(0, 1 - p.vida/170); ctx.globalAlpha = alfa; ctx.fillStyle = p.c;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      if(p.f === 'c'){ ctx.beginPath(); ctx.arc(0, 0, p.r*.6, 0, 7); ctx.fill(); } else ctx.fillRect(-p.r, -p.r*.45, p.r*2, p.r*.9);
+      ctx.restore(); });
+    ctx.globalAlpha = 1;
+    if(ahora - inicio < 3800) _celAnim = requestAnimationFrame(paso); else ctx.clearRect(0, 0, W, H);
+  };
+  _celAnim = requestAnimationFrame(paso);
+}
+function celContar(el, hasta, ms){
+  if(!el) return;
+  if(mcMovReducido()){ el.textContent = '+' + fmt(hasta); return; }
+  const t0 = performance.now();
+  const paso = t => { const k = Math.min(1, (t - t0)/ms), e = 1 - Math.pow(1-k, 3); el.textContent = '+' + fmt(Math.round(hasta*e)); if(k < 1) requestAnimationFrame(paso); else el.classList.add('cel-pop'); };
+  requestAnimationFrame(paso);
+}
+// Progreso de una meta con o sin una venta (para mostrar cuánto la movió)
+function celMetaActual(m, sinId){
+  const ini = m.inicio ? new Date(m.inicio+'T00:00:00') : new Date(m.creadaEn || Date.now()), fin = m.fin ? new Date(m.fin+'T00:00:00') : null;
+  const vs = ventas.filter(v=>{ if(v.id === sinId) return false; const d = new Date(v.fecha+'T00:00:00'); return d >= ini && (!fin || d <= fin); });
+  return m.tipo === 'unidades' ? vs.length : m.tipo === 'facturacion' ? vs.reduce((a,v)=>a + ccNum(v.precioVenta), 0) : vs.reduce((a,v)=>a + mcGanVenta(v), 0);
+}
+function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, venta){
+  const modal = document.getElementById('modal-celebracion'), card = document.getElementById('cel-card');
+  _celTimers.forEach(clearTimeout); _celTimers = [];
+  const mes = String(fechaVenta||hoyLocal()).slice(0,7), nomMes = MESES[Number(mes.slice(5,7))-1];
+  const delMes = ventas.filter(v=>String(v.fecha||'').startsWith(mes)), nMes = delMes.length;
+  const ganMes = delMes.reduce((a,v)=>a + mcGanVenta(v), 0), ganMesAntes = ganMes - ganancia;
   const capitalLiberado = diasParado >= DIAS_ALERTA;
+  const plac = venta && venta.motoPlaca ? `<span class="cc-placa">${ccEsc(String(venta.motoPlaca).toUpperCase())}</span>` : '';
 
-  if(ganancia > 0){
-    const emojis = ['🏆','🔥','💰','🚀','💪','⭐','🎯','👑'];
-
-    // Mensajes especiales si el vehículo llevaba +100 días parado
-    const msgsCapital = capitalLiberado ? [
-      { titulo:'¡Capital liberado! 💸',     msg:`"${nombreVehiculo}" llevaba ${diasParado} días reteniendo tu capital y hoy lo moviste. Eso es gestión inteligente — el dinero en movimiento es el que trabaja para ti.`, sub:'Capital liberado = capital productivo. Así se hace. 🏎️' },
-      { titulo:'¡Por fin se movió! 🔓',     msg:`${diasParado} días parado y hoy ${nombreVehiculo} salió. El capital inmovilizado es el mayor enemigo del negocio — acabas de eliminarlo. Bien hecho.`, sub:'Dinero quieto es dinero perdido. Tú lo entendiste. 💪' },
-      { titulo:'¡Eso es mover el capital! 🚀', msg:`"${nombreVehiculo}" tenía ${diasParado} días frenando tu liquidez. Hoy lo desbloqueaste y además ganaste. Doble victoria — el GT3 y el SVJ te lo agradecen. 🏎️🐂`, sub:'Capital activo, negocio activo. Sigue así.' },
-    ] : [];
-
-    const msgsNormal = [
-      { titulo:'¡Negocio cerrado! 💪',       msg:`"${nombreVehiculo}" vendido con ganancia. Cada venta te acerca más a ese objetivo. Tu Porsche GT3 te está esperando — sigue así.`,                                          sub:'Un paso más cerca del GT3. 🏎️' },
-      { titulo:'¡Crack del negocio! 🏆',      msg:`Ganaste con "${nombreVehiculo}". Cada billete que entra es un ladrillo más del camino hacia donde quieres llegar. Tu Lamborghini SVJ te está esperando.`,                  sub:'El SVJ ya tiene tu nombre. 🐂' },
-      { titulo:'¡Bien jugado! 💰',            msg:`Esa es la actitud. Comprar bien, vender mejor. Vas construyendo el camino hacia ese Porsche GT3 con cada negocio que cierras.`,                                             sub:'No pares. El momentum es tuyo. 🏎️' },
-      { titulo:'¡Así se hace! 🎯',            msg:`Sigue así y la vida de tus sueños está a tan solo ventas por hacer. Cada cierre cuenta, cada ganancia suma. Tú lo estás logrando.`,                                        sub:'La vida que imaginas ya está en construcción.' },
-      { titulo:'¡Un paso más! 🚀',            msg:`"${nombreVehiculo}" en el bolsillo. Tu Lamborghini SVJ te está esperando — y cada venta lo acerca más a ti. No hay límite para quien no para.`,                           sub:'Los sueños grandes requieren trabajo grande. Tú lo tienes. 🐂' },
-      { titulo:'¡Puro fuego! 🔥',             msg:`Así es como se construye un imperio desde cero — venta por venta. La vida de tus sueños está a tan solo ventas por hacer.`,                                                sub:'No se detiene quien tiene claro para dónde va.' },
-      { titulo:'¡Mente de campeón! ⭐',       msg:`"${nombreVehiculo}" cerrado. El Lamborghini SVJ no se compra esperando — se compra trabajando exactamente como lo estás haciendo tú ahora mismo.`,                        sub:'Sigue en ese nivel. El SVJ ya te está viendo llegar. 🐂' },
-    ];
-
-    const pool = capitalLiberado ? [...msgsCapital, ...msgsNormal] : msgsNormal;
-    // Peso mayor a mensajes de capital si aplica: primeros 3 son de capital
-    const m = capitalLiberado
-      ? pool[Math.floor(Math.random() * msgsCapital.length)] // 100% chance de msg capital
-      : pool[Math.floor(Math.random() * pool.length)];
-
-    const emoji = capitalLiberado ? '💸' : emojis[Math.floor(Math.random()*emojis.length)];
-    document.getElementById('cel-emoji').textContent    = emoji;
-    document.getElementById('cel-titulo').textContent   = m.titulo;
-    document.getElementById('cel-msg').textContent      = m.msg;
-    document.getElementById('cel-ganancia').textContent = '+' + fmt(ganancia);
-    document.getElementById('cel-ganancia').style.color = 'var(--green)';
-    document.getElementById('cel-sub').textContent      = m.sub;
-    card.style.borderColor = capitalLiberado ? 'rgba(0,214,143,.5)' : 'rgba(34,201,138,.4)';
-
-  } else {
-    const datosMeses = Array.from({length:12},(_,i)=>{
-      const mv=ventas.filter(v=>new Date(v.fecha+'T00:00:00').getMonth()===i);
-      return {mes:i, gan:mv.reduce((a,v)=>a+v.gananciaNeta,0), cnt:mv.length};
-    });
-    const mejorMes = datosMeses.filter(d=>d.cnt>0).sort((a,b)=>b.gan-a.gan)[0];
-    const nomMejor = mejorMes ? MESES[mejorMes.mes] : null;
-
+  if(ganancia <= 0){
+    const porMesP = {}; ventas.forEach(v=>{ const k = String(v.fecha||'').slice(0,7); if(k && k !== mes) porMesP[k] = (porMesP[k]||0) + mcGanVenta(v); });
+    const mejorMes = Object.entries(porMesP).filter(x=>x[1] > 0).sort((a,b)=>b[1]-a[1])[0], nomMejor = mejorMes ? MESES[Number(mejorMes[0].slice(5,7))-1].toLowerCase() : null;
     const msgs = [
-      { titulo:'Esto también es el camino 💪',  msg:`No todas las jugadas salen perfectas — así es el negocio. ${nomMejor?`${nomMejor} fue un mes fuerte, `:''}sigue trabajando para superarlo. Tú puedes y lo sabes.`,                                      sub:'Los grandes también tienen días difíciles. Lo que importa es no parar.' },
-      { titulo:'Aprende y sigue adelante 🚀',   msg:`Esta venta no salió como esperabas. Analiza qué pasó, ajusta y vuelve más fuerte. ${nomMejor?`Ya lo demostraste en ${nomMejor} — ese nivel lo puedes repetir.`:'El mejor mes aún está por venir.'}`,    sub:'Tu Porsche GT3 sigue esperándote. No lo hagas esperar demasiado. 🏎️' },
-      { titulo:'Hoy no, mañana sí 🔥',          msg:`Los negocios tienen altos y bajos — lo que importa es que sigues en pie y en movimiento. ${nomMejor?`${nomMejor} fue mejor — ese nivel lo puedes volver a alcanzar.`:'El mejor mes aún no ha llegado.'}`, sub:'Tú puedes. Ya lo has demostrado antes.' },
-      { titulo:'El camino sigue 💡',             msg:`Una venta difícil no define el negocio — define cómo respondes. Levántate, ajusta y vuelve con más fuerza. Tu Lamborghini SVJ no va a esperar para siempre.`,                                            sub:'Cada tropiezo es una lección disfrazada. Úsala. 🐂' },
-      { titulo:'No te detengas 👊',              msg:`${nomMejor?`En ${nomMejor} lo hiciste bien — ese tú sigue adentro.`:'Tu mejor mes aún está por venir.'} Los negocios son rachas, y la tuya viene.`,                                                      sub:'El que no para, llega. Tú no paras.' },
+      {titulo:'Esto también es el camino', msg:`No todas las jugadas salen perfectas: así es el negocio. ${nomMejor?`${nomMejor.charAt(0).toUpperCase()+nomMejor.slice(1)} fue un mes fuerte, `:''}sigue trabajando para superarlo.`, sub:'Los grandes también tienen días difíciles. Lo que importa es no parar.'},
+      {titulo:'Aprende y sigue adelante', msg:`Esta venta no salió como esperabas. Analiza qué pasó, ajusta y vuelve más fuerte. ${nomMejor?`Ya lo demostraste en ${nomMejor}.`:'El mejor mes aún está por venir.'}`, sub:'Tu Porsche GT3 sigue esperándote.'},
+      {titulo:'Hoy no, mañana sí', msg:'Los negocios tienen altos y bajos: lo que importa es que sigues en movimiento.', sub:'Tú puedes. Ya lo has demostrado antes.'},
     ];
     const m = msgs[Math.floor(Math.random()*msgs.length)];
-    document.getElementById('cel-emoji').textContent    = '💪';
-    document.getElementById('cel-titulo').textContent   = m.titulo;
-    document.getElementById('cel-msg').textContent      = m.msg;
-    document.getElementById('cel-ganancia').textContent = fmt(ganancia);
-    document.getElementById('cel-ganancia').style.color = 'var(--red)';
-    document.getElementById('cel-sub').textContent      = m.sub;
-    card.style.borderColor = 'rgba(255,69,96,.3)';
+    card.className = 'cel-card cel-perdida';
+    card.innerHTML = `
+      <div class="cel-medalla" style="--c1:#7a7a98;--c2:#3a3a52">${mcIco('rayo',34)}</div>
+      <div class="cel-k">Venta #${nMes} de ${nomMes.toLowerCase()}</div>
+      <div class="cel-veh">${plac}${ccEsc(nombreVehiculo||'Vehículo')}</div>
+      <div class="cel-gan neg">−${fmt(Math.abs(ganancia))}</div>
+      <div class="cel-t">${m.titulo}</div>
+      <p class="cel-msg">${m.msg}</p>
+      <div class="cel-logros"><span class="cel-logro"><i>${mcIco('retoma',15)}</i><b>Capital de vuelta</b><em>${fmt(ccNum(venta && venta.precioVenta))} vuelven a moverse</em></span></div>
+      <div class="cel-sub">${m.sub}</div>
+      <div class="cel-acc"><button class="btn btn-primary" onclick="cerrarCelebracion()">Seguir adelante</button></div>`;
+    modal.classList.remove('modal-hidden'); modal.style.display = 'flex';
+    if(typeof mcSonidosActivos !== 'function' || mcSonidosActivos()) playPianoTriste();
+    return;
   }
-  modal.classList.remove('modal-hidden');
-  modal.style.display='flex';
-  // Sonido según resultado
-  if(ganancia > 0) playBombazoFinal();
-  else playPianoTriste();
+
+  // Rango de la venta, récord y logros
+  const otras = ventas.filter(v=>!venta || v.id !== venta.id);
+  const maxAntes = otras.length ? Math.max(...otras.map(mcGanVenta)) : 0;
+  const record = otras.length >= 3 && ganancia > maxAntes;
+  const rango = [...CEL_RANGOS].reverse().find(r=>ganancia >= r.desde) || CEL_RANGOS[0];
+  const porMes = {}; otras.forEach(v=>{ const k = String(v.fecha||'').slice(0,7); if(k !== mes) porMes[k] = (porMes[k]||0) + mcGanVenta(v); });
+  const mejorOtro = Object.entries(porMes).sort((a,b)=>b[1]-a[1])[0];
+  const total = ventas.length, ganTotal = ventas.reduce((a,v)=>a + mcGanVenta(v), 0), ganTotalAntes = ganTotal - ganancia;
+  const fechas = new Set(ventas.map(v=>v.fecha)); let racha = 0; { const d = new Date(String(fechaVenta)+'T00:00:00'); while(fechas.has(hoyLocal(d))){ racha++; d.setDate(d.getDate()-1); } }
+  const logros = [];
+  if(record) logros.push({ico:'trofeo', t:'Nuevo récord', d:`Tu mayor ganancia en una sola venta (antes ${fmt(maxAntes)})`, oro:true});
+  if(mejorOtro && ganMesAntes <= mejorOtro[1] && ganMes > mejorOtro[1]) logros.push({ico:'bandera', t:`¡Superaste a ${MESES[Number(mejorOtro[0].slice(5,7))-1].toLowerCase()}!`, d:`${nomMes} ya es tu mejor mes`, oro:true});
+  if(nMes === 1) logros.push({ico:'rayo', t:`Primera venta de ${nomMes.toLowerCase()}`, d:'El mes ya arrancó'});
+  if([3,5,10,15,20,25,30,40,50].includes(nMes)) logros.push({ico:'fuego', t:`${nMes} ventas en ${nomMes.toLowerCase()}`, d:'Vas imparable'});
+  if([10,25,50,75,100,150,200,300,500,750,1000].includes(total)) logros.push({ico:'llave', t:`Venta número ${total}`, d:'Un hito en tu historia', oro: total >= 50});
+  if(racha >= 2) logros.push({ico:'fuego', t:`Racha de ${racha} días`, d:'Días seguidos vendiendo'});
+  const hitos = [10e6, 25e6, 50e6, 100e6, 250e6, 500e6, 1e9];
+  const hito = hitos.find(x=>ganTotalAntes < x && ganTotal >= x);
+  if(hito) logros.push({ico:'objetivo', t:`${fmt(hito)} en ganancias`, d:'Acumuladas desde que empezaste', oro:true});
+  // Meta en foco: cuánto la movió esta venta
+  let metaHtml = '';
+  try {
+    const activas = metas.map(m=>({m, p: calcularProgresoMeta(m)})).filter(x=>!x.p.lograda || celMetaActual(x.m, venta && venta.id) < x.m.objetivo)
+      .filter(x=>{ const d = new Date(String(fechaVenta)+'T00:00:00'); return (!x.m.inicio || d >= new Date(x.m.inicio+'T00:00:00')) && (!x.m.fin || d <= new Date(x.m.fin+'T00:00:00')); });
+    const foco = activas.sort((a,b)=>(a.m.fin||'9999').localeCompare(b.m.fin||'9999') || b.p.pct - a.p.pct)[0];
+    if(foco){
+      const antes = Math.min(100, Math.max(0, celMetaActual(foco.m, venta && venta.id) / foco.m.objetivo * 100)), ahora = Math.min(100, Math.max(0, foco.p.actual / foco.m.objetivo * 100));
+      if(antes < 100 && ahora >= 100) logros.unshift({ico:'trofeo', t:'¡Meta cumplida!', d:ccEsc(foco.m.nombre), oro:true});
+      const dif = ahora - antes;
+      metaHtml = `<div class="cel-barra"><div class="cel-barra-cab"><span>${mcIco('bandera',14)}Meta: ${ccEsc(foco.m.nombre)}</span><b>${Math.floor(ahora)}%${dif > 0 ? ` <em>+${dif >= 1 ? Math.round(dif) : dif.toFixed(1)}%</em>` : ''}</b></div>
+        <div class="cel-pista"><i class="ant" style="width:${antes}%"></i><i class="nue" data-w="${ahora}" style="width:${antes}%"></i></div></div>`;
+    }
+  } catch(e){}
+  // Barra del mes contra el mejor mes
+  let obj = mejorOtro ? Math.max(mejorOtro[1], ganMes) : ganMes, objTxt = '';
+  if(mejorOtro && ganMes < mejorOtro[1]) objTxt = `Faltan ${fmt(mejorOtro[1] - ganMes)} para superar ${MESES[Number(mejorOtro[0].slice(5,7))-1].toLowerCase()}`;
+  else if(mejorOtro) objTxt = `¡Tu mejor mes! ${fmt(ganMes - mejorOtro[1])} por encima de ${MESES[Number(mejorOtro[0].slice(5,7))-1].toLowerCase()}`;
+  else objTxt = `${nMes} venta${nMes!==1?'s':''} en ${nomMes.toLowerCase()}`;
+  const pAntes = obj > 0 ? Math.max(0, ganMesAntes / obj * 100) : 0, pAhora = obj > 0 ? Math.min(100, ganMes / obj * 100) : 100;
+  // Mensaje del día (los de siempre, sin emojis)
+  const msgsCapital = [
+    {titulo:'¡Capital liberado!', msg:`"${nombreVehiculo}" llevaba ${diasParado} días reteniendo tu capital y hoy lo moviste. El dinero en movimiento es el que trabaja para ti.`, sub:'Capital liberado = capital productivo. Así se hace.'},
+    {titulo:'¡Por fin se movió!', msg:`${diasParado} días parado y hoy ${nombreVehiculo} salió. Acabas de eliminar capital inmovilizado. Bien hecho.`, sub:'Dinero quieto es dinero perdido. Tú lo entendiste.'},
+  ];
+  const msgsNormal = [
+    {titulo:'¡Negocio cerrado!', msg:`"${nombreVehiculo}" vendido con ganancia. Cada venta te acerca más. Tu Porsche GT3 te está esperando.`, sub:'Un paso más cerca del GT3.'},
+    {titulo:'¡Crack del negocio!', msg:`Ganaste con "${nombreVehiculo}". Cada billete que entra es un ladrillo más del camino. Tu Lamborghini SVJ te está esperando.`, sub:'El SVJ ya tiene tu nombre.'},
+    {titulo:'¡Bien jugado!', msg:'Comprar bien, vender mejor. Vas construyendo el camino hacia ese Porsche GT3 con cada negocio que cierras.', sub:'No pares. El momentum es tuyo.'},
+    {titulo:'¡Así se hace!', msg:'La vida de tus sueños está a tan solo ventas por hacer. Cada cierre cuenta, cada ganancia suma.', sub:'La vida que imaginas ya está en construcción.'},
+    {titulo:'¡Puro fuego!', msg:'Así se construye un imperio desde cero: venta por venta.', sub:'No se detiene quien tiene claro para dónde va.'},
+    {titulo:'¡Mente de campeón!', msg:`"${nombreVehiculo}" cerrado. El Lamborghini SVJ no se compra esperando: se compra trabajando como lo estás haciendo ahora.`, sub:'Sigue en ese nivel.'},
+  ];
+  const pool = capitalLiberado ? msgsCapital : msgsNormal, m = pool[Math.floor(Math.random()*pool.length)];
+  card.className = `cel-card cel-${rango.id}${record ? ' cel-record' : ''}`;
+  card.style.setProperty('--c1', rango.c1); card.style.setProperty('--c2', rango.c2);
+  card.innerHTML = `
+    <div class="cel-rayos" aria-hidden="true"></div>
+    <div class="cel-medalla">${mcIco(record ? 'trofeo' : rango.id === 'legendaria' ? 'rayo' : rango.id === 'epica' ? 'fuego' : 'llave', 36)}</div>
+    <div class="cel-k">Venta #${nMes} de ${nomMes.toLowerCase()}</div>
+    <div class="cel-rango">${record ? 'Nuevo récord' : rango.nombre}</div>
+    <div class="cel-veh">${plac}${ccEsc(nombreVehiculo||'Vehículo')}</div>
+    <div class="cel-gan" id="cel-ganancia">+$0</div>
+    <div class="cel-t">${celSinEmoji(m.titulo)}</div>
+    <p class="cel-msg">${celSinEmoji(m.msg)}</p>
+    <div class="cel-barra"><div class="cel-barra-cab"><span>${mcIco('calendario',14)}Ganancia de ${nomMes.toLowerCase()}</span><b>${fmt(ganMes)}</b></div>
+      <div class="cel-pista"><i class="ant" style="width:${pAntes}%"></i><i class="nue" data-w="${pAhora}" style="width:${pAntes}%"></i></div><div class="cel-barra-pie">${objTxt}</div></div>
+    ${metaHtml}
+    ${logros.length ? `<div class="cel-logros">${logros.slice(0,4).map((l,i)=>`<span class="cel-logro${l.oro?' oro':''}" style="animation-delay:${1.15 + i*.22}s"><i>${mcIco(l.ico,15)}</i><b>${l.t}</b><em>${l.d}</em></span>`).join('')}</div>` : ''}
+    <div class="cel-sub">${celSinEmoji(m.sub)}</div>
+    <div class="cel-acc">
+      <button class="btn btn-primary" onclick="cerrarCelebracion()">¡A por la siguiente!</button>
+      <button class="btn btn-ghost" onclick="celOtraVenta()">Registrar otra venta</button>
+    </div>`;
+  modal.classList.remove('modal-hidden'); modal.style.display = 'flex';
+  // Animaciones: conteo, barras que avanzan, confeti y sonido
+  celContar(document.getElementById('cel-ganancia'), ganancia, 950);
+  _celTimers.push(setTimeout(()=>card.querySelectorAll('.cel-pista .nue').forEach(b=>{ b.style.width = b.dataset.w + '%'; }), 500));
+  const colores = [mcCss('--accent') || '#2a7fff', mcCss('--accent-b') || '#7c5cff', '#00d68f', '#f5c451', '#ffffff', '#ff8c3c'];
+  celConfeti(rango.confeti + (record ? 120 : 0), colores);
+  celSonido(rango, record);
+  try { if(navigator.vibrate) navigator.vibrate(record ? [30, 60, 30, 60, 90] : [25, 50, 60]); } catch(e){}
 }
-function cerrarCelebracion(){
-  const modal=document.getElementById('modal-celebracion');
-  modal.classList.add('modal-hidden');
-  modal.style.display='';
-  go('ventas');
+function celCerrar(){
+  _celTimers.forEach(clearTimeout); _celTimers = [];
+  cancelAnimationFrame(_celAnim);
+  const cv = document.getElementById('cel-confeti'); if(cv) cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+  const modal = document.getElementById('modal-celebracion');
+  modal.classList.add('modal-hidden'); modal.style.display = '';
 }
+function cerrarCelebracion(){ celCerrar(); go('ventas'); }
+function celOtraVenta(){ celCerrar(); go('nueva-venta'); }
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape'){ const m = document.getElementById('modal-celebracion'); if(m && !m.classList.contains('modal-hidden')) cerrarCelebracion(); } });
 
 // ── NOTAS DE VEHÍCULO ─────────────────────────────────────────────────────────
 function guardarNota(tipo, id, texto){
