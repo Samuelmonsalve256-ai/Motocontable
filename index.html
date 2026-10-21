@@ -1664,8 +1664,8 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
   .cel-logro{animation:none!important;opacity:1}
   .cel-pista .nue{transition:none}
 }
-/* ── LOGROS (pestaña en Ventas) ─────────────────────────────────────────── */
-#ventas-tabs{display:flex;flex-direction:column;gap:12px;margin-bottom:1.1rem}
+/* ── LOGROS (pestaña en Metas) ─────────────────────────────────────────── */
+#metas-tabs{display:flex;flex-direction:column;gap:12px;margin-bottom:1.1rem}
 .vt-seg{display:inline-flex;align-self:flex-start;gap:4px;padding:4px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
 .vt-seg button{display:flex;align-items:center;gap:8px;min-height:38px;padding:0 16px;border:none;border-radius:10px;background:transparent;color:#9a9ab8;font:600 13px 'Inter',sans-serif;cursor:pointer;transition:background .18s,color .18s}
 .vt-seg button svg{width:15px;height:15px}
@@ -1700,8 +1700,8 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
 .lg-nivel-cnt b{display:block;font:800 28px/1 'Space Grotesk',sans-serif;color:#fff}
 .lg-nivel-cnt span{font-size:11.5px;color:#9a9ab8}
 .lg-ayuda{font-size:12px;color:#7e7e9a;margin:8px 4px 4px}
-#ventas-logros .mc-sec{margin:22px 0 12px}
-#ventas-logros .mc-sec span{display:inline-flex;align-items:center;gap:8px}
+#metas-logros .mc-sec{margin:22px 0 12px}
+#metas-logros .mc-sec span{display:inline-flex;align-items:center;gap:8px}
 .lg-prox{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .lg-prox-c{display:flex;gap:12px;align-items:center;padding:14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
 .lg-prox-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
@@ -1938,11 +1938,9 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
     <div><div class="page-title">Ventas de motos</div><div class="page-sub">Precio compra, precio venta y ganancia neta por vehículo</div></div>
     <button class="btn btn-primary" onclick="go('nueva-venta')">+ Registrar venta</button>
   </div>
-  <div id="ventas-tabs"></div>
   <div id="ventas-cobros-banner"></div>
   <div id="alertas-papeles"></div>
   <div id="tabla-ventas"></div>
-  <div id="ventas-logros" style="display:none"></div>
 </div>
 
 <!-- INVENTARIO -->
@@ -2176,10 +2174,12 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
     </div>
     <button class="btn btn-primary" onclick="abrirModalMeta()">+ Nueva meta</button>
   </div>
+  <div id="metas-tabs"></div>
   <div id="metas-resumen" class="mt-resumen"></div>
   <div id="metas-foco"></div>
   <div id="metas-grid"></div>
   <div id="metas-trofeos"></div>
+  <div id="metas-logros" style="display:none"></div>
 </div>
 
 <div class="page" id="page-contactos">
@@ -5149,6 +5149,8 @@ function mcAnillo(id, pct, tam, grosor, t){
   </svg>`;
 }
 function renderMetas(){
+  try { lgCabeceraMetas(); } catch(e){ console.warn('logros', e); }
+  if(mtTab === 'logros') return;
   const grid = document.getElementById('metas-grid'), res = document.getElementById('metas-resumen'), foco = document.getElementById('metas-foco'), tro = document.getElementById('metas-trofeos');
   if(!grid) return;
   if(!metas.length){
@@ -6167,7 +6169,6 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
 
 function renderVentas(){
   ccBannerVentas();
-  try { lgCabeceraVentas(); } catch(e){ console.warn('logros', e); }
   const cont = document.getElementById('tabla-ventas');
   const alertCont = document.getElementById('alertas-papeles');
 
@@ -7965,26 +7966,26 @@ function lgMedalla(x, tam){
   const t = x.tier;
   return `<span class="lg-med${x.ganado?'':' bloq'}" style="--ta:${t.a};--tb:${t.b};width:${tam}px;height:${tam}px">${x.ganado ? mcIco(x.fam.ico, Math.round(tam*.44)) : `<svg viewBox="0 0 24 24" width="${Math.round(tam*.4)}" height="${Math.round(tam*.4)}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`}</span>`;
 }
-let vtTab = 'historial';
-function setVtTab(t){ vtTab = t; renderVentas(); window.scrollTo({top:0, behavior: mcMovReducido() ? 'auto' : 'smooth'}); }
-function verLogros(){ vtTab = 'logros'; go('ventas'); }
-// Pestañas Historial | Logros arriba de Ventas, y la tira del próximo logro
-function lgCabeceraVentas(){
-  const box = document.getElementById('ventas-tabs'); if(!box) return;
-  const L = mcLogros(), ganados = L.items.filter(x=>x.ganado).length, nuevos = vtTab === 'logros' ? [] : lgNuevos(L), prox = lgProximos(L, 1)[0];
+let mtTab = 'metas';
+function setMtTab(t){ mtTab = t; renderMetas(); window.scrollTo({top:0, behavior: mcMovReducido() ? 'auto' : 'smooth'}); }
+function verLogros(){ mtTab = 'logros'; go('metas'); }
+// Pestañas Metas | Logros arriba de Metas, y la tira del próximo logro
+function lgCabeceraMetas(){
+  const box = document.getElementById('metas-tabs'); if(!box) return;
+  const L = mcLogros(), ganados = L.items.filter(x=>x.ganado).length, nuevos = mtTab === 'logros' ? [] : lgNuevos(L), prox = lgProximos(L, 1)[0];
   box.innerHTML = `<div class="vt-seg" role="tablist">
-      <button class="${vtTab==='historial'?'on':''}" onclick="setVtTab('historial')">${mcIco('recibo',15)}Historial</button>
-      <button class="${vtTab==='logros'?'on':''}" onclick="setVtTab('logros')">${mcIco('trofeo',15)}Logros <span class="vt-n">${ganados}/${L.items.length}</span>${nuevos.length?`<span class="vt-nuevo">${nuevos.length} nuevo${nuevos.length!==1?'s':''}</span>`:''}</button>
+      <button class="${mtTab==='metas'?'on':''}" onclick="setMtTab('metas')">${mcIco('bandera',15)}Metas</button>
+      <button class="${mtTab==='logros'?'on':''}" onclick="setMtTab('logros')">${mcIco('trofeo',15)}Logros <span class="vt-n">${ganados}/${L.items.length}</span>${nuevos.length?`<span class="vt-nuevo">${nuevos.length} nuevo${nuevos.length!==1?'s':''}</span>`:''}</button>
     </div>
-    ${vtTab==='historial' && prox ? `<button class="lg-tira" onclick="setVtTab('logros')">
+    ${mtTab==='metas' && prox ? `<button class="lg-tira" onclick="setMtTab('logros')">
       ${lgMedalla(prox, 34)}<span class="lg-tira-t"><b>Próximo logro: ${prox.nombre}</b><em>${lgFalta(prox)} · nivel ${L.nivel.n} ${L.nivel.nombre}</em></span>
       <span class="lg-tira-bar"><i style="width:${prox.pct}%"></i></span></button>` : ''}`;
-  const hist = vtTab === 'historial';
-  ['tabla-ventas','alertas-papeles','ventas-cobros-banner'].forEach(id=>{ const el = document.getElementById(id); if(el) el.style.display = hist ? '' : 'none'; });
-  const lg = document.getElementById('ventas-logros'); if(lg){ lg.style.display = hist ? 'none' : ''; if(!hist) renderLogros(L); }
+  const hist = mtTab === 'metas';
+  ['metas-resumen','metas-foco','metas-grid','metas-trofeos'].forEach(id=>{ const el = document.getElementById(id); if(el) el.style.display = hist ? '' : 'none'; });
+  const lg = document.getElementById('metas-logros'); if(lg){ lg.style.display = hist ? 'none' : ''; if(!hist) renderLogros(L); }
 }
 function renderLogros(L){
-  const box = document.getElementById('ventas-logros'); if(!box) return;
+  const box = document.getElementById('metas-logros'); if(!box) return;
   L = L || mcLogros();
   const nuevos = new Set(lgNuevos(L).map(x=>x.k));
   const ganados = L.items.filter(x=>x.ganado), niv = L.nivel;
