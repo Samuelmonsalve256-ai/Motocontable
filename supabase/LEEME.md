@@ -368,7 +368,7 @@ Cuando envías en PDF una cuenta ya cobrada, el mensaje y el PDF llevan un **enl
 
 ## FASE 12: Cotizaciones de crédito en la nube
 
-La página **Cotizaciones** (`cotizaciones.html`) reemplaza el Excel "COTIZACION Y REQUISITOS". Usa la misma cuenta de MotoContable y guarda en la nube las cotizaciones, el catálogo de motos, los ajustes y los requisitos, para que se vean igual en el iPhone y en el Mac.
+La página **Cotizaciones** (`cotizaciones.html`) reemplaza el Excel "COTIZACION Y REQUISITOS". Es un sistema aparte de MotoContable: no aparece en su menú y tiene su propia sesión (se entra con el mismo correo y contraseña de Supabase). Guarda en la nube las cotizaciones, el catálogo de motos, los ajustes y los requisitos, para que se vean igual en el iPhone y en el Mac.
 
 **Paso único: ejecutar el SQL**
 1. En Supabase abre **SQL Editor → New query**.
@@ -376,8 +376,7 @@ La página **Cotizaciones** (`cotizaciones.html`) reemplaza el Excel "COTIZACION
 3. Al final debe mostrar la regla con las 12 colecciones (incluye `cotizaciones`, `cot_motos` y `cot_config`).
 
 **Cómo entrar:**
-- En MotoContable: menú lateral → **Cotizar crédito** (en el iPhone: **Más → Cotizar crédito**).
-- O directo: `https://samuelmonsalve256-ai.github.io/Motocontable/cotizaciones.html`. En el iPhone puedes agregarla a la pantalla de inicio (Compartir → Agregar a inicio).
+- Directo: `https://samuelmonsalve256-ai.github.io/Motocontable/cotizaciones.html`. En el iPhone agrégala a la pantalla de inicio (Compartir → Agregar a inicio) para tenerla como una app aparte. En el Mac, guárdala en favoritos o en el Dock (Safari → Archivo → Agregar al Dock).
 
 **Si no ejecutas el SQL**, la página funciona igual pero todo queda solo en ese dispositivo, y al iniciar sesión verás el aviso "Falta ejecutar supabase/10_cotizaciones.sql".
 

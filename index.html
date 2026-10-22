@@ -1988,8 +1988,6 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
     <div class="nav-item" onclick="go('contactos')"><span class="nav-ico">👥</span>Contactos<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('ajustes')"><span class="nav-ico">🎨</span>Personalizar paneles<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('papelera')"><span class="nav-ico">🗑</span>Papelera<span class="nav-count" id="nav-papelera-n"></span><div class="nav-dot" style="margin-left:auto"></div></div>
-    <div class="nav-label">Herramientas</div>
-    <a class="nav-item" href="cotizaciones.html" style="text-decoration:none;color:inherit"><span class="nav-ico">🧾</span>Cotizar crédito<div class="nav-dot" style="margin-left:auto"></div></a>
   </nav>
   <div class="sidebar-footer"><p id="sync-cuenta">Datos guardados en la nube.</p><div id="sync-indicator" style="font-size:11px;color:var(--text3);margin-top:2px;cursor:pointer" onclick="sincronizarAhora()" title="Toca para sincronizar">☁️ Nube</div></div>
 </div>
@@ -2692,7 +2690,6 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   <div class="mh-titulo">Más</div>
   <div class="mh-grid">
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('cobros')"><span>💰</span>Por cobrar<i class="mtab-n" id="mc-mas-cobros-n"></i></button>
-    <button class="mh-cuadro" onclick="location.href='cotizaciones.html'"><span>🧾</span>Cotizar crédito</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('carros')"><span>🚗</span>Mis carros</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('inventario')"><span>📦</span>Inventario</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('analisis')"><span>📈</span>Análisis</button>
@@ -3619,7 +3616,7 @@ function calcMoto(id){
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────────
-const NAV_PAGES = ['resumen','motos','carros','ventas','cobros','inventario','analisis','nueva-moto','nuevo-carro','nueva-venta','metas','contactos','ajustes','papelera','cotizaciones'];
+const NAV_PAGES = ['resumen','motos','carros','ventas','cobros','inventario','analisis','nueva-moto','nuevo-carro','nueva-venta','metas','contactos','ajustes','papelera'];
 function go(page){
   // "Contado vs financiado" ahora es una pestaña dentro de Análisis
   if(page==='analisis-ventas'){ anGuardarTab('pago'); page = 'analisis'; }
@@ -5338,7 +5335,7 @@ function mcIco(nombre, tam){
   return `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${MC_ICONOS[nombre] || ''}</svg>`;
 }
 const MC_ICONO_DE_PAGINA = {resumen:'tablero', motos:'moto', carros:'carro', ventas:'llave', cobros:'recibo', inventario:'caja', analisis:'telemetria',
-  'nueva-moto':'moto', 'nuevo-carro':'carro', 'nueva-venta':'billete', metas:'bandera', contactos:'personas', ajustes:'ajustes', papelera:'papelera', cotizaciones:'recibo'};
+  'nueva-moto':'moto', 'nuevo-carro':'carro', 'nueva-venta':'billete', metas:'bandera', contactos:'personas', ajustes:'ajustes', papelera:'papelera'};
 function mcAplicarIconos(){
   document.querySelectorAll('.sidebar .nav-item').forEach((n, i)=>{ const ic = n.querySelector('.nav-ico'), pg = NAV_PAGES[i]; if(ic && MC_ICONO_DE_PAGINA[pg]) ic.innerHTML = mcIco(MC_ICONO_DE_PAGINA[pg]); });
   const deTab = {resumen:'tablero', motos:'moto', ventas:'llave', mas:'menu'};
@@ -5346,7 +5343,7 @@ function mcAplicarIconos(){
   document.querySelectorAll('#mc-hoja-mas .mh-cuadro').forEach(b=>{
     const s = b.querySelector('span'), on = b.getAttribute('onclick') || '';
     const pg = (on.match(/go\('([^']+)'\)/) || [])[1];
-    const n = pg ? MC_ICONO_DE_PAGINA[pg] : /mcMostrarAviso/.test(on) ? 'campana' : /sincronizar/.test(on) ? 'nube' : /cotizaciones/.test(on) ? 'recibo' : '';
+    const n = pg ? MC_ICONO_DE_PAGINA[pg] : /mcMostrarAviso/.test(on) ? 'campana' : /sincronizar/.test(on) ? 'nube' : '';
     if(s && n) s.innerHTML = mcIco(n, 24);
   });
   document.querySelectorAll('#mc-hoja-nuevo .mh-fila').forEach(b=>{

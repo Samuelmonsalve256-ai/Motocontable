@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#f3f5fb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Cotizaciones">
+<link rel="apple-touch-icon" href="cotizaciones-icono.png">
+<link rel="icon" type="image/png" href="cotizaciones-icono.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -131,9 +133,6 @@ function ctAplicarColor(id){
   .nav-btn.active { background: var(--accent-light); color: var(--accent); font-weight: 700; box-shadow: inset 3px 0 0 var(--accent); }
   .nav-btn.active svg { color: var(--accent); }
   .nav-count { margin-left: auto; font-size: 10.5px; font-weight: 800; background: var(--surface2); color: var(--text2); border-radius: 20px; padding: 1px 8px; }
-  .nav-otras { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--border); }
-  .nav-otras a { display: flex; align-items: center; gap: 8px; padding: 7px 12px; color: var(--text3); font-size: 12.5px; font-weight: 600; text-decoration: none; border-radius: 10px; }
-  .nav-otras a:hover { background: #f1f3fb; color: var(--accent); }
 
   main { padding: 1.75rem 2.25rem 3rem; min-width: 0; }
   .panel { display: none; }
@@ -462,7 +461,7 @@ function ctAplicarColor(id){
       box-shadow: 0 -8px 24px -10px rgba(15,23,42,.18);
     }
     .nav-section { position: static; flex-direction: row; justify-content: space-around; }
-    .nav-label, .nav-otras, .nav-count { display: none; }
+    .nav-label, .nav-count { display: none; }
     .nav-btn { flex-direction: column; gap: 3px; flex: 1; min-width: 0; padding: 7px 2px 6px; font-size: 10.5px; justify-content: center; text-align: center; white-space: nowrap; }
     .nav-btn svg { width: 22px; height: 22px; }
     .nav-btn.active { box-shadow: none; }
@@ -532,10 +531,6 @@ function ctAplicarColor(id){
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
         Ajustes
       </button>
-      <div class="nav-otras">
-        <a href="index.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>MotoContable</a>
-        <a href="traspasos.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>Traspasos</a>
-      </div>
     </div>
   </nav>
 
@@ -671,7 +666,7 @@ function ctAplicarColor(id){
   </div>
 </div>
 
-<!-- Inicio de sesión (misma cuenta de MotoContable) -->
+<!-- Inicio de sesión -->
 <div class="modal" id="ct-login">
   <div class="modal-box" style="max-width:380px">
     <div class="modal-t" id="ct-login-titulo" style="justify-content:center">Inicia sesión</div>
@@ -1953,7 +1948,8 @@ function ir(p){
 
 // ════════════════════════════════════════════════════════════════════════════
 // ── NUBE (Supabase) ──────────────────────────────────────────────────────────
-// Igual que Traspasos: la misma cuenta y la misma tabla que MotoContable
+// Sistema independiente con su propia sesión. Guarda en mc_registros del mismo
+// proyecto de Supabase, en colecciones propias que las otras páginas ignoran
 // (mc_registros, colecciones 'cotizaciones', 'cot_motos' y 'cot_config').
 // localStorage es la copia local. La "sombra" guarda, por registro, la última versión
 // confirmada por la nube; lo que difiere de ella es un cambio pendiente y se envía con
@@ -1966,7 +1962,7 @@ const CT_URL_PUBLICA = 'https://samuelmonsalve256-ai.github.io/Motocontable/coti
 let _supa = null;
 try {
   _supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
-    auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit', storageKey: 'mc-auth'}  // misma sesión que MotoContable
+    auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit', storageKey: 'ct-auth'}  // sesión propia, aparte de las otras páginas
   });
 } catch(e){ console.log('Supabase no disponible:', e); }
 
@@ -1987,12 +1983,12 @@ let _ctRecuperacion = /type=recovery/.test(location.hash);
 
 const ctDeviceId = (() => {
   try {
-    let d = localStorage.getItem('mc_device_id');
+    let d = localStorage.getItem('ct_device_id');
     if(!d){
       const ua = navigator.userAgent;
       const tipo = /iPhone/.test(ua) ? 'iphone' : /iPad/.test(ua) ? 'ipad' : /Android/.test(ua) ? 'android' : /Mac/.test(ua) ? 'mac' : /Windows/.test(ua) ? 'windows' : 'web';
       d = tipo + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-      localStorage.setItem('mc_device_id', d);
+      localStorage.setItem('ct_device_id', d);
     }
     return d;
   } catch(e){ return 'web_' + Math.random().toString(36).slice(2, 8); }
@@ -2255,9 +2251,9 @@ function ctActualizarCuenta(n){
   const conectado = _ctSesion && _ctEstadoListo;
   if(btn) btn.textContent = conectado ? 'Cerrar sesión' : 'Iniciar sesión';
   if(!info) return;
-  if(!conectado){ info.textContent = 'No has iniciado sesión. Todo se guarda en este dispositivo y se subirá a la nube cuando entres con tu cuenta de MotoContable.'; return; }
+  if(!conectado){ info.textContent = 'No has iniciado sesión. Todo se guarda en este dispositivo y se subirá a la nube cuando inicies sesión.'; return; }
   const hora = _ctUltimoOk ? _ctUltimoOk.toLocaleTimeString('es-CO', {hour: '2-digit', minute: '2-digit'}) : '—';
-  info.innerHTML = 'Conectado como <strong></strong> (la misma cuenta de MotoContable).<br>Última sincronización: ' + hora + '<br>Cambios pendientes: <strong>' + (n || 0) + '</strong>';
+  info.innerHTML = 'Conectado como <strong></strong>.<br>Última sincronización: ' + hora + '<br>Cambios pendientes: <strong>' + (n || 0) + '</strong>';
   info.querySelector('strong').textContent = (_ctSesion.user && _ctSesion.user.email) || '';
 }
 function ctEditando(){ const a = document.activeElement; return a && a.closest && a.closest('main') && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); }
@@ -2277,7 +2273,7 @@ document.addEventListener('focusout', () => {
   setTimeout(() => { if(_ctRefrescar && !ctEditando() && !$('ct-modal').classList.contains('on')) ctRefrescarUI(); }, 400);
 });
 
-// Inicio de sesión (la misma cuenta de MotoContable)
+// Inicio de sesión
 let _ctModoLogin = 'login';
 function ctMostrarLogin(modo){
   _ctModoLogin = modo || 'login';
@@ -2285,7 +2281,7 @@ function ctMostrarLogin(modo){
   $('ct-login-titulo').textContent = nueva ? 'Nueva contraseña' : cargando ? 'Sincronizando…' : 'Inicia sesión';
   $('ct-login-sub').textContent = nueva ? 'Escribe tu nueva contraseña.'
     : cargando ? 'Estamos uniendo las cotizaciones de este dispositivo con la nube. No cierres la página.'
-    : 'Usa la misma cuenta de MotoContable. Tus cotizaciones, motos y requisitos se verán igual en el celular y en el Mac.';
+    : 'Entra con tu correo y contraseña. Tus cotizaciones, motos y requisitos se verán igual en el celular y en el Mac.';
   $('ct-login-form').style.display = cargando ? 'none' : '';
   $('ct-login-email-g').style.display = nueva ? 'none' : '';
   $('ct-login-extra').style.display = (nueva || cargando) ? 'none' : 'flex';
@@ -2336,7 +2332,7 @@ async function ctCerrarSesion(){
   if(navigator.onLine) await ctGuardarAhora('cerrar-sesion');
   const n = _ctEstado ? ctCalcularPendientes().length : 0;
   if(n){ await preguntar({titulo: 'Hay cambios sin subir', texto: `Tienes ${n} cambio(s) que todavía no llegan a la nube. Conéctate a internet y espera a que diga "Guardado en la nube".`, si: 'Entendido', no: null}); return; }
-  if(!await preguntar({titulo: 'Cerrar sesión', texto: 'Se cerrará la sesión también en MotoContable y Traspasos en este navegador.', si: 'Cerrar sesión'})) return;
+  if(!await preguntar({titulo: 'Cerrar sesión', texto: 'Tus cotizaciones están guardadas en la nube. Podrás volver a entrar cuando quieras.', si: 'Cerrar sesión'})) return;
   if(_ctCanal){ try { _supa.removeChannel(_ctCanal); } catch(e){} _ctCanal = null; }
   await _supa.auth.signOut();
   _ctSesion = null; _ctEstadoListo = false;
