@@ -373,7 +373,7 @@ La página **Cotizaciones** (`cotizaciones.html`) reemplaza el Excel "COTIZACION
 **Paso único: ejecutar el SQL**
 1. En Supabase abre **SQL Editor → New query**.
 2. Abre el archivo `10_cotizaciones.sql`, copia **todo su contenido** y pégalo en el editor. Pulsa **Run**.
-3. Al final debe mostrar la regla con las 12 colecciones (incluye `cotizaciones`, `cot_motos` y `cot_config`).
+3. Al final debe mostrar la regla nueva (incluye `cotizaciones`, `cot_motos` y `cot_config`) y cuántos registros hay por colección. Si tu tabla ya tenía otras colecciones, el SQL las conserva en la regla.
 
 **Cómo entrar:**
 - Directo: `https://samuelmonsalve256-ai.github.io/Motocontable/cotizaciones.html`. En el iPhone agrégala a la pantalla de inicio (Compartir → Agregar a inicio) para tenerla como una app aparte. En el Mac, guárdala en favoritos o en el Dock (Safari → Archivo → Agregar al Dock).

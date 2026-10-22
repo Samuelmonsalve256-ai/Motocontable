@@ -8,25 +8,37 @@
 --      'cotizaciones' → las cotizaciones guardadas
 --      'cot_motos'    → el catálogo de motos con su precio
 --      'cot_config'   → los ajustes (empresa, planes, plazos) y los requisitos
---  • NO borra ni modifica ningún dato. Los registros existentes siguen cumpliendo
---    la regla nueva.
---  • Se puede ejecutar más de una vez sin problema.
+--  • La lista nueva incluye también cualquier colección que ya exista en la
+--    tabla, para que ningún registro actual quede por fuera de la regla.
+--  • NO borra ni modifica ningún dato. Se puede ejecutar más de una vez.
 -- ════════════════════════════════════════════════════════════════════════════
 
-begin;
+do $$
+declare
+  lista text;
+begin
+  select string_agg(quote_literal(c), ', ' order by c) into lista
+  from (
+    select unnest(array[
+      'motos','movimientos','ventas','carros','contactos','metas','config',
+      'traspasos','traspasos_borradores',
+      'cotizaciones','cot_motos','cot_config']) as c
+    union
+    select distinct coleccion from public.mc_registros
+  ) t;
 
-alter table public.mc_registros
-  drop constraint if exists mc_registros_coleccion_check;
+  alter table public.mc_registros drop constraint if exists mc_registros_coleccion_check;
+  execute 'alter table public.mc_registros add constraint mc_registros_coleccion_check '
+       || 'check (coleccion in (' || lista || '))';
+end $$;
 
-alter table public.mc_registros
-  add constraint mc_registros_coleccion_check check (coleccion in
-    ('motos','movimientos','ventas','carros','contactos','metas','config',
-     'traspasos','traspasos_borradores',
-     'cotizaciones','cot_motos','cot_config'));
-
-commit;
-
--- Verificación: debe mostrar la regla nueva con las 12 colecciones.
+-- Verificación: la regla nueva (debe incluir cotizaciones, cot_motos y cot_config)
 select pg_get_constraintdef(oid) as regla
 from pg_constraint
 where conname = 'mc_registros_coleccion_check';
+
+-- Cuántos registros hay por colección (solo para revisar)
+select coleccion, count(*) as registros
+from public.mc_registros
+group by coleccion
+order by coleccion;
