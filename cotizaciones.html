@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f3f5fb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cotizaciones">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Cotizaciones de Crédito</title>
+<script>
+// Colores del tema: se aplican antes de dibujar la página para que no parpadee.
+const CT_COLORES = [
+  {id:'indigo',    nombre:'Índigo',    a:'#4f46e5', b:'#7c3aed'},
+  {id:'oceano',    nombre:'Océano',    a:'#2563eb', b:'#0891b2'},
+  {id:'turquesa',  nombre:'Turquesa',  a:'#0d9488', b:'#0284c7'},
+  {id:'bosque',    nombre:'Bosque',    a:'#15803d', b:'#0d9488'},
+  {id:'rosa',      nombre:'Rosa',      a:'#db2777', b:'#9333ea'},
+  {id:'atardecer', nombre:'Atardecer', a:'#ea580c', b:'#e11d48'},
+  {id:'lavanda',   nombre:'Lavanda',   a:'#8b5cf6', b:'#d946ef'},
+  {id:'grafito',   nombre:'Grafito',   a:'#27272a', b:'#52525b'},
+];
+function ctHexRgb(h){ const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+function ctMezcla(h, con, t){ const a = ctHexRgb(h); return '#' + a.map(c => Math.round(c + (con - c) * t).toString(16).padStart(2, '0')).join(''); }
+function ctAplicarColor(id){
+  const c = CT_COLORES.find(x => x.id === id) || CT_COLORES[0];
+  const st = document.documentElement.style;
+  st.setProperty('--accent', c.a);
+  st.setProperty('--accent-2', c.b);
+  st.setProperty('--accent-rgb', ctHexRgb(c.a).join(','));
+  st.setProperty('--accent-2-rgb', ctHexRgb(c.b).join(','));
+  st.setProperty('--accent-light', ctMezcla(c.a, 255, .9));
+  st.setProperty('--accent-ink', ctMezcla(c.a, 0, .35));
+  st.setProperty('--grad', 'linear-gradient(135deg, ' + c.a + ' 0%, ' + c.b + ' 100%)');
+  document.documentElement.dataset.color = c.id;
+  return c;
+}
+(function(){ let id = 'indigo'; try { id = localStorage.getItem('ct_color') || 'indigo'; } catch(e){} ctAplicarColor(id); })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<style>
+  :root {
+    --bg: #f3f5fb;
+    --surface: #ffffff;
+    --surface2: #f5f7fc;
+    --border: #e6eaf2;
+    --border2: #d6dce8;
+    --text: #0f172a;
+    --text2: #526079;
+    --text3: #8a94ab;
+    --ok: #059669;
+    --ok-bg: #e9faf2;
+    --warn: #b45309;
+    --warn-bg: #fff7e8;
+    --danger: #e11d48;
+    --radius: 18px;
+    --radius-sm: 12px;
+    --sh-1: 0 1px 2px rgba(15,23,42,.04), 0 4px 14px -6px rgba(15,23,42,.08);
+    --sh-2: 0 2px 4px rgba(15,23,42,.04), 0 18px 36px -14px rgba(30,27,75,.25);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 14px; color: var(--text); min-height: 100vh;
+    background:
+      radial-gradient(900px 420px at 100% -10%, rgba(var(--accent-2-rgb),.08), transparent 60%),
+      radial-gradient(700px 380px at -10% 0%, rgba(var(--accent-rgb),.07), transparent 60%),
+      var(--bg);
+    background-attachment: fixed;
+    letter-spacing: -.005em;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: rgba(var(--accent-rgb),.18); }
+  * { scrollbar-width: thin; scrollbar-color: #cdd3e1 transparent; }
+  .num, .money { font-variant-numeric: tabular-nums; }
+  button { font-family: inherit; }
+  [hidden] { display: none !important; }
+
+  /* ── Cabecera ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; gap: 12px;
+    height: 64px; padding: 0 1.5rem;
+    background: rgba(255,255,255,.78);
+    backdrop-filter: saturate(1.6) blur(14px); -webkit-backdrop-filter: saturate(1.6) blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0;
+    background: var(--grad); color: #fff; box-shadow: 0 6px 16px -6px rgba(var(--accent-rgb),.7);
+  }
+  header h1 { font-size: 17px; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; }
+  header h1 { display: flex; align-items: center; min-width: 0; }
+  header h1 small { font-size: 11px; font-weight: 700; margin-left: 8px; background: var(--accent-light); color: var(--accent); padding: 2px 9px; border-radius: 20px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
+  #ct-sync {
+    margin-left: auto; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 44vw;
+    font-size: 11.5px; font-weight: 700; color: var(--text2);
+    background: var(--surface); border: 1px solid var(--border); padding: 6px 12px 6px 24px; border-radius: 20px; position: relative;
+  }
+  #ct-sync::before { content: ''; position: absolute; left: 10px; top: 50%; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%; background: var(--text3); }
+  #ct-sync[data-estado="guardado"]::before { background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,.18); }
+  #ct-sync[data-estado="guardando"]::before, #ct-sync[data-estado="cargando"]::before { background: #f59e0b; }
+  #ct-sync[data-estado="error"]::before, #ct-sync[data-estado="sin-nube"]::before { background: var(--danger); }
+  .hdr-btn {
+    width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface);
+    display: grid; place-items: center; cursor: pointer; color: var(--text2); flex-shrink: 0;
+  }
+  .hdr-btn .bolita { width: 18px; height: 18px; border-radius: 50%; background: var(--grad); box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--border2); }
+
+  /* ── Estructura ── */
+  .layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); }
+  nav {
+    background: rgba(255,255,255,.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-right: 1px solid var(--border); padding: 1.25rem .85rem;
+  }
+  .nav-section { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 2px; }
+  .nav-label { font-size: 10.5px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: #a0a8bd; padding: 0 .75rem; margin: 14px 0 8px; }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-btn {
+    display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: none; background: transparent;
+    color: #4b5671; font-size: 13.5px; font-weight: 600; border-radius: 12px; cursor: pointer; text-align: left;
+    transition: background .18s, color .18s, transform .12s; position: relative;
+  }
+  .nav-btn svg { color: #9aa3b8; flex-shrink: 0; transition: color .18s; }
+  .nav-btn:hover { background: #f1f3fb; color: var(--text); }
+  .nav-btn:hover svg { color: var(--accent); }
+  .nav-btn:active { transform: scale(.98); }
+  .nav-btn.active { background: var(--accent-light); color: var(--accent); font-weight: 700; box-shadow: inset 3px 0 0 var(--accent); }
+  .nav-btn.active svg { color: var(--accent); }
+  .nav-count { margin-left: auto; font-size: 10.5px; font-weight: 800; background: var(--surface2); color: var(--text2); border-radius: 20px; padding: 1px 8px; }
+  .nav-otras { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--border); }
+  .nav-otras a { display: flex; align-items: center; gap: 8px; padding: 7px 12px; color: var(--text3); font-size: 12.5px; font-weight: 600; text-decoration: none; border-radius: 10px; }
+  .nav-otras a:hover { background: #f1f3fb; color: var(--accent); }
+
+  main { padding: 1.75rem 2.25rem 3rem; min-width: 0; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: ctEntrar .32s cubic-bezier(.2,.7,.2,1); }
+  @keyframes ctEntrar { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .panel > * { max-width: 1180px; }
+  .page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 1.3rem; flex-wrap: wrap; }
+  .page-title { font-size: 25px; font-weight: 800; letter-spacing: -.03em; display: flex; align-items: center; gap: 12px; }
+  .page-title .pt-ico {
+    width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; color: #fff; flex-shrink: 0;
+    background: var(--grad); box-shadow: 0 8px 18px -8px rgba(var(--accent-rgb),.7);
+  }
+  .page-sub { color: var(--text2); font-size: 13px; margin-top: 2px; font-weight: 500; }
+  .page-acc { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* ── Tarjetas ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--sh-1); padding: 1.3rem 1.4rem; }
+  .card + .card { margin-top: 14px; }
+  .card-title {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;
+    color: var(--accent); font-size: 11.5px; letter-spacing: 1.1px; font-weight: 800; text-transform: uppercase;
+  }
+  .card-title .paso { width: 22px; height: 22px; border-radius: 8px; background: var(--grad); color: #fff; display: grid; place-items: center; font-size: 11px; letter-spacing: 0; }
+  .card-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+  .card-title .ct-acc { order: 2; margin-left: 4px; }
+
+  /* ── Campos ── */
+  .grid { display: grid; gap: 12px; }
+  .g2 { grid-template-columns: 1fr 1fr; }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .campo { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .campo.full { grid-column: 1 / -1; }
+  label, .lbl { font-size: 12px; font-weight: 700; color: #475169; }
+  .lbl-opc { font-weight: 500; color: var(--text3); }
+  input, select, textarea {
+    font-family: inherit; color: var(--text); width: 100%;
+    border-radius: var(--radius-sm); border: 1px solid #dfe4ee; background: #fbfcff;
+    padding: 11px 12px; font-size: 15px; outline: none;
+    transition: border .15s, box-shadow .15s, background .15s;
+  }
+  input:hover, select:hover, textarea:hover { border-color: #c9d1e2; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px rgba(var(--accent-rgb),.13); }
+  textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+  select {
+    -webkit-appearance: none; appearance: none; padding-right: 34px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23526079' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+  }
+  .money-wrap { position: relative; }
+  .money-wrap::before { content: '$'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text3); font-weight: 700; pointer-events: none; }
+  .money-wrap input { padding-left: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .input-btn { display: flex; gap: 8px; }
+  .input-btn input { flex: 1; }
+  .hint { font-size: 12px; color: var(--text3); line-height: 1.45; }
+  .hint b { color: var(--text2); }
+
+  /* ── Botones ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    padding: 10px 18px; border-radius: 12px; border: 1px solid #dfe4ee; background: var(--surface); color: var(--text);
+    font-size: 13.5px; font-weight: 700; cursor: pointer; white-space: nowrap; text-decoration: none;
+    transition: background .15s, border .15s, transform .1s, box-shadow .15s, filter .15s;
+  }
+  .btn:hover { background: #f4f6fb; border-color: #cfd6e4; }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--grad); border-color: transparent; color: #fff; box-shadow: 0 8px 18px -8px rgba(var(--accent-rgb),.75); }
+  .btn-primary:hover { background: var(--grad); filter: brightness(1.08); }
+  .btn-wa { background: #25d366; border-color: transparent; color: #fff; box-shadow: 0 8px 18px -8px rgba(37,211,102,.8); }
+  .btn-wa:hover { background: #1fbe5b; }
+  .btn-ghost { border-color: transparent; background: transparent; }
+  .btn-ghost:hover { background: #eef1f8; }
+  .btn-danger { color: var(--danger); border-color: #fbcdd6; }
+  .btn-danger:hover { background: #fff1f3; border-color: #f8a9b8; }
+  .btn-sm { padding: 7px 12px; font-size: 12.5px; border-radius: 10px; }
+  .btn-xs { padding: 5px 9px; font-size: 12px; border-radius: 9px; gap: 5px; }
+  .btn-icon { width: 34px; height: 34px; padding: 0; border-radius: 10px; }
+  .btn-block { width: 100%; }
+  .btn:disabled { opacity: .5; pointer-events: none; }
+
+  /* ── Chips ── */
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    border: 1px solid var(--border); background: var(--surface2); color: var(--text2);
+    padding: 7px 12px; border-radius: 20px; font-size: 12.5px; font-weight: 700; cursor: pointer;
+    transition: all .15s; white-space: nowrap; font-variant-numeric: tabular-nums;
+  }
+  .chip:hover { border-color: rgba(var(--accent-rgb),.4); color: var(--accent); }
+  .chip.on { background: var(--accent-light); border-color: rgba(var(--accent-rgb),.45); color: var(--accent); }
+  .chip small { font-weight: 600; opacity: .75; margin-left: 4px; }
+  .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; background: var(--surface2); border: 1px solid var(--border); padding: 4px; border-radius: 14px; }
+  .seg button {
+    border: none; background: transparent; padding: 9px 8px; border-radius: 10px; cursor: pointer;
+    font-size: 13px; font-weight: 700; color: var(--text2); line-height: 1.2;
+  }
+  .seg button small { display: block; font-size: 11px; font-weight: 600; color: var(--text3); margin-top: 1px; }
+  .seg button.on { background: var(--surface); color: var(--accent); box-shadow: var(--sh-1); }
+  .seg button.on small { color: var(--accent); opacity: .8; }
+
+  /* ── Cotizador ── */
+  .cot-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: 18px; align-items: start; }
+  .cot-res { position: sticky; top: 84px; }
+  .editando {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: var(--accent-light); color: var(--accent-ink); border: 1px solid rgba(var(--accent-rgb),.25);
+    border-radius: 14px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; font-weight: 600;
+  }
+  .editando .btn { margin-left: auto; }
+  .aviso { display: flex; gap: 9px; align-items: flex-start; border-radius: 12px; padding: 10px 12px; font-size: 12.5px; line-height: 1.45; font-weight: 500; margin-top: 10px; }
+  .aviso svg { flex-shrink: 0; margin-top: 1px; }
+  .aviso.warn { background: var(--warn-bg); color: var(--warn); border: 1px solid #fadba0; }
+  .aviso.ok { background: var(--ok-bg); color: var(--ok); border: 1px solid #a7ecd0; }
+  .aviso.info { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+
+  .hero {
+    border-radius: 22px; padding: 1.3rem 1.4rem 1.2rem; color: #fff; position: relative; overflow: hidden;
+    background: var(--grad); box-shadow: 0 22px 40px -22px rgba(var(--accent-rgb),.9);
+  }
+  .hero::after { content: ''; position: absolute; right: -60px; top: -60px; width: 200px; height: 200px; border-radius: 50%; background: rgba(255,255,255,.1); }
+  .hero::before { content: ''; position: absolute; right: 40px; bottom: -90px; width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,.07); }
+  .hero-k { font-size: 11px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; opacity: .8; }
+  .hero-v { font-size: 34px; font-weight: 800; letter-spacing: -.04em; margin: 2px 0 12px; font-variant-numeric: tabular-nums; position: relative; z-index: 1; }
+  .hero-filas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: relative; z-index: 1; }
+  .hero-fila { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.18); border-radius: 12px; padding: 8px 10px; }
+  .hero-fila span { display: block; font-size: 11px; font-weight: 600; opacity: .85; }
+  .hero-fila b { font-size: 14.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .hero-plan { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; background: rgba(255,255,255,.18); border-radius: 20px; padding: 3px 10px; margin-top: 10px; position: relative; z-index: 1; }
+
+  .plazos { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 14px; }
+  .plazo {
+    border: 1.5px solid var(--border); background: var(--surface); border-radius: 16px; padding: 12px 12px 11px; cursor: pointer;
+    text-align: left; transition: transform .14s, box-shadow .2s, border-color .2s; box-shadow: var(--sh-1); position: relative;
+  }
+  .plazo:hover { transform: translateY(-2px); box-shadow: var(--sh-2); }
+  .plazo .pz-n { font-size: 12px; font-weight: 700; color: var(--text2); }
+  .plazo .pz-c { font-size: 19px; font-weight: 800; letter-spacing: -.03em; color: var(--text); font-variant-numeric: tabular-nums; margin: 2px 0; }
+  .plazo .pz-t { font-size: 11px; color: var(--text3); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .plazo.on { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(var(--accent-rgb),.12), var(--sh-2); }
+  .plazo.on .pz-c { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .plazo.on::after { content: '✓'; position: absolute; right: 10px; top: 9px; width: 18px; height: 18px; border-radius: 50%; background: var(--grad); color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; }
+
+  .detalle { margin-top: 14px; }
+  .det-fila { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
+  .det-fila:last-child { border-bottom: none; }
+  .det-fila span { color: var(--text2); }
+  .det-fila b { font-variant-numeric: tabular-nums; }
+  .det-fila.total b { color: var(--accent); font-size: 15px; }
+  .tabla-wrap { overflow-x: auto; margin-top: 8px; border: 1px solid var(--border); border-radius: 12px; }
+  table.tabla { width: 100%; border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .tabla th { background: #f8f9fd; color: var(--text3); font-size: 11px; font-weight: 700; text-align: right; padding: 9px 10px; white-space: nowrap; }
+  .tabla th:first-child, .tabla td:first-child { text-align: center; }
+  .tabla td { padding: 8px 10px; border-top: 1px solid #eff2f8; text-align: right; white-space: nowrap; }
+  .tabla tr:hover td { background: #f7f8ff; }
+  details.plan > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--accent); font-size: 13px; padding: 8px 0 2px; }
+  details.plan > summary::-webkit-details-marker { display: none; }
+  details.plan > summary svg { transition: transform .2s; }
+  details.plan[open] > summary svg { transform: rotate(90deg); }
+
+  .acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .acciones .btn { padding: 12px 10px; }
+  .acciones .full { grid-column: 1 / -1; }
+
+  /* ── Lista de cotizaciones ── */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; box-shadow: var(--sh-1); position: relative; overflow: hidden; }
+  .kpi::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--k, var(--grad)); }
+  .kpi span { font-size: 11.5px; color: var(--text3); font-weight: 700; }
+  .kpi b { display: block; font-size: 24px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .barra { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .buscar { position: relative; flex: 1 1 260px; }
+  .buscar svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text3); }
+  .buscar input { padding-left: 36px; background: var(--surface); }
+  .lista { display: grid; gap: 10px; }
+  .item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--sh-1);
+    padding: 14px 16px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 6px 14px; align-items: center;
+    transition: transform .14s, box-shadow .2s;
+  }
+  .item:hover { box-shadow: var(--sh-2); }
+  .item-t { font-size: 15px; font-weight: 800; letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .item-s { font-size: 12.5px; color: var(--text2); display: flex; gap: 6px 12px; flex-wrap: wrap; }
+  .item-s span { display: inline-flex; align-items: center; gap: 4px; }
+  .item-c { text-align: right; }
+  .item-c b { display: block; font-size: 18px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .item-c small { font-size: 11.5px; color: var(--text3); font-weight: 600; }
+  .item-acc { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; border-top: 1px dashed var(--border); padding-top: 10px; margin-top: 4px; align-items: center; }
+  .item-acc .estado-sel { width: auto; padding: 6px 30px 6px 10px; font-size: 12px; font-weight: 700; border-radius: 9px; margin-left: auto; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 20px; white-space: nowrap; }
+  .b-nueva { background: var(--accent-light); color: var(--accent); }
+  .b-seguimiento { background: var(--warn-bg); color: var(--warn); }
+  .b-vendida { background: var(--ok-bg); color: var(--ok); }
+  .b-perdida { background: #f1f3f8; color: var(--text3); }
+  .b-num { background: var(--surface2); color: var(--text3); font-weight: 700; }
+  .vacio { text-align: center; padding: 3rem 1rem; background: var(--surface); border: 1px dashed var(--border2); border-radius: var(--radius); color: var(--text2); }
+  .vacio .v-ico { width: 54px; height: 54px; border-radius: 18px; margin: 0 auto 12px; display: grid; place-items: center; background: var(--accent-light); color: var(--accent); }
+  .vacio b { display: block; font-size: 16px; color: var(--text); margin-bottom: 4px; }
+
+  /* ── Requisitos ── */
+  .req-doc { display: grid; gap: 14px; }
+  .req-grupo .rg-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .rg-ico { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: var(--accent-light); color: var(--accent); flex-shrink: 0; }
+  .rg-titulo { font-size: 16px; font-weight: 800; letter-spacing: -.02em; }
+  .rg-nota { font-size: 12.5px; color: var(--warn); background: var(--warn-bg); border: 1px solid #fadba0; border-radius: 10px; padding: 7px 10px; margin: 8px 0 4px; font-weight: 600; }
+  .req-items { list-style: none; counter-reset: req; margin-top: 8px; }
+  .req-items > li { counter-increment: req; display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 10px 0; border-top: 1px dashed var(--border); }
+  .req-items > li:first-child { border-top: none; }
+  .req-items > li::before {
+    content: counter(req); width: 26px; height: 26px; border-radius: 9px; display: grid; place-items: center;
+    font-size: 12px; font-weight: 800; color: #fff; background: var(--grad);
+  }
+  .ri-t { font-weight: 700; font-size: 14px; line-height: 1.4; }
+  .ri-d { font-size: 12.5px; color: var(--text2); margin-top: 2px; }
+  .ri-ops { display: grid; gap: 6px; margin-top: 8px; }
+  .ri-op { display: flex; gap: 8px; align-items: baseline; background: var(--surface2); border-radius: 10px; padding: 7px 10px; font-size: 13px; line-height: 1.4; }
+  .ri-op b { color: var(--accent); white-space: nowrap; }
+  .req-cierre { display: grid; gap: 8px; }
+  .req-cierre div { display: flex; gap: 10px; align-items: center; font-weight: 700; font-size: 13.5px; }
+  .req-cierre svg { color: var(--accent); flex-shrink: 0; }
+
+  .ed-grupo { border: 1px solid var(--border); border-radius: 16px; padding: 14px; background: var(--surface); box-shadow: var(--sh-1); }
+  .ed-grupo + .ed-grupo { margin-top: 12px; }
+  .ed-head { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .ed-head input { font-weight: 800; font-size: 15px; }
+  .ed-item { border: 1px dashed var(--border2); border-radius: 12px; padding: 10px; margin-top: 8px; background: #fcfdff; }
+  .ed-fila { display: flex; gap: 6px; align-items: center; }
+  .ed-fila input { padding: 9px 10px; font-size: 14px; }
+  .ed-fila .num-i { width: 26px; height: 26px; flex-shrink: 0; border-radius: 8px; background: var(--accent-light); color: var(--accent); font-weight: 800; font-size: 12px; display: grid; place-items: center; }
+  .ed-sub { margin: 6px 0 0 32px; display: grid; gap: 6px; }
+  .ed-op { display: grid; grid-template-columns: 130px 1fr auto; gap: 6px; }
+  .ed-op input { padding: 8px 10px; font-size: 13.5px; }
+  .ed-op input:first-child { font-weight: 700; }
+  .ed-mini { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 0 32px; }
+
+  /* ── Motos ── */
+  .motos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .moto {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--sh-1);
+    padding: 14px 15px; display: flex; flex-direction: column; gap: 8px; transition: transform .14s, box-shadow .2s;
+  }
+  .moto:hover { transform: translateY(-2px); box-shadow: var(--sh-2); }
+  .moto-t { display: flex; align-items: center; gap: 10px; }
+  .moto-ico { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--accent-light); color: var(--accent); flex-shrink: 0; }
+  .moto-n { font-weight: 800; font-size: 15.5px; letter-spacing: -.02em; line-height: 1.2; }
+  .moto-m { font-size: 12px; color: var(--text3); font-weight: 600; }
+  .moto-p { font-size: 21px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .moto-s { font-size: 12px; color: var(--text2); }
+  .moto-acc { display: flex; gap: 6px; margin-top: auto; padding-top: 6px; }
+  .moto-acc .btn:first-child { flex: 1; }
+
+  /* ── Ajustes ── */
+  .aj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+  .aj-grid .card + .card { margin-top: 0; }
+  .fila-ed { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; margin-top: 8px; align-items: center; }
+  .fila-ed.plan { grid-template-columns: 1fr 110px auto; }
+  .fila-ed input { padding: 9px 10px; font-size: 14px; }
+  .swatches { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+  .sw { aspect-ratio: 1; border-radius: 12px; border: 2px solid transparent; cursor: pointer; position: relative; }
+  .sw.on { border-color: var(--text); box-shadow: 0 0 0 2px #fff inset; }
+  .sw-pop { position: fixed; top: 70px; right: 16px; z-index: 1500; width: 300px; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--sh-2); padding: 14px; display: none; }
+  .sw-pop.on { display: block; animation: ctEntrar .2s; }
+  .sw-pop .lbl { display: block; margin-bottom: 10px; }
+  .sw-pop .swatches { grid-template-columns: repeat(4, 1fr); }
+  #ct-cuenta-info { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
+
+  /* ── Ventanas ── */
+  .modal { position: fixed; inset: 0; z-index: 1600; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(15,23,42,.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .modal.on { display: flex; }
+  .modal-box {
+    background: var(--surface); border-radius: 22px; width: 100%; max-width: 520px; max-height: calc(100vh - 32px); overflow-y: auto;
+    padding: 1.4rem 1.5rem; box-shadow: 0 30px 70px -20px rgba(15,23,42,.45); animation: ctModal .22s cubic-bezier(.2,.7,.2,1);
+  }
+  @keyframes ctModal { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+  .modal-t { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 1rem; }
+  .modal-t .x { margin-left: auto; }
+  .modal-pie { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.1rem; flex-wrap: wrap; }
+  .paso-env { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 12px 0; border-top: 1px dashed var(--border); }
+  .paso-env:first-of-type { border-top: none; padding-top: 0; }
+  .paso-env .n { width: 28px; height: 28px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; background: var(--accent-light); color: var(--accent); }
+  .paso-env.hecho .n { background: #10b981; color: #fff; }
+  .paso-env.hecho .n::after { content: '✓'; }
+  .paso-env.hecho .n span { display: none; }
+  .paso-env b { font-size: 14px; }
+  .paso-env small { display: block; font-size: 12px; color: var(--text2); margin-top: 2px; line-height: 1.45; }
+  .msg-prev { white-space: pre-line; font-size: 12.5px; line-height: 1.5; background: #e9fbe9; border: 1px solid #c6eec6; border-radius: 12px 12px 12px 4px; padding: 10px 12px; margin-top: 8px; max-height: 180px; overflow-y: auto; color: #14361f; }
+  .paso-acc { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 9px; }
+  .switch { display: flex; align-items: center; gap: 10px; padding: 8px 0; cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .switch input { display: none; }
+  .switch .sl { width: 40px; height: 24px; border-radius: 20px; background: #d6dce8; position: relative; flex-shrink: 0; transition: background .2s; }
+  .switch .sl::after { content: ''; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform .2s; }
+  .switch input:checked + .sl { background: var(--accent); }
+  .switch input:checked + .sl::after { transform: translateX(16px); }
+  .picker-lista { display: grid; gap: 6px; margin-top: 10px; max-height: 50vh; overflow-y: auto; }
+  .picker-item { display: flex; align-items: center; gap: 10px; text-align: left; border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 10px 12px; cursor: pointer; }
+  .picker-item:hover { border-color: rgba(var(--accent-rgb),.45); background: var(--accent-light); }
+  .picker-item b { flex: 1; font-size: 14px; }
+  .picker-item span { font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+  #ct-login { background: radial-gradient(700px 400px at 15% 10%, rgba(var(--accent-2-rgb),.35), transparent 60%), radial-gradient(600px 400px at 90% 90%, rgba(var(--accent-rgb),.35), transparent 60%), linear-gradient(135deg, #0b1020, var(--accent-ink)); z-index: 2000; }
+
+  #toast {
+    position: fixed; right: 20px; bottom: 20px; z-index: 3000; max-width: 380px;
+    background: #0f172a; color: #fff; border-radius: 14px; padding: 12px 18px; font-size: 13px; font-weight: 600;
+    box-shadow: 0 18px 40px -12px rgba(15,23,42,.55); opacity: 0; transform: translateY(10px); pointer-events: none; transition: all .25s;
+  }
+  #toast.on { opacity: 1; transform: none; pointer-events: auto; }
+  #toast button { background: none; border: none; color: #a5b4fc; font-weight: 800; margin-left: 12px; cursor: pointer; font-size: 13px; }
+
+  /* ── Tablet ── */
+  @media (max-width: 1080px) {
+    .cot-grid { grid-template-columns: 1fr; }
+    .cot-res { position: static; }
+    .aj-grid { grid-template-columns: 1fr; }
+  }
+  /* ── iPhone: menú inferior tipo app ── */
+  @media (max-width: 680px) {
+    header { padding: 0 14px; height: 58px; gap: 10px; }
+    .logo { width: 34px; height: 34px; border-radius: 11px; }
+    header h1 { font-size: 16px; }
+    header h1 small { display: none; }
+    #ct-sync { font-size: 11px; max-width: 50vw; }
+    .hdr-btn { width: 34px; height: 34px; }
+    .layout { display: block; min-height: 0; }
+    nav {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 900;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border); border-right: none;
+      padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+      box-shadow: 0 -8px 24px -10px rgba(15,23,42,.18);
+    }
+    .nav-section { position: static; flex-direction: row; justify-content: space-around; }
+    .nav-label, .nav-otras, .nav-count { display: none; }
+    .nav-btn { flex-direction: column; gap: 3px; flex: 1; min-width: 0; padding: 7px 2px 6px; font-size: 10.5px; justify-content: center; text-align: center; white-space: nowrap; }
+    .nav-btn svg { width: 22px; height: 22px; }
+    .nav-btn.active { box-shadow: none; }
+    .nav-btn.active::after { content: ''; position: absolute; top: 1px; left: 50%; width: 18px; height: 3px; margin-left: -9px; border-radius: 3px; background: var(--grad); }
+    main { padding: 1rem 14px calc(96px + env(safe-area-inset-bottom)); }
+    .page-title { font-size: 22px; }
+    .page-title .pt-ico { width: 36px; height: 36px; border-radius: 12px; }
+    .page-acc { margin-left: 0; width: 100%; }
+    .page-acc .btn { flex: 1; }
+    .card { padding: 1.05rem 1rem; }
+    .g3 { grid-template-columns: 1fr 1fr; }
+    .g3 .campo.solo { grid-column: 1 / -1; }
+    .hero-v { font-size: 30px; }
+    input, select, textarea { font-size: 16px; }
+    .solo-escritorio { display: none; }
+    .plazos { grid-template-columns: 1fr 1fr; }
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .item { grid-template-columns: 1fr; }
+    .item-c { text-align: left; }
+    .item-acc .estado-sel { margin-left: 0; }
+    .ed-op { grid-template-columns: 1fr auto; }
+    .ed-op input:nth-child(2) { grid-column: 1 / 2; }
+    .ed-sub, .ed-mini { margin-left: 0; }
+    .swatches { grid-template-columns: repeat(4, 1fr); }
+    .sw-pop { left: 12px; right: 12px; width: auto; top: 64px; }
+    #toast { left: 12px; right: 12px; bottom: calc(88px + env(safe-area-inset-bottom)); max-width: none; }
+    .modal { align-items: flex-end; padding: 0; }
+    .modal-box { border-radius: 22px 22px 0 0; max-height: 92vh; padding-bottom: calc(1.4rem + env(safe-area-inset-bottom)); }
+    .item:hover, .moto:hover, .plazo:hover { transform: none; }
+  }
+  @media (max-width: 380px) { .g2 { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h3M14 14h2M8 18h3M14 18h2"/></svg></div>
+  <h1>Cotizaciones <small id="ct-empresa-corta">Crédito</small></h1>
+  <div id="ct-sync" onclick="ctSincronizarAhora()" title="Toca para sincronizar con la nube">Nube</div>
+  <button class="hdr-btn" onclick="ctAbrirColores(event)" title="Cambiar el color" aria-label="Cambiar el color"><span class="bolita"></span></button>
+</header>
+<div class="sw-pop" id="ct-colores"><span class="lbl">Color del tema</span><div class="swatches" id="ct-sw-pop"></div></div>
+
+<div class="layout">
+  <nav>
+    <div class="nav-section">
+      <div class="nav-label">Ventas</div>
+      <button class="nav-btn active" data-p="cotizar" onclick="ir('cotizar')">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h3M14 14h2M8 18h3M14 18h2"/></svg>
+        Cotizar
+      </button>
+      <button class="nav-btn" data-p="historial" onclick="ir('historial')">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
+        Historial <span class="nav-count" id="nav-n-cot">0</span>
+      </button>
+      <button class="nav-btn" data-p="requisitos" onclick="ir('requisitos')">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>
+        Requisitos
+      </button>
+      <div class="nav-label">Configuración</div>
+      <button class="nav-btn" data-p="motos" onclick="ir('motos')">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M15 6h2l3 7M5.5 17l4-7h5l4 7M9 10l-1-3H6"/></svg>
+        Motos <span class="nav-count" id="nav-n-motos">0</span>
+      </button>
+      <button class="nav-btn" data-p="ajustes" onclick="ir('ajustes')">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+        Ajustes
+      </button>
+      <div class="nav-otras">
+        <a href="index.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>MotoContable</a>
+        <a href="traspasos.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>Traspasos</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ═══════════ COTIZAR ═══════════ -->
+    <section class="panel active" id="p-cotizar">
+      <div class="page-head">
+        <div>
+          <div class="page-title"><span class="pt-ico"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h3M14 14h2M8 18h3M14 18h2"/></svg></span>Cotizar crédito</div>
+        </div>
+        <div class="page-acc"><button class="btn btn-sm" onclick="nuevaCotizacion()"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva cotización</button></div>
+      </div>
+
+      <div class="editando" id="cz-editando" hidden></div>
+
+      <div class="cot-grid">
+        <div>
+          <div class="card">
+            <div class="card-title"><span class="paso">1</span>Cliente</div>
+            <div class="grid g3">
+              <div class="campo solo"><label for="cz-nombre">Nombre</label><input id="cz-nombre" type="text" autocomplete="off" autocapitalize="words" placeholder="Nombre del cliente" oninput="czCambio()"></div>
+              <div class="campo"><label for="cz-cel">Celular <span class="lbl-opc">(WhatsApp)</span></label><input id="cz-cel" type="tel" inputmode="tel" autocomplete="off" placeholder="300 000 0000" oninput="czCambio()"></div>
+              <div class="campo"><label for="cz-cc">Cédula <span class="lbl-opc">(opcional)</span></label><input id="cz-cc" type="text" inputmode="numeric" autocomplete="off" placeholder="Número" oninput="czCambio()"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="paso">2</span>Moto y precio</div>
+            <div class="grid g3">
+              <div class="campo solo" style="grid-column:span 2">
+                <label for="cz-moto">Referencia</label>
+                <div class="input-btn">
+                  <input id="cz-moto" type="text" list="cz-motos-dl" autocomplete="off" autocapitalize="characters" placeholder="Ej: XR190" oninput="czMotoEscrita()">
+                  <button class="btn" type="button" onclick="abrirPicker()" title="Elegir de mis motos"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span class="solo-escritorio">Mis motos</span></button>
+                </div>
+                <datalist id="cz-motos-dl"></datalist>
+              </div>
+              <div class="campo"><label for="cz-anio">Modelo (año)</label><input id="cz-anio" type="text" inputmode="numeric" maxlength="4" oninput="czCambio()"></div>
+              <div class="campo"><label for="cz-valor">Valor del vehículo</label><div class="money-wrap"><input id="cz-valor" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)"></div></div>
+              <div class="campo"><label for="cz-soat">SOAT, matrícula y demás</label><div class="money-wrap"><input id="cz-soat" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)"></div></div>
+              <div class="campo"><label for="cz-acc">Accesorios</label><div class="money-wrap"><input id="cz-acc" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)"></div></div>
+              <div class="campo"><label for="cz-desc">Descuento</label><div class="money-wrap"><input id="cz-desc" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)"></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="paso">3</span>Cuota inicial y plan</div>
+            <div class="campo">
+              <label for="cz-inicial">Cuota inicial</label>
+              <div class="money-wrap"><input id="cz-inicial" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)" style="font-size:20px;padding-top:12px;padding-bottom:12px"></div>
+              <div class="chips" id="cz-ini-chips"></div>
+              <div id="cz-ini-aviso"></div>
+            </div>
+            <div class="campo" style="margin-top:14px">
+              <span class="lbl">Plan de crédito</span>
+              <div class="seg" id="cz-planes"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cot-res" id="cz-res"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════ HISTORIAL ═══════════ -->
+    <section class="panel" id="p-historial">
+      <div class="page-head">
+        <div>
+          <div class="page-title"><span class="pt-ico"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg></span>Cotizaciones</div>
+          <div class="page-sub">Todas las cotizaciones guardadas, para hacerles seguimiento.</div>
+        </div>
+      </div>
+      <div class="kpis" id="hs-kpis"></div>
+      <div class="barra">
+        <div class="buscar"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="hs-buscar" type="search" placeholder="Buscar cliente, celular o moto…" oninput="renderHistorial()"></div>
+        <div class="chips" id="hs-filtros"></div>
+      </div>
+      <div class="lista" id="hs-lista"></div>
+    </section>
+
+    <!-- ═══════════ REQUISITOS ═══════════ -->
+    <section class="panel" id="p-requisitos">
+      <div class="page-head">
+        <div>
+          <div class="page-title"><span class="pt-ico"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></span>Requisitos</div>
+          <div class="page-sub">Documentos para solicitar la financiación.</div>
+        </div>
+        <div class="page-acc" id="rq-acc"></div>
+      </div>
+      <div id="rq-cuerpo"></div>
+    </section>
+
+    <!-- ═══════════ MOTOS ═══════════ -->
+    <section class="panel" id="p-motos">
+      <div class="page-head">
+        <div>
+          <div class="page-title"><span class="pt-ico"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M15 6h2l3 7M5.5 17l4-7h5l4 7M9 10l-1-3H6"/></svg></span>Mis motos</div>
+          <div class="page-sub">Precios guardados para cotizar con un toque.</div>
+        </div>
+        <div class="page-acc"><button class="btn btn-primary btn-sm" onclick="editarMoto()"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Agregar moto</button></div>
+      </div>
+      <div class="barra"><div class="buscar"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="mt-buscar" type="search" placeholder="Buscar moto…" oninput="renderMotos()"></div></div>
+      <div class="motos-grid" id="mt-lista"></div>
+    </section>
+
+    <!-- ═══════════ AJUSTES ═══════════ -->
+    <section class="panel" id="p-ajustes">
+      <div class="page-head">
+        <div>
+          <div class="page-title"><span class="pt-ico"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></span>Ajustes</div>
+          <div class="page-sub">Los cambios se guardan solos y llegan a tus otros dispositivos.</div>
+        </div>
+      </div>
+      <div class="aj-grid" id="aj-cuerpo"></div>
+    </section>
+  </main>
+</div>
+
+<!-- Ventana genérica -->
+<div class="modal" id="ct-modal" onclick="if(event.target===this) cerrarModal()">
+  <div class="modal-box" id="ct-modal-box"></div>
+</div>
+
+<!-- Pregunta -->
+<div class="modal" id="ct-pregunta" style="z-index:2100">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-t" id="ct-pregunta-titulo"></div>
+    <p id="ct-pregunta-texto" style="font-size:13.5px;color:var(--text2);line-height:1.6;white-space:pre-line"></p>
+    <div class="modal-pie">
+      <button class="btn" id="ct-pregunta-no">Cancelar</button>
+      <button class="btn btn-primary" id="ct-pregunta-si">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inicio de sesión (misma cuenta de MotoContable) -->
+<div class="modal" id="ct-login">
+  <div class="modal-box" style="max-width:380px">
+    <div class="modal-t" id="ct-login-titulo" style="justify-content:center">Inicia sesión</div>
+    <p id="ct-login-sub" style="font-size:13px;color:var(--text2);text-align:center;line-height:1.55;margin-bottom:1rem"></p>
+    <form id="ct-login-form" onsubmit="event.preventDefault();ctLoginEnviar()">
+      <div class="campo" id="ct-login-email-g" style="margin-bottom:10px"><label for="ct-login-email">Correo</label><input type="email" id="ct-login-email" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
+      <div class="campo" style="margin-bottom:14px"><label for="ct-login-pass">Contraseña</label><input type="password" id="ct-login-pass" autocomplete="current-password" required></div>
+      <div id="ct-login-msg" style="font-size:12px;margin-bottom:10px;display:none;line-height:1.5"></div>
+      <button type="submit" class="btn btn-primary btn-block" id="ct-login-btn">Iniciar sesión</button>
+    </form>
+    <div id="ct-login-extra" style="display:flex;justify-content:space-between;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button type="button" class="btn btn-sm btn-ghost" onclick="ctLoginOlvide()">¿Olvidaste tu contraseña?</button>
+      <button type="button" class="btn btn-sm btn-ghost" onclick="ctLoginSinSesion()">Continuar sin iniciar sesión</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════════════
+// Cotizaciones de crédito
+// Reemplaza la hoja "COTIZACION Y REQUISITOS": las fórmulas son las mismas.
+//   Valor con descuento = valor del vehículo + accesorios − descuento
+//   Total precio de compra = valor con descuento + SOAT, matrícula y demás
+//   Saldo a financiar = total − cuota inicial
+//   Cuota fija = redondeo hacia arriba a $1.000 de (saldo ÷ cuotas + saldo × tasa mensual)
+//   Valor pagaré = cuota × cuotas · Inicial mínima = total ÷ 3
+// Tasas del Excel: Crédito ZOMAC 2,5 %, Libranza 2 %, Credicontado 0 %.
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── Utilidades ──────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const miles = n => { const v = Math.round(Number(n) || 0); return (v < 0 ? '-' : '') + String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
+const fmt = n => '$' + miles(n);
+const num = v => Number(String(v == null ? '' : v).replace(/[^\d]/g, '')) || 0;
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const hoyISO = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const fechaLarga = iso => { if(!iso) return ''; const [y, m, d] = iso.split('-').map(Number); return d + ' de ' + MESES[m - 1] + ' de ' + y; };
+const fechaCorta = iso => { if(!iso) return ''; const [y, m, d] = iso.split('-').map(Number); return d + ' ' + MESES[m - 1].slice(0, 3) + ' ' + y; };
+const celular = c => { const d = String(c || '').replace(/[^\d]/g, ''); return d.length === 10 ? d.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3') : d; };
+const telWa = c => { const d = String(c || '').replace(/[^\d]/g, ''); return d.length === 10 ? '57' + d : d; };
+const primerNombre = n => String(n || '').trim().split(/\s+/)[0] || '';
+const tituloCaso = s => String(s || '').toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase());
+function cargar(k, def){ try { const v = JSON.parse(localStorage.getItem(k) || 'null'); return v == null ? def : v; } catch(e){ return def; } }
+function guardarLocal(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ toast('No se pudo guardar en este dispositivo (memoria llena)'); return false; } }
+
+let _toastT = null;
+function toast(msg, accion){
+  const t = $('toast');
+  t.innerHTML = esc(msg) + (accion ? '<button id="toast-acc">' + esc(accion.texto) + '</button>' : '');
+  if(accion) $('toast-acc').onclick = () => { t.classList.remove('on'); accion.fn(); };
+  t.classList.add('on');
+  clearTimeout(_toastT);
+  _toastT = setTimeout(() => t.classList.remove('on'), accion ? 6000 : 3200);
+}
+
+const ICO = {
+  check:  '<path d="M20 6 9 17l-5-5"/>',
+  alerta: '<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+  info:   '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+  pdf:    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6M9 11h2"/>',
+  wa:     '<path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.5A8.4 8.4 0 1 1 21 11.5z"/>',
+  guardar:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
+  copiar: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  editar: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  borrar: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>',
+  mas:    '<path d="M12 5v14M5 12h14"/>',
+  x:      '<path d="M18 6 6 18M6 6l12 12"/>',
+  arriba: '<path d="m18 15-6-6-6 6"/>',
+  abajo:  '<path d="m6 9 6 6 6-6"/>',
+  flecha: '<path d="m9 18 6-6-6-6"/>',
+  moto:   '<circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M15 6h2l3 7M5.5 17l4-7h5l4 7M9 10l-1-3H6"/>',
+  user:   '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  users:  '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  doc:    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+  tel:    '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+  cal:    '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  dup:    '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11"/>',
+  ojo:    '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>',
+  descarga:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+  compartir:'<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/>',
+};
+const ico = (n, s = 16, w = 2.2) => `<svg width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">${ICO[n] || ''}</svg>`;
+
+// ── Datos ───────────────────────────────────────────────────────────────────
+// Tres colecciones que se sincronizan con la nube:
+//   cotizaciones → las cotizaciones guardadas
+//   cot_motos    → el catálogo de motos con su precio
+//   cot_config   → dos registros: 'ajustes' (empresa, planes, plazos, textos) y 'requisitos'
+const K_COT = 'ct_cotizaciones', K_MOTOS = 'ct_motos', K_CFG = 'ct_config', K_BORRADOR = 'ct_borrador';
+
+const AJUSTES_INICIALES = {
+  id: 'ajustes',
+  empresa: 'Servicios Logísticos de Antioquia SAS',
+  nit: '',
+  direccion: 'Cra 3 # 10-75, Puerto Boyacá',
+  contactos: [{nombre: 'Yurany Fernández', tel: '3118252005'}, {nombre: 'Lina Ortega', tel: '3103277006'}],
+  planes: [
+    {id: 'zomac', nombre: 'Crédito ZOMAC', tasa: 2.5},
+    {id: 'libranza', nombre: 'Libranza', tasa: 2},
+    {id: 'credicontado', nombre: 'Credicontado', tasa: 0},
+  ],
+  planDefecto: 'zomac',
+  plazos: [6, 12, 18, 24, 36],
+  redondeo: 1000,
+  inicialMinima: 100 / 3,
+  soatDefecto: 1600000,
+  anioDefecto: '2026',
+  incluye: 'En el valor de la cuota está incluido: matrícula, SOAT e impuesto del presente año.',
+  aviso: 'El valor de la cuota está sujeto a cambios de precios de las motos por parte de la ensambladora.',
+  leyenda: 'Documento informativo, no válido como soporte o título valor.',
+};
+const REQUISITOS_INICIALES = {
+  id: 'requisitos',
+  titulo: 'Documentos y requisitos para adquirir el crédito',
+  grupos: [
+    {id: 'deudor', titulo: 'Deudor y/o propietario de la moto', nota: '', items: [
+      {texto: 'Fotocopia de la cédula de ciudadanía'},
+      {texto: 'Soporte de ingresos', opciones: [
+        {etiqueta: 'Empleado', texto: 'Certificación laboral y 3 desprendibles de nómina'},
+        {etiqueta: 'Independiente', texto: 'Certificado de Cámara de Comercio y extractos bancarios de 2 meses'},
+      ]},
+      {texto: 'Fotocopia de un recibo de servicio público', detalle: 'Para identificar la dirección de residencia'},
+      {texto: 'Certificado de inscripción en el RUNT'},
+    ]},
+    {id: 'fiadores', titulo: 'Codeudores o fiadores', nota: 'Un fiador si tiene finca raíz, o dos fiadores si son empleados.', items: [
+      {texto: 'Fotocopia de la cédula de ciudadanía'},
+      {texto: 'Soporte del fiador', opciones: [
+        {etiqueta: 'Empleados', texto: 'Certificación laboral con salario superior al SMLV y 3 desprendibles de nómina'},
+        {etiqueta: 'Finca raíz', texto: 'Número de matrícula inmobiliaria del predio'},
+      ]},
+      {texto: 'Fotocopia de un recibo de servicio público', detalle: 'Para identificar la dirección de residencia'},
+    ]},
+  ],
+  cierre: ['Presentando estos documentos llenamos la solicitud de crédito.', 'Antes de solicitar su crédito, planifique su presupuesto.'],
+};
+const MOTOS_INICIALES = [{id: 'xr190', nombre: 'XR190', valor: 13900000, soat: 1600000, anio: '2026'}];
+
+let cotizaciones = cargar(K_COT, []);
+let motos = cargar(K_MOTOS, null) || MOTOS_INICIALES.map(m => ({...m}));
+let config = cargar(K_CFG, null) || [];
+const clonar = o => JSON.parse(JSON.stringify(o));
+function aj(){
+  let a = config.find(r => r && r.id === 'ajustes');
+  if(!a){ a = clonar(AJUSTES_INICIALES); config.push(a); }
+  return a;
+}
+function rq(){
+  let r = config.find(x => x && x.id === 'requisitos');
+  if(!r){ r = clonar(REQUISITOS_INICIALES); config.push(r); }
+  return r;
+}
+aj(); rq();
+// Ajustes nuevos que no existían en registros viejos
+(function(){ const a = aj(); Object.keys(AJUSTES_INICIALES).forEach(k => { if(a[k] === undefined) a[k] = clonar(AJUSTES_INICIALES[k]); }); })();
+
+function guardarCot(){ guardarLocal(K_COT, cotizaciones); ctMarcarCambios(); contadores(); }
+function guardarMotos(){ guardarLocal(K_MOTOS, motos); ctMarcarCambios(); contadores(); }
+let _cfgT = null;
+function guardarCfg(inmediato){
+  clearTimeout(_cfgT);
+  const fn = () => { guardarLocal(K_CFG, config); ctMarcarCambios(); };
+  if(inmediato) fn(); else _cfgT = setTimeout(fn, 350);
+}
+function contadores(){
+  $('nav-n-cot').textContent = cotizaciones.length;
+  $('nav-n-motos').textContent = motos.length;
+  const e = aj().empresa || '';
+  $('ct-empresa-corta').textContent = e ? e.replace(/\s+(S\.?A\.?S\.?|LTDA\.?|S\.?A\.?)$/i, '') : 'Crédito';
+}
+
+// ── El cálculo (fórmulas del Excel) ─────────────────────────────────────────
+function plazosActivos(){
+  const p = (aj().plazos || []).map(Number).filter(n => n > 0 && n <= 120);
+  return [...new Set(p)].sort((a, b) => a - b);
+}
+function planPorId(id){ const ps = aj().planes || []; return ps.find(p => p.id === id) || ps[0] || {id: 'x', nombre: 'Crédito', tasa: 0}; }
+function calcular(q){
+  const conDesc = q.valor + q.accesorios - q.descuento;
+  const total = conDesc + q.soat;
+  const saldo = Math.max(0, total - q.inicial);
+  const tasa = (Number(q.tasa) || 0) / 100;
+  const red = Number(aj().redondeo) || 1;
+  const opciones = (q.plazos || plazosActivos()).map(n => {
+    const capital = saldo / n, interes = saldo * tasa;
+    const exacto = Math.round((capital + interes) * 100) / 100;
+    const cuota = saldo > 0 ? Math.ceil(exacto / red) * red : 0;
+    return {n, capital, interes, cuota, pagare: cuota * n, costo: cuota * n - saldo};
+  });
+  const minima = total * (Number(aj().inicialMinima) || 0) / 100;
+  return {conDesc, total, saldo, minima, opciones};
+}
+function tablaPagos(q, n){
+  const r = calcular({...q, plazos: [n]}), o = r.opciones[0];
+  const filas = [];
+  for(let k = 1; k <= n; k++) filas.push({k, capital: o.capital, interes: o.interes, cuota: o.cuota, resta: o.pagare - o.cuota * k});
+  return {o, filas};
+}
+
+// ── Cotizador ───────────────────────────────────────────────────────────────
+let cz = null;   // cotización en pantalla
+function czVacia(){
+  const a = aj();
+  return {id: null, numero: null, fecha: hoyISO(), cliente: {nombre: '', cel: '', cc: ''},
+          moto: '', anio: a.anioDefecto || '', valor: 0, soat: Number(a.soatDefecto) || 0, accesorios: 0, descuento: 0, inicial: 0,
+          planId: a.planDefecto || (a.planes[0] || {}).id, plazoElegido: null, estado: 'nueva', nota: '', envios: []};
+}
+function czDesdeForm(){
+  cz.cliente = {nombre: $('cz-nombre').value.trim(), cel: $('cz-cel').value.trim(), cc: $('cz-cc').value.trim()};
+  cz.moto = $('cz-moto').value.trim();
+  cz.anio = $('cz-anio').value.trim();
+  cz.valor = num($('cz-valor').value); cz.soat = num($('cz-soat').value);
+  cz.accesorios = num($('cz-acc').value); cz.descuento = num($('cz-desc').value);
+  cz.inicial = num($('cz-inicial').value);
+}
+function czAForm(){
+  $('cz-nombre').value = cz.cliente.nombre || ''; $('cz-cel').value = cz.cliente.cel || ''; $('cz-cc').value = cz.cliente.cc || '';
+  $('cz-moto').value = cz.moto || ''; $('cz-anio').value = cz.anio || '';
+  const m = (id, v) => { $(id).value = v ? miles(v) : ''; };
+  m('cz-valor', cz.valor); m('cz-soat', cz.soat); m('cz-acc', cz.accesorios); m('cz-desc', cz.descuento); m('cz-inicial', cz.inicial);
+}
+function czCalc(){
+  const p = planPorId(cz.planId);
+  return calcular({valor: cz.valor, soat: cz.soat, accesorios: cz.accesorios, descuento: cz.descuento, inicial: cz.inicial, tasa: p.tasa, plazos: plazosActivos()});
+}
+// El campo de dinero se formatea con puntos mientras escribes, sin mover el cursor al final
+function czMoney(el){
+  const antes = el.value, pos = el.selectionStart || 0;
+  const digitosAntes = antes.slice(0, pos).replace(/[^\d]/g, '').length;
+  const n = num(antes);
+  const nuevo = n ? miles(n) : '';
+  el.value = nuevo;
+  let p = 0, d = 0;
+  while(p < nuevo.length && d < digitosAntes){ if(/\d/.test(nuevo[p])) d++; p++; }
+  try { el.setSelectionRange(p, p); } catch(e){}
+  czCambio();
+}
+let _czT = null;
+function czCambio(){
+  czDesdeForm();
+  renderResultado();
+  clearTimeout(_czT);
+  _czT = setTimeout(() => guardarLocal(K_BORRADOR, cz), 300);
+}
+function czMotoEscrita(){
+  const nombre = $('cz-moto').value.trim().toLowerCase();
+  const m = motos.find(x => String(x.nombre).trim().toLowerCase() === nombre);
+  if(m) usarMoto(m, true); else czCambio();
+}
+function usarMoto(m, silencioso){
+  $('cz-moto').value = m.nombre;
+  if(m.valor) $('cz-valor').value = miles(m.valor);
+  if(m.soat) $('cz-soat').value = miles(m.soat);
+  if(m.anio) $('cz-anio').value = m.anio;
+  czCambio();
+  if(!silencioso) toast(m.nombre + ' · ' + fmt(m.valor));
+}
+function czPlan(id){ cz.planId = id; renderPlanes(); czCambio(); }
+function czInicial(v){ $('cz-inicial').value = v ? miles(v) : ''; czCambio(); }
+function czPlazo(n){ cz.plazoElegido = n; renderResultado(); guardarLocal(K_BORRADOR, cz); }
+
+function renderPlanes(){
+  const ps = aj().planes || [];
+  if(ps.length && !ps.some(p => p.id === cz.planId)) cz.planId = (ps.find(p => p.id === aj().planDefecto) || ps[0]).id;
+  $('cz-planes').innerHTML = (aj().planes || []).map(p =>
+    `<button type="button" class="${p.id === cz.planId ? 'on' : ''}" onclick="czPlan('${esc(p.id)}')">${esc(p.nombre)}<small>${String(p.tasa).replace('.', ',')} % mes</small></button>`).join('');
+}
+function renderMotosDatalist(){
+  $('cz-motos-dl').innerHTML = motos.map(m => `<option value="${esc(m.nombre)}">`).join('');
+}
+function renderResultado(){
+  const r = czCalc(), p = planPorId(cz.planId);
+  // Atajos de cuota inicial
+  const redM = v => Math.ceil(v / 1000) * 1000;
+  const chips = [];
+  if(r.total > 0){
+    chips.push({t: 'Mínima', v: redM(r.minima), s: '1/3'});
+    [40, 50, 60].forEach(pc => chips.push({t: pc + ' %', v: redM(r.total * pc / 100)}));
+  }
+  $('cz-ini-chips').innerHTML = chips.map(c =>
+    `<button type="button" class="chip ${cz.inicial === c.v ? 'on' : ''}" onclick="czInicial(${c.v})">${c.t} <small>${fmt(c.v)}</small></button>`).join('');
+  $('cz-ini-chips').style.marginTop = chips.length ? '8px' : '0';
+  let aviso = '';
+  if(r.total > 0 && cz.inicial > 0 && cz.inicial >= r.total) aviso = `<div class="aviso ok">${ico('check', 15)}<div>La inicial cubre todo el valor: <b>es una venta de contado</b>.</div></div>`;
+  else if(r.total > 0 && cz.inicial > 0 && cz.inicial < r.minima) aviso = `<div class="aviso warn">${ico('alerta', 15)}<div>Queda por debajo de la inicial mínima sugerida (<b>${fmt(r.minima)}</b>, un tercio del total).</div></div>`;
+  $('cz-ini-aviso').innerHTML = aviso;
+
+  const el = $('cz-res');
+  if(r.total <= 0){
+    el.innerHTML = `<div class="vacio"><div class="v-ico">${ico('moto', 26, 2)}</div><b>Escribe el valor de la moto</b>Elige una de tus motos o escribe el precio y la cuota inicial. Las cuotas aparecen aquí al instante.</div>`;
+    return;
+  }
+  const ops = r.opciones;
+  if(!ops.some(o => o.n === cz.plazoElegido)) cz.plazoElegido = (ops.find(o => o.n === 12) || ops[0] || {}).n || null;
+  const el2 = ops.find(o => o.n === cz.plazoElegido);
+  const nombre = primerNombre(cz.cliente.nombre);
+  let html = `
+    <div class="hero">
+      <div class="hero-k">Saldo a financiar</div>
+      <div class="hero-v">${fmt(r.saldo)}</div>
+      <div class="hero-filas">
+        <div class="hero-fila"><span>Total precio de compra</span><b>${fmt(r.total)}</b></div>
+        <div class="hero-fila"><span>Cuota inicial</span><b>${fmt(cz.inicial)}</b></div>
+      </div>
+      <div class="hero-plan">${esc(p.nombre)} · ${String(p.tasa).replace('.', ',')} % mensual</div>
+    </div>`;
+  if(r.saldo > 0){
+    html += `<div class="plazos">${ops.map(o => `
+      <button type="button" class="plazo ${o.n === cz.plazoElegido ? 'on' : ''}" onclick="czPlazo(${o.n})">
+        <div class="pz-n">${o.n} cuotas</div>
+        <div class="pz-c">${fmt(o.cuota)}</div>
+        <div class="pz-t">Total ${fmt(o.pagare)}</div>
+      </button>`).join('')}</div>`;
+    if(el2){
+      const t = tablaPagos({valor: cz.valor, soat: cz.soat, accesorios: cz.accesorios, descuento: cz.descuento, inicial: cz.inicial, tasa: p.tasa}, el2.n);
+      html += `
+      <div class="card detalle">
+        <div class="card-title">Detalle a ${el2.n} cuotas</div>
+        <div class="det-fila"><span>Valor del vehículo</span><b>${fmt(cz.valor)}</b></div>
+        ${cz.accesorios ? `<div class="det-fila"><span>Accesorios</span><b>${fmt(cz.accesorios)}</b></div>` : ''}
+        ${cz.descuento ? `<div class="det-fila"><span>Descuento</span><b>− ${fmt(cz.descuento)}</b></div>` : ''}
+        <div class="det-fila"><span>SOAT, matrícula y demás</span><b>${fmt(cz.soat)}</b></div>
+        <div class="det-fila"><span>Abono a capital por cuota</span><b>${fmt(el2.capital)}</b></div>
+        <div class="det-fila"><span>Interés por cuota</span><b>${fmt(el2.interes)}</b></div>
+        <div class="det-fila"><span>Total intereses</span><b>${fmt(el2.costo)}</b></div>
+        <div class="det-fila total"><span>Valor pagaré (${el2.n} × ${fmt(el2.cuota)})</span><b>${fmt(el2.pagare)}</b></div>
+        <details class="plan"><summary>${ico('flecha', 14, 2.6)}Ver plan de pagos</summary>
+          <div class="tabla-wrap"><table class="tabla"><thead><tr><th>N.º</th><th>Capital</th><th>Interés</th><th>Cuota</th><th>Saldo pagaré</th></tr></thead>
+          <tbody><tr><td>—</td><td></td><td></td><td></td><td>${fmt(el2.pagare)}</td></tr>${t.filas.map(f => `<tr><td>${f.k}</td><td>${fmt(f.capital)}</td><td>${fmt(f.interes)}</td><td><b>${fmt(f.cuota)}</b></td><td>${fmt(f.resta)}</td></tr>`).join('')}</tbody></table></div>
+        </details>
+      </div>`;
+    }
+  }
+  html += `
+    <div class="acciones">
+      <button class="btn btn-wa full" onclick="enviarCotizacion()">${ico('wa', 17)}Enviar al cliente${nombre ? ' (' + esc(nombre) + ')' : ''}</button>
+      <button class="btn" onclick="guardarCotizacion()">${ico('guardar', 16)}${cz.id ? 'Guardar cambios' : 'Guardar'}</button>
+      <button class="btn" onclick="descargarPdfActual()">${ico('pdf', 16)}Ver PDF</button>
+    </div>`;
+  el.innerHTML = html;
+}
+function renderEditando(){
+  const b = $('cz-editando');
+  if(!cz.id){ b.hidden = true; return; }
+  b.hidden = false;
+  b.innerHTML = `${ico('editar', 16)}<span>Editando la cotización <b>N.º ${String(cz.numero).padStart(4, '0')}</b>${cz.cliente.nombre ? ' de ' + esc(cz.cliente.nombre) : ''}</span>
+    <button class="btn btn-sm" onclick="nuevaCotizacion()">${ico('mas', 14)}Nueva</button>`;
+}
+function cargarEnFormulario(q){
+  cz = clonar(q);
+  cz.cliente = cz.cliente || {nombre: '', cel: '', cc: ''};
+  czAForm(); renderPlanes(); renderEditando(); renderResultado();
+  guardarLocal(K_BORRADOR, cz);
+}
+function nuevaCotizacion(){
+  cargarEnFormulario(czVacia());
+  ir('cotizar');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  setTimeout(() => { if(matchMedia('(min-width: 681px)').matches) $('cz-nombre').focus(); }, 80);
+}
+function siguienteNumero(){ return cotizaciones.reduce((m, q) => Math.max(m, Number(q.numero) || 0), 0) + 1; }
+// Guarda la cotización en pantalla; devuelve el registro guardado
+function guardarCotizacion(silencioso){
+  czDesdeForm();
+  const r = czCalc();
+  if(r.total <= 0){ toast('Escribe el valor de la moto'); $('cz-valor').focus(); return null; }
+  const p = planPorId(cz.planId);
+  const reg = {...clonar(cz), planNombre: p.nombre, tasa: p.tasa, plazos: plazosActivos(),
+               total: r.total, saldo: r.saldo, actualizada: new Date().toISOString()};
+  if(!reg.id){ reg.id = uid(); reg.numero = siguienteNumero(); reg.creada = reg.actualizada; reg.fecha = hoyISO(); }
+  const i = cotizaciones.findIndex(q => q.id === reg.id);
+  if(i >= 0) cotizaciones[i] = reg; else cotizaciones.unshift(reg);
+  guardarCot();
+  cz = clonar(reg);
+  guardarLocal(K_BORRADOR, cz);
+  renderEditando(); renderResultado();
+  if(!silencioso) toast(`Cotización N.º ${String(reg.numero).padStart(4, '0')} guardada`);
+  return reg;
+}
+
+// Selector de motos (más cómodo que la lista en el celular)
+function abrirPicker(){
+  abrirModal(`
+    <div class="modal-t">${ico('moto', 20)}Elegir moto<button class="btn btn-ghost btn-icon x" onclick="cerrarModal()">${ico('x', 18)}</button></div>
+    <div class="buscar"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="pk-buscar" type="search" placeholder="Buscar…" oninput="renderPicker()"></div>
+    <div class="picker-lista" id="pk-lista"></div>
+    <div class="modal-pie"><button class="btn btn-sm" onclick="cerrarModal();editarMoto()">${ico('mas', 14)}Agregar moto nueva</button></div>`);
+  renderPicker();
+  if(matchMedia('(min-width: 681px)').matches) setTimeout(() => $('pk-buscar').focus(), 60);
+}
+function renderPicker(){
+  const q = ($('pk-buscar').value || '').trim().toLowerCase();
+  const l = motos.filter(m => !q || String(m.nombre).toLowerCase().includes(q)).sort((a, b) => String(a.nombre).localeCompare(String(b.nombre)));
+  $('pk-lista').innerHTML = l.length ? l.map(m => `<button class="picker-item" onclick="cerrarModal();usarMoto(motos.find(x=>x.id==='${esc(m.id)}'))">${ico('moto', 18)}<b>${esc(m.nombre)}</b><span>${fmt(m.valor)}</span></button>`).join('')
+    : `<div class="hint" style="padding:12px;text-align:center">No hay motos con ese nombre.</div>`;
+}
+
+// ── Mensaje y PDF ───────────────────────────────────────────────────────────
+function datosCotizacion(q){
+  const r = calcular({valor: q.valor, soat: q.soat, accesorios: q.accesorios, descuento: q.descuento, inicial: q.inicial,
+                      tasa: q.tasa != null ? q.tasa : planPorId(q.planId).tasa, plazos: q.plazos && q.plazos.length ? q.plazos : plazosActivos()});
+  return r;
+}
+function textoCotizacion(q){
+  const r = datosCotizacion(q), a = aj();
+  const nombre = primerNombre(tituloCaso(q.cliente && q.cliente.nombre));
+  const moto = [q.moto, q.anio].filter(Boolean).join(' modelo ');
+  let t = `Hola${nombre ? ' ' + nombre : ''} 👋, te comparto la cotización${moto ? ' de la *' + moto + '*' : ''}:\n\n`;
+  t += `Precio total: *${fmt(r.total)}*\n`;
+  t += `Cuota inicial: *${fmt(q.inicial)}*\n`;
+  t += `Saldo a financiar: *${fmt(r.saldo)}*\n`;
+  if(r.saldo > 0){
+    t += `\n*Opciones de pago:*\n`;
+    r.opciones.forEach(o => { t += `• ${o.n} cuotas de *${fmt(o.cuota)}*${o.n === q.plazoElegido ? ' ⭐' : ''}\n`; });
+  }
+  if(a.incluye) t += `\n${a.incluye}\n`;
+  t += `\nTe envío el PDF con el detalle y los requisitos para el crédito.`;
+  if(a.empresa) t += `\n\n${a.empresa}`;
+  return t;
+}
+
+const CT_JSPDF = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+let _pdfLib = null;
+function cargarPdf(){
+  if(window.jspdf) return Promise.resolve(window.jspdf);
+  if(_pdfLib) return _pdfLib;
+  _pdfLib = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = CT_JSPDF; s.async = true;
+    s.onload = () => window.jspdf ? res(window.jspdf) : rej(new Error('pdf'));
+    s.onerror = () => { _pdfLib = null; rej(new Error('pdf')); };
+    document.head.appendChild(s);
+  });
+  return _pdfLib;
+}
+const colorTema = () => { const c = CT_COLORES.find(x => x.id === document.documentElement.dataset.color) || CT_COLORES[0]; return {a: ctHexRgb(c.a), b: ctHexRgb(c.b)}; };
+// Texto apto para las fuentes del PDF (quita emojis y símbolos que no existen en Helvetica)
+const pdfTxt = s => String(s == null ? '' : s).replace(/[−–—]/g, '-').replace(/[“”]/g, '"').replace(/[‘’]/g, "'").replace(/[^\x20-\x7E\xA0-\xFF\n]/g, '');
+
+// Un "lienzo" con encabezado, pie y saltos de página automáticos
+function pdfNuevo(jsPDF, titulo, sub, derecha){
+  const doc = new jsPDF({unit: 'mm', format: 'a4'});
+  const a = aj(), col = colorTema();
+  const W = 210, H = 297, M = 16;
+  const ink = [15, 23, 42], gris = [100, 110, 135], linea = [226, 230, 240];
+  const L = {doc, W, H, M, ink, gris, linea, col, y: 0, pagina: 1};
+  L.encabezado = () => {
+    doc.setFillColor(...col.a); doc.rect(0, 0, W, 34, 'F');
+    doc.setFillColor(...col.b); doc.rect(W * .62, 0, W * .38, 34, 'F');
+    doc.setFillColor(...col.a); doc.triangle(W * .62, 0, W * .62 + 18, 0, W * .62, 34, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.text(pdfTxt((a.empresa || '').toUpperCase()), M, 11);
+    doc.setFontSize(19); doc.text(pdfTxt(titulo), M, 21.5);
+    if(sub){ doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.text(pdfTxt(sub), M, 28); }
+    if(derecha){
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.text(pdfTxt(derecha[0]), W - M, 14, {align: 'right'});
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11.5); doc.text(pdfTxt(derecha[1]), W - M, 21, {align: 'right'});
+      if(derecha[2]){ doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.text(pdfTxt(derecha[2]), W - M, 27.5, {align: 'right'}); }
+    }
+    L.y = 46;
+  };
+  L.pie = () => {
+    const y = H - 14;
+    doc.setDrawColor(...linea); doc.setLineWidth(.3); doc.line(M, y - 4, W - M, y - 4);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...gris);
+    const cont = (a.contactos || []).filter(c => c && (c.nombre || c.tel)).map(c => [c.nombre, celular(c.tel)].filter(Boolean).join(' ')).join('   ·   ');
+    if(cont) doc.text(pdfTxt('Información: ' + cont), M, y);
+    const lin2 = [a.direccion, a.nit ? 'NIT ' + a.nit : ''].filter(Boolean).join('   ·   ');
+    if(lin2) doc.text(pdfTxt(lin2), M, y + 4.5);
+    doc.text('Pág. ' + L.pagina, W - M, y + 4.5, {align: 'right'});
+  };
+  L.espacio = h => {
+    if(L.y + h <= H - 24) return;
+    L.pie(); doc.addPage(); L.pagina++;
+    doc.setFillColor(...col.a); doc.rect(0, 0, W, 5, 'F');
+    L.y = 16;
+  };
+  L.seccion = t => {
+    L.espacio(16);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...col.a);
+    doc.text(pdfTxt(t.toUpperCase()), M, L.y);
+    doc.setDrawColor(...linea); doc.setLineWidth(.3); doc.line(M, L.y + 2.4, W - M, L.y + 2.4);
+    L.y += 8.5;
+  };
+  // Párrafo que se parte en líneas; devuelve la altura usada
+  L.parrafo = (txt, x, ancho, opt = {}) => {
+    doc.setFont('helvetica', opt.estilo || 'normal'); doc.setFontSize(opt.tam || 10); doc.setTextColor(...(opt.color || ink));
+    const lineas = doc.splitTextToSize(pdfTxt(txt), ancho);
+    const alto = lineas.length * (opt.interlinea || (opt.tam || 10) * .45);
+    L.espacio(alto);
+    doc.text(lineas, x, L.y);
+    L.y += alto;
+    return alto;
+  };
+  L.encabezado();
+  return L;
+}
+
+function pdfRequisitos(L){
+  const {doc, M, W, col, gris, ink} = L, r = rq();
+  L.seccion(r.titulo || 'Requisitos');
+  (r.grupos || []).forEach((g, gi) => {
+    L.espacio(22);
+    // Título del grupo con un distintivo
+    doc.setFillColor(...col.a); doc.roundedRect(M, L.y - 4.2, 3, 5.6, 1, 1, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11.5); doc.setTextColor(...ink);
+    doc.text(pdfTxt(g.titulo || ''), M + 6, L.y);
+    L.y += 5;
+    if(g.nota){
+      L.y += 1;
+      L.parrafo(g.nota, M + 6, W - 2 * M - 6, {tam: 9, estilo: 'italic', color: [180, 83, 9]});
+      L.y += 1;
+    }
+    L.y += 2;
+    (g.items || []).forEach((it, i) => {
+      L.espacio(10);
+      const x = M + 6;
+      doc.setFillColor(...col.a); doc.circle(x + 2.4, L.y - 1.3, 2.6, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(255, 255, 255);
+      doc.text(String(i + 1), x + 2.4, L.y - .2, {align: 'center'});
+      L.parrafo(it.texto || '', x + 8, W - 2 * M - 14, {tam: 10.5, estilo: 'bold'});
+      if(it.detalle){ L.parrafo(it.detalle, x + 8, W - 2 * M - 14, {tam: 9, color: gris}); }
+      (it.opciones || []).filter(o => o && (o.etiqueta || o.texto)).forEach(o => {
+        L.y += .8;
+        const et = pdfTxt(o.etiqueta ? o.etiqueta + ':' : '');
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+        const anchoEt = o.etiqueta ? doc.getTextWidth(et) + 2 : 0;
+        const lineas = doc.splitTextToSize(pdfTxt(o.texto || ''), W - 2 * M - 22 - anchoEt);
+        const alto = lineas.length * 4.3;
+        L.espacio(alto + 1);
+        doc.setFillColor(245, 247, 252); doc.roundedRect(x + 8, L.y - 3.6, W - 2 * M - 14, alto + 2.4, 1.5, 1.5, 'F');
+        doc.setTextColor(...col.a); doc.text(et, x + 11, L.y);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(...ink); doc.text(lineas, x + 11 + anchoEt, L.y);
+        L.y += alto + 1.6;
+      });
+      L.y += 3.2;
+    });
+    if(gi < r.grupos.length - 1) L.y += 2;
+  });
+  const cierre = (r.cierre || []).filter(Boolean);
+  if(cierre.length){
+    L.y += 1;
+    const lineas = cierre.map(c => doc.splitTextToSize(pdfTxt(c), W - 2 * M - 16));
+    const alto = lineas.reduce((s, l) => s + l.length * 4.6, 0) + 6;
+    L.espacio(alto + 2);
+    doc.setFillColor(...col.a.map(c => Math.round(c + (255 - c) * .9))); doc.roundedRect(M, L.y - 1, W - 2 * M, alto, 2.5, 2.5, 'F');
+    let y = L.y + 4.6;
+    lineas.forEach(l => {
+      doc.setFillColor(...col.a); doc.circle(M + 6, y - 1.3, 1.1, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(...ink); doc.text(l, M + 10, y);
+      y += l.length * 4.6;
+    });
+    L.y += alto + 4;
+  }
+}
+
+function pdfCotizacion(jsPDF, q, opt){
+  const a = aj(), r = datosCotizacion(q);
+  const n4 = String(q.numero || 0).padStart(4, '0');
+  const L = pdfNuevo(jsPDF, 'Cotización de crédito', q.planNombre || planPorId(q.planId).nombre,
+                     ['Fecha', fechaLarga(q.fecha || hoyISO()), q.numero ? 'N.º ' + n4 : '']);
+  const {doc, W, M, ink, gris, linea, col} = L;
+  // Cliente y vehículo
+  const dato = (x, label, valor) => {
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...gris); doc.text(pdfTxt(label), x, L.y);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...ink); doc.text(pdfTxt(valor || '-'), x, L.y + 5.3);
+  };
+  const c3 = (W - 2 * M) / 3;
+  const cli = q.cliente || {};
+  dato(M, 'Cliente', tituloCaso(cli.nombre) || '-');
+  dato(M + 2 * c3, cli.cel ? 'Celular' : 'Cédula', cli.cel ? celular(cli.cel) : (cli.cc || '-'));
+  L.y += 13;
+  dato(M, 'Referencia', q.moto || '-');
+  dato(M + c3, 'Modelo', q.anio || '-');
+  if(cli.cel && cli.cc) dato(M + 2 * c3, 'Cédula', cli.cc);
+  L.y += 16;
+
+  // Valores
+  L.seccion('Valores');
+  const fila = (label, valor, o = {}) => {
+    L.espacio(8);
+    doc.setFont('helvetica', o.bold ? 'bold' : 'normal'); doc.setFontSize(o.big ? 12 : 10.5); doc.setTextColor(...(o.color || (o.suave ? gris : ink)));
+    doc.text(pdfTxt(label), M, L.y); doc.text(pdfTxt(valor), W - M, L.y, {align: 'right'});
+    L.y += o.big ? 8 : 6.4;
+  };
+  fila('Valor del vehículo', fmt(q.valor));
+  if(q.accesorios) fila('Accesorios', fmt(q.accesorios));
+  if(q.descuento) fila('Descuento', '- ' + fmt(q.descuento), {suave: true});
+  fila('SOAT, matrícula y demás', fmt(q.soat));
+  doc.setDrawColor(...linea); doc.line(M, L.y - 3.4, W - M, L.y - 3.4); L.y += 1;
+  fila('Total precio de compra', fmt(r.total), {bold: true});
+  fila('Cuota inicial', '- ' + fmt(q.inicial), {suave: true});
+  doc.setDrawColor(...linea); doc.line(M, L.y - 3.4, W - M, L.y - 3.4); L.y += 1.5;
+  fila('Saldo a financiar', fmt(r.saldo), {bold: true, big: true, color: col.a});
+  L.y += 3;
+
+  // Opciones de pago
+  if(r.saldo > 0){
+    L.seccion('Opciones de pago');
+    const ops = r.opciones, cols = Math.min(ops.length, 5), gap = 3;
+    const ancho = (W - 2 * M - gap * (cols - 1)) / cols, alto = 21;
+    for(let i = 0; i < ops.length; i += cols){
+      L.espacio(alto + 3);
+      ops.slice(i, i + cols).forEach((o, j) => {
+        const x = M + j * (ancho + gap), sel = o.n === q.plazoElegido;
+        if(sel){ doc.setFillColor(...col.a); doc.roundedRect(x, L.y - 4, ancho, alto, 2.5, 2.5, 'F'); }
+        else { doc.setFillColor(246, 248, 252); doc.setDrawColor(...linea); doc.setLineWidth(.3); doc.roundedRect(x, L.y - 4, ancho, alto, 2.5, 2.5, 'FD'); }
+        doc.setTextColor(...(sel ? [255, 255, 255] : gris)); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+        doc.text(o.n + ' CUOTAS', x + ancho / 2, L.y + 1.6, {align: 'center'});
+        doc.setTextColor(...(sel ? [255, 255, 255] : ink)); doc.setFontSize(cols > 4 ? 12.5 : 14);
+        doc.text(fmt(o.cuota), x + ancho / 2, L.y + 9, {align: 'center'});
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...(sel ? [235, 235, 255] : gris));
+        doc.text(sel ? 'Plazo sugerido' : 'mensual', x + ancho / 2, L.y + 14, {align: 'center'});
+      });
+      L.y += alto + 3;
+    }
+    L.y += 2;
+  }
+  // Notas
+  const notas = [a.incluye, a.aviso].filter(Boolean);
+  if(notas.length){
+    const lineas = notas.map((n, i) => doc.splitTextToSize(pdfTxt(n), W - 2 * M - 12));
+    const alto = lineas.reduce((s, l) => s + l.length * 4.3, 0) + 6;
+    L.espacio(alto + 2);
+    doc.setFillColor(255, 247, 232); doc.setDrawColor(250, 219, 160); doc.setLineWidth(.3); doc.roundedRect(M, L.y - 1, W - 2 * M, alto, 2.5, 2.5, 'FD');
+    let y = L.y + 4.4;
+    lineas.forEach((l, i) => {
+      doc.setFont('helvetica', i ? 'italic' : 'bold'); doc.setFontSize(9); doc.setTextColor(146, 64, 14);
+      doc.text(l, M + 6, y); y += l.length * 4.3;
+    });
+    L.y += alto + 5;
+  }
+
+  // Plan de pagos del plazo sugerido
+  if(opt.plan && r.saldo > 0 && q.plazoElegido){
+    const t = tablaPagos({valor: q.valor, soat: q.soat, accesorios: q.accesorios, descuento: q.descuento, inicial: q.inicial, tasa: q.tasa != null ? q.tasa : planPorId(q.planId).tasa}, q.plazoElegido);
+    L.seccion('Plan de pagos a ' + q.plazoElegido + ' cuotas');
+    const xs = [M + 8, M + 52, M + 92, M + 132, W - M];
+    const cab = ['N.º', 'Capital', 'Interés', 'Cuota', 'Saldo pagaré'];
+    const cabecera = () => {
+      doc.setFillColor(246, 248, 252); doc.rect(M, L.y - 4, W - 2 * M, 6.4, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...gris);
+      cab.forEach((c, i) => doc.text(c, i ? xs[i] : xs[0], L.y, {align: i ? 'right' : 'center'}));
+      L.y += 6.4;
+    };
+    cabecera();
+    t.filas.forEach(f => {
+      if(L.y + 5.4 > L.H - 24){ L.espacio(100); cabecera(); }
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...ink);
+      doc.text(String(f.k), xs[0], L.y, {align: 'center'});
+      doc.text(fmt(f.capital), xs[1], L.y, {align: 'right'});
+      doc.text(fmt(f.interes), xs[2], L.y, {align: 'right'});
+      doc.setFont('helvetica', 'bold'); doc.text(fmt(f.cuota), xs[3], L.y, {align: 'right'});
+      doc.setFont('helvetica', 'normal'); doc.text(fmt(f.resta), xs[4], L.y, {align: 'right'});
+      doc.setDrawColor(238, 241, 247); doc.setLineWidth(.2); doc.line(M, L.y + 1.8, W - M, L.y + 1.8);
+      L.y += 5.4;
+    });
+    L.y += 2;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(...col.a);
+    L.espacio(8);
+    doc.text('Valor pagaré', M, L.y); doc.text(fmt(t.o.pagare), W - M, L.y, {align: 'right'});
+    L.y += 8;
+  }
+
+  if(opt.requisitos){
+    // Los requisitos van completos: si no caben en esta hoja, pasan a la siguiente
+    if(L.y > 120){ L.espacio(999); } else L.y += 2;
+    pdfRequisitos(L);
+  }
+  if(a.leyenda){
+    L.espacio(8); L.y += 1;
+    L.parrafo(a.leyenda, M, W - 2 * M, {tam: 8, estilo: 'italic', color: gris});
+  }
+  L.pie();
+  return L.doc;
+}
+
+function pdfSoloRequisitos(jsPDF, para){
+  const L = pdfNuevo(jsPDF, 'Requisitos para financiación', para ? 'Para: ' + tituloCaso(para) : 'Crédito de motos', ['Fecha', fechaLarga(hoyISO())]);
+  pdfRequisitos(L);
+  L.pie();
+  return L.doc;
+}
+
+function archivoNombre(base, extra){ return (base + (extra ? '-' + extra : '')).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') + '.pdf'; }
+function descargarBlob(blob, nombre){
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+function verBlob(blob, nombre){
+  // En iPhone abrir en pestaña nueva lo muestra; en el Mac también. Si se bloquea, se descarga.
+  const url = URL.createObjectURL(blob);
+  const w = window.open(url, '_blank');
+  if(!w) descargarBlob(blob, nombre);
+  setTimeout(() => URL.revokeObjectURL(url), 120000);
+}
+
+let _opcPdf = (() => { const o = cargar('ct_opc_pdf', null); return o || {requisitos: true, plan: false}; })();
+async function descargarPdfActual(){
+  czDesdeForm();
+  if(czCalc().total <= 0){ toast('Escribe el valor de la moto'); return; }
+  let lib;
+  try { lib = await cargarPdf(); } catch(e){ toast('No se pudo preparar el PDF. Revisa la conexión a internet'); return; }
+  const p = planPorId(cz.planId);
+  const q = {...cz, planNombre: p.nombre, tasa: p.tasa, plazos: plazosActivos(), numero: cz.numero};
+  const doc = pdfCotizacion(lib.jsPDF, q, _opcPdf);
+  verBlob(doc.output('blob'), archivoNombre('Cotizacion', q.cliente.nombre || q.moto));
+}
+
+// Envío en dos pasos (WhatsApp no deja pasar el texto junto con el archivo):
+// 1) el mensaje con las cuotas, 2) el PDF.
+async function enviarCotizacion(id){
+  let q;
+  if(id) q = cotizaciones.find(x => x.id === id);
+  else q = guardarCotizacion(true);
+  if(!q) return;
+  if(!id) toast(`Cotización N.º ${String(q.numero).padStart(4, '0')} guardada`);
+  abrirEnvio(q);
+}
+function abrirEnvio(q){
+  const texto = textoCotizacion(q), tel = telWa(q.cliente && q.cliente.cel), nombre = primerNombre(tituloCaso(q.cliente && q.cliente.nombre)) || 'el cliente';
+  window._env = {q, texto, tel};
+  abrirModal(`
+    <div class="modal-t">${ico('wa', 20)}Enviar a ${esc(nombre)}<button class="btn btn-ghost btn-icon x" onclick="cerrarModal()">${ico('x', 18)}</button></div>
+    <div class="paso-env" id="env-1">
+      <span class="n"><span>1</span></span>
+      <div><b>El mensaje con las cuotas</b>
+        <small>${tel ? `Abre el chat de ${esc(nombre)} con el mensaje listo: solo pulsa Enviar.` : 'Abre WhatsApp con el mensaje listo y elige el chat del cliente. (Escribe su celular en la cotización para abrir su chat directo.)'}</small>
+        <div class="msg-prev">${esc(texto)}</div>
+        <div class="paso-acc">
+          <button class="btn btn-wa btn-sm" onclick="envWhatsapp()">${ico('wa', 15)}Abrir WhatsApp</button>
+          <button class="btn btn-sm" onclick="envCopiar()">${ico('copiar', 15)}Copiar</button>
+        </div>
+      </div>
+    </div>
+    <div class="paso-env" id="env-2">
+      <span class="n"><span>2</span></span>
+      <div><b>El PDF de la cotización</b>
+        <small>Compártelo en el mismo chat. En el Mac se descarga y lo arrastras a WhatsApp.</small>
+        <label class="switch"><input type="checkbox" id="env-req" ${_opcPdf.requisitos ? 'checked' : ''} onchange="envOpc()"><span class="sl"></span>Incluir los requisitos</label>
+        <label class="switch" style="padding-top:0"><input type="checkbox" id="env-plan" ${_opcPdf.plan ? 'checked' : ''} onchange="envOpc()"><span class="sl"></span>Incluir el plan de pagos (${q.plazoElegido || '-'} cuotas)</label>
+        <div class="paso-acc">
+          ${navigator.share ? `<button class="btn btn-primary btn-sm" onclick="envPdf('compartir')">${ico('compartir', 15)}Compartir PDF</button>` : ''}
+          <button class="btn ${navigator.share ? '' : 'btn-primary'} btn-sm" onclick="envPdf('descargar')">${ico('descarga', 15)}Descargar</button>
+          <button class="btn btn-ghost btn-sm" onclick="envPdf('ver')">${ico('ojo', 15)}Ver</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-pie"><button class="btn" onclick="envListo()">Listo</button></div>`);
+}
+function envOpc(){ _opcPdf = {requisitos: $('env-req').checked, plan: $('env-plan').checked}; guardarLocal('ct_opc_pdf', _opcPdf); }
+function envMarcar(paso, via){
+  const el = $('env-' + paso); if(el) el.classList.add('hecho');
+  const q = cotizaciones.find(x => x.id === _env.q.id);
+  if(q){
+    q.envios = [...(q.envios || []), {fecha: hoyISO(), via, en: new Date().toISOString()}];
+    if(q.estado === 'nueva') q.estado = 'seguimiento';
+    guardarCot();
+    if(cz && cz.id === q.id){ cz.envios = q.envios; cz.estado = q.estado; }
+  }
+}
+function envWhatsapp(){ window.open('https://wa.me/' + _env.tel + '?text=' + encodeURIComponent(_env.texto), '_blank'); envMarcar(1, 'whatsapp'); }
+async function envCopiar(){
+  try { await navigator.clipboard.writeText(_env.texto); toast('Mensaje copiado'); envMarcar(1, 'copiado'); }
+  catch(e){ prompt('Copia el mensaje:', _env.texto); }
+}
+async function envPdf(modo){
+  let lib;
+  try { lib = await cargarPdf(); } catch(e){ toast('No se pudo preparar el PDF. Revisa la conexión a internet'); return; }
+  const q = _env.q;
+  const doc = pdfCotizacion(lib.jsPDF, q, _opcPdf);
+  const nombre = archivoNombre('Cotizacion-' + String(q.numero || '').padStart(4, '0'), (q.cliente && q.cliente.nombre) || q.moto);
+  const blob = doc.output('blob');
+  if(modo === 'ver'){ verBlob(blob, nombre); return; }
+  if(modo === 'compartir'){
+    let file = null;
+    try { file = new File([blob], nombre, {type: 'application/pdf'}); } catch(e){}
+    if(file && navigator.canShare && navigator.canShare({files: [file]})){
+      try { await navigator.share({files: [file], title: 'Cotización ' + (q.moto || '')}); envMarcar(2, 'compartir'); return; }
+      catch(e){ if(e && e.name === 'AbortError') return; }
+    }
+  }
+  descargarBlob(blob, nombre); envMarcar(2, 'descarga');
+}
+function envListo(){ cerrarModal(); if(document.querySelector('.panel.active').id === 'p-historial') renderHistorial(); }
+
+// ── Historial ───────────────────────────────────────────────────────────────
+const ESTADOS = {nueva: 'Nueva', seguimiento: 'En seguimiento', vendida: 'Vendida', perdida: 'No compró'};
+let _filtro = 'todas';
+function renderHistorial(){
+  const mes = hoyISO().slice(0, 7);
+  const delMes = cotizaciones.filter(q => String(q.fecha || '').startsWith(mes));
+  const vendidas = cotizaciones.filter(q => q.estado === 'vendida').length;
+  const cerradas = cotizaciones.filter(q => q.estado === 'vendida' || q.estado === 'perdida').length;
+  $('hs-kpis').innerHTML = `
+    <div class="kpi"><span>Este mes</span><b>${delMes.length}</b></div>
+    <div class="kpi" style="--k:linear-gradient(90deg,#f59e0b,#fcd34d)"><span>Abiertas</span><b>${cotizaciones.filter(q => q.estado === 'seguimiento' || q.estado === 'nueva' || !q.estado).length}</b></div>
+    <div class="kpi" style="--k:linear-gradient(90deg,#059669,#6ee7b7)"><span>Vendidas</span><b>${vendidas}</b></div>
+    <div class="kpi" style="--k:linear-gradient(90deg,#0284c7,#7dd3fc)"><span>Cierre</span><b>${cerradas ? Math.round(vendidas / cerradas * 100) + ' %' : '—'}</b></div>`;
+  const fs = [['todas', 'Todas'], ['abiertas', 'Abiertas'], ['vendida', 'Vendidas'], ['perdida', 'No compró']];
+  $('hs-filtros').innerHTML = fs.map(([k, t]) => `<button class="chip ${_filtro === k ? 'on' : ''}" onclick="_filtro='${k}';renderHistorial()">${t}</button>`).join('');
+  const b = ($('hs-buscar').value || '').trim().toLowerCase();
+  const lista = cotizaciones.filter(q => {
+    const e = q.estado || 'nueva';
+    if(_filtro === 'abiertas' && !(e === 'nueva' || e === 'seguimiento')) return false;
+    if(_filtro === 'vendida' && e !== 'vendida') return false;
+    if(_filtro === 'perdida' && e !== 'perdida') return false;
+    if(!b) return true;
+    const c = q.cliente || {};
+    return [c.nombre, c.cel, c.cc, q.moto, String(q.numero).padStart(4, '0')].join(' ').toLowerCase().includes(b);
+  }).sort((x, y) => String(y.creada || y.fecha).localeCompare(String(x.creada || x.fecha)));
+  const el = $('hs-lista');
+  if(!cotizaciones.length){
+    el.innerHTML = `<div class="vacio"><div class="v-ico">${ico('doc', 26, 2)}</div><b>Todavía no hay cotizaciones</b>Las que guardes o envíes aparecen aquí para hacerles seguimiento.<div style="margin-top:14px"><button class="btn btn-primary" onclick="nuevaCotizacion()">${ico('mas', 15)}Hacer una cotización</button></div></div>`;
+    return;
+  }
+  if(!lista.length){ el.innerHTML = `<div class="vacio"><b>Sin resultados</b>No hay cotizaciones con ese filtro.</div>`; return; }
+  el.innerHTML = lista.map(q => {
+    const r = datosCotizacion(q), c = q.cliente || {};
+    const o = r.opciones.find(x => x.n === q.plazoElegido) || r.opciones[0];
+    const e = q.estado || 'nueva';
+    const env = (q.envios || []).length;
+    return `<div class="item">
+      <div>
+        <div class="item-t">${esc(tituloCaso(c.nombre) || 'Sin nombre')} <span class="badge b-${e}">${ESTADOS[e]}</span></div>
+        <div class="item-s">
+          <span>${ico('moto', 13)}${esc([q.moto, q.anio].filter(Boolean).join(' ') || 'Moto')}</span>
+          <span>${ico('cal', 13)}${fechaCorta(q.fecha)}</span>
+          ${c.cel ? `<span>${ico('tel', 13)}${esc(celular(c.cel))}</span>` : ''}
+          <span class="badge b-num">N.º ${String(q.numero).padStart(4, '0')}</span>
+          ${env ? `<span style="color:var(--ok)">${ico('check', 13)}Enviada${env > 1 ? ' ' + env + ' veces' : ''}</span>` : ''}
+        </div>
+      </div>
+      <div class="item-c">${r.saldo > 0 && o ? `<b>${o.n} × ${fmt(o.cuota)}</b><small>Inicial ${fmt(q.inicial)} · ${esc(q.planNombre || '')}</small>` : `<b>${fmt(r.total)}</b><small>De contado</small>`}</div>
+      <div class="item-acc">
+        <button class="btn btn-xs" onclick="abrirCot('${q.id}')">${ico('editar', 13)}Abrir</button>
+        <button class="btn btn-xs" onclick="enviarCotizacion('${q.id}')">${ico('wa', 13)}Enviar</button>
+        <button class="btn btn-xs" onclick="duplicarCot('${q.id}')">${ico('dup', 13)}Duplicar</button>
+        <button class="btn btn-xs btn-ghost btn-danger" onclick="borrarCot('${q.id}')" title="Eliminar">${ico('borrar', 13)}</button>
+        <select class="estado-sel" onchange="estadoCot('${q.id}', this.value)">${Object.entries(ESTADOS).map(([k, t]) => `<option value="${k}" ${k === e ? 'selected' : ''}>${t}</option>`).join('')}</select>
+      </div>
+    </div>`;
+  }).join('');
+}
+function abrirCot(id){ const q = cotizaciones.find(x => x.id === id); if(!q) return; cargarEnFormulario(q); ir('cotizar'); window.scrollTo({top: 0}); }
+function duplicarCot(id){
+  const q = cotizaciones.find(x => x.id === id); if(!q) return;
+  const d = {...clonar(q), id: null, numero: null, fecha: hoyISO(), estado: 'nueva', envios: [], cliente: {nombre: '', cel: '', cc: ''}};
+  cargarEnFormulario(d); ir('cotizar'); window.scrollTo({top: 0});
+  toast('Copia lista: escribe el nombre del otro cliente');
+}
+function estadoCot(id, e){ const q = cotizaciones.find(x => x.id === id); if(!q) return; q.estado = e; guardarCot(); renderHistorial(); if(cz && cz.id === id) cz.estado = e; }
+function borrarCot(id){
+  const i = cotizaciones.findIndex(x => x.id === id); if(i < 0) return;
+  const [q] = cotizaciones.splice(i, 1);
+  guardarCot(); renderHistorial();
+  if(cz && cz.id === id){ cz.id = null; cz.numero = null; renderEditando(); }
+  toast('Cotización eliminada', {texto: 'Deshacer', fn: () => { cotizaciones.splice(i, 0, q); guardarCot(); renderHistorial(); }});
+}
+
+// ── Requisitos ──────────────────────────────────────────────────────────────
+let _rqEditar = false;
+function renderRequisitos(){
+  $('rq-acc').innerHTML = _rqEditar
+    ? `<button class="btn btn-primary btn-sm" onclick="rqListo()">${ico('check', 15)}Listo</button>`
+    : `<button class="btn btn-sm" onclick="_rqEditar=true;renderRequisitos()">${ico('editar', 15)}Editar</button>
+       <button class="btn btn-wa btn-sm" onclick="enviarRequisitos()">${ico('wa', 15)}Enviar al cliente</button>`;
+  _rqEditar ? renderRqEditor() : renderRqVista();
+}
+function renderRqVista(){
+  const r = rq();
+  const ico3 = ['user', 'users', 'doc'];
+  $('rq-cuerpo').innerHTML = `<div class="req-doc">
+    ${(r.grupos || []).map((g, gi) => `
+      <div class="card req-grupo">
+        <div class="rg-head"><span class="rg-ico">${ico(ico3[Math.min(gi, 2)], 18)}</span><span class="rg-titulo">${esc(g.titulo)}</span></div>
+        ${g.nota ? `<div class="rg-nota">${esc(g.nota)}</div>` : ''}
+        <ol class="req-items">${(g.items || []).map(it => `
+          <li><div>
+            <div class="ri-t">${esc(it.texto)}</div>
+            ${it.detalle ? `<div class="ri-d">${esc(it.detalle)}</div>` : ''}
+            ${(it.opciones || []).length ? `<div class="ri-ops">${it.opciones.map(o => `<div class="ri-op">${o.etiqueta ? `<b>${esc(o.etiqueta)}:</b>` : ''}<span>${esc(o.texto)}</span></div>`).join('')}</div>` : ''}
+          </div></li>`).join('')}
+        </ol>
+      </div>`).join('')}
+    ${(r.cierre || []).filter(Boolean).length ? `<div class="card req-cierre">${r.cierre.filter(Boolean).map(c => `<div>${ico('info', 17)}${esc(c)}</div>`).join('')}</div>` : ''}
+  </div>`;
+}
+// Editor: cada cambio se guarda solo
+function renderRqEditor(){
+  const r = rq();
+  const bi = (fn, icono, titulo, extra = '') => `<button class="btn btn-ghost btn-icon ${extra}" type="button" onclick="${fn}" title="${titulo}">${ico(icono, 15)}</button>`;
+  $('rq-cuerpo').innerHTML = `
+    <div class="card" style="margin-bottom:12px">
+      <div class="campo"><label>Título del documento</label><input value="${esc(r.titulo || '')}" oninput="rqSet(['titulo'], this.value)"></div>
+    </div>
+    ${(r.grupos || []).map((g, gi) => `
+    <div class="ed-grupo">
+      <div class="ed-head">
+        <input value="${esc(g.titulo)}" placeholder="Nombre del grupo (ej: Deudor)" oninput="rqSet(['grupos',${gi},'titulo'], this.value)">
+        ${gi > 0 ? bi(`rqMover('g',${gi},-1)`, 'arriba', 'Subir') : ''}
+        ${gi < r.grupos.length - 1 ? bi(`rqMover('g',${gi},1)`, 'abajo', 'Bajar') : ''}
+        ${bi(`rqBorrarGrupo(${gi})`, 'borrar', 'Eliminar grupo', 'btn-danger')}
+      </div>
+      <div class="campo"><input value="${esc(g.nota || '')}" placeholder="Nota destacada (opcional)" oninput="rqSet(['grupos',${gi},'nota'], this.value)" style="font-size:13.5px"></div>
+      ${(g.items || []).map((it, ii) => `
+      <div class="ed-item">
+        <div class="ed-fila">
+          <span class="num-i">${ii + 1}</span>
+          <input value="${esc(it.texto)}" placeholder="Documento o requisito" oninput="rqSet(['grupos',${gi},'items',${ii},'texto'], this.value)" style="font-weight:700">
+          ${ii > 0 ? bi(`rqMover('i',${gi},-1,${ii})`, 'arriba', 'Subir') : ''}
+          ${ii < g.items.length - 1 ? bi(`rqMover('i',${gi},1,${ii})`, 'abajo', 'Bajar') : ''}
+          ${bi(`rqBorrarItem(${gi},${ii})`, 'x', 'Quitar', 'btn-danger')}
+        </div>
+        <div class="ed-sub">
+          ${it.detalle != null ? `<div class="ed-op" style="grid-template-columns:1fr auto"><input value="${esc(it.detalle)}" placeholder="Aclaración" style="font-weight:500" oninput="rqSet(['grupos',${gi},'items',${ii},'detalle'], this.value)">${bi(`rqQuitarDetalle(${gi},${ii})`, 'x', 'Quitar aclaración')}</div>` : ''}
+          ${(it.opciones || []).map((o, oi) => `
+            <div class="ed-op">
+              <input value="${esc(o.etiqueta)}" placeholder="Caso (ej: Empleado)" oninput="rqSet(['grupos',${gi},'items',${ii},'opciones',${oi},'etiqueta'], this.value)">
+              <input value="${esc(o.texto)}" placeholder="Qué debe traer" oninput="rqSet(['grupos',${gi},'items',${ii},'opciones',${oi},'texto'], this.value)">
+              ${bi(`rqBorrarOpcion(${gi},${ii},${oi})`, 'x', 'Quitar caso')}
+            </div>`).join('')}
+        </div>
+        <div class="ed-mini">
+          ${it.detalle == null ? `<button class="btn btn-xs btn-ghost" onclick="rqAgregarDetalle(${gi},${ii})">${ico('mas', 12)}Aclaración</button>` : ''}
+          <button class="btn btn-xs btn-ghost" onclick="rqAgregarOpcion(${gi},${ii})">${ico('mas', 12)}Caso (empleado, independiente…)</button>
+        </div>
+      </div>`).join('')}
+      <button class="btn btn-sm" style="margin-top:10px" onclick="rqAgregarItem(${gi})">${ico('mas', 14)}Agregar requisito</button>
+    </div>`).join('')}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
+      <button class="btn" onclick="rqAgregarGrupo()">${ico('mas', 15)}Agregar grupo</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Mensajes finales</div>
+      <div class="campo"><textarea rows="3" placeholder="Una frase por línea" oninput="rqSet(['cierre'], this.value.split('\\n'))">${esc((r.cierre || []).join('\n'))}</textarea>
+      <span class="hint">Una frase por línea. Salen al final del PDF.</span></div>
+    </div>
+    <div style="margin-top:14px"><button class="btn btn-sm btn-ghost btn-danger" onclick="rqRestaurar()">Restaurar los requisitos originales</button></div>`;
+}
+function rqListo(){ _rqEditar = false; limpiarRequisitos(); renderRequisitos(); toast('Requisitos guardados'); }
+function rqSet(ruta, valor){
+  let o = rq();
+  for(let i = 0; i < ruta.length - 1; i++) o = o[ruta[i]];
+  o[ruta[ruta.length - 1]] = valor;
+  guardarCfg();
+}
+const rqG = gi => rq().grupos[gi];
+function rqRender(){ guardarCfg(true); renderRqEditor(); }
+function rqMover(tipo, gi, d, ii){
+  const arr = tipo === 'g' ? rq().grupos : rqG(gi).items, i = tipo === 'g' ? gi : ii, j = i + d;
+  if(j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]]; rqRender();
+}
+function rqAgregarGrupo(){ rq().grupos.push({id: uid(), titulo: '', nota: '', items: [{texto: ''}]}); rqRender(); }
+async function rqBorrarGrupo(gi){
+  const g = rqG(gi);
+  if(!await preguntar({titulo: 'Eliminar grupo', texto: `Se eliminará "${g.titulo || 'sin nombre'}" con sus ${(g.items || []).length} requisitos.`, si: 'Eliminar', peligro: true})) return;
+  rq().grupos.splice(gi, 1); rqRender();
+}
+function rqAgregarItem(gi){ rqG(gi).items.push({texto: ''}); rqRender(); const ins = document.querySelectorAll('.ed-grupo')[gi].querySelectorAll('.ed-item .ed-fila input'); if(ins.length) ins[ins.length - 1].focus(); }
+function rqBorrarItem(gi, ii){ rqG(gi).items.splice(ii, 1); rqRender(); }
+function rqAgregarOpcion(gi, ii){ const it = rqG(gi).items[ii]; it.opciones = [...(it.opciones || []), {etiqueta: '', texto: ''}]; rqRender(); }
+function rqBorrarOpcion(gi, ii, oi){ const it = rqG(gi).items[ii]; it.opciones.splice(oi, 1); if(!it.opciones.length) delete it.opciones; rqRender(); }
+function rqAgregarDetalle(gi, ii){ rqG(gi).items[ii].detalle = ''; rqRender(); }
+function rqQuitarDetalle(gi, ii){ delete rqG(gi).items[ii].detalle; rqRender(); }
+async function rqRestaurar(){
+  if(!await preguntar({titulo: 'Restaurar requisitos', texto: 'Se reemplazarán por los del Excel original. Los cambios que hiciste se perderán.', si: 'Restaurar', peligro: true})) return;
+  const r = rq(); Object.assign(r, clonar(REQUISITOS_INICIALES)); rqRender();
+}
+function limpiarRequisitos(){
+  // Al salir del editor quita lo que quedó vacío
+  const r = rq();
+  r.grupos = (r.grupos || []).map(g => ({...g, items: (g.items || []).filter(it => (it.texto || '').trim() || (it.opciones || []).length)
+    .map(it => { const o = {...it}; if(o.opciones){ o.opciones = o.opciones.filter(x => (x.etiqueta || '').trim() || (x.texto || '').trim()); if(!o.opciones.length) delete o.opciones; } if(o.detalle != null && !String(o.detalle).trim()) delete o.detalle; return o; })}))
+    .filter(g => (g.titulo || '').trim() || g.items.length);
+  r.cierre = (r.cierre || []).map(s => s.trim()).filter(Boolean);
+  guardarCfg(true);
+}
+function textoRequisitos(nombre){
+  const r = rq(), a = aj();
+  let t = `Hola${nombre ? ' ' + primerNombre(tituloCaso(nombre)) : ''} 👋, estos son los *requisitos para la financiación* de tu moto:\n`;
+  (r.grupos || []).forEach(g => {
+    t += `\n*${(g.titulo || '').toUpperCase()}*\n`;
+    if(g.nota) t += `_${g.nota}_\n`;
+    (g.items || []).forEach((it, i) => {
+      t += `${i + 1}. ${it.texto}${it.detalle ? ' (' + it.detalle + ')' : ''}\n`;
+      (it.opciones || []).forEach(o => { t += `   • ${o.etiqueta ? o.etiqueta + ': ' : ''}${o.texto}\n`; });
+    });
+  });
+  if((r.cierre || []).length) t += '\n' + r.cierre.join('\n');
+  if(a.empresa) t += `\n\n${a.empresa}`;
+  return t;
+}
+function enviarRequisitos(pre){
+  const nombre0 = pre ? pre.nombre : '', cel0 = pre ? pre.cel : '';
+  abrirModal(`
+    <div class="modal-t">${ico('wa', 20)}Enviar requisitos<button class="btn btn-ghost btn-icon x" onclick="cerrarModal()">${ico('x', 18)}</button></div>
+    <div class="grid g2">
+      <div class="campo"><label for="er-nombre">Cliente <span class="lbl-opc">(opcional)</span></label><input id="er-nombre" value="${esc(nombre0)}" placeholder="Nombre" autocapitalize="words" oninput="erPrev()"></div>
+      <div class="campo"><label for="er-cel">Celular <span class="lbl-opc">(opcional)</span></label><input id="er-cel" type="tel" inputmode="tel" value="${esc(cel0)}" placeholder="300 000 0000"></div>
+    </div>
+    <div class="paso-env" id="env-1" style="margin-top:14px">
+      <span class="n"><span>1</span></span>
+      <div><b>El mensaje</b><small>La lista de requisitos lista para WhatsApp.</small>
+        <div class="msg-prev" id="er-prev"></div>
+        <div class="paso-acc"><button class="btn btn-wa btn-sm" onclick="erWhatsapp()">${ico('wa', 15)}Abrir WhatsApp</button><button class="btn btn-sm" onclick="erCopiar()">${ico('copiar', 15)}Copiar</button></div>
+      </div>
+    </div>
+    <div class="paso-env" id="env-2">
+      <span class="n"><span>2</span></span>
+      <div><b>El PDF de requisitos</b><small>Una hoja ordenada para que el cliente tenga todo a la mano.</small>
+        <div class="paso-acc">
+          ${navigator.share ? `<button class="btn btn-primary btn-sm" onclick="erPdf('compartir')">${ico('compartir', 15)}Compartir PDF</button>` : ''}
+          <button class="btn ${navigator.share ? '' : 'btn-primary'} btn-sm" onclick="erPdf('descargar')">${ico('descarga', 15)}Descargar</button>
+          <button class="btn btn-ghost btn-sm" onclick="erPdf('ver')">${ico('ojo', 15)}Ver</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-pie"><button class="btn" onclick="cerrarModal()">Listo</button></div>`);
+  erPrev();
+}
+function erPrev(){ $('er-prev').textContent = textoRequisitos($('er-nombre').value); }
+function erWhatsapp(){ window.open('https://wa.me/' + telWa($('er-cel').value) + '?text=' + encodeURIComponent(textoRequisitos($('er-nombre').value)), '_blank'); $('env-1').classList.add('hecho'); }
+async function erCopiar(){ const t = textoRequisitos($('er-nombre').value); try { await navigator.clipboard.writeText(t); toast('Mensaje copiado'); $('env-1').classList.add('hecho'); } catch(e){ prompt('Copia el mensaje:', t); } }
+async function erPdf(modo){
+  let lib;
+  try { lib = await cargarPdf(); } catch(e){ toast('No se pudo preparar el PDF. Revisa la conexión a internet'); return; }
+  const para = $('er-nombre').value.trim();
+  const blob = pdfSoloRequisitos(lib.jsPDF, para).output('blob');
+  const nombre = archivoNombre('Requisitos-financiacion', para);
+  if(modo === 'ver'){ verBlob(blob, nombre); return; }
+  if(modo === 'compartir'){
+    let file = null;
+    try { file = new File([blob], nombre, {type: 'application/pdf'}); } catch(e){}
+    if(file && navigator.canShare && navigator.canShare({files: [file]})){
+      try { await navigator.share({files: [file], title: 'Requisitos para financiación'}); $('env-2').classList.add('hecho'); return; }
+      catch(e){ if(e && e.name === 'AbortError') return; }
+    }
+  }
+  descargarBlob(blob, nombre); $('env-2').classList.add('hecho');
+}
+
+// ── Motos ───────────────────────────────────────────────────────────────────
+function renderMotos(){
+  const b = ($('mt-buscar').value || '').trim().toLowerCase();
+  const l = motos.filter(m => !b || String(m.nombre).toLowerCase().includes(b)).sort((x, y) => String(x.nombre).localeCompare(String(y.nombre)));
+  const el = $('mt-lista');
+  if(!motos.length){ el.innerHTML = `<div class="vacio" style="grid-column:1/-1"><div class="v-ico">${ico('moto', 26, 2)}</div><b>Agrega tus motos</b>Guarda cada referencia con su precio para cotizar con un toque.</div>`; return; }
+  if(!l.length){ el.innerHTML = `<div class="vacio" style="grid-column:1/-1"><b>Sin resultados</b></div>`; return; }
+  el.innerHTML = l.map(m => `
+    <div class="moto">
+      <div class="moto-t"><span class="moto-ico">${ico('moto', 20)}</span><div><div class="moto-n">${esc(m.nombre)}</div>${m.anio ? `<div class="moto-m">Modelo ${esc(m.anio)}</div>` : ''}</div></div>
+      <div><div class="moto-p">${fmt(m.valor)}</div><div class="moto-s">+ ${fmt(m.soat)} de SOAT, matrícula y demás</div></div>
+      <div class="moto-acc">
+        <button class="btn btn-primary btn-sm" onclick="cotizarMoto('${esc(m.id)}')">Cotizar</button>
+        <button class="btn btn-sm btn-icon" onclick="editarMoto('${esc(m.id)}')" title="Editar">${ico('editar', 15)}</button>
+      </div>
+    </div>`).join('');
+}
+function cotizarMoto(id){
+  const m = motos.find(x => x.id === id); if(!m) return;
+  if(cz.id) cargarEnFormulario(czVacia());
+  ir('cotizar'); usarMoto(m, true); window.scrollTo({top: 0});
+  setTimeout(() => $('cz-inicial').focus(), 120);
+}
+function editarMoto(id){
+  const m = id ? motos.find(x => x.id === id) : null;
+  const a = aj();
+  abrirModal(`
+    <div class="modal-t">${ico('moto', 20)}${m ? 'Editar moto' : 'Agregar moto'}<button class="btn btn-ghost btn-icon x" onclick="cerrarModal()">${ico('x', 18)}</button></div>
+    <div class="grid g2">
+      <div class="campo full"><label for="mm-nombre">Referencia</label><input id="mm-nombre" value="${esc(m ? m.nombre : '')}" autocapitalize="characters" placeholder="Ej: XR190"></div>
+      <div class="campo"><label for="mm-valor">Valor del vehículo</label><div class="money-wrap"><input id="mm-valor" class="money" inputmode="numeric" value="${m && m.valor ? miles(m.valor) : ''}" oninput="this.value=num(this.value)?miles(num(this.value)):''"></div></div>
+      <div class="campo"><label for="mm-soat">SOAT, matrícula y demás</label><div class="money-wrap"><input id="mm-soat" class="money" inputmode="numeric" value="${miles(m ? m.soat : a.soatDefecto)}" oninput="this.value=num(this.value)?miles(num(this.value)):''"></div></div>
+      <div class="campo"><label for="mm-anio">Modelo (año)</label><input id="mm-anio" inputmode="numeric" maxlength="4" value="${esc(m ? (m.anio || '') : (a.anioDefecto || ''))}"></div>
+    </div>
+    <div class="modal-pie">
+      ${m ? `<button class="btn btn-danger" style="margin-right:auto" onclick="borrarMoto('${esc(m.id)}')">${ico('borrar', 15)}Eliminar</button>` : ''}
+      <button class="btn btn-ghost" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarMoto('${m ? esc(m.id) : ''}')">${ico('check', 15)}Guardar</button>
+    </div>`);
+  if(!m && matchMedia('(min-width: 681px)').matches) setTimeout(() => $('mm-nombre').focus(), 60);
+}
+function guardarMoto(id){
+  const nombre = $('mm-nombre').value.trim().replace(/\s+/g, ' ');
+  if(!nombre){ toast('Escribe la referencia'); $('mm-nombre').focus(); return; }
+  const valor = num($('mm-valor').value);
+  if(!valor){ toast('Escribe el valor del vehículo'); $('mm-valor').focus(); return; }
+  const dato = {nombre, valor, soat: num($('mm-soat').value), anio: $('mm-anio').value.trim()};
+  const otra = motos.find(x => x.id !== id && x.nombre.toLowerCase() === nombre.toLowerCase());
+  if(otra){ toast('Ya tienes una moto con ese nombre'); return; }
+  if(id){ Object.assign(motos.find(x => x.id === id), dato); }
+  else motos.push({id: uid(), ...dato});
+  guardarMotos(); cerrarModal(); renderMotos(); renderMotosDatalist();
+  toast(nombre + ' guardada');
+}
+function borrarMoto(id){
+  const i = motos.findIndex(x => x.id === id); if(i < 0) return;
+  const [m] = motos.splice(i, 1);
+  guardarMotos(); cerrarModal(); renderMotos(); renderMotosDatalist();
+  toast(m.nombre + ' eliminada', {texto: 'Deshacer', fn: () => { motos.splice(i, 0, m); guardarMotos(); renderMotos(); renderMotosDatalist(); }});
+}
+
+// ── Ajustes ─────────────────────────────────────────────────────────────────
+function ajSet(campo, valor, rerender){ aj()[campo] = valor; guardarCfg(); contadores(); if(rerender) renderAjustes(); }
+function renderAjustes(){
+  const a = aj();
+  const color = document.documentElement.dataset.color;
+  $('aj-cuerpo').innerHTML = `
+    <div>
+      <div class="card">
+        <div class="card-title">Empresa</div>
+        <div class="grid">
+          <div class="campo"><label>Nombre</label><input value="${esc(a.empresa)}" oninput="ajSet('empresa', this.value)"></div>
+          <div class="grid g2">
+            <div class="campo"><label>NIT <span class="lbl-opc">(opcional)</span></label><input value="${esc(a.nit)}" oninput="ajSet('nit', this.value)"></div>
+            <div class="campo"><label>Dirección</label><input value="${esc(a.direccion)}" oninput="ajSet('direccion', this.value)"></div>
+          </div>
+        </div>
+        <div class="lbl" style="margin-top:14px">Contactos que salen en el PDF</div>
+        ${(a.contactos || []).map((c, i) => `
+          <div class="fila-ed">
+            <input value="${esc(c.nombre)}" placeholder="Nombre" oninput="aj().contactos[${i}].nombre=this.value;guardarCfg()">
+            <input value="${esc(c.tel)}" placeholder="Celular" inputmode="tel" oninput="aj().contactos[${i}].tel=this.value;guardarCfg()">
+            <button class="btn btn-ghost btn-icon btn-danger" onclick="aj().contactos.splice(${i},1);guardarCfg(true);renderAjustes()" title="Quitar">${ico('x', 15)}</button>
+          </div>`).join('')}
+        <button class="btn btn-sm" style="margin-top:10px" onclick="aj().contactos.push({nombre:'',tel:''});guardarCfg(true);renderAjustes()">${ico('mas', 14)}Agregar contacto</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Textos de la cotización</div>
+        <div class="grid">
+          <div class="campo"><label>Qué incluye la cuota</label><textarea rows="2" oninput="ajSet('incluye', this.value)">${esc(a.incluye)}</textarea></div>
+          <div class="campo"><label>Aviso</label><textarea rows="2" oninput="ajSet('aviso', this.value)">${esc(a.aviso)}</textarea></div>
+          <div class="campo"><label>Leyenda al pie</label><input value="${esc(a.leyenda)}" oninput="ajSet('leyenda', this.value)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-title">Planes y tasas</div>
+        <div class="hint" style="margin-bottom:4px">Interés simple mensual sobre el saldo, como en el Excel.</div>
+        ${(a.planes || []).map((p, i) => `
+          <div class="fila-ed plan">
+            <input value="${esc(p.nombre)}" placeholder="Nombre del plan" oninput="aj().planes[${i}].nombre=this.value;guardarCfg()">
+            <div style="position:relative"><input value="${String(p.tasa).replace('.', ',')}" inputmode="decimal" placeholder="0" oninput="aj().planes[${i}].tasa=Number(this.value.replace(',', '.'))||0;guardarCfg()" style="padding-left:12px;padding-right:28px"><span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-weight:700">%</span></div>
+            <button class="btn btn-ghost btn-icon btn-danger" onclick="ajQuitarPlan(${i})" title="Quitar">${ico('x', 15)}</button>
+          </div>`).join('')}
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px">
+          <button class="btn btn-sm" onclick="aj().planes.push({id:uid(),nombre:'Nuevo plan',tasa:0});guardarCfg(true);renderAjustes()">${ico('mas', 14)}Agregar plan</button>
+          <span class="hint">Plan por defecto:</span>
+          <select style="width:auto;padding:7px 30px 7px 10px;font-size:13px" onchange="ajSet('planDefecto', this.value)">${(a.planes || []).map(p => `<option value="${esc(p.id)}" ${p.id === a.planDefecto ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Cálculo</div>
+        <div class="grid g2">
+          <div class="campo full"><label>Plazos (número de cuotas)</label><input value="${(a.plazos || []).join(', ')}" placeholder="6, 12, 18, 24, 36" inputmode="numeric" onchange="ajPlazos(this)"><span class="hint">Separados por coma. Ej: 6, 12, 18, 24, 36</span></div>
+          <div class="campo"><label>Redondear la cuota a</label><select onchange="ajSet('redondeo', Number(this.value))">${[1, 100, 500, 1000, 5000, 10000].map(v => `<option value="${v}" ${Number(a.redondeo) === v ? 'selected' : ''}>${v === 1 ? 'Sin redondeo' : fmt(v)}</option>`).join('')}</select></div>
+          <div class="campo"><label>Inicial mínima (% del total)</label><input value="${String(Math.round(Number(a.inicialMinima) * 100) / 100).replace('.', ',')}" inputmode="decimal" oninput="ajSet('inicialMinima', Number(this.value.replace(',', '.'))||0)"></div>
+          <div class="campo"><label>SOAT y matrícula por defecto</label><div class="money-wrap"><input value="${miles(a.soatDefecto)}" inputmode="numeric" oninput="this.value=num(this.value)?miles(num(this.value)):'';ajSet('soatDefecto', num(this.value))"></div></div>
+          <div class="campo"><label>Modelo (año) por defecto</label><input value="${esc(a.anioDefecto)}" inputmode="numeric" maxlength="4" oninput="ajSet('anioDefecto', this.value.trim())"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Color</div>
+        <div class="swatches">${CT_COLORES.map(c => `<button class="sw ${c.id === color ? 'on' : ''}" title="${c.nombre}" style="background:linear-gradient(135deg,${c.a},${c.b})" onclick="ctElegirColor('${c.id}')"></button>`).join('')}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Cuenta y nube</div>
+        <div id="ct-cuenta-info"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-sm" id="ct-btn-sesion" onclick="ctBotonSesion()">Iniciar sesión</button>
+          <button class="btn btn-sm" onclick="ctSincronizarAhora()">Sincronizar ahora</button>
+        </div>
+        <div class="lbl" style="margin-top:16px">Respaldo</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+          <button class="btn btn-sm" onclick="exportarRespaldo()">${ico('descarga', 14)}Descargar respaldo</button>
+          <label class="btn btn-sm" style="cursor:pointer">${ico('compartir', 14)}Importar<input type="file" accept=".json,application/json" hidden onchange="importarRespaldo(this)"></label>
+        </div>
+      </div>
+    </div>`;
+  ctActualizarIndicador();
+}
+function ajPlazos(el){
+  const p = [...new Set(el.value.split(/[^\d]+/).map(Number).filter(n => n > 0 && n <= 120))].sort((a, b) => a - b);
+  if(!p.length){ toast('Escribe al menos un plazo'); el.value = (aj().plazos || []).join(', '); return; }
+  ajSet('plazos', p); el.value = p.join(', ');
+}
+async function ajQuitarPlan(i){
+  const a = aj();
+  if(a.planes.length <= 1){ toast('Debe quedar al menos un plan'); return; }
+  if(!await preguntar({titulo: 'Quitar plan', texto: `Se quitará "${a.planes[i].nombre}". Las cotizaciones guardadas conservan su tasa.`, si: 'Quitar', peligro: true})) return;
+  const [p] = a.planes.splice(i, 1);
+  if(a.planDefecto === p.id) a.planDefecto = a.planes[0].id;
+  guardarCfg(true); renderAjustes();
+}
+function exportarRespaldo(){
+  const b = {app: 'Cotizaciones', version: 1, fecha: new Date().toISOString(), cotizaciones, motos, config};
+  const blob = new Blob([JSON.stringify(b, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = 'Cotizaciones_respaldo_' + hoyISO() + '.json';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  toast('Respaldo descargado (' + cotizaciones.length + ' cotizaciones)');
+}
+// Importar SUMA: nunca borra. Lo que ya existe con el mismo id no se toca.
+function importarRespaldo(input){
+  const f = input.files[0]; input.value = ''; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = async e => {
+    let d; try { d = JSON.parse(e.target.result); } catch(err){ toast('El archivo no es un respaldo válido'); return; }
+    if(!d || d.app !== 'Cotizaciones'){ toast('El archivo no es un respaldo de Cotizaciones'); return; }
+    const ids = new Set(cotizaciones.map(q => q.id)), idsM = new Set(motos.map(m => m.id));
+    const nc = (d.cotizaciones || []).filter(q => q && q.id && !ids.has(q.id));
+    const nm = (d.motos || []).filter(m => m && m.id && !idsM.has(m.id));
+    if(!nc.length && !nm.length){ toast('Ese respaldo no tiene nada nuevo'); return; }
+    if(!await preguntar({titulo: '¿Importar este respaldo?', texto: `Se agregarán ${nc.length} cotización(es) y ${nm.length} moto(s). No se borra nada de lo que ya tienes.`, si: 'Importar'})) return;
+    cotizaciones.push(...nc); motos.push(...nm);
+    guardarCot(); guardarMotos(); ctRefrescarUI();
+    toast('Respaldo importado');
+  };
+  rd.readAsText(f);
+}
+
+// ── Colores ─────────────────────────────────────────────────────────────────
+function ctElegirColor(id){
+  try { localStorage.setItem('ct_color', id); } catch(e){}
+  ctAplicarColor(id);
+  document.querySelectorAll('.sw').forEach(s => s.classList.toggle('on', s.getAttribute('onclick').includes("'" + id + "'")));
+}
+function ctAbrirColores(ev){
+  ev.stopPropagation();
+  const p = $('ct-colores');
+  const color = document.documentElement.dataset.color;
+  $('ct-sw-pop').innerHTML = CT_COLORES.map(c => `<button class="sw ${c.id === color ? 'on' : ''}" title="${c.nombre}" style="background:linear-gradient(135deg,${c.a},${c.b})" onclick="ctElegirColor('${c.id}')"></button>`).join('');
+  p.classList.toggle('on');
+}
+document.addEventListener('click', e => { const p = $('ct-colores'); if(p.classList.contains('on') && !p.contains(e.target)) p.classList.remove('on'); });
+
+// ── Ventanas ────────────────────────────────────────────────────────────────
+function abrirModal(html){ $('ct-modal-box').innerHTML = html; $('ct-modal').classList.add('on'); }
+function cerrarModal(){ $('ct-modal').classList.remove('on'); if(_ctRefrescar) setTimeout(() => { if(!ctEditando()) ctRefrescarUI(); }, 0); }
+document.addEventListener('keydown', e => { if(e.key === 'Escape'){ cerrarModal(); $('ct-colores').classList.remove('on'); } });
+function preguntar({titulo, texto, si, no, peligro}){
+  return new Promise(res => {
+    $('ct-pregunta-titulo').textContent = titulo;
+    $('ct-pregunta-texto').textContent = texto;
+    const bSi = $('ct-pregunta-si'), bNo = $('ct-pregunta-no');
+    bSi.textContent = si || 'Aceptar'; bSi.className = peligro ? 'btn btn-danger' : 'btn btn-primary';
+    bNo.textContent = no || 'Cancelar'; bNo.style.display = no === null ? 'none' : '';
+    const cerrar = v => { $('ct-pregunta').classList.remove('on'); res(v); };
+    bSi.onclick = () => cerrar(true); bNo.onclick = () => cerrar(false);
+    $('ct-pregunta').classList.add('on');
+  });
+}
+
+// ── Navegación ──────────────────────────────────────────────────────────────
+function panelActual(){ return ((document.querySelector('.panel.active') || {}).id || '').replace('p-', ''); }
+function ir(p){
+  if(panelActual() === 'requisitos' && p !== 'requisitos' && _rqEditar){ _rqEditar = false; limpiarRequisitos(); }
+  document.querySelectorAll('.panel').forEach(x => x.classList.toggle('active', x.id === 'p-' + p));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.p === p));
+  if(p === 'historial') renderHistorial();
+  if(p === 'requisitos') renderRequisitos();
+  if(p === 'motos') renderMotos();
+  if(p === 'ajustes') renderAjustes();
+  if(p === 'cotizar'){ renderPlanes(); renderResultado(); }
+  try { localStorage.setItem('ct_panel', p); } catch(e){}
+  if(p !== 'cotizar') window.scrollTo({top: 0});
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// ── NUBE (Supabase) ──────────────────────────────────────────────────────────
+// Igual que Traspasos: la misma cuenta y la misma tabla que MotoContable
+// (mc_registros, colecciones 'cotizaciones', 'cot_motos' y 'cot_config').
+// localStorage es la copia local. La "sombra" guarda, por registro, la última versión
+// confirmada por la nube; lo que difiere de ella es un cambio pendiente y se envía con
+// mc_push, que no deja que una versión vieja pise una nueva.
+// Requiere supabase/10_cotizaciones.sql (ver LEEME, FASE 12).
+// ════════════════════════════════════════════════════════════════════════════
+const SUPA_URL = 'https://llyovzgwdqoeunvyczcy.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxseW92emd3ZHFvZXVudnljemN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MzUzNjcsImV4cCI6MjEwNjAxMTM2N30.g1DgUdTGPHDz8HEI1Kgv4SOJ13zyOwOfcAp8Ak2BRGQ';
+const CT_URL_PUBLICA = 'https://samuelmonsalve256-ai.github.io/Motocontable/cotizaciones.html';
+let _supa = null;
+try {
+  _supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
+    auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit', storageKey: 'mc-auth'}  // misma sesión que MotoContable
+  });
+} catch(e){ console.log('Supabase no disponible:', e); }
+
+const CT_SYNC_KEY = 'ct_sync_v1';
+const CT_COLS = {
+  cotizaciones: {key: K_COT,   get: () => cotizaciones, set: v => { cotizaciones = v; }},
+  cot_motos:    {key: K_MOTOS, get: () => motos,        set: v => { motos = v; }},
+  cot_config:   {key: K_CFG,   get: () => config,       set: v => { config = v; }},
+};
+const CT_COLECCIONES = Object.keys(CT_COLS);
+const CT_ESPERA_GUARDADO = 1200, CT_ESPERA_MAXIMA = 5000;
+
+let _ctSesion = null, _ctEstado = null, _ctSync = null, _ctRepetir = false;
+let _ctTimer = null, _ctPrimerCambio = 0, _ctTimerRemoto = null, _ctReintento = null;
+let _ctFallos = 0, _ctCanal = null, _ctUltimoOk = null, _ctRefrescar = false;
+let _ctEventosListos = false, _ctMigrando = false, _ctEstadoListo = false;
+let _ctRecuperacion = /type=recovery/.test(location.hash);
+
+const ctDeviceId = (() => {
+  try {
+    let d = localStorage.getItem('mc_device_id');
+    if(!d){
+      const ua = navigator.userAgent;
+      const tipo = /iPhone/.test(ua) ? 'iphone' : /iPad/.test(ua) ? 'ipad' : /Android/.test(ua) ? 'android' : /Mac/.test(ua) ? 'mac' : /Windows/.test(ua) ? 'windows' : 'web';
+      d = tipo + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      localStorage.setItem('mc_device_id', d);
+    }
+    return d;
+  } catch(e){ return 'web_' + Math.random().toString(36).slice(2, 8); }
+})();
+
+function ctCanon(v){
+  return JSON.stringify(v, (k, val) => {
+    if(val && typeof val === 'object' && !Array.isArray(val)){ const o = {}; Object.keys(val).sort().forEach(key => { o[key] = val[key]; }); return o; }
+    return val;
+  });
+}
+function ctHash(v){
+  const s = ctCanon(v);
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for(let i = 0; i < s.length; i++){ const ch = s.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (h2 >>> 0).toString(36) + (h1 >>> 0).toString(36) + ':' + s.length;
+}
+function ctCargarEstado(){ try { _ctEstado = JSON.parse(localStorage.getItem(CT_SYNC_KEY) || 'null'); } catch(e){ _ctEstado = null; } return _ctEstado; }
+function ctGuardarEstado(){ try { localStorage.setItem(CT_SYNC_KEY, JSON.stringify(_ctEstado)); return true; } catch(e){ return false; } }
+function ctMapaLocal(col){
+  const m = new Map();
+  (CT_COLS[col].get() || []).forEach(o => { if(o && o.id != null && o.id !== '') m.set(String(o.id), o); });
+  return m;
+}
+function ctPersistirLocal(col){ return guardarLocal(CT_COLS[col].key, CT_COLS[col].get()); }
+
+function ctCalcularPendientes(){
+  const cambios = [];
+  if(!_ctEstado) return cambios;
+  const sombra = _ctEstado.sombra;
+  CT_COLECCIONES.forEach(col => {
+    const mapa = ctMapaLocal(col);
+    mapa.forEach((obj, id) => {
+      const sh = sombra[col + '|' + id], h = ctHash(obj);
+      if(!sh || sh.d || sh.h !== h) cambios.push({coleccion: col, id, data: obj, base_version: sh ? sh.v : null, _h: h});
+    });
+    Object.keys(sombra).forEach(k => {
+      if(!k.startsWith(col + '|')) return;
+      const id = k.slice(col.length + 1), sh = sombra[k];
+      if(!sh.d && !mapa.has(id)) cambios.push({coleccion: col, id, eliminar: true, base_version: sh.v});
+    });
+  });
+  return cambios;
+}
+function ctBorradosMasivos(cambios){
+  const vivos = {}, borrados = {};
+  Object.entries(_ctEstado.sombra).forEach(([k, sh]) => { if(!sh.d){ const c = k.slice(0, k.indexOf('|')); vivos[c] = (vivos[c] || 0) + 1; } });
+  cambios.forEach(c => { if(c.eliminar) borrados[c.coleccion] = (borrados[c.coleccion] || 0) + 1; });
+  return Object.keys(borrados).filter(c => borrados[c] >= 5 && borrados[c] > (vivos[c] || 0) / 2).map(c => ({coleccion: c, cantidad: borrados[c], total: vivos[c] || 0}));
+}
+function ctOrdenar(col){
+  const sombra = _ctEstado.sombra;
+  const fecha = o => { const sh = sombra[col + '|' + o.id]; return sh && sh.c != null ? sh.c : Infinity; };
+  const arr = CT_COLS[col].get().slice();
+  arr.sort((a, b) => { const fa = fecha(a), fb = fecha(b); return fa === fb ? 0 : (fa < fb ? -1 : 1); });
+  CT_COLS[col].set(arr);
+}
+function ctAplicarRemota(fila, forzar){
+  const col = fila.coleccion, id = String(fila.id), key = col + '|' + id;
+  if(!CT_COLECCIONES.includes(col)) return false;
+  const sombra = _ctEstado.sombra, sh = sombra[key];
+  const local = ctMapaLocal(col).get(id);
+  const c = fila.created_at ? Date.parse(fila.created_at) : (sh && sh.c);
+  const hRemoto = fila.eliminado ? null : ctHash(fila.data);
+  const nuevaSombra = fila.eliminado ? {v: fila.version, d: 1, c} : {v: fila.version, h: hRemoto, c};
+  if(fila.eliminado ? !local : (local && ctHash(local) === hRemoto)){ sombra[key] = nuevaSombra; return false; }
+  const pendiente = sh ? (sh.d ? !!local : (!local || ctHash(local) !== sh.h)) : !!local;
+  if(pendiente && !forzar) return false;
+  const arr = CT_COLS[col].get().slice();
+  const idx = arr.findIndex(o => o && String(o.id) === id);
+  if(fila.eliminado){ if(idx >= 0) arr.splice(idx, 1); }
+  else if(idx >= 0) arr[idx] = fila.data;
+  else arr.push(fila.data);
+  CT_COLS[col].set(arr);
+  sombra[key] = nuevaSombra;
+  return true;
+}
+async function ctTraerCambios(desde, forzar){
+  let cursor = desde;
+  const tocadas = new Set(), insertadas = new Set();
+  while(true){
+    const {data, error} = await _supa.rpc('mc_pull', {p_desde: cursor, p_limite: 500});
+    if(error) throw error;
+    const filas = data || [];
+    filas.forEach(f => {
+      if(CT_COLECCIONES.includes(f.coleccion)){
+        const existia = ctMapaLocal(f.coleccion).has(String(f.id));
+        if(ctAplicarRemota(f, !!(forzar && forzar(f)))){ tocadas.add(f.coleccion); if(!existia && !f.eliminado) insertadas.add(f.coleccion); }
+      }
+      if(f.seq > cursor) cursor = f.seq;
+    });
+    if(filas.length < 500) break;
+  }
+  insertadas.forEach(ctOrdenar);
+  tocadas.forEach(ctPersistirLocal);
+  _ctEstado.cursor = cursor;
+  ctGuardarEstado();
+  if(tocadas.size) ctRefrescarUI();
+  return tocadas.size;
+}
+function ctLotes(cambios){
+  const lotes = []; let actual = [], tam = 0;
+  cambios.forEach(c => {
+    const t = c.data ? JSON.stringify(c.data).length : 100;
+    if(actual.length && (actual.length >= 100 || tam + t > 1500000)){ lotes.push(actual); actual = []; tam = 0; }
+    actual.push(c); tam += t;
+  });
+  if(actual.length) lotes.push(actual);
+  return lotes;
+}
+const ctSinHash = c => { const {_h, ...resto} = c; return resto; };
+async function ctEnviarPendientes(){
+  let cambios = ctCalcularPendientes();
+  if(!cambios.length) return;
+  const masivos = ctBorradosMasivos(cambios);
+  if(masivos.length){
+    const nombres = {cotizaciones: 'cotizaciones', cot_motos: 'motos', cot_config: 'ajustes'};
+    const detalle = masivos.map(m => `• ${m.cantidad} de ${m.total} ${nombres[m.coleccion] || m.coleccion}`).join('\n');
+    const ok = await preguntar({titulo: 'Confirmar eliminación',
+      texto: `Se van a eliminar de la nube, y por lo tanto de todos tus dispositivos:\n${detalle}\n\nSi no es lo que querías, pulsa "Recuperar".`, si: 'Sí, eliminar', no: 'Recuperar'});
+    if(!ok){
+      const recuperar = new Set(cambios.filter(c => c.eliminar && masivos.some(m => m.coleccion === c.coleccion)).map(c => c.coleccion + '|' + c.id));
+      await ctTraerCambios(0, f => recuperar.has(f.coleccion + '|' + f.id));
+      cambios = ctCalcularPendientes().filter(c => !(c.eliminar && recuperar.has(c.coleccion + '|' + c.id)));
+      if(!cambios.length) return;
+    }
+  }
+  const sombra = _ctEstado.sombra, tocadas = new Set();
+  let conflictos = 0;
+  for(const lote of ctLotes(cambios)){
+    const enviado = {};
+    lote.forEach(c => { enviado[c.coleccion + '|' + c.id] = c; });
+    const {data, error} = await _supa.rpc('mc_push', {p_cambios: lote.map(ctSinHash), p_device: ctDeviceId});
+    if(error) throw error;
+    (data.aplicados || []).forEach(a => {
+      const key = a.coleccion + '|' + a.id, c = enviado[key], prev = sombra[key] || {};
+      if(a.resultado === 'inexistente') delete sombra[key];
+      else if(a.eliminado) sombra[key] = {v: a.version, d: 1, c: prev.c};
+      else sombra[key] = {v: a.version, h: c._h, c: prev.c != null ? prev.c : Date.now()};
+    });
+    const aHistorial = [];
+    (data.conflictos || []).forEach(f => {
+      conflictos++;
+      const c = enviado[f.coleccion + '|' + f.id];
+      const actual = ctMapaLocal(f.coleccion).get(String(f.id));
+      if(actual && c && !c.eliminar && ctHash(actual) !== c._h) aHistorial.push({coleccion: f.coleccion, id: String(f.id), data: actual, base_version: null});
+      if(ctAplicarRemota(f, true)) tocadas.add(f.coleccion);
+    });
+    if(aHistorial.length){ const r = await _supa.rpc('mc_push', {p_cambios: aHistorial, p_device: ctDeviceId}); if(r.error) throw r.error; }
+    ctGuardarEstado();
+  }
+  tocadas.forEach(col => { ctOrdenar(col); ctPersistirLocal(col); });
+  ctGuardarEstado();
+  if(tocadas.size) ctRefrescarUI();
+  if(conflictos) toast(`${conflictos} cambio(s) en conflicto: se conservó la versión más reciente de la nube`);
+}
+async function ctReconciliar(){
+  const {data, error} = await _supa.rpc('mc_indice');
+  if(error) throw error;
+  const sombra = _ctEstado.sombra, enNube = new Set();
+  let difiere = false;
+  (data || []).forEach(r => {
+    if(!CT_COLECCIONES.includes(r.coleccion)) return;
+    const key = r.coleccion + '|' + r.id; enNube.add(key);
+    const sh = sombra[key];
+    if(!sh || sh.v !== r.version || !!sh.d !== !!r.eliminado) difiere = true;
+  });
+  Object.keys(sombra).forEach(k => { if(!enNube.has(k)) delete sombra[k]; });
+  return difiere;
+}
+function ctSincronizar(motivo, opciones){
+  if(!_supa || !_ctSesion || !_ctEstadoListo || !_ctEstado || _ctMigrando){ ctActualizarIndicador(); return Promise.resolve(false); }
+  if(_ctSync){ _ctRepetir = true; return _ctSync; }
+  if(!navigator.onLine){ ctActualizarIndicador(); return Promise.resolve(false); }
+  _ctSync = (async () => {
+    let ok = false;
+    try {
+      ctActualizarIndicador();
+      if(opciones && opciones.reconciliar && await ctReconciliar()) await ctTraerCambios(0);
+      else await ctTraerCambios(_ctEstado.cursor || 0);
+      await ctEnviarPendientes();
+      _ctFallos = 0; _ctUltimoOk = new Date(); ok = true;
+      clearTimeout(_ctReintento); _ctReintento = null;
+    } catch(e){
+      console.log('Error de sincronización (' + motivo + '):', e);
+      _ctFallos++;
+      if(_ctFallos === 1 && ctCalcularPendientes().length)
+        toast(/coleccion_check/.test((e && e.message) || '') ? 'Falta ejecutar supabase/10_cotizaciones.sql en Supabase. Tus datos están a salvo en este dispositivo'
+          : 'No se pudo guardar en la nube. Tus cambios están a salvo en este dispositivo y se reintentará');
+      if(e && (e.code === '42501' || e.status === 401 || /JWT|sesi/i.test(e.message || ''))){
+        const {data} = await _supa.auth.getSession();
+        if(!data || !data.session){ _ctSesion = null; _ctEstadoListo = false; ctMostrarLogin('login'); }
+      }
+      clearTimeout(_ctReintento);
+      _ctReintento = setTimeout(() => ctSincronizar('reintento'), Math.min(60000, 5000 * Math.pow(2, _ctFallos - 1)));
+    } finally {
+      _ctSync = null;
+      ctActualizarIndicador();
+      if(_ctRepetir){ _ctRepetir = false; setTimeout(() => ctSincronizar('repetir'), 0); }
+    }
+    return ok;
+  })();
+  return _ctSync;
+}
+function ctMarcarCambios(){
+  const ahora = Date.now();
+  if(!_ctPrimerCambio) _ctPrimerCambio = ahora;
+  clearTimeout(_ctTimer);
+  _ctTimer = setTimeout(() => ctGuardarAhora('guardado'), Math.max(0, Math.min(CT_ESPERA_GUARDADO, _ctPrimerCambio + CT_ESPERA_MAXIMA - ahora)));
+  ctActualizarIndicador();
+}
+function ctGuardarAhora(motivo){
+  clearTimeout(_ctTimer); _ctTimer = null; _ctPrimerCambio = 0;
+  if(_ctSesion && _ctEstadoListo) return ctSincronizar(motivo || 'guardado');
+  ctActualizarIndicador();
+  return Promise.resolve(false);
+}
+function ctEnvioDeEmergencia(){
+  try {
+    if(_cfgT){ clearTimeout(_cfgT); _cfgT = null; guardarLocal(K_CFG, config); }
+    if(!_ctSesion || !_ctEstadoListo || !_ctEstado || _ctMigrando) return;
+    let cambios = ctCalcularPendientes();
+    if(!cambios.length) return;
+    if(ctBorradosMasivos(cambios).length) cambios = cambios.filter(c => !c.eliminar);
+    const lote = []; let tam = 200;
+    for(const c of cambios){ const t = JSON.stringify(ctSinHash(c)).length; if(tam + t > 60000) continue; lote.push(ctSinHash(c)); tam += t; }
+    if(!lote.length) return;
+    fetch(SUPA_URL + '/rest/v1/rpc/mc_push', {
+      method: 'POST', keepalive: true,
+      headers: {'Content-Type': 'application/json', apikey: SUPA_KEY, Authorization: 'Bearer ' + _ctSesion.access_token},
+      body: JSON.stringify({p_cambios: lote, p_device: ctDeviceId})
+    }).catch(() => {});
+  } catch(e){}
+}
+function ctIndicador(estado, n){
+  const ind = $('ct-sync'); if(!ind) return;
+  const cambios = n === 1 ? '1 cambio' : n + ' cambios';
+  const e = {
+    'guardando': 'Guardando…', 'guardado': 'Guardado en la nube', 'error': 'Error al guardar — toca para reintentar',
+    'sin-nube': 'Sin conexión con la nube', 'sin-conexion': n ? 'Sin conexión — ' + cambios + ' aquí' : 'Sin conexión',
+    'sin-sesion': 'Sin sesión — toca para entrar', 'cargando': 'Cargando…',
+  }[estado] || 'Nube';
+  ind.textContent = e; ind.dataset.estado = estado;
+}
+function ctActualizarIndicador(){
+  let n = 0;
+  try { n = _ctEstado ? ctCalcularPendientes().length : 0; } catch(e){}
+  if(!_supa) ctIndicador('sin-conexion', n);
+  else if(!_ctSesion || !_ctEstadoListo) ctIndicador(_ctMigrando ? 'cargando' : 'sin-sesion');
+  else if(!navigator.onLine) ctIndicador('sin-conexion', n);
+  else if(_ctFallos && !_ctSync) ctIndicador(n ? 'error' : 'sin-nube', n);
+  else if(n) ctIndicador('guardando', n);
+  else ctIndicador('guardado');
+  ctActualizarCuenta(n);
+}
+function ctActualizarCuenta(n){
+  const info = $('ct-cuenta-info'), btn = $('ct-btn-sesion');
+  const conectado = _ctSesion && _ctEstadoListo;
+  if(btn) btn.textContent = conectado ? 'Cerrar sesión' : 'Iniciar sesión';
+  if(!info) return;
+  if(!conectado){ info.textContent = 'No has iniciado sesión. Todo se guarda en este dispositivo y se subirá a la nube cuando entres con tu cuenta de MotoContable.'; return; }
+  const hora = _ctUltimoOk ? _ctUltimoOk.toLocaleTimeString('es-CO', {hour: '2-digit', minute: '2-digit'}) : '—';
+  info.innerHTML = 'Conectado como <strong></strong> (la misma cuenta de MotoContable).<br>Última sincronización: ' + hora + '<br>Cambios pendientes: <strong>' + (n || 0) + '</strong>';
+  info.querySelector('strong').textContent = (_ctSesion.user && _ctSesion.user.email) || '';
+}
+function ctEditando(){ const a = document.activeElement; return a && a.closest && a.closest('main') && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); }
+function ctRefrescarUI(){
+  contadores(); renderMotosDatalist();
+  const p = panelActual();
+  if(ctEditando() || $('ct-modal').classList.contains('on')){ _ctRefrescar = true; return; }
+  _ctRefrescar = false;
+  if(p === 'cotizar'){ renderPlanes(); renderResultado(); }
+  else if(p === 'historial') renderHistorial();
+  else if(p === 'requisitos' && !_rqEditar) renderRequisitos();
+  else if(p === 'motos') renderMotos();
+  else if(p === 'ajustes') renderAjustes();
+}
+document.addEventListener('focusout', () => {
+  if(!_ctRefrescar) return;
+  setTimeout(() => { if(_ctRefrescar && !ctEditando() && !$('ct-modal').classList.contains('on')) ctRefrescarUI(); }, 400);
+});
+
+// Inicio de sesión (la misma cuenta de MotoContable)
+let _ctModoLogin = 'login';
+function ctMostrarLogin(modo){
+  _ctModoLogin = modo || 'login';
+  const nueva = _ctModoLogin === 'nueva', cargando = _ctModoLogin === 'cargando';
+  $('ct-login-titulo').textContent = nueva ? 'Nueva contraseña' : cargando ? 'Sincronizando…' : 'Inicia sesión';
+  $('ct-login-sub').textContent = nueva ? 'Escribe tu nueva contraseña.'
+    : cargando ? 'Estamos uniendo las cotizaciones de este dispositivo con la nube. No cierres la página.'
+    : 'Usa la misma cuenta de MotoContable. Tus cotizaciones, motos y requisitos se verán igual en el celular y en el Mac.';
+  $('ct-login-form').style.display = cargando ? 'none' : '';
+  $('ct-login-email-g').style.display = nueva ? 'none' : '';
+  $('ct-login-extra').style.display = (nueva || cargando) ? 'none' : 'flex';
+  const pass = $('ct-login-pass'); pass.value = ''; pass.autocomplete = nueva ? 'new-password' : 'current-password';
+  $('ct-login-email').required = !nueva;
+  $('ct-login-btn').textContent = nueva ? 'Guardar contraseña' : 'Iniciar sesión';
+  ctLoginMensaje('');
+  $('ct-login').classList.add('on');
+}
+function ctOcultarLogin(){ $('ct-login').classList.remove('on'); }
+function ctLoginMensaje(txt, error){ const m = $('ct-login-msg'); m.textContent = txt; m.style.display = txt ? 'block' : 'none'; m.style.color = error ? 'var(--danger)' : 'var(--text2)'; }
+async function ctLoginEnviar(){
+  if(!_supa){ ctLoginMensaje('No hay conexión con la nube. Revisa tu internet y recarga la página.', true); return; }
+  const btn = $('ct-login-btn'), email = $('ct-login-email').value.trim(), pass = $('ct-login-pass').value;
+  btn.disabled = true;
+  try {
+    if(_ctModoLogin === 'nueva'){
+      if(pass.length < 8){ ctLoginMensaje('La contraseña debe tener al menos 8 caracteres.', true); return; }
+      const {error} = await _supa.auth.updateUser({password: pass});
+      if(error){ ctLoginMensaje('No se pudo cambiar la contraseña: ' + error.message, true); return; }
+      _ctRecuperacion = false; toast('Contraseña actualizada'); ctOcultarLogin();
+      const {data} = await _supa.auth.getSession();
+      if(data && data.session && !_ctEstadoListo) await ctConSesion(data.session);
+      return;
+    }
+    ctLoginMensaje('Entrando…');
+    const {data, error} = await _supa.auth.signInWithPassword({email, password: pass});
+    if(error){
+      ctLoginMensaje(/invalid/i.test(error.message) ? 'Correo o contraseña incorrectos.'
+        : (!navigator.onLine || /fetch|network/i.test(error.message)) ? 'No se pudo conectar con la nube. Revisa tu internet.' : 'No se pudo iniciar sesión: ' + error.message, true);
+      return;
+    }
+    await ctConSesion(data.session);
+  } catch(e){ ctLoginMensaje('No se pudo conectar. Revisa tu internet e inténtalo de nuevo.', true); }
+  finally { btn.disabled = false; }
+}
+async function ctLoginOlvide(){
+  const email = $('ct-login-email').value.trim();
+  if(!email){ ctLoginMensaje('Escribe tu correo y vuelve a pulsar "¿Olvidaste tu contraseña?".', true); return; }
+  if(!_supa){ ctLoginMensaje('No hay conexión con la nube.', true); return; }
+  const destino = location.protocol === 'file:' ? CT_URL_PUBLICA : location.origin + location.pathname;
+  const {error} = await _supa.auth.resetPasswordForEmail(email, {redirectTo: destino});
+  ctLoginMensaje(error ? 'No se pudo enviar el correo: ' + error.message : 'Si el correo está registrado, te llegará un enlace para crear una nueva contraseña.', !!error);
+}
+function ctLoginSinSesion(){ ctOcultarLogin(); ctActualizarIndicador(); toast('Sin sesión: todo queda en este dispositivo hasta que inicies sesión'); }
+function ctBotonSesion(){ if(_ctSesion && _ctEstadoListo) ctCerrarSesion(); else ctMostrarLogin('login'); }
+async function ctCerrarSesion(){
+  if(navigator.onLine) await ctGuardarAhora('cerrar-sesion');
+  const n = _ctEstado ? ctCalcularPendientes().length : 0;
+  if(n){ await preguntar({titulo: 'Hay cambios sin subir', texto: `Tienes ${n} cambio(s) que todavía no llegan a la nube. Conéctate a internet y espera a que diga "Guardado en la nube".`, si: 'Entendido', no: null}); return; }
+  if(!await preguntar({titulo: 'Cerrar sesión', texto: 'Se cerrará la sesión también en MotoContable y Traspasos en este navegador.', si: 'Cerrar sesión'})) return;
+  if(_ctCanal){ try { _supa.removeChannel(_ctCanal); } catch(e){} _ctCanal = null; }
+  await _supa.auth.signOut();
+  _ctSesion = null; _ctEstadoListo = false;
+  ctActualizarIndicador(); ctMostrarLogin('login');
+}
+
+// Primera vez que esta cuenta entra en este navegador: se sube lo que solo existe aquí.
+// Para los ajustes y requisitos manda la nube (si ya existen allí); lo de aquí queda en el historial.
+async function ctTraerTodo(){
+  const filas = []; let cursor = 0;
+  while(true){
+    const {data, error} = await _supa.rpc('mc_pull', {p_desde: cursor, p_limite: 1000});
+    if(error) throw error;
+    (data || []).forEach(f => { if(CT_COLECCIONES.includes(f.coleccion)) filas.push(f); if(f.seq > cursor) cursor = f.seq; });
+    if(!data || data.length < 1000) break;
+  }
+  return {filas, cursor};
+}
+function ctMensajeError(e){
+  const m = (e && e.message) || 'error de conexión';
+  return /coleccion_check/.test(m) ? 'Falta ejecutar supabase/10_cotizaciones.sql en Supabase (ver LEEME, FASE 12)' : m;
+}
+async function ctMigrarDispositivo(uid){
+  _ctMigrando = true;
+  ctMostrarLogin('cargando');
+  try {
+    const {filas} = await ctTraerTodo();
+    const nube = new Map(filas.map(f => [f.coleccion + '|' + f.id, f]));
+    const cambios = [];
+    CT_COLECCIONES.forEach(col => {
+      (CT_COLS[col].get() || []).forEach(item => {
+        if(!item || typeof item !== 'object' || item.id == null || item.id === '') return;
+        const id = String(item.id), f = nube.get(col + '|' + id);
+        if(f && !f.eliminado && ctHash(f.data) === ctHash(item)) return;
+        if(f && f.eliminado) return;   // otro dispositivo lo eliminó
+        cambios.push({coleccion: col, id, data: item, modo: 'migracion'});
+      });
+    });
+    let subidos = 0;
+    for(const lote of ctLotes(cambios)){
+      const {data, error} = await _supa.rpc('mc_push', {p_cambios: lote, p_device: ctDeviceId});
+      if(error) throw error;
+      subidos += (data.aplicados || []).filter(a => a.resultado === 'creado').length;
+    }
+    const final = await ctTraerTodo();
+    const sombra = {};
+    CT_COLECCIONES.forEach(col => {
+      const filasCol = final.filas.filter(f => f.coleccion === col && !f.eliminado).sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
+      CT_COLS[col].set(filasCol.map(f => f.data));
+      ctPersistirLocal(col);
+    });
+    final.filas.forEach(f => {
+      sombra[f.coleccion + '|' + f.id] = f.eliminado ? {v: f.version, d: 1, c: Date.parse(f.created_at)} : {v: f.version, h: ctHash(f.data), c: Date.parse(f.created_at)};
+    });
+    _ctEstado = {userId: uid, cursor: final.cursor, sombra};
+    ctGuardarEstado();
+    _ctUltimoOk = new Date(); _ctMigrando = false;
+    aj(); rq();
+    ctOcultarLogin(); ctRefrescarUI();
+    toast(subidos ? `${subidos} registro(s) subidos a la nube` : 'Sincronizado con la nube');
+    return true;
+  } catch(e){
+    _ctMigrando = false;
+    console.log('Error en la migración del dispositivo:', e);
+    ctMostrarLogin('login');
+    ctLoginMensaje('No se pudo sincronizar (' + ctMensajeError(e) + '). Tus datos de este dispositivo siguen intactos. Puedes continuar sin sesión.', true);
+    return false;
+  }
+}
+async function ctConSesion(session){
+  _ctSesion = session;
+  const uid = session.user.id;
+  ctCargarEstado();
+  if(!_ctEstado || _ctEstado.userId !== uid){ if(!await ctMigrarDispositivo(uid)) return; }
+  else ctOcultarLogin();
+  _ctEstadoListo = true;
+  ctActualizarIndicador();
+  ctSuscribirTiempoReal(uid);
+  ctRegistrarEventos();
+  if(_ctRecuperacion) ctMostrarLogin('nueva');
+  await ctSincronizar('inicio', {reconciliar: true});
+}
+function ctSuscribirTiempoReal(uid){
+  if(_ctCanal || !_supa.channel) return;
+  try {
+    _ctCanal = _supa.channel('ct-registros-' + ctDeviceId)
+      .on('postgres_changes', {event: '*', schema: 'public', table: 'mc_registros', filter: 'user_id=eq.' + uid},
+          () => { clearTimeout(_ctTimerRemoto); _ctTimerRemoto = setTimeout(() => ctSincronizar('tiempo-real'), 400); })
+      .subscribe();
+  } catch(e){ console.log('Tiempo real no disponible:', e); }
+}
+function ctRegistrarEventos(){
+  if(_ctEventosListos) return;
+  _ctEventosListos = true;
+  window.addEventListener('online', () => { _ctFallos = 0; ctGuardarAhora('online'); });
+  window.addEventListener('offline', () => ctActualizarIndicador());
+  document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'hidden') ctGuardarAhora('oculta'); else ctSincronizar('visible'); });
+  window.addEventListener('pageshow', e => { if(e.persisted) ctSincronizar('pageshow'); });
+  setInterval(() => { if(document.visibilityState === 'visible') ctSincronizar('periodico'); }, 60000);
+}
+window.addEventListener('pagehide', ctEnvioDeEmergencia);
+async function ctIniciar(){
+  try { if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
+  ctCargarEstado();
+  if(!_supa){ ctActualizarIndicador(); return; }
+  ctIndicador('cargando');
+  _supa.auth.onAuthStateChange((evento, session) => {
+    if(session) _ctSesion = session;
+    if(evento === 'PASSWORD_RECOVERY'){ _ctRecuperacion = true; setTimeout(() => { if(!_ctMigrando) ctMostrarLogin('nueva'); }, 0); }
+    if(evento === 'SIGNED_OUT' && _ctSesion){ _ctSesion = null; _ctEstadoListo = false; setTimeout(() => { ctActualizarIndicador(); ctMostrarLogin('login'); }, 0); }
+  });
+  let session = null;
+  try { session = (await _supa.auth.getSession()).data.session; } catch(e){}
+  if(!session){ ctActualizarIndicador(); ctMostrarLogin('login'); return; }
+  await ctConSesion(session);
+}
+async function ctSincronizarAhora(){
+  if(!_supa){ toast('Sin conexión con la nube'); return; }
+  if(!_ctSesion || !_ctEstadoListo){ ctMostrarLogin('login'); return; }
+  const ok = await ctGuardarAhora('manual');
+  toast(ok ? 'Sincronizado con la nube' : !navigator.onLine ? 'Sin conexión: los cambios se enviarán al volver internet' : 'No se pudo sincronizar. Se reintentará automáticamente');
+}
+
+// ── Arranque ────────────────────────────────────────────────────────────────
+(function iniciar(){
+  // Si no había nada guardado, se dejan los valores del Excel como punto de partida
+  if(localStorage.getItem(K_MOTOS) == null) guardarLocal(K_MOTOS, motos);
+  if(localStorage.getItem(K_CFG) == null) guardarLocal(K_CFG, config);
+  contadores();
+  renderMotosDatalist();
+  const b = cargar(K_BORRADOR, null);
+  cz = b && b.cliente ? b : czVacia();
+  if(cz.id && !cotizaciones.some(q => q.id === cz.id)){ cz.id = null; cz.numero = null; }
+  czAForm(); renderPlanes(); renderEditando(); renderResultado();
+  let p = 'cotizar'; try { p = localStorage.getItem('ct_panel') || 'cotizar'; } catch(e){}
+  if(!$('p-' + p)) p = 'cotizar';
+  ir(p);
+  ctIniciar();
+  setTimeout(() => cargarPdf().catch(() => {}), 2500);
+})();
+</script>
+</body>
+</html>
