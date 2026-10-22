@@ -23,6 +23,7 @@ Esta guía te lleva paso a paso para configurar tu proyecto de Supabase.
 | `07_fotos.sql` | Crea el bucket privado `fotos` y sus reglas | Guarda las fotos de motos y carros como archivos en Supabase Storage (FASE 9). No toca ninguna tabla ni dato |
 | `08_respaldos.sql` | Crea el bucket privado `respaldos` y sus reglas | Respaldo semanal automático de tus datos en la nube, aparte de la sincronización (FASE 10). No toca ninguna tabla ni dato |
 | `09_aprobaciones.sql` | Crea la tabla `mc_aprobaciones` y 4 funciones | Quien paga en la financiera aprueba las cuentas cobradas desde un enlace, con su cédula (FASE 11). No toca ninguna tabla ni dato existente |
+| `10_cotizaciones.sql` | Amplía la lista de colecciones permitidas | Guarda en la nube las Cotizaciones de crédito, el catálogo de motos y los requisitos (FASE 12). No borra datos |
 
 Ningún archivo borra la tabla `mc_datos` ni tus datos. Los archivos 01 a 05 se pueden volver a ejecutar sin problema: no duplican ni pisan nada.
 
@@ -362,4 +363,27 @@ Cuando envías en PDF una cuenta ya cobrada, el mensaje y el PDF llevan un **enl
 - La página solo muestra el resumen de esa cuenta: nada más de tu negocio, y nunca la cédula guardada.
 - Si escriben mal la cédula 5 veces, el enlace se bloquea.
 - Solo tú, con tu sesión, puedes ver la lista de aprobaciones.
+
+---
+
+## FASE 12: Cotizaciones de crédito en la nube
+
+La página **Cotizaciones** (`cotizaciones.html`) reemplaza el Excel "COTIZACION Y REQUISITOS". Es un sistema aparte de MotoContable: no aparece en su menú y tiene su propia sesión (se entra con el mismo correo y contraseña de Supabase). Guarda en la nube las cotizaciones, el catálogo de motos, los ajustes y los requisitos, para que se vean igual en el iPhone y en el Mac.
+
+**Paso único: ejecutar el SQL**
+1. En Supabase abre **SQL Editor → New query**.
+2. Abre el archivo `10_cotizaciones.sql`, copia **todo su contenido** y pégalo en el editor. Pulsa **Run**.
+3. Al final debe mostrar la regla nueva (incluye `cotizaciones`, `cot_motos` y `cot_config`) y cuántos registros hay por colección. Si tu tabla ya tenía otras colecciones, el SQL las conserva en la regla.
+
+**Cómo entrar:**
+- Directo: `https://samuelmonsalve256-ai.github.io/Motocontable/cotizaciones.html`. En el iPhone agrégala a la pantalla de inicio (Compartir → Agregar a inicio) para tenerla como una app aparte. En el Mac, guárdala en favoritos o en el Dock (Safari → Archivo → Agregar al Dock).
+
+**Si no ejecutas el SQL**, la página funciona igual pero todo queda solo en ese dispositivo, y al iniciar sesión verás el aviso "Falta ejecutar supabase/10_cotizaciones.sql".
+
+**Fórmulas (las mismas del Excel):**
+- Total precio de compra = valor del vehículo + accesorios − descuento + SOAT, matrícula y demás.
+- Saldo a financiar = total − cuota inicial.
+- Cuota = (saldo ÷ número de cuotas + saldo × tasa mensual), redondeada hacia arriba a $1.000.
+- Valor pagaré = cuota × número de cuotas. Inicial mínima sugerida = total ÷ 3.
+- Tasas: Crédito ZOMAC 2,5 %, Libranza 2 %, Credicontado 0 % (se cambian en **Ajustes**).
 
