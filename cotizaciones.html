@@ -64,6 +64,7 @@ function ctAplicarColor(id){
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-text-size-adjust: 100%; }
+  body.bloqueado { overflow: hidden; }
   body {
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-size: 14px; color: var(--text); min-height: 100vh;
@@ -428,7 +429,36 @@ function ctAplicarColor(id){
   .picker-item:hover { border-color: rgba(var(--accent-rgb),.45); background: var(--accent-light); }
   .picker-item b { flex: 1; font-size: 14px; }
   .picker-item span { font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
-  #ct-login { background: radial-gradient(700px 400px at 15% 10%, rgba(var(--accent-2-rgb),.35), transparent 60%), radial-gradient(600px 400px at 90% 90%, rgba(var(--accent-rgb),.35), transparent 60%), linear-gradient(135deg, #0b1020, var(--accent-ink)); z-index: 2000; }
+  /* Inicio de sesión: pantalla completa dentro de la página (no flotante), para que
+     el teclado del iPhone no la tape ni la haga saltar */
+  #ct-login { display: none; }
+  body.login-on > header, body.login-on > .layout, body.login-on > .sw-pop { display: none !important; }
+  body.login-on #ct-login {
+    display: flex; justify-content: center; align-items: flex-start;
+    min-height: 100vh; min-height: 100dvh;
+    padding: calc(env(safe-area-inset-top) + 9vh) 18px calc(env(safe-area-inset-bottom) + 28px);
+    background:
+      radial-gradient(700px 400px at 15% 0%, rgba(var(--accent-2-rgb),.35), transparent 60%),
+      radial-gradient(600px 420px at 90% 100%, rgba(var(--accent-rgb),.35), transparent 60%),
+      linear-gradient(160deg, #0b1020, var(--accent-ink));
+  }
+  .login-box { width: 100%; max-width: 400px; background: var(--surface); border-radius: 26px; padding: 28px 22px 22px; box-shadow: 0 30px 80px -20px rgba(0,0,0,.6); animation: ctModal .25s cubic-bezier(.2,.7,.2,1); }
+  .login-logo { width: 56px; height: 56px; border-radius: 18px; margin: 0 auto 14px; display: grid; place-items: center; background: var(--grad); color: #fff; box-shadow: 0 12px 26px -10px rgba(var(--accent-rgb),.8); }
+  .login-titulo { text-align: center; font-size: 22px; font-weight: 800; letter-spacing: -.03em; }
+  .login-sub { text-align: center; font-size: 13.5px; color: var(--text2); line-height: 1.55; margin: 6px 0 20px; }
+  .login-box .campo { margin-bottom: 12px; }
+  .login-box input { font-size: 16px; padding: 14px 14px; border-radius: 14px; }
+  .pass-wrap { position: relative; }
+  .pass-wrap input { padding-right: 52px; }
+  .pass-ver { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border: none; background: none; color: var(--text3); display: grid; place-items: center; cursor: pointer; border-radius: 12px; }
+  .pass-ver:active { background: var(--surface2); }
+  #ct-login-btn { width: 100%; padding: 15px; font-size: 16px; border-radius: 14px; margin-top: 4px; }
+  #ct-login-msg { font-size: 13px; line-height: 1.5; margin: 2px 0 12px; padding: 10px 12px; border-radius: 12px; background: var(--surface2); }
+  #ct-login-msg.error { background: #fff1f3; color: var(--danger); }
+  .login-extra { display: flex; flex-direction: column; gap: 4px; margin-top: 14px; }
+  .login-extra .btn { width: 100%; padding: 12px; font-size: 14px; color: var(--text2); }
+  .girando { width: 34px; height: 34px; margin: 10px auto 4px; border-radius: 50%; border: 3px solid var(--accent-light); border-top-color: var(--accent); animation: girar .8s linear infinite; }
+  @keyframes girar { to { transform: rotate(360deg); } }
 
   #toast {
     position: fixed; right: 20px; bottom: 20px; z-index: 3000; max-width: 380px;
@@ -487,9 +517,16 @@ function ctAplicarColor(id){
     .ed-sub, .ed-mini { margin-left: 0; }
     .swatches { grid-template-columns: repeat(4, 1fr); }
     .sw-pop { left: 12px; right: 12px; width: auto; top: 64px; }
-    #toast { left: 12px; right: 12px; bottom: calc(88px + env(safe-area-inset-bottom)); max-width: none; }
-    .modal { align-items: flex-end; padding: 0; }
-    .modal-box { border-radius: 22px 22px 0 0; max-height: 92vh; padding-bottom: calc(1.4rem + env(safe-area-inset-bottom)); }
+    /* Avisos arriba, para que no tapen los campos ni queden debajo del teclado */
+    #toast { left: 12px; right: 12px; top: calc(env(safe-area-inset-top) + 10px); bottom: auto; max-width: none; transform: translateY(-10px); }
+    #toast.on { transform: none; }
+    .modal { display: none; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+    .modal.on { display: flex; }
+    .modal-box { margin-top: auto; border-radius: 22px 22px 0 0; max-height: none; overflow: visible; padding-bottom: calc(1.4rem + env(safe-area-inset-bottom)); }
+    /* Con el teclado abierto el menú de abajo se esconde para no tapar el campo */
+    body.teclado nav { display: none; }
+    body.teclado main { padding-bottom: 24px; }
+    header { height: calc(58px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
     .item:hover, .moto:hover, .plazo:hover { transform: none; }
   }
   @media (max-width: 380px) { .g2 { grid-template-columns: 1fr; } }
@@ -666,20 +703,31 @@ function ctAplicarColor(id){
   </div>
 </div>
 
-<!-- Inicio de sesión -->
-<div class="modal" id="ct-login">
-  <div class="modal-box" style="max-width:380px">
-    <div class="modal-t" id="ct-login-titulo" style="justify-content:center">Inicia sesión</div>
-    <p id="ct-login-sub" style="font-size:13px;color:var(--text2);text-align:center;line-height:1.55;margin-bottom:1rem"></p>
-    <form id="ct-login-form" onsubmit="event.preventDefault();ctLoginEnviar()">
-      <div class="campo" id="ct-login-email-g" style="margin-bottom:10px"><label for="ct-login-email">Correo</label><input type="email" id="ct-login-email" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
-      <div class="campo" style="margin-bottom:14px"><label for="ct-login-pass">Contraseña</label><input type="password" id="ct-login-pass" autocomplete="current-password" required></div>
-      <div id="ct-login-msg" style="font-size:12px;margin-bottom:10px;display:none;line-height:1.5"></div>
-      <button type="submit" class="btn btn-primary btn-block" id="ct-login-btn">Iniciar sesión</button>
+<!-- Inicio de sesión (pantalla completa) -->
+<div id="ct-login">
+  <div class="login-box">
+    <div class="login-logo"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h3M14 14h2M8 18h3M14 18h2"/></svg></div>
+    <div class="login-titulo" id="ct-login-titulo">Inicia sesión</div>
+    <p class="login-sub" id="ct-login-sub"></p>
+    <div class="girando" id="ct-login-girando" hidden></div>
+    <form id="ct-login-form" action="#" method="post" novalidate onsubmit="event.preventDefault();ctLoginEnviar()">
+      <div class="campo" id="ct-login-email-g">
+        <label for="ct-login-email">Correo</label>
+        <input type="email" id="ct-login-email" name="email" inputmode="email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="tu@correo.com" enterkeyhint="next">
+      </div>
+      <div class="campo">
+        <label for="ct-login-pass">Contraseña</label>
+        <div class="pass-wrap">
+          <input type="password" id="ct-login-pass" name="password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Tu contraseña" enterkeyhint="go">
+          <button type="button" class="pass-ver" id="ct-pass-ver" onclick="ctVerPass()" aria-label="Mostrar contraseña"></button>
+        </div>
+      </div>
+      <div id="ct-login-msg" hidden></div>
+      <button type="submit" class="btn btn-primary" id="ct-login-btn">Iniciar sesión</button>
     </form>
-    <div id="ct-login-extra" style="display:flex;justify-content:space-between;gap:8px;margin-top:12px;flex-wrap:wrap">
-      <button type="button" class="btn btn-sm btn-ghost" onclick="ctLoginOlvide()">¿Olvidaste tu contraseña?</button>
-      <button type="button" class="btn btn-sm btn-ghost" onclick="ctLoginSinSesion()">Continuar sin iniciar sesión</button>
+    <div class="login-extra" id="ct-login-extra">
+      <button type="button" class="btn btn-ghost" onclick="ctLoginOlvide()">¿Olvidaste tu contraseña?</button>
+      <button type="button" class="btn btn-ghost" onclick="ctLoginSinSesion()">Continuar sin iniciar sesión</button>
     </div>
   </div>
 </div>
@@ -1371,8 +1419,9 @@ let _opcPdf = (() => { const o = cargar('ct_opc_pdf', null); return o || {requis
 async function descargarPdfActual(){
   czDesdeForm();
   if(czCalc().total <= 0){ toast('Escribe el valor de la moto'); return; }
-  let lib;
-  try { lib = await cargarPdf(); } catch(e){ toast('No se pudo preparar el PDF. Revisa la conexión a internet'); return; }
+  // Si la librería ya está cargada todo pasa en el mismo toque (el iPhone lo exige para compartir)
+  let lib = window.jspdf;
+  if(!lib){ try { lib = await cargarPdf(); } catch(e){ toast('No se pudo preparar el PDF. Revisa la conexión a internet'); return; } }
   const p = planPorId(cz.planId);
   const q = {...cz, planNombre: p.nombre, tasa: p.tasa, plazos: plazosActivos(), numero: cz.numero};
   const doc = pdfCotizacion(lib.jsPDF, q, _opcPdf);
@@ -1437,8 +1486,9 @@ async function envCopiar(){
   catch(e){ prompt('Copia el mensaje:', _env.texto); }
 }
 async function envPdf(modo){
-  let lib;
-  try { lib = await cargarPdf(); } catch(e){ toast('No se pudo preparar el PDF. Revisa la conexión a internet'); return; }
+  // Si la librería ya está cargada todo pasa en el mismo toque (el iPhone lo exige para compartir)
+  let lib = window.jspdf;
+  if(!lib){ try { lib = await cargarPdf(); } catch(e){ toast('No se pudo preparar el PDF. Revisa la conexión a internet'); return; } }
   const q = _env.q;
   const doc = pdfCotizacion(lib.jsPDF, q, _opcPdf);
   const nombre = archivoNombre('Cotizacion-' + String(q.numero || '').padStart(4, '0'), (q.cliente && q.cliente.nombre) || q.moto);
@@ -1696,8 +1746,9 @@ function erPrev(){ $('er-prev').textContent = textoRequisitos($('er-nombre').val
 function erWhatsapp(){ window.open('https://wa.me/' + telWa($('er-cel').value) + '?text=' + encodeURIComponent(textoRequisitos($('er-nombre').value)), '_blank'); $('env-1').classList.add('hecho'); }
 async function erCopiar(){ const t = textoRequisitos($('er-nombre').value); try { await navigator.clipboard.writeText(t); toast('Mensaje copiado'); $('env-1').classList.add('hecho'); } catch(e){ prompt('Copia el mensaje:', t); } }
 async function erPdf(modo){
-  let lib;
-  try { lib = await cargarPdf(); } catch(e){ toast('No se pudo preparar el PDF. Revisa la conexión a internet'); return; }
+  // Si la librería ya está cargada todo pasa en el mismo toque (el iPhone lo exige para compartir)
+  let lib = window.jspdf;
+  if(!lib){ try { lib = await cargarPdf(); } catch(e){ toast('No se pudo preparar el PDF. Revisa la conexión a internet'); return; } }
   const para = $('er-nombre').value.trim();
   const blob = pdfSoloRequisitos(lib.jsPDF, para).output('blob');
   const nombre = archivoNombre('Requisitos-financiacion', para);
@@ -1915,8 +1966,24 @@ function ctAbrirColores(ev){
 document.addEventListener('click', e => { const p = $('ct-colores'); if(p.classList.contains('on') && !p.contains(e.target)) p.classList.remove('on'); });
 
 // ── Ventanas ────────────────────────────────────────────────────────────────
-function abrirModal(html){ $('ct-modal-box').innerHTML = html; $('ct-modal').classList.add('on'); }
-function cerrarModal(){ $('ct-modal').classList.remove('on'); if(_ctRefrescar) setTimeout(() => { if(!ctEditando()) ctRefrescarUI(); }, 0); }
+function abrirModal(html){ $('ct-modal-box').innerHTML = html; $('ct-modal').scrollTop = 0; $('ct-modal').classList.add('on'); document.body.classList.add('bloqueado'); }
+function cerrarModal(){ $('ct-modal').classList.remove('on'); document.body.classList.remove('bloqueado'); if(_ctRefrescar) setTimeout(() => { if(!ctEditando()) ctRefrescarUI(); }, 0); }
+// iPhone: con el teclado abierto se esconde el menú de abajo y el campo de una ventana se centra
+const esCelular = () => matchMedia('(max-width: 680px)').matches;
+const esCampo = el => el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) && !/^(checkbox|radio|file|button|submit)$/.test(el.type);
+// En el iPhone el teclado achica la zona visible (visualViewport) pero no la ventana
+function ctTeclado(){
+  const vv = window.visualViewport;
+  const abierto = esCelular() && esCampo(document.activeElement) && !!vv && window.innerHeight - vv.height > 120;
+  document.body.classList.toggle('teclado', abierto);
+}
+document.addEventListener('focusin', e => {
+  if(!esCelular() || !esCampo(e.target)) return;
+  setTimeout(ctTeclado, 350);
+  if(e.target.closest('.modal')) setTimeout(() => { try { e.target.scrollIntoView({block: 'center', behavior: 'smooth'}); } catch(x){} }, 380);
+});
+document.addEventListener('focusout', () => setTimeout(ctTeclado, 120));
+if(window.visualViewport) window.visualViewport.addEventListener('resize', ctTeclado);
 document.addEventListener('keydown', e => { if(e.key === 'Escape'){ cerrarModal(); $('ct-colores').classList.remove('on'); } });
 function preguntar({titulo, texto, si, no, peligro}){
   return new Promise(res => {
@@ -1925,9 +1992,9 @@ function preguntar({titulo, texto, si, no, peligro}){
     const bSi = $('ct-pregunta-si'), bNo = $('ct-pregunta-no');
     bSi.textContent = si || 'Aceptar'; bSi.className = peligro ? 'btn btn-danger' : 'btn btn-primary';
     bNo.textContent = no || 'Cancelar'; bNo.style.display = no === null ? 'none' : '';
-    const cerrar = v => { $('ct-pregunta').classList.remove('on'); res(v); };
+    const cerrar = v => { $('ct-pregunta').classList.remove('on'); if(!$('ct-modal').classList.contains('on')) document.body.classList.remove('bloqueado'); res(v); };
     bSi.onclick = () => cerrar(true); bNo.onclick = () => cerrar(false);
-    $('ct-pregunta').classList.add('on');
+    $('ct-pregunta').classList.add('on'); document.body.classList.add('bloqueado');
   });
 }
 
@@ -2278,25 +2345,52 @@ let _ctModoLogin = 'login';
 function ctMostrarLogin(modo){
   _ctModoLogin = modo || 'login';
   const nueva = _ctModoLogin === 'nueva', cargando = _ctModoLogin === 'cargando';
-  $('ct-login-titulo').textContent = nueva ? 'Nueva contraseña' : cargando ? 'Sincronizando…' : 'Inicia sesión';
+  $('ct-login-titulo').textContent = nueva ? 'Nueva contraseña' : cargando ? 'Sincronizando…' : 'Cotizaciones';
   $('ct-login-sub').textContent = nueva ? 'Escribe tu nueva contraseña.'
     : cargando ? 'Estamos uniendo las cotizaciones de este dispositivo con la nube. No cierres la página.'
-    : 'Entra con tu correo y contraseña. Tus cotizaciones, motos y requisitos se verán igual en el celular y en el Mac.';
-  $('ct-login-form').style.display = cargando ? 'none' : '';
-  $('ct-login-email-g').style.display = nueva ? 'none' : '';
-  $('ct-login-extra').style.display = (nueva || cargando) ? 'none' : 'flex';
-  const pass = $('ct-login-pass'); pass.value = ''; pass.autocomplete = nueva ? 'new-password' : 'current-password';
-  $('ct-login-email').required = !nueva;
+    : 'Entra con tu correo y contraseña. Tus cotizaciones se verán igual en el iPhone y en el Mac.';
+  $('ct-login-form').hidden = cargando;
+  $('ct-login-girando').hidden = !cargando;
+  $('ct-login-email-g').hidden = nueva;
+  $('ct-login-extra').hidden = nueva || cargando;
+  const pass = $('ct-login-pass'); pass.value = ''; pass.type = 'password'; pass.autocomplete = nueva ? 'new-password' : 'current-password';
+  ctPintarVerPass();
+  const correo = $('ct-login-email');
+  if(!correo.value){ try { correo.value = localStorage.getItem('ct_ultimo_correo') || ''; } catch(e){} }
   $('ct-login-btn').textContent = nueva ? 'Guardar contraseña' : 'Iniciar sesión';
+  $('ct-login-btn').disabled = false;
   ctLoginMensaje('');
-  $('ct-login').classList.add('on');
+  cerrarModal();
+  document.body.classList.add('login-on');
+  window.scrollTo(0, 0);
 }
-function ctOcultarLogin(){ $('ct-login').classList.remove('on'); }
-function ctLoginMensaje(txt, error){ const m = $('ct-login-msg'); m.textContent = txt; m.style.display = txt ? 'block' : 'none'; m.style.color = error ? 'var(--danger)' : 'var(--text2)'; }
+function ctOcultarLogin(){
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  document.body.classList.remove('login-on');
+}
+function ctLoginMensaje(txt, error){ const m = $('ct-login-msg'); m.textContent = txt; m.hidden = !txt; m.classList.toggle('error', !!error); }
+function ctPintarVerPass(){
+  const p = $('ct-login-pass'), visible = p.type === 'text';
+  $('ct-pass-ver').innerHTML = visible
+    ? '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M17.9 17.9A10 10 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.1-5.9M9.9 4.2A9 9 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.2 3.2M1 1l22 22"/><path d="M14.1 14.1a3 3 0 1 1-4.2-4.2"/></svg>'
+    : '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  $('ct-pass-ver').setAttribute('aria-label', visible ? 'Ocultar contraseña' : 'Mostrar contraseña');
+}
+function ctVerPass(){ const p = $('ct-login-pass'); p.type = p.type === 'password' ? 'text' : 'password'; ctPintarVerPass(); }
+let _ctEntrando = false;
 async function ctLoginEnviar(){
+  if(_ctEntrando) return;
   if(!_supa){ ctLoginMensaje('No hay conexión con la nube. Revisa tu internet y recarga la página.', true); return; }
-  const btn = $('ct-login-btn'), email = $('ct-login-email').value.trim(), pass = $('ct-login-pass').value;
-  btn.disabled = true;
+  const btn = $('ct-login-btn');
+  // iOS a veces deja espacios o mayúsculas al autocompletar el correo
+  const email = $('ct-login-email').value.replace(/\s+/g, '').toLowerCase(), pass = $('ct-login-pass').value;
+  if(_ctModoLogin !== 'nueva'){
+    if(!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)){ ctLoginMensaje('Escribe tu correo completo.', true); $('ct-login-email').focus(); return; }
+    if(!pass){ ctLoginMensaje('Escribe tu contraseña.', true); $('ct-login-pass').focus(); return; }
+  }
+  _ctEntrando = true; btn.disabled = true;
+  const textoBtn = btn.textContent;
+  btn.textContent = _ctModoLogin === 'nueva' ? 'Guardando…' : 'Entrando…';
   try {
     if(_ctModoLogin === 'nueva'){
       if(pass.length < 8){ ctLoginMensaje('La contraseña debe tener al menos 8 caracteres.', true); return; }
@@ -2307,20 +2401,24 @@ async function ctLoginEnviar(){
       if(data && data.session && !_ctEstadoListo) await ctConSesion(data.session);
       return;
     }
-    ctLoginMensaje('Entrando…');
+    ctLoginMensaje('');
     const {data, error} = await _supa.auth.signInWithPassword({email, password: pass});
     if(error){
-      ctLoginMensaje(/invalid/i.test(error.message) ? 'Correo o contraseña incorrectos.'
-        : (!navigator.onLine || /fetch|network/i.test(error.message)) ? 'No se pudo conectar con la nube. Revisa tu internet.' : 'No se pudo iniciar sesión: ' + error.message, true);
+      ctLoginMensaje(/invalid/i.test(error.message) ? 'Correo o contraseña incorrectos. Revisa que estén bien escritos.'
+        : /confirm/i.test(error.message) ? 'Ese correo todavía no está confirmado en Supabase.'
+        : (!navigator.onLine || /fetch|network|load failed/i.test(error.message)) ? 'No se pudo conectar con la nube. Revisa tu internet e inténtalo de nuevo.'
+        : 'No se pudo iniciar sesión: ' + error.message, true);
       return;
     }
+    try { localStorage.setItem('ct_ultimo_correo', email); } catch(e){}
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
     await ctConSesion(data.session);
   } catch(e){ ctLoginMensaje('No se pudo conectar. Revisa tu internet e inténtalo de nuevo.', true); }
-  finally { btn.disabled = false; }
+  finally { _ctEntrando = false; btn.disabled = false; if(/…$/.test(btn.textContent)) btn.textContent = textoBtn; }
 }
 async function ctLoginOlvide(){
-  const email = $('ct-login-email').value.trim();
-  if(!email){ ctLoginMensaje('Escribe tu correo y vuelve a pulsar "¿Olvidaste tu contraseña?".', true); return; }
+  const email = $('ct-login-email').value.replace(/\s+/g, '').toLowerCase();
+  if(!email){ ctLoginMensaje('Escribe tu correo y vuelve a pulsar "¿Olvidaste tu contraseña?".', true); $('ct-login-email').focus(); return; }
   if(!_supa){ ctLoginMensaje('No hay conexión con la nube.', true); return; }
   const destino = location.protocol === 'file:' ? CT_URL_PUBLICA : location.origin + location.pathname;
   const {error} = await _supa.auth.resetPasswordForEmail(email, {redirectTo: destino});
@@ -2392,7 +2490,7 @@ async function ctMigrarDispositivo(uid){
     _ctUltimoOk = new Date(); _ctMigrando = false;
     aj(); rq();
     ctOcultarLogin(); ctRefrescarUI();
-    toast(subidos ? `${subidos} registro(s) subidos a la nube` : 'Sincronizado con la nube');
+    toast('Listo: conectado a la nube');
     return true;
   } catch(e){
     _ctMigrando = false;
@@ -2471,7 +2569,7 @@ async function ctSincronizarAhora(){
   if(!$('p-' + p)) p = 'cotizar';
   ir(p);
   ctIniciar();
-  setTimeout(() => cargarPdf().catch(() => {}), 2500);
+  setTimeout(() => cargarPdf().catch(() => {}), 1200);
 })();
 </script>
 </body>
