@@ -1785,7 +1785,8 @@ function cotizarMoto(id){
   const m = motos.find(x => x.id === id); if(!m) return;
   if(cz.id) cargarEnFormulario(czVacia());
   ir('cotizar'); usarMoto(m, true); window.scrollTo({top: 0});
-  setTimeout(() => $('cz-inicial').focus(), 120);
+  // En el iPhone no se enfoca solo: un foco sin toque deja el campo marcado pero sin teclado
+  if(!esCelular()) setTimeout(() => $('cz-inicial').focus(), 120);
 }
 function editarMoto(id){
   const m = id ? motos.find(x => x.id === id) : null;
@@ -1984,6 +1985,15 @@ document.addEventListener('focusin', e => {
 });
 document.addEventListener('focusout', () => setTimeout(ctTeclado, 120));
 if(window.visualViewport) window.visualViewport.addEventListener('resize', ctTeclado);
+// Salvavidas del iPhone: si tocas un campo que ya tenía el foco pero el teclado no salió,
+// se vuelve a enfocar dentro del mismo toque para que Safari sí lo abra.
+document.addEventListener('touchend', e => {
+  const el = e.target && e.target.closest && e.target.closest('input, textarea');
+  if(!el || el !== document.activeElement || el.readOnly || el.disabled || !esCampo(el)) return;
+  const vv = window.visualViewport;
+  if(vv && window.innerHeight - vv.height > 120) return;   // el teclado ya está abierto
+  el.blur(); el.focus();
+}, {passive: true});
 document.addEventListener('keydown', e => { if(e.key === 'Escape'){ cerrarModal(); $('ct-colores').classList.remove('on'); } });
 function preguntar({titulo, texto, si, no, peligro}){
   return new Promise(res => {
