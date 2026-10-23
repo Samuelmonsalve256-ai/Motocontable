@@ -381,7 +381,7 @@ La página **Cotizaciones** (`cotizaciones.html`) reemplaza el Excel "COTIZACION
 **Si no ejecutas el SQL**, la página funciona igual pero todo queda solo en ese dispositivo, y al iniciar sesión verás el aviso "Falta ejecutar supabase/10_cotizaciones.sql".
 
 **Fórmulas (las mismas del Excel):**
-- Total precio de compra = valor del vehículo + SOAT, matrícula y demás (este último no se escribe: sale de la moto elegida o del valor por defecto en **Ajustes**).
+- Total = valor del vehículo, que se escribe con todo incluido (la mayoría son de segunda mano: no se suma SOAT ni matrícula aparte).
 - Saldo a financiar = total − cuota inicial.
 - Cuota = (saldo ÷ número de cuotas + saldo × tasa mensual), redondeada hacia arriba a $1.000.
 - Valor pagaré = cuota × número de cuotas. Inicial mínima sugerida = total ÷ 3.

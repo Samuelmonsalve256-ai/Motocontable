@@ -606,8 +606,7 @@ function ctAplicarColor(id){
                 <datalist id="cz-motos-dl"></datalist>
               </div>
               <div class="campo"><label for="cz-anio">Modelo (año)</label><input id="cz-anio" type="text" inputmode="numeric" maxlength="4" oninput="czCambio()"></div>
-              <div class="campo full"><label for="cz-valor">Valor del vehículo</label><div class="money-wrap"><input id="cz-valor" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)"></div>
-                <span class="hint" id="cz-soat-hint"></span></div>
+              <div class="campo full"><label for="cz-valor">Valor del vehículo <span class="lbl-opc">(con todo incluido)</span></label><div class="money-wrap"><input id="cz-valor" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)"></div></div>
             </div>
           </div>
 
@@ -732,7 +731,8 @@ function ctAplicarColor(id){
 // ════════════════════════════════════════════════════════════════════════════
 // Cotizaciones de crédito
 // Reemplaza la hoja "COTIZACION Y REQUISITOS": las fórmulas son las mismas.
-//   Total precio de compra = valor del vehículo + SOAT, matrícula y demás
+//   Total = valor del vehículo, que ya se escribe con todo incluido (la mayoría son de
+//   segunda mano: no se suma SOAT ni matrícula aparte)
 //   Saldo a financiar = total − cuota inicial
 //   Cuota fija = redondeo hacia arriba a $1.000 de (saldo ÷ cuotas + saldo × tasa mensual)
 //   Valor pagaré = cuota × cuotas · Inicial mínima = total ÷ 3
@@ -812,9 +812,8 @@ const AJUSTES_INICIALES = {
   plazos: [6, 12, 18, 24, 36],
   redondeo: 1000,
   inicialMinima: 100 / 3,
-  soatDefecto: 1600000,
   anioDefecto: '2026',
-  incluye: 'En el valor de la cuota está incluido: matrícula, SOAT e impuesto del presente año.',
+  incluye: '',
   aviso: 'El valor de la cuota está sujeto a cambios de precios de las motos por parte de la ensambladora.',
   leyenda: 'Documento informativo, no válido como soporte o título valor.',
 };
@@ -842,7 +841,7 @@ const REQUISITOS_INICIALES = {
   ],
   cierre: ['Presentando estos documentos llenamos la solicitud de crédito.', 'Antes de solicitar su crédito, planifique su presupuesto.'],
 };
-const MOTOS_INICIALES = [{id: 'xr190', nombre: 'XR190', valor: 13900000, soat: 1600000, anio: '2026'}];
+const MOTOS_INICIALES = [{id: 'xr190', nombre: 'XR190', valor: 13900000, anio: '2026'}];
 
 let cotizaciones = cargar(K_COT, []);
 let motos = cargar(K_MOTOS, null) || MOTOS_INICIALES.map(m => ({...m}));
@@ -862,6 +861,11 @@ aj(); rq();
 // Ajustes nuevos que no existían en registros viejos
 (function(){ const a = aj(); Object.keys(AJUSTES_INICIALES).forEach(k => { if(a[k] === undefined) a[k] = clonar(AJUSTES_INICIALES[k]); }); })();
 
+const INCLUYE_VIEJO = 'En el valor de la cuota está incluido: matrícula, SOAT e impuesto del presente año.';
+function migrarAjustes(){
+  const a = aj();
+  if(a.incluye === INCLUYE_VIEJO){ a.incluye = ''; guardarCfg(true); }
+}
 function guardarCot(){ guardarLocal(K_COT, cotizaciones); ctMarcarCambios(); contadores(); }
 function guardarMotos(){ guardarLocal(K_MOTOS, motos); ctMarcarCambios(); contadores(); }
 let _cfgT = null;
@@ -888,7 +892,7 @@ function tasaActual(){ const t = Number(aj().tasa); return aj().tasa == null || 
 function planPorId(){ return {id: 'credito', nombre: 'Crédito', tasa: tasaActual()}; }
 function calcular(q){
   const conDesc = q.valor + (q.accesorios || 0) - (q.descuento || 0);
-  const total = conDesc + q.soat;
+  const total = conDesc + (q.soat || 0);   // las cotizaciones nuevas no llevan SOAT aparte
   const saldo = Math.max(0, total - q.inicial);
   const tasa = (Number(q.tasa) || 0) / 100;
   const red = Number(aj().redondeo) || 1;
@@ -913,7 +917,7 @@ let cz = null;   // cotización en pantalla
 function czVacia(){
   const a = aj();
   return {id: null, numero: null, fecha: hoyISO(), cliente: {nombre: '', cel: '', cc: ''},
-          moto: '', anio: a.anioDefecto || '', valor: 0, soat: Number(a.soatDefecto) || 0, accesorios: 0, descuento: 0, inicial: 0,
+          moto: '', anio: a.anioDefecto || '', valor: 0, soat: 0, accesorios: 0, descuento: 0, inicial: 0,
           planId: 'credito', plazoElegido: null, estado: 'nueva', nota: '', envios: []};
 }
 function czDesdeForm(){
@@ -921,7 +925,7 @@ function czDesdeForm(){
   cz.moto = $('cz-moto').value.trim();
   cz.anio = $('cz-anio').value.trim();
   cz.valor = num($('cz-valor').value);
-  cz.accesorios = 0; cz.descuento = 0;
+  cz.soat = 0; cz.accesorios = 0; cz.descuento = 0;
   cz.inicial = num($('cz-inicial').value);
 }
 function czAForm(){
@@ -929,10 +933,7 @@ function czAForm(){
   $('cz-moto').value = cz.moto || ''; $('cz-anio').value = cz.anio || '';
   const m = (id, v) => { $(id).value = v ? miles(v) : ''; };
   m('cz-valor', cz.valor); m('cz-inicial', cz.inicial);
-  pintarSoat();
 }
-// El SOAT, la matrícula y demás no se escriben: salen de la moto elegida o del valor por defecto
-function pintarSoat(){ $('cz-soat-hint').innerHTML = `Se suman <b>${fmt(cz.soat)}</b> de SOAT, matrícula y demás.`; }
 function czCalc(){
   const p = planPorId(cz.planId);
   return calcular({valor: cz.valor, soat: cz.soat, accesorios: cz.accesorios, descuento: cz.descuento, inicial: cz.inicial, tasa: p.tasa, plazos: plazosActivos()});
@@ -964,7 +965,6 @@ function czMotoEscrita(){
 function usarMoto(m, silencioso){
   $('cz-moto').value = m.nombre;
   if(m.valor) $('cz-valor').value = miles(m.valor);
-  cz.soat = Number(m.soat) || Number(aj().soatDefecto) || 0; pintarSoat();
   if(m.anio) $('cz-anio').value = m.anio;
   czCambio();
   if(!silencioso) toast(m.nombre + ' · ' + fmt(m.valor));
@@ -1024,7 +1024,6 @@ function renderResultado(){
       <div class="card detalle">
         <div class="card-title">Detalle a ${el2.n} cuotas</div>
         <div class="det-fila"><span>Valor del vehículo</span><b>${fmt(cz.valor)}</b></div>
-        <div class="det-fila"><span>SOAT, matrícula y demás</span><b>${fmt(cz.soat)}</b></div>
         <div class="det-fila"><span>Abono a capital por cuota</span><b>${fmt(el2.capital)}</b></div>
         <div class="det-fila"><span>Interés por cuota</span><b>${fmt(el2.interes)}</b></div>
         <div class="det-fila"><span>Total intereses</span><b>${fmt(el2.costo)}</b></div>
@@ -1054,6 +1053,7 @@ function renderEditando(){
 function cargarEnFormulario(q){
   cz = clonar(q);
   cz.cliente = cz.cliente || {nombre: '', cel: '', cc: ''};
+  cz.soat = 0; cz.accesorios = 0; cz.descuento = 0;   // el valor ya se escribe con todo incluido
   czAForm(); renderEditando(); renderResultado();
   guardarLocal(K_BORRADOR, cz);
 }
@@ -1287,12 +1287,15 @@ function pdfCotizacion(jsPDF, q, opt){
     doc.text(pdfTxt(label), M, L.y); doc.text(pdfTxt(valor), W - M, L.y, {align: 'right'});
     L.y += o.big ? 8 : 6.4;
   };
-  fila('Valor del vehículo', fmt(q.valor));
-  if(q.accesorios) fila('Accesorios', fmt(q.accesorios));
-  if(q.descuento) fila('Descuento', '- ' + fmt(q.descuento), {suave: true});
-  fila('SOAT, matrícula y demás', fmt(q.soat));
-  doc.setDrawColor(...linea); doc.line(M, L.y - 3.4, W - M, L.y - 3.4); L.y += 1;
-  fila('Total precio de compra', fmt(r.total), {bold: true});
+  // Las cotizaciones viejas podían traer accesorios, descuento o SOAT aparte
+  if(q.accesorios || q.descuento || q.soat){
+    fila('Valor del vehículo', fmt(q.valor));
+    if(q.accesorios) fila('Accesorios', fmt(q.accesorios));
+    if(q.descuento) fila('Descuento', '- ' + fmt(q.descuento), {suave: true});
+    if(q.soat) fila('SOAT, matrícula y demás', fmt(q.soat));
+    doc.setDrawColor(...linea); doc.line(M, L.y - 3.4, W - M, L.y - 3.4); L.y += 1;
+    fila('Total precio de compra', fmt(r.total), {bold: true});
+  } else fila('Valor del vehículo', fmt(q.valor), {bold: true});
   fila('Cuota inicial', '- ' + fmt(q.inicial), {suave: true});
   doc.setDrawColor(...linea); doc.line(M, L.y - 3.4, W - M, L.y - 3.4); L.y += 1.5;
   fila('Saldo a financiar', fmt(r.saldo), {bold: true, big: true, color: col.a});
@@ -1759,7 +1762,7 @@ function renderMotos(){
   el.innerHTML = l.map(m => `
     <div class="moto">
       <div class="moto-t"><span class="moto-ico">${ico('moto', 20)}</span><div><div class="moto-n">${esc(m.nombre)}</div>${m.anio ? `<div class="moto-m">Modelo ${esc(m.anio)}</div>` : ''}</div></div>
-      <div><div class="moto-p">${fmt(m.valor)}</div><div class="moto-s">+ ${fmt(m.soat)} de SOAT, matrícula y demás</div></div>
+      <div><div class="moto-p">${fmt(m.valor)}</div><div class="moto-s">Valor con todo incluido</div></div>
       <div class="moto-acc">
         <button class="btn btn-primary btn-sm" onclick="cotizarMoto('${esc(m.id)}')">Cotizar</button>
         <button class="btn btn-sm btn-icon" onclick="editarMoto('${esc(m.id)}')" title="Editar">${ico('editar', 15)}</button>
@@ -1780,8 +1783,7 @@ function editarMoto(id){
     <div class="modal-t">${ico('moto', 20)}${m ? 'Editar moto' : 'Agregar moto'}<button class="btn btn-ghost btn-icon x" onclick="cerrarModal()">${ico('x', 18)}</button></div>
     <div class="grid g2">
       <div class="campo full"><label for="mm-nombre">Referencia</label><input id="mm-nombre" value="${esc(m ? m.nombre : '')}" autocapitalize="characters" placeholder="Ej: XR190"></div>
-      <div class="campo"><label for="mm-valor">Valor del vehículo</label><div class="money-wrap"><input id="mm-valor" class="money" inputmode="numeric" value="${m && m.valor ? miles(m.valor) : ''}" oninput="this.value=num(this.value)?miles(num(this.value)):''"></div></div>
-      <div class="campo"><label for="mm-soat">SOAT, matrícula y demás</label><div class="money-wrap"><input id="mm-soat" class="money" inputmode="numeric" value="${miles(m ? m.soat : a.soatDefecto)}" oninput="this.value=num(this.value)?miles(num(this.value)):''"></div></div>
+      <div class="campo"><label for="mm-valor">Valor con todo incluido</label><div class="money-wrap"><input id="mm-valor" class="money" inputmode="numeric" value="${m && m.valor ? miles(m.valor) : ''}" oninput="this.value=num(this.value)?miles(num(this.value)):''"></div></div>
       <div class="campo"><label for="mm-anio">Modelo (año)</label><input id="mm-anio" inputmode="numeric" maxlength="4" value="${esc(m ? (m.anio || '') : (a.anioDefecto || ''))}"></div>
     </div>
     <div class="modal-pie">
@@ -1796,10 +1798,10 @@ function guardarMoto(id){
   if(!nombre){ toast('Escribe la referencia'); $('mm-nombre').focus(); return; }
   const valor = num($('mm-valor').value);
   if(!valor){ toast('Escribe el valor del vehículo'); $('mm-valor').focus(); return; }
-  const dato = {nombre, valor, soat: num($('mm-soat').value), anio: $('mm-anio').value.trim()};
+  const dato = {nombre, valor, anio: $('mm-anio').value.trim()};
   const otra = motos.find(x => x.id !== id && x.nombre.toLowerCase() === nombre.toLowerCase());
   if(otra){ toast('Ya tienes una moto con ese nombre'); return; }
-  if(id){ Object.assign(motos.find(x => x.id === id), dato); }
+  if(id){ const x = motos.find(y => y.id === id); Object.assign(x, dato); delete x.soat; }
   else motos.push({id: uid(), ...dato});
   guardarMotos(); cerrarModal(); renderMotos(); renderMotosDatalist();
   toast(nombre + ' guardada');
@@ -1840,7 +1842,7 @@ function renderAjustes(){
       <div class="card">
         <div class="card-title">Textos de la cotización</div>
         <div class="grid">
-          <div class="campo"><label>Qué incluye la cuota</label><textarea rows="2" oninput="ajSet('incluye', this.value)">${esc(a.incluye)}</textarea></div>
+          <div class="campo"><label>Nota sobre la cuota <span class="lbl-opc">(opcional)</span></label><textarea rows="2" oninput="ajSet('incluye', this.value)">${esc(a.incluye)}</textarea></div>
           <div class="campo"><label>Aviso</label><textarea rows="2" oninput="ajSet('aviso', this.value)">${esc(a.aviso)}</textarea></div>
           <div class="campo"><label>Leyenda al pie</label><input value="${esc(a.leyenda)}" oninput="ajSet('leyenda', this.value)"></div>
         </div>
@@ -1861,7 +1863,6 @@ function renderAjustes(){
           <div class="campo full"><label>Plazos (número de cuotas)</label><input value="${(a.plazos || []).join(', ')}" placeholder="6, 12, 18, 24, 36" inputmode="numeric" onchange="ajPlazos(this)"><span class="hint">Separados por coma. Ej: 6, 12, 18, 24, 36</span></div>
           <div class="campo"><label>Redondear la cuota a</label><select onchange="ajSet('redondeo', Number(this.value))">${[1, 100, 500, 1000, 5000, 10000].map(v => `<option value="${v}" ${Number(a.redondeo) === v ? 'selected' : ''}>${v === 1 ? 'Sin redondeo' : fmt(v)}</option>`).join('')}</select></div>
           <div class="campo"><label>Inicial mínima (% del total)</label><input value="${String(Math.round(Number(a.inicialMinima) * 100) / 100).replace('.', ',')}" inputmode="decimal" oninput="ajSet('inicialMinima', Number(this.value.replace(',', '.'))||0)"></div>
-          <div class="campo"><label>SOAT y matrícula por defecto</label><div class="money-wrap"><input value="${miles(a.soatDefecto)}" inputmode="numeric" oninput="this.value=num(this.value)?miles(num(this.value)):'';ajSet('soatDefecto', num(this.value))"></div></div>
           <div class="campo"><label>Modelo (año) por defecto</label><input value="${esc(a.anioDefecto)}" inputmode="numeric" maxlength="4" oninput="ajSet('anioDefecto', this.value.trim())"></div>
         </div>
       </div>
@@ -2303,6 +2304,7 @@ function ctActualizarCuenta(n){
 }
 function ctEditando(){ const a = document.activeElement; return a && a.closest && a.closest('main') && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); }
 function ctRefrescarUI(){
+  migrarAjustes();
   contadores(); renderMotosDatalist();
   const p = panelActual();
   if(ctEditando() || $('ct-modal').classList.contains('on')){ _ctRefrescar = true; return; }
@@ -2537,11 +2539,13 @@ async function ctSincronizarAhora(){
   // Si no había nada guardado, se dejan los valores del Excel como punto de partida
   if(localStorage.getItem(K_MOTOS) == null) guardarLocal(K_MOTOS, motos);
   if(localStorage.getItem(K_CFG) == null) guardarLocal(K_CFG, config);
+  migrarAjustes();
   contadores();
   renderMotosDatalist();
   const b = cargar(K_BORRADOR, null);
   cz = b && b.cliente ? b : czVacia();
   if(cz.id && !cotizaciones.some(q => q.id === cz.id)){ cz.id = null; cz.numero = null; }
+  cz.soat = 0; cz.accesorios = 0; cz.descuento = 0;
   czAForm(); renderEditando(); renderResultado();
   let p = 'cotizar'; try { p = localStorage.getItem('ct_panel') || 'cotizar'; } catch(e){}
   if(!$('p-' + p)) p = 'cotizar';
