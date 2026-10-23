@@ -606,24 +606,18 @@ function ctAplicarColor(id){
                 <datalist id="cz-motos-dl"></datalist>
               </div>
               <div class="campo"><label for="cz-anio">Modelo (año)</label><input id="cz-anio" type="text" inputmode="numeric" maxlength="4" oninput="czCambio()"></div>
-              <div class="campo"><label for="cz-valor">Valor del vehículo</label><div class="money-wrap"><input id="cz-valor" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)"></div></div>
-              <div class="campo"><label for="cz-soat">SOAT, matrícula y demás</label><div class="money-wrap"><input id="cz-soat" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)"></div></div>
-              <div class="campo"><label for="cz-acc">Accesorios</label><div class="money-wrap"><input id="cz-acc" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)"></div></div>
-              <div class="campo"><label for="cz-desc">Descuento</label><div class="money-wrap"><input id="cz-desc" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)"></div></div>
+              <div class="campo full"><label for="cz-valor">Valor del vehículo</label><div class="money-wrap"><input id="cz-valor" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)"></div>
+                <span class="hint" id="cz-soat-hint"></span></div>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-title"><span class="paso">3</span>Cuota inicial y plan</div>
+            <div class="card-title"><span class="paso">3</span>Cuota inicial</div>
             <div class="campo">
               <label for="cz-inicial">Cuota inicial</label>
               <div class="money-wrap"><input id="cz-inicial" class="money" type="text" inputmode="numeric" placeholder="0" oninput="czMoney(this)" style="font-size:20px;padding-top:12px;padding-bottom:12px"></div>
               <div class="chips" id="cz-ini-chips"></div>
               <div id="cz-ini-aviso"></div>
-            </div>
-            <div class="campo" style="margin-top:14px">
-              <span class="lbl">Plan de crédito</span>
-              <div class="seg" id="cz-planes"></div>
             </div>
           </div>
         </div>
@@ -738,12 +732,11 @@ function ctAplicarColor(id){
 // ════════════════════════════════════════════════════════════════════════════
 // Cotizaciones de crédito
 // Reemplaza la hoja "COTIZACION Y REQUISITOS": las fórmulas son las mismas.
-//   Valor con descuento = valor del vehículo + accesorios − descuento
-//   Total precio de compra = valor con descuento + SOAT, matrícula y demás
+//   Total precio de compra = valor del vehículo + SOAT, matrícula y demás
 //   Saldo a financiar = total − cuota inicial
 //   Cuota fija = redondeo hacia arriba a $1.000 de (saldo ÷ cuotas + saldo × tasa mensual)
 //   Valor pagaré = cuota × cuotas · Inicial mínima = total ÷ 3
-// Tasas del Excel: Crédito ZOMAC 2,5 %, Libranza 2 %, Credicontado 0 %.
+// Una sola tasa para todas las cotizaciones: 2,5 % mensual (se cambia en Ajustes).
 // ════════════════════════════════════════════════════════════════════════════
 
 // ── Utilidades ──────────────────────────────────────────────────────────────
@@ -806,7 +799,7 @@ const ico = (n, s = 16, w = 2.2) => `<svg width="${s}" height="${s}" fill="none"
 // Tres colecciones que se sincronizan con la nube:
 //   cotizaciones → las cotizaciones guardadas
 //   cot_motos    → el catálogo de motos con su precio
-//   cot_config   → dos registros: 'ajustes' (empresa, planes, plazos, textos) y 'requisitos'
+//   cot_config   → dos registros: 'ajustes' (empresa, tasa, plazos, textos) y 'requisitos'
 const K_COT = 'ct_cotizaciones', K_MOTOS = 'ct_motos', K_CFG = 'ct_config', K_BORRADOR = 'ct_borrador';
 
 const AJUSTES_INICIALES = {
@@ -815,12 +808,7 @@ const AJUSTES_INICIALES = {
   nit: '',
   direccion: 'Cra 3 # 10-75, Puerto Boyacá',
   contactos: [{nombre: 'Yurany Fernández', tel: '3118252005'}, {nombre: 'Lina Ortega', tel: '3103277006'}],
-  planes: [
-    {id: 'zomac', nombre: 'Crédito ZOMAC', tasa: 2.5},
-    {id: 'libranza', nombre: 'Libranza', tasa: 2},
-    {id: 'credicontado', nombre: 'Credicontado', tasa: 0},
-  ],
-  planDefecto: 'zomac',
+  tasa: 2.5,
   plazos: [6, 12, 18, 24, 36],
   redondeo: 1000,
   inicialMinima: 100 / 3,
@@ -894,9 +882,12 @@ function plazosActivos(){
   const p = (aj().plazos || []).map(Number).filter(n => n > 0 && n <= 120);
   return [...new Set(p)].sort((a, b) => a - b);
 }
-function planPorId(id){ const ps = aj().planes || []; return ps.find(p => p.id === id) || ps[0] || {id: 'x', nombre: 'Crédito', tasa: 0}; }
+const tasaTxt = t => String(t).replace('.', ',') + ' %';
+// Los ajustes guardados antes de este cambio no traen la tasa: se usa 2,5 %
+function tasaActual(){ const t = Number(aj().tasa); return aj().tasa == null || isNaN(t) ? AJUSTES_INICIALES.tasa : t; }
+function planPorId(){ return {id: 'credito', nombre: 'Crédito', tasa: tasaActual()}; }
 function calcular(q){
-  const conDesc = q.valor + q.accesorios - q.descuento;
+  const conDesc = q.valor + (q.accesorios || 0) - (q.descuento || 0);
   const total = conDesc + q.soat;
   const saldo = Math.max(0, total - q.inicial);
   const tasa = (Number(q.tasa) || 0) / 100;
@@ -923,22 +914,25 @@ function czVacia(){
   const a = aj();
   return {id: null, numero: null, fecha: hoyISO(), cliente: {nombre: '', cel: '', cc: ''},
           moto: '', anio: a.anioDefecto || '', valor: 0, soat: Number(a.soatDefecto) || 0, accesorios: 0, descuento: 0, inicial: 0,
-          planId: a.planDefecto || (a.planes[0] || {}).id, plazoElegido: null, estado: 'nueva', nota: '', envios: []};
+          planId: 'credito', plazoElegido: null, estado: 'nueva', nota: '', envios: []};
 }
 function czDesdeForm(){
   cz.cliente = {nombre: $('cz-nombre').value.trim(), cel: $('cz-cel').value.trim(), cc: $('cz-cc').value.trim()};
   cz.moto = $('cz-moto').value.trim();
   cz.anio = $('cz-anio').value.trim();
-  cz.valor = num($('cz-valor').value); cz.soat = num($('cz-soat').value);
-  cz.accesorios = num($('cz-acc').value); cz.descuento = num($('cz-desc').value);
+  cz.valor = num($('cz-valor').value);
+  cz.accesorios = 0; cz.descuento = 0;
   cz.inicial = num($('cz-inicial').value);
 }
 function czAForm(){
   $('cz-nombre').value = cz.cliente.nombre || ''; $('cz-cel').value = cz.cliente.cel || ''; $('cz-cc').value = cz.cliente.cc || '';
   $('cz-moto').value = cz.moto || ''; $('cz-anio').value = cz.anio || '';
   const m = (id, v) => { $(id).value = v ? miles(v) : ''; };
-  m('cz-valor', cz.valor); m('cz-soat', cz.soat); m('cz-acc', cz.accesorios); m('cz-desc', cz.descuento); m('cz-inicial', cz.inicial);
+  m('cz-valor', cz.valor); m('cz-inicial', cz.inicial);
+  pintarSoat();
 }
+// El SOAT, la matrícula y demás no se escriben: salen de la moto elegida o del valor por defecto
+function pintarSoat(){ $('cz-soat-hint').innerHTML = `Se suman <b>${fmt(cz.soat)}</b> de SOAT, matrícula y demás.`; }
 function czCalc(){
   const p = planPorId(cz.planId);
   return calcular({valor: cz.valor, soat: cz.soat, accesorios: cz.accesorios, descuento: cz.descuento, inicial: cz.inicial, tasa: p.tasa, plazos: plazosActivos()});
@@ -970,21 +964,14 @@ function czMotoEscrita(){
 function usarMoto(m, silencioso){
   $('cz-moto').value = m.nombre;
   if(m.valor) $('cz-valor').value = miles(m.valor);
-  if(m.soat) $('cz-soat').value = miles(m.soat);
+  cz.soat = Number(m.soat) || Number(aj().soatDefecto) || 0; pintarSoat();
   if(m.anio) $('cz-anio').value = m.anio;
   czCambio();
   if(!silencioso) toast(m.nombre + ' · ' + fmt(m.valor));
 }
-function czPlan(id){ cz.planId = id; renderPlanes(); czCambio(); }
 function czInicial(v){ $('cz-inicial').value = v ? miles(v) : ''; czCambio(); }
 function czPlazo(n){ cz.plazoElegido = n; renderResultado(); guardarLocal(K_BORRADOR, cz); }
 
-function renderPlanes(){
-  const ps = aj().planes || [];
-  if(ps.length && !ps.some(p => p.id === cz.planId)) cz.planId = (ps.find(p => p.id === aj().planDefecto) || ps[0]).id;
-  $('cz-planes').innerHTML = (aj().planes || []).map(p =>
-    `<button type="button" class="${p.id === cz.planId ? 'on' : ''}" onclick="czPlan('${esc(p.id)}')">${esc(p.nombre)}<small>${String(p.tasa).replace('.', ',')} % mes</small></button>`).join('');
-}
 function renderMotosDatalist(){
   $('cz-motos-dl').innerHTML = motos.map(m => `<option value="${esc(m.nombre)}">`).join('');
 }
@@ -1022,7 +1009,7 @@ function renderResultado(){
         <div class="hero-fila"><span>Total precio de compra</span><b>${fmt(r.total)}</b></div>
         <div class="hero-fila"><span>Cuota inicial</span><b>${fmt(cz.inicial)}</b></div>
       </div>
-      <div class="hero-plan">${esc(p.nombre)} · ${String(p.tasa).replace('.', ',')} % mensual</div>
+      <div class="hero-plan">Interés ${tasaTxt(p.tasa)} mensual</div>
     </div>`;
   if(r.saldo > 0){
     html += `<div class="plazos">${ops.map(o => `
@@ -1037,8 +1024,6 @@ function renderResultado(){
       <div class="card detalle">
         <div class="card-title">Detalle a ${el2.n} cuotas</div>
         <div class="det-fila"><span>Valor del vehículo</span><b>${fmt(cz.valor)}</b></div>
-        ${cz.accesorios ? `<div class="det-fila"><span>Accesorios</span><b>${fmt(cz.accesorios)}</b></div>` : ''}
-        ${cz.descuento ? `<div class="det-fila"><span>Descuento</span><b>− ${fmt(cz.descuento)}</b></div>` : ''}
         <div class="det-fila"><span>SOAT, matrícula y demás</span><b>${fmt(cz.soat)}</b></div>
         <div class="det-fila"><span>Abono a capital por cuota</span><b>${fmt(el2.capital)}</b></div>
         <div class="det-fila"><span>Interés por cuota</span><b>${fmt(el2.interes)}</b></div>
@@ -1069,7 +1054,7 @@ function renderEditando(){
 function cargarEnFormulario(q){
   cz = clonar(q);
   cz.cliente = cz.cliente || {nombre: '', cel: '', cc: ''};
-  czAForm(); renderPlanes(); renderEditando(); renderResultado();
+  czAForm(); renderEditando(); renderResultado();
   guardarLocal(K_BORRADOR, cz);
 }
 function nuevaCotizacion(){
@@ -1276,7 +1261,7 @@ function pdfRequisitos(L){
 function pdfCotizacion(jsPDF, q, opt){
   const a = aj(), r = datosCotizacion(q);
   const n4 = String(q.numero || 0).padStart(4, '0');
-  const L = pdfNuevo(jsPDF, 'Cotización de crédito', q.planNombre || planPorId(q.planId).nombre,
+  const L = pdfNuevo(jsPDF, 'Cotización de crédito', q.moto ? 'Moto ' + q.moto + (q.anio ? ' modelo ' + q.anio : '') : '',
                      ['Fecha', fechaLarga(q.fecha || hoyISO()), q.numero ? 'N.º ' + n4 : '']);
   const {doc, W, M, ink, gris, linea, col} = L;
   // Cliente y vehículo
@@ -1553,7 +1538,7 @@ function renderHistorial(){
           ${env ? `<span style="color:var(--ok)">${ico('check', 13)}Enviada${env > 1 ? ' ' + env + ' veces' : ''}</span>` : ''}
         </div>
       </div>
-      <div class="item-c">${r.saldo > 0 && o ? `<b>${o.n} × ${fmt(o.cuota)}</b><small>Inicial ${fmt(q.inicial)} · ${esc(q.planNombre || '')}</small>` : `<b>${fmt(r.total)}</b><small>De contado</small>`}</div>
+      <div class="item-c">${r.saldo > 0 && o ? `<b>${o.n} × ${fmt(o.cuota)}</b><small>Inicial ${fmt(q.inicial)}</small>` : `<b>${fmt(r.total)}</b><small>De contado</small>`}</div>
       <div class="item-acc">
         <button class="btn btn-xs" onclick="abrirCot('${q.id}')">${ico('editar', 13)}Abrir</button>
         <button class="btn btn-xs" onclick="enviarCotizacion('${q.id}')">${ico('wa', 13)}Enviar</button>
@@ -1864,19 +1849,10 @@ function renderAjustes(){
 
     <div>
       <div class="card">
-        <div class="card-title">Planes y tasas</div>
-        <div class="hint" style="margin-bottom:4px">Interés simple mensual sobre el saldo, como en el Excel.</div>
-        ${(a.planes || []).map((p, i) => `
-          <div class="fila-ed plan">
-            <input value="${esc(p.nombre)}" placeholder="Nombre del plan" oninput="aj().planes[${i}].nombre=this.value;guardarCfg()">
-            <div style="position:relative"><input value="${String(p.tasa).replace('.', ',')}" inputmode="decimal" placeholder="0" oninput="aj().planes[${i}].tasa=Number(this.value.replace(',', '.'))||0;guardarCfg()" style="padding-left:12px;padding-right:28px"><span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-weight:700">%</span></div>
-            <button class="btn btn-ghost btn-icon btn-danger" onclick="ajQuitarPlan(${i})" title="Quitar">${ico('x', 15)}</button>
-          </div>`).join('')}
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px">
-          <button class="btn btn-sm" onclick="aj().planes.push({id:uid(),nombre:'Nuevo plan',tasa:0});guardarCfg(true);renderAjustes()">${ico('mas', 14)}Agregar plan</button>
-          <span class="hint">Plan por defecto:</span>
-          <select style="width:auto;padding:7px 30px 7px 10px;font-size:13px" onchange="ajSet('planDefecto', this.value)">${(a.planes || []).map(p => `<option value="${esc(p.id)}" ${p.id === a.planDefecto ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select>
-        </div>
+        <div class="card-title">Interés</div>
+        <div class="campo"><label>Tasa mensual para todas las cotizaciones</label>
+          <div style="position:relative;max-width:160px"><input value="${String(tasaActual()).replace('.', ',')}" inputmode="decimal" placeholder="2,5" oninput="ajSet('tasa', Number(this.value.replace(',', '.'))||0)" style="padding-right:30px"><span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-weight:700">%</span></div>
+          <span class="hint">Interés simple mensual sobre el saldo, como en el Excel.</span></div>
       </div>
 
       <div class="card">
@@ -1915,14 +1891,6 @@ function ajPlazos(el){
   const p = [...new Set(el.value.split(/[^\d]+/).map(Number).filter(n => n > 0 && n <= 120))].sort((a, b) => a - b);
   if(!p.length){ toast('Escribe al menos un plazo'); el.value = (aj().plazos || []).join(', '); return; }
   ajSet('plazos', p); el.value = p.join(', ');
-}
-async function ajQuitarPlan(i){
-  const a = aj();
-  if(a.planes.length <= 1){ toast('Debe quedar al menos un plan'); return; }
-  if(!await preguntar({titulo: 'Quitar plan', texto: `Se quitará "${a.planes[i].nombre}". Las cotizaciones guardadas conservan su tasa.`, si: 'Quitar', peligro: true})) return;
-  const [p] = a.planes.splice(i, 1);
-  if(a.planDefecto === p.id) a.planDefecto = a.planes[0].id;
-  guardarCfg(true); renderAjustes();
 }
 function exportarRespaldo(){
   const b = {app: 'Cotizaciones', version: 1, fecha: new Date().toISOString(), cotizaciones, motos, config};
@@ -2018,7 +1986,7 @@ function ir(p){
   if(p === 'requisitos') renderRequisitos();
   if(p === 'motos') renderMotos();
   if(p === 'ajustes') renderAjustes();
-  if(p === 'cotizar'){ renderPlanes(); renderResultado(); }
+  if(p === 'cotizar'){ renderResultado(); }
   try { localStorage.setItem('ct_panel', p); } catch(e){}
   if(p !== 'cotizar') window.scrollTo({top: 0});
 }
@@ -2339,7 +2307,7 @@ function ctRefrescarUI(){
   const p = panelActual();
   if(ctEditando() || $('ct-modal').classList.contains('on')){ _ctRefrescar = true; return; }
   _ctRefrescar = false;
-  if(p === 'cotizar'){ renderPlanes(); renderResultado(); }
+  if(p === 'cotizar'){ renderResultado(); }
   else if(p === 'historial') renderHistorial();
   else if(p === 'requisitos' && !_rqEditar) renderRequisitos();
   else if(p === 'motos') renderMotos();
@@ -2574,7 +2542,7 @@ async function ctSincronizarAhora(){
   const b = cargar(K_BORRADOR, null);
   cz = b && b.cliente ? b : czVacia();
   if(cz.id && !cotizaciones.some(q => q.id === cz.id)){ cz.id = null; cz.numero = null; }
-  czAForm(); renderPlanes(); renderEditando(); renderResultado();
+  czAForm(); renderEditando(); renderResultado();
   let p = 'cotizar'; try { p = localStorage.getItem('ct_panel') || 'cotizar'; } catch(e){}
   if(!$('p-' + p)) p = 'cotizar';
   ir(p);

@@ -381,9 +381,9 @@ La página **Cotizaciones** (`cotizaciones.html`) reemplaza el Excel "COTIZACION
 **Si no ejecutas el SQL**, la página funciona igual pero todo queda solo en ese dispositivo, y al iniciar sesión verás el aviso "Falta ejecutar supabase/10_cotizaciones.sql".
 
 **Fórmulas (las mismas del Excel):**
-- Total precio de compra = valor del vehículo + accesorios − descuento + SOAT, matrícula y demás.
+- Total precio de compra = valor del vehículo + SOAT, matrícula y demás (este último no se escribe: sale de la moto elegida o del valor por defecto en **Ajustes**).
 - Saldo a financiar = total − cuota inicial.
 - Cuota = (saldo ÷ número de cuotas + saldo × tasa mensual), redondeada hacia arriba a $1.000.
 - Valor pagaré = cuota × número de cuotas. Inicial mínima sugerida = total ÷ 3.
-- Tasas: Crédito ZOMAC 2,5 %, Libranza 2 %, Credicontado 0 % (se cambian en **Ajustes**).
+- Una sola tasa para todas las cotizaciones: 2,5 % mensual (se cambia en **Ajustes**).
 
