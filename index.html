@@ -1973,6 +1973,33 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .dia-ley i.l1{background:var(--accent)}
 .dia-ley i.l2{background:#00d68f}
 @media (max-width:760px){ html .dia-ley{padding:0 1rem} html .dia-ctrl{width:100%} html .dia-vista{flex:1} html .dia-vista button{flex:1;justify-content:center} }
+/* Líneas estilo "Mis Finanzas" */
+.dl-hero{grid-column:1/-1;width:100%;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;padding:.2rem 0 0}
+.dl-k{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8a8aa6}
+.dl-k svg{width:13px;height:13px;color:var(--dl)}
+.dl-total{margin-top:4px;font:800 2.3rem/1.1 'Space Grotesk',sans-serif;letter-spacing:-.02em;color:var(--dl);font-variant-numeric:tabular-nums}
+.dl-sub{margin-top:4px;font-size:12.5px;color:#9a9ab8}
+.dl-met{display:inline-flex;gap:4px}
+.dl-met button{padding:6px 14px;border-radius:999px;border:0;background:transparent;color:#9a9ab8;font:700 12.5px 'Inter',sans-serif;cursor:pointer}
+.dl-met button.on{color:#fff;background:var(--dl);box-shadow:0 6px 18px -8px var(--dl)}
+#page-analisis .dia-ley{margin-top:.2rem;padding:.2rem 1.4rem .4rem}
+.dia-ley .pt{width:9px;height:9px;border-radius:50%}
+.dia-ley .pt.pico{background:#9a9ab8;opacity:.6}
+.dia-ley .dl-toca{color:#7a7a98}
+.dia-ley .dl-toca svg{width:12px;height:12px}
+#dia-detalle{padding:0 1.4rem}
+.dd-caja{margin:.4rem 0 .8rem;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);overflow:hidden}
+.dd-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+.dd-cab b{display:block;color:#fff;font-size:14px}
+.dd-cab span{font-size:12px;color:#9a9ab8}
+.dd-cab button{background:none;border:0;color:#9a9ab8;font-size:20px;line-height:1;cursor:pointer}
+.dd-fila{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px dashed rgba(255,255,255,.06)}
+.dd-fila:last-child{border-bottom:0}
+.dd-fila b{display:flex;align-items:center;gap:8px;color:#e8e8f4;font-size:13.5px}
+.dd-fila span{display:block;font-size:12px;color:#8a8aa6;margin-top:2px}
+.dd-fila strong{font:700 14px 'Space Grotesk',sans-serif;white-space:nowrap}
+.dd-fila strong.pos{color:#00d68f}.dd-fila strong.neg{color:#ff6b8d}
+@media (max-width:760px){ html .dl-hero{padding:.2rem 0 0} html .dl-total{font-size:1.9rem} html #dia-detalle{padding:0 1rem} html #page-analisis .dia-ley{padding:.2rem 1rem .4rem} }
 </style>
 </head>
 <body>
@@ -2218,8 +2245,9 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
       </div>
     </div>
     <div id="kpis-diarios"></div>
-    <div class="dia-ley" id="dia-ley" hidden><span><i class="l1"></i>Ganancia de cada día</span><span><i class="l2"></i>Ganancia acumulada</span></div>
     <div class="dia-graf" id="canvas-wrap-diario"><canvas id="chart-diario" role="img" aria-label="Gráfica de ganancia diaria del negocio"></canvas><div id="tooltip-diario" style="display:none"></div></div>
+    <div class="dia-ley" id="dia-ley" hidden></div>
+    <div id="dia-detalle"></div>
     <div class="dia-bajo">
       <div><div class="dia-mini-tit">Mejores días</div><div id="top-dias-diario"></div></div>
       <div><div class="dia-mini-tit">Por día de la semana</div><div id="semana-diario"></div></div>
@@ -5637,6 +5665,20 @@ function mcInsights(x){
 // Vista de la gráfica diaria: columnas o líneas (se recuerda en este dispositivo)
 function diaVistaActual(){ try { return localStorage.getItem('mc_dia_vista') === 'lineas' ? 'lineas' : 'barras'; } catch(e){ return 'barras'; } }
 function diaVista(v){ try { localStorage.setItem('mc_dia_vista', v); } catch(e){} renderGraficaDiaria(); }
+function diaMetrica(){ try { return localStorage.getItem('mc_dia_met') === 'vend' ? 'vend' : 'gan'; } catch(e){ return 'gan'; } }
+function diaMetricaCambiar(m){ try { localStorage.setItem('mc_dia_met', m); } catch(e){} renderGraficaDiaria(); }
+// Detalle del día tocado en la gráfica de líneas
+function diaDetalle(f){
+  const det = document.getElementById('dia-detalle'), dat = (window._diaPorFecha || {})[f]; if(!det) return;
+  if(!dat){ det.innerHTML = ''; return; }
+  const d = new Date(f+'T00:00:00'), DL = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  det.dataset.f = f;
+  det.innerHTML = `<div class="dd-caja">
+    <div class="dd-cab"><div><b>${DL[d.getDay()]} ${d.getDate()} de ${MESES[d.getMonth()].toLowerCase()}</b><span>${dat.cnt} venta${dat.cnt!==1?'s':''} · vendido ${fmt(dat.vend)} · ganancia ${dat.gan>=0?'+':''}${fmt(dat.gan)}</span></div><button onclick="document.getElementById('dia-detalle').innerHTML=''" aria-label="Cerrar">×</button></div>
+    ${dat.lista.map(v=>{ const g = mcGanVenta(v); return `<div class="dd-fila"><div><b>${v.motoPlaca ? `<span class="cc-placa">${ccEsc(String(v.motoPlaca).toUpperCase())}</span>` : ''}${ccEsc(v.motoNombre||'Vehículo')}</b><span>${v.comprador ? ccEsc(v.comprador) + ' · ' : ''}vendida en ${fmt(ccNum(v.precioVenta))}${v.formaPago ? ' · ' + (v.formaPago === 'financiado' ? 'financiada' : 'de contado') : ''}</span></div><strong class="${g>=0?'pos':'neg'}">${g>=0?'+':''}${fmt(g)}</strong></div>`; }).join('')}
+  </div>`;
+  if(!mcMovReducido()) det.querySelector('.dd-caja').animate([{opacity:0, transform:'translateY(6px)'},{opacity:1, transform:'none'}], {duration:220, easing:'ease-out'});
+}
 function renderGraficaDiaria(){
   const anio = parseInt(document.getElementById('anio-select')?.value) || new Date().getFullYear();
   const mes  = document.getElementById('mes-diario')?.value || 'todos';
@@ -5650,8 +5692,8 @@ function renderGraficaDiaria(){
   });
   const porFecha = {};
   filtradas.forEach(v=>{
-    if(!porFecha[v.fecha]) porFecha[v.fecha] = {gan:0, cnt:0, nombres:[]};
-    porFecha[v.fecha].gan += mcGanVenta(v); porFecha[v.fecha].cnt += 1; porFecha[v.fecha].nombres.push(v.motoNombre||'Vehículo');
+    if(!porFecha[v.fecha]) porFecha[v.fecha] = {gan:0, vend:0, cnt:0, nombres:[], lista:[]};
+    porFecha[v.fecha].gan += mcGanVenta(v); porFecha[v.fecha].vend += ccNum(v.precioVenta); porFecha[v.fecha].cnt += 1; porFecha[v.fecha].nombres.push(v.motoNombre||'Vehículo'); porFecha[v.fecha].lista.push(v);
   });
   const conVentas = Object.keys(porFecha).sort();
   const kpiEl = document.getElementById('kpis-diarios'), tdEl = document.getElementById('top-dias-diario'), sdEl = document.getElementById('semana-diario');
@@ -5685,46 +5727,55 @@ function renderGraficaDiaria(){
   const lineas = diaVistaActual() === 'lineas';
   document.querySelectorAll('.dia-vista button').forEach(b=>b.classList.toggle('on', b.dataset.v === (lineas ? 'lineas' : 'barras')));
   const sub = document.getElementById('dia-sub'), ley = document.getElementById('dia-ley');
-  if(sub) sub.textContent = lineas ? 'Línea azul: lo que ganaste cada día · línea verde: cómo crece lo acumulado' : 'Columnas: lo que ganaste cada día · línea punteada: lo acumulado';
+  if(sub) sub.textContent = lineas ? 'Cómo se movió cada día · toca un punto para ver qué vendiste' : 'Columnas: lo que ganaste cada día · línea punteada: lo acumulado';
   if(ley) ley.hidden = !lineas;
+  if(!lineas){ const det = document.getElementById('dia-detalle'); if(det) det.innerHTML = ''; }
   if(ctx && lineas){
-    // Líneas: todos los días seguidos (los días sin ventas valen $0) para ver el movimiento real
+    // Líneas (estilo "Mis Finanzas"): una sola línea suave con su área, el número
+    // grande arriba, el día pico resaltado y el detalle al tocar un punto.
     let ejesL = ejes;
     if(mes === 'todos'){
       const ini = new Date(conVentas[0]+'T00:00:00'), finR = new Date(conVentas[conVentas.length-1]+'T00:00:00');
       const fin = (anio === hoy.getFullYear() && hoy > finR) ? hoy : finR;
       ejesL = []; for(const d = new Date(ini); d <= fin; d.setDate(d.getDate()+1)) ejesL.push(hoyLocal(d));
     }
-    const gansL = ejesL.map(f=>porFecha[f] ? porFecha[f].gan : 0);
-    let sumaL = 0; const acumL = ejesL.map(f=>{ sumaL += porFecha[f] ? porFecha[f].gan : 0; return sumaL; });
-    const acD = mcCss('--accent') || '#2a7fff', rgbD = mcCss('--accent-rgb') || '42,127,255';
-    const largo = ejesL.length > 45;
+    const met = diaMetrica(), clave = met === 'vend' ? 'vend' : 'gan';
+    const valsL = ejesL.map(f=>porFecha[f] ? porFecha[f][clave] : 0);
+    const totalM = conVentas.reduce((a,f)=>a + porFecha[f][clave], 0), maxM = Math.max(...conVentas.map(f=>porFecha[f][clave]));
+    const picoF = conVentas.find(f=>porFecha[f][clave] === maxM), promM = Math.round(totalM / conVentas.length);
+    const color = met === 'vend' ? '#00d68f' : (mcCss('--accent') || '#2a7fff'), rgb = met === 'vend' ? '0,214,143' : (mcCss('--accent-rgb') || '42,127,255');
+    const periodo = mes === 'todos' ? `Año ${anio}` : `${MESES[parseInt(mes)].slice(0,3)} ${anio}`;
+    if(kpiEl) kpiEl.innerHTML = `<div class="dl-hero" style="--dl:${color}">
+      <div><div class="dl-k">${mcIco('telemetria',13)}Análisis diario · ${periodo}</div>
+        <div class="dl-total">${fmt(totalM)}</div>
+        <div class="dl-sub">${met === 'vend' ? 'vendidos' : 'de ganancia'} · ${conVentas.length} día${conVentas.length!==1?'s':''} con ventas · Prom. ${fmt(promM)}/día activo</div></div>
+      <div class="dl-met"><button class="${met==='gan'?'on':''}" onclick="diaMetricaCambiar('gan')">Ganancia</button><button class="${met==='vend'?'on':''}" onclick="diaMetricaCambiar('vend')">Vendido</button></div>
+    </div>`;
+    if(ley){ ley.hidden = false; ley.innerHTML = `<span><i class="pt" style="background:${color}"></i>${met === 'vend' ? 'Vendido por día' : 'Ganancia diaria'}</span><span><i class="pt pico"></i>Día pico: ${dCorto(picoF)}</span><span class="dl-toca">${mcIco('rayo',12)}Toca un punto para ver el detalle</span>`; }
+    const idxPico = ejesL.indexOf(picoF);
     _chartDiario = new Chart(ctx, {
       type:'line',
       data:{labels: ejesL.map(f=>{ const d = new Date(f+'T00:00:00'); return mes !== 'todos' ? String(d.getDate()) : `${d.getDate()} ${MESES[d.getMonth()].slice(0,3).toLowerCase()}`; }),
-        datasets:[
-          {label:'Ganancia del día', data:gansL, yAxisID:'y', borderColor:acD, borderWidth:2.6, tension:.38, cubicInterpolationMode:'monotone', fill:'origin',
-            backgroundColor: c=>mcGradiente(c, `rgba(${rgbD},.42)`, `rgba(${rgbD},0)`),
-            pointRadius: c=>porFecha[ejesL[c.dataIndex]] ? (largo ? 2.5 : 4) : 0, pointHoverRadius:7,
-            pointBackgroundColor: c=>gansL[c.dataIndex] === maxG ? '#00d68f' : '#0b0b14', pointBorderColor: c=>gansL[c.dataIndex] === maxG ? '#00d68f' : acD, pointBorderWidth:2,
-            pointHoverBackgroundColor:acD, pointHoverBorderColor:'#fff', pointHoverBorderWidth:2},
-          {label:'Acumulado', data:acumL, yAxisID:'y2', borderColor:'#00d68f', borderWidth:2.2, tension:.3, cubicInterpolationMode:'monotone', fill:false,
-            pointRadius:0, pointHoverRadius:5, pointHoverBackgroundColor:'#00d68f', pointHoverBorderColor:'#fff'}
-        ]},
+        datasets:[{label: met === 'vend' ? 'Vendido' : 'Ganancia', data:valsL, borderColor:color, borderWidth:2.6, tension:.42, cubicInterpolationMode:'monotone', fill:'origin',
+          backgroundColor: c=>mcGradiente(c, `rgba(${rgb},.30)`, `rgba(${rgb},0)`),
+          pointRadius: c=>c.dataIndex === idxPico ? 7 : porFecha[ejesL[c.dataIndex]] ? (ejesL.length > 45 ? 2 : 3.2) : 0,
+          pointBackgroundColor: c=>c.dataIndex === idxPico ? color : '#0b0b14', pointBorderColor: c=>c.dataIndex === idxPico ? '#fff' : color,
+          pointBorderWidth: c=>c.dataIndex === idxPico ? 2.5 : 1.6, pointHoverRadius:8, pointHoverBackgroundColor:color, pointHoverBorderColor:'#fff', pointHoverBorderWidth:2.5, pointHitRadius:14}]},
       options:{responsive:true, maintainAspectRatio:false, animation:{duration: mcMovReducido() ? 0 : 900, easing:'easeOutQuart'},
-        interaction:{mode:'index', intersect:false},
-        plugins:{legend:{display:false}, tooltip:{...mcTooltip(), callbacks:{
-          title: it=>dLargo(ejesL[it[0].dataIndex]),
-          label: it=>{ const f = ejesL[it.dataIndex], dat = porFecha[f];
-            if(it.datasetIndex === 1) return `Acumulado ${fmt(acumL[it.dataIndex])}`;
-            if(!dat) return 'Sin ventas este día';
-            return [`Ganancia ${dat.gan>=0?'+':''}${fmt(dat.gan)}`, `${dat.cnt} venta${dat.cnt!==1?'s':''}: ${dat.nombres.join(', ')}`]; }}}},
+        interaction:{mode:'nearest', axis:'x', intersect:false},
+        onClick:(e, els)=>{ if(els && els.length) diaDetalle(ejesL[els[0].index]); },
+        onHover:(e, els)=>{ e.native && e.native.target && (e.native.target.style.cursor = els.length && porFecha[ejesL[els[0].index]] ? 'pointer' : 'default'); },
+        plugins:{legend:{display:false}, tooltip:{...mcTooltip(), displayColors:true, boxWidth:10, boxHeight:10, callbacks:{
+          title: it=>{ const d = new Date(ejesL[it[0].dataIndex]+'T00:00:00'); return `Día ${d.getDate()} de ${MESES[d.getMonth()].slice(0,3)}`; },
+          label: it=>{ const dat = porFecha[ejesL[it.dataIndex]]; return dat ? `${fmt(dat[clave])} · toca para ver detalle` : 'Sin ventas'; },
+          labelColor: ()=>({borderColor:color, backgroundColor:color})}}},
         scales:{
-          x:{grid:{display:false}, border:{display:false}, ticks:{color:'#7a7a98', font:{size:10.5, weight:'600'}, maxRotation:0, autoSkip:true, autoSkipPadding:12}},
-          y:{beginAtZero:true, border:{display:false}, grid:{color:'rgba(255,255,255,.05)', drawTicks:false}, ticks:{color:'#7f8cff', padding:8, font:{size:10}, maxTicksLimit:5, callback: v=>'$' + mcCorto(v)}, grace:'15%'},
-          y2:{position:'right', beginAtZero:true, border:{display:false}, grid:{display:false}, ticks:{color:'#2fd99a', padding:8, font:{size:10}, maxTicksLimit:5, callback: v=>'$' + mcCorto(v)}, grace:'8%'}
+          x:{grid:{display:false}, border:{display:false}, ticks:{color:'#7a7a98', font:{size:10.5, weight:'600'}, maxRotation:0, autoSkip:true, autoSkipPadding:18}},
+          y:{beginAtZero:true, border:{display:false}, grid:{color:'rgba(255,255,255,.05)', drawTicks:false}, ticks:{color:'#5b5b78', padding:8, font:{size:10}, maxTicksLimit:6, callback: v=>'$' + mcCorto(v)}, grace:'12%'}
         }}
     });
+    window._diaPorFecha = porFecha; window._diaClave = clave;
+    const det = document.getElementById('dia-detalle'); if(det && det.dataset.f && !porFecha[det.dataset.f]) det.innerHTML = '';
   } else if(ctx){
     const acD = mcCss('--accent') || '#2a7fff', rgbD = mcCss('--accent-rgb') || '42,127,255';
     _chartDiario = new Chart(ctx, {
