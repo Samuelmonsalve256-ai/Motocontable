@@ -1962,6 +1962,17 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .cel-gan{white-space:nowrap;overflow:hidden;max-width:100%}
 .cel-gan.cel-pop{transform-origin:left center;animation-name:celPopSuave}
 @keyframes celPopSuave{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
+/* Gráfica diaria: columnas o líneas */
+.dia-ctrl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dia-vista{display:inline-flex;gap:3px;padding:3px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.dia-vista button{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:0;border-radius:9px;background:transparent;color:#9a9ab8;font:600 12.5px 'Inter',sans-serif;cursor:pointer;transition:background .18s,color .18s}
+.dia-vista button.on{color:#fff;background:linear-gradient(135deg,rgba(var(--accent-rgb),.32),rgba(var(--accent-rgb),.12));box-shadow:inset 0 0 0 1px rgba(var(--accent-rgb),.45)}
+.dia-ley{display:flex;gap:16px;flex-wrap:wrap;padding:0 1.4rem;margin-top:.7rem;font-size:12px;color:#9a9ab8}
+.dia-ley span{display:inline-flex;align-items:center;gap:7px}
+.dia-ley i{width:18px;height:3px;border-radius:3px}
+.dia-ley i.l1{background:var(--accent)}
+.dia-ley i.l2{background:#00d68f}
+@media (max-width:760px){ html .dia-ley{padding:0 1rem} html .dia-ctrl{width:100%} html .dia-vista{flex:1} html .dia-vista button{flex:1;justify-content:center} }
 </style>
 </head>
 <body>
@@ -2197,10 +2208,17 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   <div class="an-panel" data-panel="diario">
   <div class="an-card">
     <div class="dia-cab">
-      <div><div class="an-card-tit"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16"/><path d="M7 15.5l3.4-4.2 3 2.6 5.1-6.4"/></svg>Movimiento diario</div><div class="an-card-sub">Columnas: lo que ganaste cada día · línea punteada: lo acumulado</div></div>
-      <select id="mes-diario" onchange="renderGraficaDiaria()" aria-label="Mes"></select>
+      <div><div class="an-card-tit"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16"/><path d="M7 15.5l3.4-4.2 3 2.6 5.1-6.4"/></svg>Movimiento diario</div><div class="an-card-sub" id="dia-sub">Columnas: lo que ganaste cada día · línea punteada: lo acumulado</div></div>
+      <div class="dia-ctrl">
+        <div class="dia-vista" role="tablist" aria-label="Tipo de gráfica">
+          <button data-v="barras" onclick="diaVista('barras')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 20V11M12 20V5M18 20v-6"/></svg>Columnas</button>
+          <button data-v="lineas" onclick="diaVista('lineas')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l5-6 4 3 7-8"/></svg>Líneas</button>
+        </div>
+        <select id="mes-diario" onchange="renderGraficaDiaria()" aria-label="Mes"></select>
+      </div>
     </div>
     <div id="kpis-diarios"></div>
+    <div class="dia-ley" id="dia-ley" hidden><span><i class="l1"></i>Ganancia de cada día</span><span><i class="l2"></i>Ganancia acumulada</span></div>
     <div class="dia-graf" id="canvas-wrap-diario"><canvas id="chart-diario" role="img" aria-label="Gráfica de ganancia diaria del negocio"></canvas><div id="tooltip-diario" style="display:none"></div></div>
     <div class="dia-bajo">
       <div><div class="dia-mini-tit">Mejores días</div><div id="top-dias-diario"></div></div>
@@ -5616,6 +5634,9 @@ function mcInsights(x){
 }
 
 // Movimiento diario: columnas por día y la línea del acumulado
+// Vista de la gráfica diaria: columnas o líneas (se recuerda en este dispositivo)
+function diaVistaActual(){ try { return localStorage.getItem('mc_dia_vista') === 'lineas' ? 'lineas' : 'barras'; } catch(e){ return 'barras'; } }
+function diaVista(v){ try { localStorage.setItem('mc_dia_vista', v); } catch(e){} renderGraficaDiaria(); }
 function renderGraficaDiaria(){
   const anio = parseInt(document.getElementById('anio-select')?.value) || new Date().getFullYear();
   const mes  = document.getElementById('mes-diario')?.value || 'todos';
@@ -5661,7 +5682,50 @@ function renderGraficaDiaria(){
 
   if(_chartDiario) _chartDiario.destroy();
   const ctx = document.getElementById('chart-diario')?.getContext('2d');
-  if(ctx){
+  const lineas = diaVistaActual() === 'lineas';
+  document.querySelectorAll('.dia-vista button').forEach(b=>b.classList.toggle('on', b.dataset.v === (lineas ? 'lineas' : 'barras')));
+  const sub = document.getElementById('dia-sub'), ley = document.getElementById('dia-ley');
+  if(sub) sub.textContent = lineas ? 'Línea azul: lo que ganaste cada día · línea verde: cómo crece lo acumulado' : 'Columnas: lo que ganaste cada día · línea punteada: lo acumulado';
+  if(ley) ley.hidden = !lineas;
+  if(ctx && lineas){
+    // Líneas: todos los días seguidos (los días sin ventas valen $0) para ver el movimiento real
+    let ejesL = ejes;
+    if(mes === 'todos'){
+      const ini = new Date(conVentas[0]+'T00:00:00'), finR = new Date(conVentas[conVentas.length-1]+'T00:00:00');
+      const fin = (anio === hoy.getFullYear() && hoy > finR) ? hoy : finR;
+      ejesL = []; for(const d = new Date(ini); d <= fin; d.setDate(d.getDate()+1)) ejesL.push(hoyLocal(d));
+    }
+    const gansL = ejesL.map(f=>porFecha[f] ? porFecha[f].gan : 0);
+    let sumaL = 0; const acumL = ejesL.map(f=>{ sumaL += porFecha[f] ? porFecha[f].gan : 0; return sumaL; });
+    const acD = mcCss('--accent') || '#2a7fff', rgbD = mcCss('--accent-rgb') || '42,127,255';
+    const largo = ejesL.length > 45;
+    _chartDiario = new Chart(ctx, {
+      type:'line',
+      data:{labels: ejesL.map(f=>{ const d = new Date(f+'T00:00:00'); return mes !== 'todos' ? String(d.getDate()) : `${d.getDate()} ${MESES[d.getMonth()].slice(0,3).toLowerCase()}`; }),
+        datasets:[
+          {label:'Ganancia del día', data:gansL, yAxisID:'y', borderColor:acD, borderWidth:2.6, tension:.38, cubicInterpolationMode:'monotone', fill:'origin',
+            backgroundColor: c=>mcGradiente(c, `rgba(${rgbD},.42)`, `rgba(${rgbD},0)`),
+            pointRadius: c=>porFecha[ejesL[c.dataIndex]] ? (largo ? 2.5 : 4) : 0, pointHoverRadius:7,
+            pointBackgroundColor: c=>gansL[c.dataIndex] === maxG ? '#00d68f' : '#0b0b14', pointBorderColor: c=>gansL[c.dataIndex] === maxG ? '#00d68f' : acD, pointBorderWidth:2,
+            pointHoverBackgroundColor:acD, pointHoverBorderColor:'#fff', pointHoverBorderWidth:2},
+          {label:'Acumulado', data:acumL, yAxisID:'y2', borderColor:'#00d68f', borderWidth:2.2, tension:.3, cubicInterpolationMode:'monotone', fill:false,
+            pointRadius:0, pointHoverRadius:5, pointHoverBackgroundColor:'#00d68f', pointHoverBorderColor:'#fff'}
+        ]},
+      options:{responsive:true, maintainAspectRatio:false, animation:{duration: mcMovReducido() ? 0 : 900, easing:'easeOutQuart'},
+        interaction:{mode:'index', intersect:false},
+        plugins:{legend:{display:false}, tooltip:{...mcTooltip(), callbacks:{
+          title: it=>dLargo(ejesL[it[0].dataIndex]),
+          label: it=>{ const f = ejesL[it.dataIndex], dat = porFecha[f];
+            if(it.datasetIndex === 1) return `Acumulado ${fmt(acumL[it.dataIndex])}`;
+            if(!dat) return 'Sin ventas este día';
+            return [`Ganancia ${dat.gan>=0?'+':''}${fmt(dat.gan)}`, `${dat.cnt} venta${dat.cnt!==1?'s':''}: ${dat.nombres.join(', ')}`]; }}}},
+        scales:{
+          x:{grid:{display:false}, border:{display:false}, ticks:{color:'#7a7a98', font:{size:10.5, weight:'600'}, maxRotation:0, autoSkip:true, autoSkipPadding:12}},
+          y:{beginAtZero:true, border:{display:false}, grid:{color:'rgba(255,255,255,.05)', drawTicks:false}, ticks:{color:'#7f8cff', padding:8, font:{size:10}, maxTicksLimit:5, callback: v=>'$' + mcCorto(v)}, grace:'15%'},
+          y2:{position:'right', beginAtZero:true, border:{display:false}, grid:{display:false}, ticks:{color:'#2fd99a', padding:8, font:{size:10}, maxTicksLimit:5, callback: v=>'$' + mcCorto(v)}, grace:'8%'}
+        }}
+    });
+  } else if(ctx){
     const acD = mcCss('--accent') || '#2a7fff', rgbD = mcCss('--accent-rgb') || '42,127,255';
     _chartDiario = new Chart(ctx, {
       data:{labels: ejes.map(f=>{ const d = new Date(f+'T00:00:00'); return mes !== 'todos' ? String(d.getDate()) : `${d.getDate()}/${d.getMonth()+1}`; }),
