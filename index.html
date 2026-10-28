@@ -2135,6 +2135,109 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .ivm-fila{grid-template-columns:auto 1fr auto;padding:10px 14px}
   html .ivm-fila .ivm-num:nth-of-type(3){display:none}
 }
+/* ── Ficha de vehículo (Mis motos / Mis carros) ──────────────────────────── */
+.moto-card.vc{--n:var(--accent);display:flex;flex-direction:column;gap:12px;padding:16px;border-left:3px solid var(--n)}
+.moto-card.vc.n-nuevo{--n:#00d68f}.moto-card.vc.n-medio{--n:var(--accent)}.moto-card.vc.n-pronto{--n:#f5c451}
+.moto-card.vc.n-alerta{--n:#ff8a5c}.moto-card.vc.n-crit{--n:#ff4d6d}.moto-card.vc.n-urg{--n:#ff2d55}.moto-card.vc.n-sin{--n:#5b5b78}
+.moto-card.vc.veh-separada{border-left-color:#2dd4bf}
+.vc-cab{display:flex;gap:12px;align-items:flex-start}
+.vc-foto{position:relative;width:76px;height:76px;flex:none;border-radius:16px;overflow:hidden;background:rgba(255,255,255,.04)}
+.vc-foto img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+.vc-foto-acc{position:absolute;inset:auto 0 0 0;display:flex;justify-content:space-between;padding:3px;opacity:0;transition:opacity .15s}
+.vc-foto:hover .vc-foto-acc{opacity:1}
+.vc-foto-acc button{width:22px;height:22px;border:0;border-radius:7px;display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.65);cursor:pointer;font-size:14px;line-height:1}
+.vc-foto-vacia{width:100%;height:100%;border:1.5px dashed rgba(255,255,255,.14);border-radius:16px;background:none;color:#6e6e8a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;font:600 10.5px 'Inter',sans-serif}
+.vc-foto-vacia:hover{color:var(--accent);border-color:rgba(var(--accent-rgb),.5)}
+.vc-titulo{flex:1;min-width:0}
+.vc-nom{font:700 16px 'Space Grotesk',sans-serif;color:#fff;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vc-det{font-size:12.5px;color:#8a8aa6;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.vc-chips .cc-placa{display:inline-flex;width:auto}
+.vc-chip{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;color:#9a9ab8;background:rgba(255,255,255,.05)}
+.vc-chip.sep{color:#5eead4;background:rgba(45,212,191,.12)}
+.vc-chip.ret{color:#93c5fd;background:rgba(77,159,255,.12)}
+.vc-dias{flex:none;text-align:center;min-width:58px;padding:6px 8px;border-radius:14px;color:var(--n);background:color-mix(in srgb,var(--n) 12%,transparent);border:1px solid color-mix(in srgb,var(--n) 32%,transparent)}
+.vc-dias b{display:block;font:800 20px/1.1 'Space Grotesk',sans-serif}
+.vc-dias span{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.moto-card.vc.n-urg .vc-dias{animation:lgLatir 1.8s ease-in-out infinite}
+.vc-barra{height:4px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:-4px}
+.vc-barra i{display:block;height:100%;border-radius:99px;background:var(--n)}
+.moto-card.vc .sep-cinta,.moto-card.vc .rt-sello{margin:0}
+.vc-nota{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;padding:9px 12px;border-radius:12px;border:1px solid rgba(245,196,81,.35);background:rgba(245,196,81,.08);color:#ffe08a;font:500 12.5px/1.45 'Inter',sans-serif;cursor:pointer}
+.vc-nota svg{flex:none;margin-top:2px;color:#f5c451}
+.vc-nota span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vc-num{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:8px}
+.vc-num > div{padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);min-width:0}
+.vc-num small{display:block;font-size:10.5px;color:#8a8aa6;text-transform:uppercase;letter-spacing:.07em;font-weight:700}
+.vc-num b{display:block;font:700 14px 'Space Grotesk',sans-serif;color:#e8e8f4;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vc-num .vc-tot{background:rgba(var(--accent-rgb),.1);border-color:rgba(var(--accent-rgb),.3)}
+.vc-num .vc-tot b{color:#fff;font-size:15px}
+.vc-paps{display:flex;flex-wrap:wrap;gap:6px}
+.vc-pap{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:600;color:#c4c4da;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
+.vc-pap i{width:7px;height:7px;border-radius:50%;background:#5b5b78}
+.vc-pap b{font-weight:700}
+.vc-pap.ok i{background:#00d68f}.vc-pap.ok b{color:#5be3b0}
+.vc-pap.warn i{background:#f5c451}.vc-pap.warn b{color:#f5c451}
+.vc-pap.mal i{background:#ff4d6d}.vc-pap.mal b{color:#ff8aa5}
+.vc-pap.no b{color:#8a8aa6}
+.vc-acc{display:flex;gap:6px;flex-wrap:wrap}
+.vc-acc .btn-primary{flex:1;justify-content:center}
+.vc-acc .btn-sep.activo{color:#5eead4;border-color:rgba(45,212,191,.45)}
+.vc-acc .vc-borrar:hover{color:#ff6b8d;border-color:rgba(255,107,141,.45)}
+.vc-mas{border-top:1px solid rgba(255,255,255,.07);margin:0 -16px -16px;padding:0 16px}
+.vc-mas summary{list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;cursor:pointer;font-size:12.5px;color:#c4c4da;font-weight:600}
+.vc-mas summary::-webkit-details-marker{display:none}
+.vc-mas summary em{flex:1;font-style:normal;font-weight:500;color:#7a7a98;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vc-mas summary svg{transform:rotate(90deg);transition:transform .2s;color:#7a7a98}
+.vc-mas[open] summary svg{transform:rotate(-90deg)}
+.vc-mas-cuerpo{display:flex;flex-direction:column;gap:14px;padding-bottom:16px}
+.vc-sec-tit{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a8aa6;margin-bottom:6px}
+.vc-sec-tit b{color:#f5c451;letter-spacing:0;font-size:12.5px}
+.vc-linea{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:4px 0}
+.vc-linea span{color:#8a8aa6}.vc-linea b{color:#e8e8f4;font-weight:600;text-align:right}
+.vc-vacio{font-size:12px;color:#6e6e8a;padding:2px 0 6px}
+.vc-mas textarea{width:100%;font-size:12.5px;resize:vertical;min-height:54px}
+.vc-nota-borrar{background:none;border:0;color:#ff8aa5;font:600 11.5px 'Inter',sans-serif;cursor:pointer;text-transform:none;letter-spacing:0}
+@media (max-width:760px){
+  html .moto-card.vc{padding:14px}
+  html .vc-foto{width:64px;height:64px}
+  html .vc-num{grid-template-columns:1fr 1fr}
+  html .vc-num .vc-tot{grid-column:1/-1}
+  html .vc-mas{margin:0 -14px -14px;padding:0 14px}
+}
+.cc-placa{display:inline-flex;align-items:center;width:auto;padding:1px 7px;border-radius:5px;background:#f7d117;color:#111;font:700 11px 'JetBrains Mono',monospace;letter-spacing:.04em;border:1px solid #111;line-height:1.5}
+/* ── Avisos de Ventas: cuentas por cobrar y papeles ──────────────────────── */
+.av-tarjeta{--a:var(--accent);margin-bottom:14px;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--a) 12%,transparent),rgba(255,255,255,.015) 65%);border:1px solid color-mix(in srgb,var(--a) 32%,transparent)}
+.av-ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;color:#fff;background:linear-gradient(135deg,var(--a),color-mix(in srgb,var(--a) 55%,#000))}
+.av-txt{flex:1;min-width:0}
+.av-txt b{display:block;color:#fff;font-size:14.5px}
+.av-txt span{display:block;font-size:12.5px;color:#a9a9c2;margin-top:2px}
+.av-txt em{font-style:normal}.av-txt em.medio,.av-pap-veh em.medio{color:#f5c451}.av-txt em.mal,.av-pap-veh em.mal{color:#ff8aa5}
+.av-cobro{--a:#f5a623;display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform .18s var(--ease,ease),border-color .18s}
+.av-cobro:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--a) 55%,transparent)}
+.av-monto{display:inline!important;color:#ffc861;font:800 16px 'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums}
+.av-chip{flex:none;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px;color:#c4b5fd;background:rgba(167,139,250,.14)}
+.av-ir{flex:none;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#ffc861}
+.av-pap{--a:#ff6b8d}
+.av-pap-cab{display:flex;align-items:center;gap:12px}
+.av-pap-lista{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.av-pap-fila{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.06)}
+.av-pap-veh{min-width:0}
+.av-pap-veh b{display:flex;align-items:center;gap:8px;color:#fff;font-size:13.5px}
+.av-pap-veh b em{font-style:normal;color:#8a8aa6;font-weight:500}
+.av-pap-veh span{display:block;font-size:12px;color:#9a9ab8;margin-top:2px}
+.av-pap-veh span em{font-style:normal}
+.av-pap-btns{display:flex;gap:6px;flex-wrap:wrap}
+.av-papel{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,107,141,.45);background:rgba(255,107,141,.1);color:#ffb3c4;font:700 12px 'Inter',sans-serif;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.av-papel svg{opacity:.55}
+.av-papel:hover{background:rgba(0,214,143,.14);border-color:rgba(0,214,143,.5);color:#5be3b0}
+.av-papel:hover svg{opacity:1}
+.av-mas{margin-top:8px;background:none;border:0;color:#ff8aa5;font:700 12.5px 'Inter',sans-serif;cursor:pointer}
+@media (max-width:760px){
+  html .av-cobro{flex-wrap:wrap}
+  html .av-cobro .av-ir{width:100%;justify-content:flex-end}
+}
+.av-pap-veh .cc-placa,.ivm-veh .cc-placa,.dd-fila .cc-placa,.vc-chips .cc-placa,.inv-chips .cc-placa{color:#111!important;-webkit-text-fill-color:#111}
 </style>
 </head>
 <body>
@@ -4281,9 +4384,17 @@ function ccBannerVentas(){
   const el = document.getElementById('ventas-cobros-banner'); if(!el) return;
   const t = ccTotales();
   if(!t.falta && !t.revisar){ el.innerHTML = ''; return; }
-  el.innerHTML = `<div class="cc-banner" onclick="go('cobros')" role="button">
-    <div>${t.falta ? `<strong>💰 ${FP_FINANCIERA} te debe ${fmt(t.falta)}</strong><span> en ${t.pendientes} venta${t.pendientes!==1?'s':''} financiada${t.pendientes!==1?'s':''}</span>` : `<strong>💰 Cuentas por cobrar</strong>`}${t.revisar ? `<span> · ${t.revisar} por revisar</span>` : ''}</div>
-    <span>Ver cuentas por cobrar →</span></div>`;
+  const tarde = t.masVieja > 30 ? 'mal' : t.masVieja > 15 ? 'medio' : '';
+  el.innerHTML = `<div class="cc-banner av-tarjeta av-cobro" onclick="go('cobros')" role="button">
+    <i class="av-ico">${mcIco('recibo',20)}</i>
+    <div class="av-txt">
+      ${t.falta ? `<b>${FP_FINANCIERA} te debe <span class="av-monto">${fmt(t.falta)}</span></b>
+        <span>${t.pendientes} venta${t.pendientes!==1?'s':''} financiada${t.pendientes!==1?'s':''} por cobrar${t.pendientes ? ` · <em class="${tarde}">la más antigua lleva ${t.masVieja} día${t.masVieja!==1?'s':''}</em>` : ''}${t.cobradoMes ? ` · cobrado este mes ${fmt(t.cobradoMes)}` : ''}</span>`
+      : `<b>Cuentas por cobrar</b><span>Revisa las ventas financiadas de antes</span>`}
+    </div>
+    ${t.revisar ? `<span class="av-chip">${t.revisar} por revisar</span>` : ''}
+    <span class="av-ir">Ver cuentas ${mcIco('flecha',14)}</span>
+  </div>`;
 }
 // Lo que se ve en cada venta: retoma y estado de la cuenta
 function ccEtiquetasVenta(v){
@@ -6518,6 +6629,89 @@ function renderAlertasResumen(){
     </div>`;
 }
 
+// ── FICHA DE VEHÍCULO (Mis motos / Mis carros) ───────────────────────────────
+// Lo importante a la vista (foto, días, placa, cuánto llevas invertido, papeles y
+// acciones) y lo demás (gastos, nota, a quién se le compró) en "Más detalles".
+function vcPapel(nombre, vig){
+  const est = vig.cls === 'vig-ok' ? 'ok' : vig.cls === 'vig-warn' ? 'warn' : vig.cls === 'vig-venc' ? 'mal' : vig.cls === 'vig-none' ? 'no' : (/debe|pend/i.test(vig.label) ? 'mal' : 'ok');
+  const limpio = String(vig.label).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]️?/gu,'').trim();
+  const txt = est === 'ok' ? 'Al día' : est === 'warn' ? limpio.replace(/^Impuesto\s*/i, '') : est === 'mal' ? (/Vencido/.test(limpio) ? 'Vencido' : 'Debe') : 'No tiene';
+  return `<span class="vc-pap ${est}" title="${nombre}: ${ccEsc(String(vig.label).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]️?/gu,'').trim())}"><i></i>${nombre}<b>${txt}</b></span>`;
+}
+function vcFicha(tipo, v){
+  const esCarro = tipo === 'carro', p = esCarro ? 'carro' : 'moto';
+  const gList = v.gastos || [], totG = gList.reduce((a,g)=>a + ccNum(g.monto), 0), compra = parseFloat(v.precioCompra) || 0, total = compra + totG;
+  const dias = diasEnInventario(v.fechaCompra), n = invNivel(dias), pct = dias == null ? 0 : Math.min(100, Math.round(dias / DIAS_ALERTA * 100));
+  const soat = vigencia(v.soatTiene ? v.soat : '', 'soat'), tecno = vigencia(v.tecnoTiene ? v.tecno : '', 'tecno'), imp = vigencia(v.impuesto || '', 'imp');
+  const fn = esCarro ? {gasto:'agregarGastoCarro', del:'elimGastoCarro', edit:'editarCarro', elim:'confirmarElimCarro', gn:'cgn-', gm:'cgm-'}
+                     : {gasto:'agregarGasto', del:'elimGasto', edit:'editarMoto', elim:'confirmarElimMoto', gn:'gn-', gm:'gm-'};
+  const foto = v.foto
+    ? `<img ${mcFotoAttr(v.foto)} onclick="abrirVisor(this.src)" title="Ver en grande" alt="">
+       <div class="vc-foto-acc"><button onclick="abrirFoto('${p}','${v.id}')" title="Cambiar foto">${mcIco('lapiz',11)}</button><button onclick="borrarFoto('${p}','${v.id}')" title="Quitar foto">×</button></div>`
+    : `<button class="vc-foto-vacia" onclick="abrirFoto('${p}','${v.id}')" title="Agregar foto">${mcIco(p,30)}<span>+ Foto</span></button>`;
+  const detalle = [v.modelo, v.color, esCarro && v.km ? parseInt(v.km).toLocaleString('es-CO') + ' km' : '', esCarro && v.cilindraje ? v.cilindraje : ''].filter(Boolean).map(ccEsc).join(' · ');
+  return `<div class="moto-card vc n-${n}${v.retoma?' veh-retoma':''}${v.separacion?' veh-separada':''}" id="veh-${p}-${v.id}">
+    <div class="vc-cab">
+      <div class="vc-foto" id="fw-${p}-${v.id}">${foto}</div>
+      <div class="vc-titulo">
+        <div class="vc-nom">${ccEsc(v.nombre || 'Vehículo')}</div>
+        <div class="vc-det">${detalle || 'Sin modelo'}</div>
+        <div class="vc-chips">
+          ${v.placa ? `<span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span>` : '<span class="vc-chip">Sin placa</span>'}
+          ${v.separacion ? '<span class="vc-chip sep">Separada</span>' : ''}${v.retoma ? '<span class="vc-chip ret">Retoma</span>' : ''}
+        </div>
+      </div>
+      <div class="vc-dias" title="${dias == null ? 'Sin fecha de compra' : dias + ' días en inventario'}"><b>${dias == null ? '—' : dias}</b><span>${dias === 1 ? 'día' : 'días'}</span></div>
+    </div>
+    <div class="vc-barra"><i style="width:${pct}%"></i></div>
+    ${sepCinta(p, v)}${ccSelloRetoma(v)}
+    ${v.nota ? `<button class="vc-nota" onclick="vcAbrirDetalles('${p}','${v.id}','nota-${v.id}')">${mcIco('lapiz',13)}<span>${ccEsc(v.nota)}</span></button>` : ''}
+    <div class="vc-num">
+      <div><small>Compra</small><b>${fmt(compra)}</b></div>
+      <div><small>Gastos</small><b>${fmt(totG)}</b></div>
+      <div class="vc-tot"><small>Invertido</small><b>${fmt(total)}</b></div>
+    </div>
+    <div class="vc-paps">${vcPapel('SOAT', soat)}${vcPapel('Tecno', tecno)}${vcPapel('Impuesto', imp)}</div>
+    <div class="vc-acc">
+      <button class="btn btn-primary btn-sm" onclick="sepVender('${p}','${v.id}')">Vender</button>
+      <button class="btn btn-ghost btn-sm btn-sep${v.separacion?' activo':''}" onclick="sepAbrir('${p}','${v.id}')" title="${v.separacion ? 'Ver separación' : 'Separar'}">${v.separacion ? 'Separación' : 'Separar'}</button>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="invCopiarPublicacion('${p}','${v.id}')" title="Copiar publicación">${mcIco('chat',14)}</button>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="${fn.edit}('${v.id}')" title="Editar">${mcIco('lapiz',14)}</button>
+      <button class="btn btn-ghost btn-sm btn-icon vc-borrar" onclick="${fn.elim}('${v.id}')" title="Eliminar">${mcIco('papelera',14)}</button>
+    </div>
+    <details class="vc-mas" id="vcm-${p}-${v.id}">
+      <summary><span>Más detalles</span><em>${gList.length ? `${gList.length} gasto${gList.length!==1?'s':''}` : 'Sin gastos'}${v.nota ? ' · nota' : ''}${v.vendedorNombre ? ' · a ' + ccEsc(v.vendedorNombre) : ''}</em>${mcIco('flecha',14)}</summary>
+      <div class="vc-mas-cuerpo">
+        <div class="vc-sec"><div class="vc-sec-tit">Compra</div>
+          <div class="vc-linea"><span>Fecha</span><b>${v.fechaCompra ? mcFechaCorta(v.fechaCompra) : '—'}</b></div>
+          <div class="vc-linea"><span>Comprado a</span><b>${ccEsc(v.vendedorNombre || '—')}${v.vendedorCC ? ' · CC ' + ccEsc(v.vendedorCC) : ''}</b></div>
+          ${v.vendedorTel ? `<div class="vc-linea"><span>Teléfono</span><b>${ccEsc(v.vendedorTel)}</b></div>` : ''}
+        </div>
+        <div class="vc-sec"><div class="vc-sec-tit">Gastos del vehículo <b>${fmt(totG)}</b></div>
+          ${gList.length ? gList.map((g,i)=>`<div class="gasto-item"><span class="gasto-nombre">${ccEsc(g.nombre)}</span><span><span class="gasto-monto">${fmt(g.monto)}</span><button class="gasto-del" onclick="${fn.del}('${v.id}',${i})" title="Quitar">×</button></span></div>`).join('') : '<div class="vc-vacio">Sin gastos registrados.</div>'}
+          <div class="add-gasto-form">
+            <input type="text" id="${fn.gn}${v.id}" placeholder="Ej: cambio de aceite, lavada…">
+            <input type="number" id="${fn.gm}${v.id}" placeholder="$ Valor" min="0">
+            <button class="btn-add-gasto" onclick="${fn.gasto}('${v.id}')">+ Agregar gasto</button>
+          </div>
+        </div>
+        <div class="vc-sec"><div class="vc-sec-tit">Nota interna ${v.nota ? `<button class="vc-nota-borrar" onclick="borrarNota('${p}','${v.id}')">Borrar</button>` : ''}</div>
+          <textarea id="nota-${v.id}" rows="2" placeholder="Ej: debo $5.000.000 de ${esCarro ? 'este carro' : 'esta moto'} a 15 días…">${ccEsc(v.nota || '')}</textarea>
+          <button class="btn-add-gasto" style="margin-top:6px" onclick="guardarNota('${p}','${v.id}',document.getElementById('nota-${v.id}').value)">Guardar nota</button>
+        </div>
+      </div>
+    </details>
+  </div>`;
+}
+// Abre "Más detalles" (y enfoca un campo) recordándolo para el siguiente redibujo
+var _vcAbiertos = new Set();
+function vcAbrirDetalles(p, id, foco){
+  const d = document.getElementById(`vcm-${p}-${id}`); if(!d) return;
+  d.open = true; if(foco) setTimeout(()=>{ const el = document.getElementById(foco); if(el){ el.focus(); el.scrollIntoView({block:'center', behavior: mcMovReducido() ? 'auto' : 'smooth'}); } }, 60);
+}
+document.addEventListener('toggle', e=>{ const d = e.target; if(d && d.classList && d.classList.contains('vc-mas')){ if(d.open) _vcAbiertos.add(d.id); else _vcAbiertos.delete(d.id); } }, true);
+function vcRestaurarAbiertos(){ _vcAbiertos.forEach(id=>{ const d = document.getElementById(id); if(d) d.open = true; }); try { mcHidratarFotos(); } catch(e){} }
+
 // ── MIS MOTOS ─────────────────────────────────────────────────────────────────
 function renderMotos(){
   // Limpiar duplicados por ID
@@ -6531,123 +6725,8 @@ function renderMotos(){
     cont.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🏍️</div><div class="empty-title">No hay motos registradas</div><div class="empty-sub">Clic en "+ Nueva moto".</div></div>`;
     return;
   }
-  cont.innerHTML = motos.map(mo=>{
-    const c        = calcMoto(mo.id);
-    const soat     = vigencia(mo.soatTiene?mo.soat:''  ,'soat');
-    const tecno    = vigencia(mo.tecnoTiene?mo.tecno:'','tecno');
-    const imp      = vigencia(mo.impuesto||'','imp');
-    const gList    = mo.gastos||[];
-    const totG     = gList.reduce((a,g)=>a+g.monto,0);
-    const compraBase = parseFloat(mo.precioCompra)||0;
-    const totalInvertido = compraBase + totG;
-    const gHtml    = gList.length
-      ? gList.map((g,i)=>`<div class="gasto-item">
-          <span class="gasto-nombre">📌 ${g.nombre}</span>
-          <span><span class="gasto-monto">${fmt(g.monto)}</span><button class="gasto-del" onclick="elimGasto('${mo.id}',${i})">✕</button></span>
-        </div>`).join('')
-      : `<div style="font-size:11px;color:var(--text3)">Sin gastos registrados.</div>`;
-
-    // Días en inventario
-    let diasInv = null, alertaInvHtml = '';
-    if(mo.fechaCompra){
-      const hoy = new Date(); hoy.setHours(0,0,0,0);
-      diasInv = Math.round((hoy - new Date(mo.fechaCompra+'T00:00:00')) / 86400000);
-      if(diasInv >= 100){
-        const frases = [
-          `¡${diasInv} días parada! Dinero quieto es dinero perdido — necesitamos mover el capital.`,
-          `${diasInv} días en inventario. Esta moto lleva demasiado tiempo quieta. ¡El capital necesita moverse!`,
-          `¡Atención! ${diasInv} días sin vender. Dinero quieto es dinero perdido — es momento de actuar.`,
-          `Esta moto lleva ${diasInv} días en el inventario. Necesitamos mover el capital, ¡muévela ya!`,
-          `${diasInv} días parada. El dinero inmovilizado no genera ganancias — mueve este capital.`,
-        ];
-        const frase = frases[Math.floor(Math.random()*frases.length)];
-        alertaInvHtml = `<div style="padding:.7rem 1.1rem;background:rgba(255,69,96,.1);border-top:3px solid var(--red)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-            <span style="font-size:18px">🚨</span>
-            <span style="font-size:12px;font-weight:700;color:var(--red)">MUEVE EL CAPITAL — ${diasInv} DÍAS EN INVENTARIO</span>
-          </div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5">${frase}</div>
-        </div>`;
-      }
-    }
-
-    return `<div class="moto-card${mo.retoma?' veh-retoma':''}${mo.separacion?' veh-separada':''}" id="veh-moto-${mo.id}" style="${diasInv>=100?'border-color:rgba(255,69,96,.4)':''}">
-      <div class="moto-card-hd">
-        <div class="moto-card-top">
-          <div style="display:flex;gap:11px;align-items:flex-start">
-            <div id="fw-moto-${mo.id}" style="position:relative;flex-shrink:0">
-              ${mo.foto
-                ? `<div style="position:relative">
-                     <img ${mcFotoAttr(mo.foto)} ondblclick="abrirVisor(this.src)" title="Doble clic para ver en grande"
-                       style="width:90px;height:90px;border-radius:12px;object-fit:cover;cursor:zoom-in;border:2px solid var(--accent);display:block">
-                     <div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:3px">
-                       <button onclick="abrirFoto('moto','${mo.id}')" title="Cambiar foto"
-                         style="background:rgba(0,0,0,.7);border:none;border-radius:5px;color:#fff;font-size:10px;padding:2px 6px;cursor:pointer;font-family:inherit">📷</button>
-                       <button onclick="borrarFoto('moto','${mo.id}')" title="Quitar foto"
-                         style="background:rgba(255,69,96,.8);border:none;border-radius:5px;color:#fff;font-size:10px;padding:2px 6px;cursor:pointer;font-family:inherit">✕</button>
-                     </div>
-                   </div>`
-                : `<div class="moto-avatar" onclick="abrirFoto('moto','${mo.id}')" title="Agregar foto"
-                    style="cursor:pointer;position:relative;">🏍️
-                    <span style="position:absolute;bottom:-3px;right:-3px;background:var(--accent);border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff">📷</span>
-                  </div>`
-              }
-            </div>
-            <div><div class="moto-name">${mo.nombre}</div><div class="moto-modelo">${mo.modelo||'Sin modelo'}</div></div>
-          </div>
-          <div class="moto-card-actions">
-            <button class="btn btn-ghost btn-sm btn-icon btn-sep${mo.separacion?' activo':''}" onclick="sepAbrir('moto','${mo.id}')" title="${mo.separacion?'Ver separación':'Separar'}">📌</button>
-            <button class="btn btn-ghost btn-sm btn-icon" onclick="editarMoto('${mo.id}')" title="Editar">✏️</button>
-            <button class="btn btn-danger btn-sm btn-icon" onclick="confirmarElimMoto('${mo.id}')" title="Eliminar">🗑</button>
-          </div>
-        </div>
-        <div class="moto-badges">
-          ${mo.separacion?`<span class="badge badge-sep">📌 Separada</span>`:''}
-          ${mo.retoma?`<span class="badge badge-retoma">🔁 Retoma</span>`:''}
-          ${mo.nota?`<span class="badge badge-nota" title="${escPap(mo.nota)}">📝 Tiene nota</span>`:''}
-          <span class="badge badge-gray">📋 ${mo.placa||'Sin placa'}</span>
-          ${mo.color?`<span class="badge badge-gray">🎨 ${mo.color}</span>`:''}
-          ${mo.fechaCompra?`<span class="badge badge-blue">📅 ${new Date(mo.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</span>`:''}
-          ${diasInv!==null?`<span class="badge ${diasInv>=100?'badge-red':'badge-gray'}">⏱ ${diasInv}d en inventario</span>`:''}
-        </div>
-        ${sepCinta('moto', mo)}
-        ${ccSelloRetoma(mo)}
-        ${mo.vendedorNombre||mo.vendedorCC?`<div style="margin-top:.5rem;font-size:11px;color:var(--text3)">Comprado a: <strong style="color:var(--text2)">${mo.vendedorNombre||'—'}</strong>${mo.vendedorCC?' · CC: '+mo.vendedorCC:''}${mo.vendedorTel?' · 📞 '+mo.vendedorTel:''}</div>`:''}
-        ${alertaInvHtml}
-      </div>
-      <div class="moto-stats">
-        <div class="moto-stat"><div class="moto-stat-label">Precio de compra</div><div class="moto-stat-val" style="color:var(--blue)">${fmt(compraBase)}</div></div>
-        <div class="moto-stat"><div class="moto-stat-label">Gastos del vehículo</div><div class="moto-stat-val" style="color:var(--amber)">${fmt(totG)}</div></div>
-        <div class="moto-stat" style="grid-column:1/-1;background:rgba(77,159,255,.1);border:1px solid rgba(77,159,255,.2)">
-          <div class="moto-stat-label" style="color:var(--blue)">💰 Total invertido (compra + gastos)</div>
-          <div class="moto-stat-val" style="color:var(--blue);font-size:15px;font-weight:700">${fmt(totalInvertido)}</div>
-        </div>
-      </div>
-      <div class="moto-docs">
-        <div class="moto-docs-title">📄 Vigencia de papeles</div>
-        <div class="doc-row"><span class="doc-name">SOAT</span><span class="${soat.cls}">${soat.label}</span></div>
-        <div class="doc-row"><span class="doc-name">Tecnicomecánica</span><span class="${tecno.cls}">${tecno.label}</span></div>
-        <div class="doc-row"><span class="doc-name">Impuesto gubernamental</span><span class="${imp.cls}">${imp.label}</span></div>
-      </div>
-      <div class="gastos-lista">
-        <div class="gastos-titulo">🔧 Gastos del vehículo — Total acumulado: <strong style="color:var(--amber)">${fmt(totG)}</strong></div>
-        ${gHtml}
-        <div class="add-gasto-form">
-          <input type="text" id="gn-${mo.id}" placeholder="Ej: lavada moto, cambio de aceite…">
-          <input type="number" id="gm-${mo.id}" placeholder="$ Valor" min="0">
-          <button class="btn-add-gasto" onclick="agregarGasto('${mo.id}')">+ Agregar gasto</button>
-        </div>
-      </div>
-      <div class="nota-bloque${mo.nota?' con-nota':''}">
-        <div class="nota-tit">
-          <span>📝 Nota interna</span>
-          ${mo.nota?`<button onclick="borrarNota('moto','${mo.id}')" style="font-size:11px;color:var(--red);background:rgba(255,69,96,.1);border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit">🗑 Borrar</button>`:''}
-        </div>
-        <textarea id="nota-${mo.id}" rows="2" placeholder="Ej: Debo $5.000.000 de esta moto a 15 días…" style="font-size:12px;resize:vertical;min-height:50px">${mo.nota||''}</textarea>
-        <button class="btn-add-gasto" style="margin-top:5px" onclick="guardarNota('moto','${mo.id}',document.getElementById('nota-${mo.id}').value)">💾 Guardar nota</button>
-      </div>
-    </div>`;
-  }).join('');
+  cont.innerHTML = motos.map(mo=>vcFicha('moto', mo)).join('');
+  vcRestaurarAbiertos();
 }
 
 function agregarGasto(id){
@@ -6970,22 +7049,21 @@ function renderVentas(){
     return faltan.length>0;
   });
   if(pendientesGlobal.length && alertCont){
-    alertCont.innerHTML = `
-      <div class="card" style="border:1px solid rgba(255,69,96,.35);background:rgba(255,69,96,.06);margin-bottom:1.25rem">
-        <div class="card-body" style="padding:1rem 1.25rem">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--red);margin-bottom:.6rem">
-            ⚠️ Papeles pendientes por tramitar — ${pendientesGlobal.length} moto${pendientesGlobal.length!==1?'s':''} vendida${pendientesGlobal.length!==1?'s':''}
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px">
-            ${pendientesGlobal.map(v=>{
-              const faltan=(v.papelesFaltantes||[]).filter(p=>!(v.papelesResueltos||[]).includes(p));
-              return `<div style="font-size:13px;color:var(--text2)">
-                ${nomVeh(v.tipoVehiculo,'ico')} <strong style="color:var(--text)">${v.motoNombre}</strong> ${v.motoModelo?'('+v.motoModelo+')':''} — falta: <span style="color:var(--red);font-weight:600">${faltan.join(', ')}</span>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>
-      </div>`;
+    // Papeles por tramitar: cada venta con lo que falta y un toque para marcarlo listo
+    const filas = pendientesGlobal.map(v=>({v, faltan:(v.papelesFaltantes||[]).filter(p=>!(v.papelesResueltos||[]).includes(p)), dias: lgDias(v.fecha, hoyLocal())}))
+      .sort((a,b)=>(b.dias||0) - (a.dias||0));
+    const nPap = filas.reduce((a,f)=>a + f.faltan.length, 0), todos = !!window._papVerTodos, vis = todos ? filas : filas.slice(0, 3);
+    alertCont.innerHTML = `<div class="av-tarjeta av-pap">
+      <div class="av-pap-cab"><i class="av-ico">${mcIco('recibo',20)}</i>
+        <div class="av-txt"><b>Papeles por tramitar</b><span>${nPap} papel${nPap!==1?'es':''} pendiente${nPap!==1?'s':''} en ${filas.length} venta${filas.length!==1?'s':''} · toca un papel cuando ya lo tengas</span></div></div>
+      <div class="av-pap-lista">${vis.map(f=>{ const v = f.v, d = f.dias || 0;
+        return `<div class="av-pap-fila">
+          <div class="av-pap-veh"><b>${v.motoPlaca ? `<span class="cc-placa">${ccEsc(String(v.motoPlaca).toUpperCase())}</span>` : ''}${ccEsc(v.motoNombre||'Vehículo')}${v.motoModelo ? ` <em>${ccEsc(v.motoModelo)}</em>` : ''}</b>
+            <span>${v.comprador ? ccEsc(v.comprador) + ' · ' : ''}<em class="${d > 30 ? 'mal' : d > 15 ? 'medio' : ''}">vendida ${d === 0 ? 'hoy' : 'hace ' + d + ' día' + (d!==1?'s':'')}</em></span></div>
+          <div class="av-pap-btns">${f.faltan.map(p=>`<button class="av-papel" onclick="resolverPapel('${v.id}','${ccEsc(p)}')" title="Marcar ${ccEsc(p)} como tramitado">${mcIco('check',12)}${ccEsc(p)}</button>`).join('')}</div>
+        </div>`; }).join('')}</div>
+      ${filas.length > 3 ? `<button class="av-mas" onclick="window._papVerTodos=${!todos};renderVentas()">${todos ? 'Ver menos' : `Ver las ${filas.length}`}</button>` : ''}
+    </div>`;
   } else if(alertCont){
     alertCont.innerHTML = '';
   }
@@ -9590,124 +9668,8 @@ function renderCarros(){
     cont.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🚗</div><div class="empty-title">No hay carros registrados</div><div class="empty-sub">Clic en "+ Nuevo carro".</div></div>`;
     return;
   }
-  cont.innerHTML = carros.map(ca=>{
-    const compraBase  = parseFloat(ca.precioCompra)||0;
-    const gList       = ca.gastos||[];
-    const totG        = gList.reduce((a,g)=>a+g.monto,0);
-    const totalInv    = compraBase + totG;
-    const soat  = vigencia(ca.soatTiene ?ca.soat :'','soat');
-    const tecno = vigencia(ca.tecnoTiene?ca.tecno:'','tecno');
-    const imp   = vigencia(ca.impuesto||'','imp');
-    const gHtml = gList.length
-      ? gList.map((g,i)=>`<div class="gasto-item">
-          <span class="gasto-nombre">📌 ${g.nombre}</span>
-          <span><span class="gasto-monto">${fmt(g.monto)}</span><button class="gasto-del" onclick="elimGastoCarro('${ca.id}',${i})">✕</button></span>
-        </div>`).join('')
-      : `<div style="font-size:11px;color:var(--text3)">Sin gastos registrados.</div>`;
-
-    // Días en inventario
-    let diasInvC = null, alertaInvHtmlC = '';
-    if(ca.fechaCompra){
-      const hoy = new Date(); hoy.setHours(0,0,0,0);
-      diasInvC = Math.round((hoy - new Date(ca.fechaCompra+'T00:00:00')) / 86400000);
-      if(diasInvC >= 100){
-        const frases = [
-          `¡${diasInvC} días parado! Dinero quieto es dinero perdido — necesitamos mover el capital.`,
-          `${diasInvC} días en inventario. Este carro lleva demasiado tiempo quieto. ¡El capital necesita moverse!`,
-          `¡Atención! ${diasInvC} días sin vender. Dinero quieto es dinero perdido — es momento de actuar.`,
-          `Este carro lleva ${diasInvC} días en el inventario. Necesitamos mover el capital, ¡muévelo ya!`,
-          `${diasInvC} días parado. El dinero inmovilizado no genera ganancias — mueve este capital.`,
-        ];
-        const frase = frases[Math.floor(Math.random()*frases.length)];
-        alertaInvHtmlC = `<div style="padding:.7rem 1.1rem;background:rgba(255,69,96,.1);border-top:3px solid var(--red)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-            <span style="font-size:18px">🚨</span>
-            <span style="font-size:12px;font-weight:700;color:var(--red)">MUEVE EL CAPITAL — ${diasInvC} DÍAS EN INVENTARIO</span>
-          </div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5">${frase}</div>
-        </div>`;
-      }
-    }
-
-    return `<div class="moto-card${ca.retoma?' veh-retoma':''}${ca.separacion?' veh-separada':''}" id="veh-carro-${ca.id}" style="${diasInvC>=100?'border-color:rgba(255,69,96,.4)':''}">
-      <div class="moto-card-hd">
-        <div class="moto-card-top">
-          <div style="display:flex;gap:11px;align-items:flex-start">
-            <div id="fw-carro-${ca.id}" style="position:relative;flex-shrink:0">
-              ${ca.foto
-                ? `<div style="position:relative">
-                     <img ${mcFotoAttr(ca.foto)} ondblclick="abrirVisor(this.src)" title="Doble clic para ver en grande"
-                       style="width:90px;height:90px;border-radius:12px;object-fit:cover;cursor:zoom-in;border:2px solid var(--blue);display:block">
-                     <div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:3px">
-                       <button onclick="abrirFoto('carro','${ca.id}')" title="Cambiar foto"
-                         style="background:rgba(0,0,0,.7);border:none;border-radius:5px;color:#fff;font-size:10px;padding:2px 6px;cursor:pointer;font-family:inherit">📷</button>
-                       <button onclick="borrarFoto('carro','${ca.id}')" title="Quitar foto"
-                         style="background:rgba(255,69,96,.8);border:none;border-radius:5px;color:#fff;font-size:10px;padding:2px 6px;cursor:pointer;font-family:inherit">✕</button>
-                     </div>
-                   </div>`
-                : `<div class="moto-avatar" onclick="abrirFoto('carro','${ca.id}')" title="Agregar foto"
-                    style="cursor:pointer;position:relative;background:linear-gradient(135deg,#4d9fff 0%,#1a3f70 100%)">🚗
-                    <span style="position:absolute;bottom:-3px;right:-3px;background:var(--accent);border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff">📷</span>
-                  </div>`
-              }
-            </div>
-            <div><div class="moto-name">${ca.nombre}</div><div class="moto-modelo">${ca.modelo||'Sin modelo'}</div></div>
-          </div>
-          <div class="moto-card-actions">
-            <button class="btn btn-ghost btn-sm btn-icon btn-sep${ca.separacion?' activo':''}" onclick="sepAbrir('carro','${ca.id}')" title="${ca.separacion?'Ver separación':'Separar'}">📌</button>
-            <button class="btn btn-ghost btn-sm btn-icon" onclick="editarCarro('${ca.id}')" title="Editar">✏️</button>
-            <button class="btn btn-danger btn-sm btn-icon" onclick="confirmarElimCarro('${ca.id}')" title="Eliminar">🗑</button>
-          </div>
-        </div>
-        <div class="moto-badges">
-          ${ca.separacion?`<span class="badge badge-sep">📌 Separada</span>`:''}
-          ${ca.retoma?`<span class="badge badge-retoma">🔁 Retoma</span>`:''}
-          ${ca.nota?`<span class="badge badge-nota" title="${escPap(ca.nota)}">📝 Tiene nota</span>`:''}
-          <span class="badge badge-gray">📋 ${ca.placa||'Sin placa'}</span>
-          ${ca.color?`<span class="badge badge-gray">🎨 ${ca.color}</span>`:''}
-          ${ca.km?`<span class="badge badge-gray">🛣️ ${parseInt(ca.km).toLocaleString('es-CO')} km</span>`:''}
-          ${ca.cilindraje?`<span class="badge badge-gray">⚙️ ${ca.cilindraje}</span>`:''}
-          ${ca.fechaCompra?`<span class="badge badge-blue">📅 ${new Date(ca.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</span>`:''}
-          ${diasInvC!==null?`<span class="badge ${diasInvC>=100?'badge-red':'badge-gray'}">⏱ ${diasInvC}d en inventario</span>`:''}
-        </div>
-        ${sepCinta('carro', ca)}
-        ${ccSelloRetoma(ca)}
-        ${ca.vendedorNombre||ca.vendedorCC?`<div style="margin-top:.5rem;font-size:11px;color:var(--text3)">Comprado a: <strong style="color:var(--text2)">${ca.vendedorNombre||'—'}</strong>${ca.vendedorCC?' · CC: '+ca.vendedorCC:''}${ca.vendedorTel?' · 📞 '+ca.vendedorTel:''}</div>`:''}
-        ${alertaInvHtmlC}
-      </div>
-      <div class="moto-stats">
-        <div class="moto-stat"><div class="moto-stat-label">Precio de compra</div><div class="moto-stat-val" style="color:var(--blue)">${fmt(compraBase)}</div></div>
-        <div class="moto-stat"><div class="moto-stat-label">Gastos del vehículo</div><div class="moto-stat-val" style="color:var(--amber)">${fmt(totG)}</div></div>
-        <div class="moto-stat" style="grid-column:1/-1;background:rgba(77,159,255,.1);border:1px solid rgba(77,159,255,.2)">
-          <div class="moto-stat-label" style="color:var(--blue)">💰 Total invertido (compra + gastos)</div>
-          <div class="moto-stat-val" style="color:var(--blue);font-size:15px;font-weight:700">${fmt(totalInv)}</div>
-        </div>
-      </div>
-      <div class="moto-docs">
-        <div class="moto-docs-title">📄 Vigencia de papeles</div>
-        <div class="doc-row"><span class="doc-name">SOAT</span><span class="${soat.cls}">${soat.label}</span></div>
-        <div class="doc-row"><span class="doc-name">Tecnicomecánica</span><span class="${tecno.cls}">${tecno.label}</span></div>
-        <div class="doc-row"><span class="doc-name">Impuesto gubernamental</span><span class="${imp.cls}">${imp.label}</span></div>
-      </div>
-      <div class="gastos-lista">
-        <div class="gastos-titulo">🔧 Gastos del vehículo — Total acumulado: <strong style="color:var(--amber)">${fmt(totG)}</strong></div>
-        ${gHtml}
-        <div class="add-gasto-form">
-          <input type="text" id="cgn-${ca.id}" placeholder="Ej: cambio de aceite, revisión…">
-          <input type="number" id="cgm-${ca.id}" placeholder="$ Valor" min="0">
-          <button class="btn-add-gasto" onclick="agregarGastoCarro('${ca.id}')">+ Agregar gasto</button>
-        </div>
-      </div>
-      <div class="nota-bloque${ca.nota?' con-nota':''}">
-        <div class="nota-tit">
-          <span>📝 Nota interna</span>
-          ${ca.nota?`<button onclick="borrarNota('carro','${ca.id}')" style="font-size:11px;color:var(--red);background:rgba(255,69,96,.1);border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit">🗑 Borrar</button>`:''}
-        </div>
-        <textarea id="nota-${ca.id}" rows="2" placeholder="Ej: Debo $5.000.000 de este carro a 15 días…" style="font-size:12px;resize:vertical;min-height:50px">${ca.nota||''}</textarea>
-        <button class="btn-add-gasto" style="margin-top:5px" onclick="guardarNota('carro','${ca.id}',document.getElementById('nota-${ca.id}').value)">💾 Guardar nota</button>
-      </div>
-    </div>`;
-  }).join('');
+  cont.innerHTML = carros.map(ca=>vcFicha('carro', ca)).join('');
+  vcRestaurarAbiertos();
 }
 
 function agregarGastoCarro(id){
