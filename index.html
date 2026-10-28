@@ -2086,6 +2086,55 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .dorm-acc{grid-column:1/-1}
   html .dorm-acc .btn{flex:1;justify-content:center}
 }
+/* ── Vendidas por mes ──────────────────────────────────────────────────── */
+.ivm-anio{margin-bottom:22px}
+.ivm-anio-cab{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.ivm-anio-cab > b{font:800 1.6rem 'Space Grotesk',sans-serif;color:#fff}
+.ivm-anio-kpis{display:flex;gap:8px;flex-wrap:wrap}
+.ivm-anio-kpis span{padding:8px 14px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+.ivm-anio-kpis small{display:block;font-size:10.5px;color:#8a8aa6;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.ivm-anio-kpis strong{font:800 15px 'Space Grotesk',sans-serif;color:#fff}
+.ivm-anio-kpis strong.pos{color:#00d68f}
+.ivm{margin-bottom:10px;border-radius:18px;background:var(--bg2);border:1px solid rgba(255,255,255,.07);overflow:hidden}
+.ivm.mejor{border-color:rgba(245,196,81,.35)}
+.ivm-cab{position:relative;width:100%;display:flex;align-items:center;gap:16px;padding:14px 18px 18px;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.ivm-mes{min-width:170px}
+.ivm-mes > b{font:800 1.15rem 'Space Grotesk',sans-serif;color:#fff;margin-right:8px}
+.ivm-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#f5c451;vertical-align:2px}
+.ivm-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.ivm-chips span{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.06);color:#c4c4da}
+.ivm-chips span.c{background:rgba(0,214,143,.12);color:#5be3b0}
+.ivm-chips span.f{background:rgba(167,139,250,.14);color:#c4b5fd}
+.ivm-stats{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ivm-stats small{display:block;font-size:10.5px;color:#8a8aa6;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.ivm-stats b{font:800 15px 'Space Grotesk',sans-serif;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ivm-stats b.pos,.ivm-num b.pos{color:#00d68f}.ivm-stats b.neg,.ivm-num b.neg{color:#ff6b8d}
+.ivm-chev{color:#8a8aa6;transition:transform .2s var(--ease,ease);transform:rotate(90deg)}
+.ivm.abierto .ivm-chev{transform:rotate(-90deg)}
+.ivm-barra{position:absolute;left:18px;right:18px;bottom:8px;height:3px;border-radius:99px;background:rgba(255,255,255,.05);overflow:hidden}
+.ivm-barra i{display:block;height:100%;border-radius:99px;background:var(--grad,linear-gradient(90deg,var(--accent),var(--accent-b)))}
+.ivm.mejor .ivm-barra i{background:linear-gradient(90deg,#f5c451,#ff8c3c)}
+.ivm-cuerpo{display:none;border-top:1px solid rgba(255,255,255,.06)}
+.ivm.abierto .ivm-cuerpo{display:block}
+.ivm-fila{display:grid;grid-template-columns:auto 1fr 140px 140px;gap:14px;align-items:center;padding:10px 18px;border-bottom:1px dashed rgba(255,255,255,.06)}
+.ivm-fila:last-child{border-bottom:0}
+.ivm-dia{width:42px;text-align:center;padding:4px 0;border-radius:10px;background:rgba(255,255,255,.04)}
+.ivm-dia b{display:block;font:800 15px 'Space Grotesk',sans-serif;color:#fff;line-height:1.1}
+.ivm-dia span{font-size:10.5px;color:#8a8aa6;text-transform:uppercase}
+.ivm-veh{min-width:0}
+.ivm-veh b{display:flex;align-items:center;gap:8px;color:#fff;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ivm-veh b em{font-style:normal;color:#8a8aa6;font-weight:500}
+.ivm-veh span{display:block;font-size:12px;color:#8a8aa6;margin-top:2px}
+.ivm-num{text-align:right}
+.ivm-num small{display:block;font-size:10.5px;color:#8a8aa6}
+.ivm-num b{font:700 14px 'Space Grotesk',sans-serif;color:#e8e8f4;white-space:nowrap}
+@media (max-width:760px){
+  html .ivm-cab{flex-wrap:wrap;gap:10px;padding:12px 14px 16px}
+  html .ivm-mes{min-width:0;flex:1}
+  html .ivm-stats{flex-basis:100%;order:3;grid-template-columns:1fr 1fr}
+  html .ivm-fila{grid-template-columns:auto 1fr auto;padding:10px 14px}
+  html .ivm-fila .ivm-num:nth-of-type(3){display:none}
+}
 </style>
 </head>
 <body>
@@ -7385,48 +7434,69 @@ function switchInv(tab, btn){
 function renderInventario(){
   renderInvActivas();
 
-  // VENDIDAS POR MES
-  if(!ventas.length){
-    document.getElementById('inv-vendidas').innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Sin ventas aún</div></div>`;
-    return;
-  }
-  const grupos={};
-  ventas.forEach(v=>{
-    const d=new Date(v.fecha+'T00:00:00');
-    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    if(!grupos[key]) grupos[key]={ventas:[],anio:d.getFullYear(),mes:d.getMonth()};
-    grupos[key].ventas.push(v);
-  });
-  const keys=Object.keys(grupos).sort().reverse();
-  const html=keys.map(key=>{
-    const g=grupos[key];
-    const tVta=g.ventas.reduce((a,v)=>a+v.precioVenta,0);
-    const tGan=g.ventas.reduce((a,v)=>a+v.gananciaNeta,0);
-    const rows=g.ventas.map(v=>`<tr>
-      <td style="font-size:11px;color:var(--text2)">${new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO')}</td>
-      <td><div style="font-weight:600;font-size:13px">${v.motoNombre}</div><div style="font-size:11px;color:var(--text3)">${v.motoModelo||''}</div></td>
-      <td style="color:var(--blue);font-family:'DM Mono',monospace">${fmt(v.inversionCompra)}</td>
-      <td style="color:var(--amber);font-family:'DM Mono',monospace">${fmt(v.gastos)}</td>
-      <td style="color:var(--green);font-family:'DM Mono',monospace">${fmt(v.precioVenta)}</td>
-      <td style="font-weight:700;font-family:'DM Mono',monospace;color:${v.gananciaNeta>=0?'var(--green)':'var(--red)'}">${v.gananciaNeta>=0?'+':''}${fmt(v.gananciaNeta)}</td>
-      <td style="font-size:11px;color:var(--text2)">${v.comprador||'—'}${v.compradorCC?'<br><span style="color:var(--text3)">CC: '+v.compradorCC+'</span>':''}</td>
-    </tr>`).join('');
-    return `<div class="card" style="padding:0;margin-bottom:1rem">
-      <div class="card-head">
-        <span class="card-head-title">📅 ${MESES[g.mes]} ${g.anio} — ${g.ventas.length} moto${g.ventas.length!==1?'s':''} vendida${g.ventas.length!==1?'s':''}</span>
-        <div style="display:flex;gap:16px">
-          <span style="font-size:12px;color:var(--green)">Ventas: <strong>${fmt(tVta)}</strong></span>
-          <span style="font-size:12px;color:${tGan>=0?'var(--green)':'var(--red)'}">Ganancia: <strong>${fmt(tGan)}</strong></span>
-        </div>
-      </div>
-      <table><thead><tr><th>Fecha</th><th>Moto</th><th>Inversión</th><th>Gastos</th><th>Precio venta</th><th>Ganancia</th><th>Comprador</th></tr></thead><tbody>${rows}</tbody></table>
-    </div>`;
-  }).join('');
-  // "Vendidas por mes" se dibuja cuando se abre esa pestaña
+  // VENDIDAS POR MES: resumen del año y una tarjeta por mes que se abre
   const caja = document.getElementById('inv-vendidas');
+  let html;
+  if(!ventas.length){
+    html = `<div class="empty-state"><div class="empty-icon">${mcIco('recibo',34)}</div><div class="empty-title">Sin ventas aún</div></div>`;
+  } else {
+    const grupos = {};
+    ventas.forEach(v=>{ const k = String(v.fecha||'').slice(0,7); if(!/^\d{4}-\d{2}$/.test(k)) return; (grupos[k] = grupos[k] || []).push(v); });
+    const keys = Object.keys(grupos).sort().reverse();
+    const res = k => { const vs = grupos[k], vend = vs.reduce((a,v)=>a + ccNum(v.precioVenta), 0), gan = vs.reduce((a,v)=>a + mcGanVenta(v), 0), inv = vend - gan;
+      const ds = vs.map(v=>lgDias(v.fechaCompra, v.fecha)).filter(d=>d != null && d >= 0);
+      return {n: vs.length, vend, gan, inv, marg: inv > 0 ? gan / inv * 100 : 0, dias: ds.length ? Math.round(ds.reduce((a,b)=>a+b, 0) / ds.length) : null,
+        cont: vs.filter(v=>v.formaPago === 'contado').length, fin: vs.filter(v=>v.formaPago === 'financiado').length}; };
+    const R = {}; keys.forEach(k=>R[k] = res(k));
+    const anios = [...new Set(keys.map(k=>k.slice(0,4)))];
+    _ivmFilas = {};
+    html = anios.map(a=>{
+      const ks = keys.filter(k=>k.startsWith(a)), vend = ks.reduce((s,k)=>s + R[k].vend, 0), gan = ks.reduce((s,k)=>s + R[k].gan, 0), n = ks.reduce((s,k)=>s + R[k].n, 0);
+      const mejor = ks.slice().sort((x,y)=>R[y].gan - R[x].gan)[0], maxG = Math.max(...ks.map(k=>R[k].gan), 1);
+      return `<div class="ivm-anio">
+        <div class="ivm-anio-cab"><b>${a}</b>
+          <div class="ivm-anio-kpis"><span><small>Vendidos</small><strong>${n}</strong></span><span><small>Vendido</small><strong>${fmt(vend)}</strong></span><span><small>Ganancia</small><strong class="pos">${fmt(gan)}</strong></span><span><small>Mejor mes</small><strong>${MESES[Number(mejor.slice(5,7))-1]}</strong></span></div></div>
+        ${ks.map((k, i)=>{
+          const r = R[k], mi = Number(k.slice(5,7)) - 1, abierto = _ivmAbiertos.has(k) || (i === 0 && a === anios[0] && !_ivmAbiertos.size), esMejor = k === mejor && ks.length > 1;
+          const vs = grupos[k].slice().sort((x,y)=>String(y.fecha).localeCompare(String(x.fecha)));
+          _ivmFilas[k] = vs.map(v=>{ const g = mcGanVenta(v), d = lgDias(v.fechaCompra, v.fecha), f = new Date(v.fecha+'T00:00:00');
+            return `<div class="ivm-fila">
+              <div class="ivm-dia"><b>${f.getDate()}</b><span>${['dom','lun','mar','mié','jue','vie','sáb'][f.getDay()]}</span></div>
+              <div class="ivm-veh"><b>${v.motoPlaca ? `<span class="cc-placa">${ccEsc(String(v.motoPlaca).toUpperCase())}</span>` : ''}${ccEsc(v.motoNombre||'Vehículo')}${v.motoModelo ? ` <em>${ccEsc(v.motoModelo)}</em>` : ''}</b>
+                <span>${v.comprador ? ccEsc(v.comprador) : 'Sin comprador'}${v.formaPago ? ' · ' + (v.formaPago === 'financiado' ? 'financiada' : 'de contado') : ''}${d != null && d >= 0 ? ` · ${d === 0 ? 'vendida el mismo día' : 'vendida en ' + d + ' día' + (d!==1?'s':'')}` : ''}</span></div>
+              <div class="ivm-num"><small>Vendida en</small><b>${fmt(ccNum(v.precioVenta))}</b></div>
+              <div class="ivm-num"><small>Ganancia</small><b class="${g >= 0 ? 'pos' : 'neg'}">${g >= 0 ? '+' : ''}${fmt(g)}</b></div>
+            </div>`; }).join('');
+          return `<div class="ivm${abierto ? ' abierto' : ''}${esMejor ? ' mejor' : ''}" id="ivm-${k}">
+            <button class="ivm-cab" onclick="ivmAlternar('${k}')" aria-expanded="${abierto}">
+              <div class="ivm-mes"><b>${MESES[mi]}</b>${esMejor ? `<span class="ivm-tag">${mcIco('trofeo',12)}Mejor mes</span>` : ''}
+                <div class="ivm-chips"><span>${r.n} vendido${r.n!==1?'s':''}</span>${r.cont ? `<span class="c">${r.cont} de contado</span>` : ''}${r.fin ? `<span class="f">${r.fin} financiado${r.fin!==1?'s':''}</span>` : ''}</div></div>
+              <div class="ivm-stats">
+                <div><small>Vendido</small><b>${fmt(r.vend)}</b></div>
+                <div><small>Ganancia</small><b class="${r.gan >= 0 ? 'pos' : 'neg'}">${r.gan >= 0 ? '+' : ''}${fmt(r.gan)}</b></div>
+                <div><small>Rentabilidad</small><b>${r.marg.toFixed(1).replace('.', ',').replace(',0','')}%</b></div>
+                <div><small>Días para vender</small><b>${r.dias == null ? '—' : r.dias}</b></div>
+              </div>
+              <span class="ivm-chev">${mcIco('flecha',16)}</span>
+              <div class="ivm-barra" title="Ganancia frente al mejor mes del año"><i style="width:${Math.max(3, Math.round(Math.max(0, r.gan) / maxG * 100))}%"></i></div>
+            </button>
+            <div class="ivm-cuerpo">${abierto ? _ivmFilas[k] : ''}</div>
+          </div>`; }).join('')}
+      </div>`; }).join('');
+  }
+  // "Vendidas por mes" se dibuja cuando se abre esa pestaña
   if(caja.style.display === 'none'){ _invVendidasHtml = html; caja.innerHTML = ''; } else { _invVendidasHtml = null; caja.innerHTML = html; }
 }
 var _invVendidasHtml = null;
+var _ivmAbiertos = new Set(), _ivmFilas = {};
+function ivmAlternar(k){
+  const el = document.getElementById('ivm-' + k); if(!el) return;
+  const abrir = !el.classList.contains('abierto');
+  el.classList.toggle('abierto', abrir);
+  el.querySelector('.ivm-cab').setAttribute('aria-expanded', abrir);
+  const cuerpo = el.querySelector('.ivm-cuerpo');
+  if(abrir){ _ivmAbiertos.add(k); if(!cuerpo.innerHTML) cuerpo.innerHTML = _ivmFilas[k] || ''; } else _ivmAbiertos.delete(k);
+}
 
 // ── INVENTARIO ───────────────────────────────────────────────────────────────
 // Panorama del capital en inventario (cuánto, cuánto tiempo lleva y dónde está
