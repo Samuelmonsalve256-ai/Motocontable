@@ -1958,6 +1958,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .cce-info small{display:block;color:#9a9ab8;font-size:12px;margin-top:2px}
 .cce-msg{margin-top:8px;padding:9px 11px;border-radius:10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);font-size:12px;line-height:1.5;color:#c9c9e0;word-break:break-all;max-height:130px;overflow:auto}
 .cce-acc{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+.metric-value{white-space:nowrap;overflow:hidden;text-overflow:clip}
 </style>
 </head>
 <body>
@@ -3648,6 +3649,25 @@ function go(page){
     if(cfgData.fontSize) document.getElementById('cfg-fontsize').value=cfgData.fontSize;
   }
 }
+
+// ── CIFRAS QUE CABEN EN SU TARJETA ───────────────────────────────────────────
+// Con montos grandes (más de mil millones) la cifra se salía de la tarjeta:
+// se achica la letra lo justo para que quepa completa.
+function mcAjustarCifras(){
+  document.querySelectorAll('.metric-value').forEach(el=>{
+    if(!el.offsetParent) return;
+    el.style.fontSize = '';
+    if(el.scrollWidth <= el.clientWidth + 1) return;
+    const base = parseFloat(getComputedStyle(el).fontSize) || 20;
+    let t = base;
+    while(el.scrollWidth > el.clientWidth + 1 && t > base * 0.5){ t -= 0.5; el.style.fontSize = t + 'px'; }
+  });
+}
+let _mcCifrasPend = false;
+function mcProgramarCifras(){ if(_mcCifrasPend) return; _mcCifrasPend = true; requestAnimationFrame(()=>{ _mcCifrasPend = false; mcAjustarCifras(); }); }
+new MutationObserver(mcProgramarCifras).observe(document.body, {childList:true, subtree:true});
+window.addEventListener('resize', mcProgramarCifras);
+document.fonts && document.fonts.ready && document.fonts.ready.then(mcProgramarCifras);
 
 // ── SONIDOS DE LAS ACCIONES ──────────────────────────────────────────────────
 // Tonos cortos generados con Web Audio (sin archivos). Se pueden apagar en Ajustes.
