@@ -2000,6 +2000,92 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .dd-fila strong{font:700 14px 'Space Grotesk',sans-serif;white-space:nowrap}
 .dd-fila strong.pos{color:#00d68f}.dd-fila strong.neg{color:#ff6b8d}
 @media (max-width:760px){ html .dl-hero{padding:.2rem 0 0} html .dl-total{font-size:1.9rem} html #dia-detalle{padding:0 1rem} html #page-analisis .dia-ley{padding:.2rem 1rem .4rem} }
+/* ── Inventario ─────────────────────────────────────────────────────────── */
+.inv-hero{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;padding:20px 22px;border-radius:20px;margin-bottom:16px;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(var(--accent-rgb),.2),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.08)}
+.inv-k{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9a9ab8}
+.inv-k svg{color:var(--accent)}
+.inv-v{margin-top:6px;font:800 2.4rem/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;color:#fff;font-variant-numeric:tabular-nums}
+.inv-s{margin-top:4px;color:#9a9ab8;font-size:13px}
+.inv-edad{display:flex;height:10px;border-radius:99px;overflow:hidden;gap:2px;margin-top:14px;background:rgba(255,255,255,.05)}
+.inv-edad i{display:block;min-width:4px}
+.t-nuevo{background:#00d68f}.t-medio{background:var(--accent)}.t-pronto{background:#f5c451}.t-alerta{background:#ff4d6d}
+.inv-edad-ley{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:11.5px;color:#9a9ab8}
+.inv-edad-ley span{display:inline-flex;align-items:center;gap:6px}
+.inv-edad-ley i{width:9px;height:9px;border-radius:3px}
+.inv-hero-der{display:grid;gap:10px;align-content:center}
+.inv-kpi{padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.inv-kpi small{display:block;font-size:11px;color:#8a8aa6;font-weight:600}
+.inv-kpi b{display:block;font:800 1.25rem 'Space Grotesk',sans-serif;color:#fff;margin-top:1px}
+.inv-kpi b.mal{color:#ff6b8d}.inv-kpi b.ok{color:#00d68f}
+.inv-kpi span{font-size:12px;color:#9a9ab8}
+.inv-barra-f{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0 14px}
+.inv-barra-f input{flex:1;min-width:200px}
+.inv-barra-f select{width:auto}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.inv-ficha{--n:var(--accent);display:flex;gap:12px;padding:12px;border-radius:18px;background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-left:3px solid var(--n);transition:transform .18s var(--ease,ease),border-color .18s}
+.inv-ficha:hover{transform:translateY(-2px)}
+.inv-ficha.n-nuevo{--n:#00d68f}.inv-ficha.n-medio{--n:var(--accent)}.inv-ficha.n-pronto{--n:#f5c451}
+.inv-ficha.n-alerta{--n:#ff8a5c}.inv-ficha.n-crit{--n:#ff4d6d}.inv-ficha.n-urg{--n:#ff2d55;box-shadow:0 0 0 1px rgba(255,45,85,.25),0 10px 30px -18px rgba(255,45,85,.8)}
+.inv-ficha.n-sin{--n:#5b5b78}
+.inv-foto{width:72px;height:72px;flex:none;border-radius:14px;overflow:hidden;display:grid;place-items:center;background:rgba(255,255,255,.04);color:#6e6e8a}
+.inv-foto img{width:100%;height:100%;object-fit:cover}
+.inv-cuerpo{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.inv-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.inv-nom{min-width:0}
+.inv-nom b{display:block;color:#fff;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-nom span{display:block;font-size:12px;color:#8a8aa6}
+.inv-dias{display:inline-flex;align-items:center;gap:5px;flex:none;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;color:var(--n);background:color-mix(in srgb,var(--n) 14%,transparent);border:1px solid color-mix(in srgb,var(--n) 35%,transparent)}
+.inv-ficha.n-urg .inv-dias{animation:lgLatir 1.8s ease-in-out infinite}
+.inv-chips{display:flex;flex-wrap:wrap;gap:6px}
+.inv-chips .cc-placa{display:inline-flex;width:auto}
+.inv-chip{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;color:#9a9ab8;background:rgba(255,255,255,.05)}
+.inv-chip.sep{color:#5eead4;background:rgba(45,212,191,.12)}
+.inv-chip.ret{color:#c4b5fd;background:rgba(167,139,250,.12)}
+.inv-barra{height:5px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+.inv-barra i{display:block;height:100%;border-radius:99px;background:var(--n)}
+.inv-pie{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.inv-pie small{display:block;font-size:10.5px;color:#8a8aa6;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.inv-pie b{display:block;font:800 1.05rem 'Space Grotesk',sans-serif;color:#fff;font-variant-numeric:tabular-nums}
+.inv-pie em{display:block;font-style:normal;font-size:11.5px;color:#8a8aa6}
+.inv-acc{display:flex;gap:6px}
+.inv-meta{font-size:11.5px;color:#6e6e8a}
+.inv-vacio{grid-column:1/-1;text-align:center;color:#9a9ab8;padding:24px}
+/* ── Aviso de capital quieto ─────────────────────────────────────────────── */
+.dorm{--d:#ff8a5c;margin-bottom:16px;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--d) 12%,transparent),rgba(255,255,255,.015) 60%);border:1px solid color-mix(in srgb,var(--d) 35%,transparent)}
+.dorm.n-crit{--d:#ff4d6d}.dorm.n-urg{--d:#ff2d55}
+.dorm.dorm-solo-pronto{--d:#f5c451;padding:10px 14px}
+.dorm-cab{display:flex;align-items:center;gap:12px}
+.dorm-ico{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none;color:#fff;background:linear-gradient(135deg,var(--d),color-mix(in srgb,var(--d) 55%,#000))}
+.dorm-tit b{display:block;color:#fff;font-size:15px}
+.dorm-tit span{font-size:12.5px;color:#c4c4da}
+.dorm-tit strong{color:var(--d);font-variant-numeric:tabular-nums}
+.dorm-idea{margin:10px 0 4px;font-size:13px;line-height:1.5;color:#c9c9e0}
+.dorm-idea b{color:#fff}
+.dorm-lista{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.dorm-fila{--n:#ff8a5c;display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.06)}
+.dorm-fila.n-crit{--n:#ff4d6d}.dorm-fila.n-urg{--n:#ff2d55}
+.dorm-veh{min-width:0}
+.dorm-veh b{display:block;color:#fff;font-size:13.5px}
+.dorm-veh b em{font-style:normal;color:#8a8aa6;font-weight:500}
+.dorm-veh span{display:block;font-size:12px;color:#9a9ab8;margin-top:1px}
+.dorm-barra{height:4px;border-radius:99px;background:rgba(255,255,255,.06);margin-top:6px;overflow:hidden;max-width:280px}
+.dorm-barra i{display:block;height:100%;background:var(--n);border-radius:99px}
+.dorm-dias{font:800 14px 'Space Grotesk',sans-serif;color:var(--n);white-space:nowrap}
+.dorm-acc{display:flex;gap:6px}
+.dorm-mas{margin-top:8px;background:none;border:0;color:var(--d);font:700 12.5px 'Inter',sans-serif;cursor:pointer}
+.dorm-pronto{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:12.5px;color:#f5c451}
+.dorm-solo-pronto .dorm-pronto{margin-top:0}
+.dorm-pronto b{color:#ffe08a}
+.dorm-pronto svg{flex:none;margin-top:2px}
+@media (max-width:760px){
+  html .inv-hero{grid-template-columns:1fr;padding:16px}
+  html .inv-v{font-size:2rem}
+  html .inv-grid{grid-template-columns:1fr}
+  html .dorm-fila{grid-template-columns:1fr auto}
+  html .dorm-acc{grid-column:1/-1}
+  html .dorm-acc .btn{flex:1;justify-content:center}
+}
 </style>
 </head>
 <body>
@@ -2179,10 +2265,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 
 <!-- INVENTARIO -->
 <div class="page" id="page-inventario">
-  <div class="page-header"><div class="page-title">Inventario</div><div class="page-sub">Motos activas y registro de vendidas por mes</div></div>
+  <div class="page-header"><div class="page-title">Inventario</div><div class="page-sub">Tu capital en vehículos: cuánto, cuánto tiempo lleva y qué mover primero</div></div>
   <div class="inv-tabs">
-    <button class="inv-tab active" onclick="switchInv('activas',this)">🏍️ Activas</button>
-    <button class="inv-tab" onclick="switchInv('vendidas',this)">✅ Vendidas por mes</button>
+    <button class="inv-tab active" onclick="switchInv('activas',this)">En inventario</button>
+    <button class="inv-tab" onclick="switchInv('vendidas',this)">Vendidas por mes</button>
   </div>
   <div id="inv-activas"></div>
   <div id="inv-vendidas" style="display:none"></div>
@@ -6345,53 +6431,6 @@ function diasEnInventario(fechaCompra){
   return Math.round((hoy - new Date(fechaCompra+'T00:00:00')) / 86400000);
 }
 
-function renderAlertasInventario(lista, tipo, contId){
-  const cont = document.getElementById(contId);
-  if(!cont) return;
-  // Deduplicar por ID por si hay duplicados en localStorage
-  const vistos = new Set();
-  const listaUnica = lista.filter(v=>{
-    if(vistos.has(v.id)) return false;
-    vistos.add(v.id);
-    return true;
-  });
-  const dormidos = listaUnica.filter(v=>{
-    const d = diasEnInventario(v.fechaCompra);
-    return d !== null && d >= DIAS_ALERTA;
-  });
-  if(!dormidos.length){ cont.innerHTML=''; return; }
-
-  const totalCapital = dormidos.reduce((a,v)=>{
-    const g=(v.gastos||[]).reduce((b,g)=>b+g.monto,0);
-    return a+(parseFloat(v.precioCompra)||0)+g;
-  },0);
-
-  const ico = tipo==='carro'?'🚗':'🏍️';
-  const filas = dormidos.map(v=>{
-    const dias = diasEnInventario(v.fechaCompra);
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,69,96,.15)">
-      <span style="font-size:13px;color:var(--text2)">${ico} <strong style="color:var(--text)">${v.nombre}</strong> ${v.modelo?'('+v.modelo+')':''}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--red);font-weight:600">${dias}d parado</span>
-    </div>`;
-  }).join('');
-
-  cont.innerHTML = `
-    <div style="background:rgba(255,69,96,.08);border:1px solid rgba(255,69,96,.35);border-left:4px solid var(--red);border-radius:var(--r2);padding:1rem 1.25rem;margin-bottom:1.25rem">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:.6rem">
-        <span style="font-size:22px">🚨</span>
-        <div>
-          <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--red)">
-            ${dormidos.length} ${tipo==='carro'?'carro':'moto'}${dormidos.length!==1?'s':''} con +${DIAS_ALERTA} días en inventario
-          </div>
-          <div style="font-size:12px;color:var(--text2);margin-top:1px">
-            Capital inmovilizado: <strong style="color:var(--red);font-family:'DM Mono',monospace">${fmt(totalCapital)}</strong> — Dinero quieto es dinero perdido. ¡Mueve el capital!
-          </div>
-        </div>
-      </div>
-      <div style="border-top:1px solid rgba(255,69,96,.2);padding-top:.5rem">${filas}</div>
-    </div>`;
-}
-
 function renderAlertasResumen(){
   const cont = document.getElementById('alertas-capital-dormido');
   if(!cont) return;
@@ -7344,48 +7383,7 @@ function switchInv(tab, btn){
 }
 
 function renderInventario(){
-  // ACTIVAS — motos + carros
-  const totalActivos = motos.length + carros.length;
-  if(!totalActivos){
-    document.getElementById('inv-activas').innerHTML=`<div class="empty-state"><div class="empty-icon">🏍️</div><div class="empty-title">Sin vehículos activos</div></div>`;
-  } else {
-    const rowsMotos = motos.map((mo,i)=>{
-      const c=calcMoto(mo.id);
-      return `<tr>
-        <td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">${i+1}</td>
-        <td><div class="tbl-name">🏍️ ${mo.nombre}</div><div class="tbl-sub">${mo.modelo||''}</div></td>
-        <td><span class="badge badge-gray">${mo.placa||'Sin placa'}</span></td>
-        <td style="color:var(--text2)">${mo.color||'—'}</td>
-        <td style="color:var(--blue);font-family:'DM Mono',monospace">${fmt(c.compra)}</td>
-        <td style="color:var(--amber);font-family:'DM Mono',monospace">${fmt(c.gastos)}</td>
-        <td style="font-size:12px;color:var(--text2)">${mo.fechaCompra?new Date(mo.fechaCompra+'T00:00:00').toLocaleDateString('es-CO'):'—'}</td>
-        <td style="font-size:12px;color:var(--text2)">${mo.vendedorNombre||'—'}</td>
-      </tr>`;
-    }).join('');
-    const rowsCarros = carros.map((ca,i)=>{
-      const compraBase=parseFloat(ca.precioCompra)||0;
-      const totG=(ca.gastos||[]).reduce((a,g)=>a+g.monto,0);
-      return `<tr>
-        <td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">${motos.length+i+1}</td>
-        <td><div class="tbl-name">🚗 ${ca.nombre}</div><div class="tbl-sub">${ca.modelo||''}${ca.cilindraje?' · '+ca.cilindraje:''}${ca.km?' · '+parseInt(ca.km).toLocaleString('es-CO')+' km':''}</div></td>
-        <td><span class="badge badge-gray">${ca.placa||'Sin placa'}</span></td>
-        <td style="color:var(--text2)">${ca.color||'—'}</td>
-        <td style="color:var(--blue);font-family:'DM Mono',monospace">${fmt(compraBase)}</td>
-        <td style="color:var(--amber);font-family:'DM Mono',monospace">${fmt(totG)}</td>
-        <td style="font-size:12px;color:var(--text2)">${ca.fechaCompra?new Date(ca.fechaCompra+'T00:00:00').toLocaleDateString('es-CO'):'—'}</td>
-        <td style="font-size:12px;color:var(--text2)">${ca.vendedorNombre||'—'}</td>
-      </tr>`;
-    }).join('');
-    const subtitulo = [
-      motos.length>0 ? `🏍️ ${motos.length} moto${motos.length!==1?'s':''}` : '',
-      carros.length>0 ? `🚗 ${carros.length} carro${carros.length!==1?'s':''}` : '',
-    ].filter(Boolean).join(' · ');
-    document.getElementById('inv-activas').innerHTML=`
-      <div class="card" style="padding:0">
-        <div class="card-head"><span class="card-head-title">Inventario activo — ${subtitulo}</span></div>
-        <table><thead><tr><th>#</th><th>Vehículo</th><th>Placa</th><th>Color</th><th>Inversión compra</th><th>Gastos totales</th><th>Fecha compra</th><th>Comprado a</th></tr></thead><tbody>${rowsMotos}${rowsCarros}</tbody></table>
-      </div>`;
-  }
+  renderInvActivas();
 
   // VENDIDAS POR MES
   if(!ventas.length){
@@ -7429,6 +7427,177 @@ function renderInventario(){
   if(caja.style.display === 'none'){ _invVendidasHtml = html; caja.innerHTML = ''; } else { _invVendidasHtml = null; caja.innerHTML = html; }
 }
 var _invVendidasHtml = null;
+
+// ── INVENTARIO ───────────────────────────────────────────────────────────────
+// Panorama del capital en inventario (cuánto, cuánto tiempo lleva y dónde está
+// quieto), filtros, orden y una ficha por vehículo con sus días a la vista.
+var _invFiltro = 'todos', _invOrden = 'dias', _invBuscar = '';
+const INV_NIVEL = {nuevo:'0 a 30 días', medio:'31 a 60', pronto:'61 a 99', alerta:'100 o más'};
+function invItems(){
+  const vistos = new Set();
+  return [...motos.map(v=>({v, tipo:'moto'})), ...carros.map(v=>({v, tipo:'carro'}))]
+    .filter(x=>{ const k = x.tipo + x.v.id; if(vistos.has(k)) return false; vistos.add(k); return true; })
+    .map(x=>{ const gastos = (x.v.gastos||[]).reduce((a,g)=>a + ccNum(g.monto), 0), compra = ccNum(x.v.precioCompra), dias = diasEnInventario(x.v.fechaCompra);
+      return {...x, compra, gastos, total: compra + gastos, dias}; });
+}
+// Nivel por días: nuevo (0-30), medio (31-60), pronto (61-99), alerta (100+), crit (150+), urg (200+)
+const invNivel = d => d == null ? 'sin' : d >= 200 ? 'urg' : d >= 150 ? 'crit' : d >= DIAS_ALERTA ? 'alerta' : d >= 61 ? 'pronto' : d >= 31 ? 'medio' : 'nuevo';
+const invTramo = d => d == null ? null : d >= DIAS_ALERTA ? 'alerta' : d >= 61 ? 'pronto' : d >= 31 ? 'medio' : 'nuevo';
+// Lo que dice tu historial: cuánto pagas en promedio y en cuántos días vendes
+function invHistorial(){
+  const dias = ventas.map(v=>lgDias(v.fechaCompra, v.fecha)).filter(d=>d != null && d >= 0);
+  const compras = ventas.map(v=>ccNum(v.inversionCompra)).filter(n=>n > 0);
+  return {diasProm: dias.length >= 3 ? Math.round(dias.reduce((a,b)=>a+b, 0) / dias.length) : null,
+          compraProm: compras.length >= 3 ? compras.reduce((a,b)=>a+b, 0) / compras.length : null};
+}
+const invDiasTxt = d => d == null ? 'Sin fecha de compra' : d === 0 ? 'Llegó hoy' : `${d} día${d!==1?'s':''}`;
+function invVer(tipo, id){
+  go(tipo === 'carro' ? 'carros' : 'motos');
+  setTimeout(()=>ccResaltar(document.getElementById(`veh-${tipo}-${id}`)), 80);
+}
+function invFiltrar(f){ _invFiltro = f; renderInventario(); }
+// Texto listo para publicar en WhatsApp, Marketplace o Instagram
+async function invCopiarPublicacion(tipo, id){
+  const v = (tipo === 'carro' ? carros : motos).find(x=>x.id === id); if(!v) return;
+  const vig = f => f ? new Date(f+'T00:00:00').toLocaleDateString('es-CO', {day:'numeric', month:'short', year:'numeric'}) : '';
+  const l = [`${tipo === 'carro' ? '🚗' : '🏍️'} VENDO ${String(v.nombre||'').toUpperCase()}${v.modelo ? ' ' + v.modelo : ''}`, ''];
+  if(v.placa) l.push(`• Placa: ${String(v.placa).toUpperCase()}`);
+  if(v.color) l.push(`• Color: ${v.color}`);
+  if(v.km) l.push(`• Kilometraje: ${Number(v.km).toLocaleString('es-CO')} km`);
+  l.push(`• SOAT: ${v.soatTiene && v.soat ? 'vigente hasta ' + vig(v.soat) : 'por renovar'}`);
+  l.push(`• Tecnomecánica: ${v.tecnoTiene && v.tecno ? 'vigente hasta ' + vig(v.tecno) : 'por revisar'}`);
+  if(v.impuestoPago !== undefined) l.push(`• Impuestos: ${v.impuestoPago ? 'al día' : 'pendientes'}`);
+  l.push('', '✅ Papeles en regla y traspaso inmediato', '📲 Escríbeme para más información y precio');
+  const texto = l.join('\n');
+  try { await navigator.clipboard.writeText(texto); mcNotificar({tipo:'ok', titulo:'Publicación copiada', texto:'Pégala en WhatsApp, Marketplace o Instagram'}); }
+  catch(e){ prompt('Copia la publicación:', texto); }
+}
+function invFicha(x){
+  const v = x.v, n = invNivel(x.dias), pct = x.dias == null ? 0 : Math.min(100, Math.round(x.dias / DIAS_ALERTA * 100));
+  const foto = v.foto ? `<img ${mcFotoAttr(v.foto)} alt="">` : `<span>${mcIco(x.tipo === 'carro' ? 'carro' : 'moto', 26)}</span>`;
+  const sep = v.separacion ? `<span class="inv-chip sep">Separada · ${ccEsc(v.separacion.cliente||'')}</span>` : '';
+  const ret = v.retoma ? `<span class="inv-chip ret">Retoma</span>` : '';
+  return `<div class="inv-ficha n-${n}" id="inv-${x.tipo}-${v.id}">
+    <div class="inv-foto">${foto}</div>
+    <div class="inv-cuerpo">
+      <div class="inv-top"><div class="inv-nom"><b>${ccEsc(v.nombre||'Vehículo')}</b><span>${[v.modelo, v.color].filter(Boolean).map(ccEsc).join(' · ') || '&nbsp;'}</span></div>
+        <span class="inv-dias">${mcIco('reloj',13)}${invDiasTxt(x.dias)}</span></div>
+      <div class="inv-chips">${v.placa ? `<span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span>` : '<span class="inv-chip">Sin placa</span>'}${sep}${ret}</div>
+      <div class="inv-barra" title="${x.dias == null ? '' : x.dias + ' de ' + DIAS_ALERTA + ' días'}"><i style="width:${pct}%"></i></div>
+      <div class="inv-pie">
+        <div><small>Invertido</small><b>${fmt(x.total)}</b><em>${fmt(x.compra)} compra${x.gastos ? ' + ' + fmt(x.gastos) + ' gastos' : ''}</em></div>
+        <div class="inv-acc">
+          <button class="btn btn-ghost btn-sm" onclick="invVer('${x.tipo}','${v.id}')">Ver</button>
+          <button class="btn btn-ghost btn-sm" title="Copiar publicación" onclick="invCopiarPublicacion('${x.tipo}','${v.id}')">${mcIco('chat',14)}</button>
+          <button class="btn btn-primary btn-sm" onclick="sepVender('${x.tipo}','${v.id}')">Vender</button>
+        </div>
+      </div>
+      <div class="inv-meta">${v.fechaCompra ? 'Comprada el ' + mcFechaCorta(v.fechaCompra) : 'Sin fecha de compra'}${v.vendedorNombre ? ' · a ' + ccEsc(v.vendedorNombre) : ''}</div>
+    </div>
+  </div>`;
+}
+function renderInvActivas(){
+  const box = document.getElementById('inv-activas'); if(!box) return;
+  const items = invItems();
+  if(!items.length){ box.innerHTML = `<div class="empty-state"><div class="empty-icon">${mcIco('caja',34)}</div><div class="empty-title">Sin vehículos en inventario</div><div class="empty-sub">Cuando registres una moto o un carro aparece aquí.</div></div>`; return; }
+  const total = items.reduce((a,x)=>a + x.total, 0), conFecha = items.filter(x=>x.dias != null);
+  const prom = conFecha.length ? Math.round(conFecha.reduce((a,x)=>a + x.dias, 0) / conFecha.length) : null;
+  const viejo = conFecha.slice().sort((a,b)=>b.dias - a.dias)[0];
+  const dorm = items.filter(x=>x.dias != null && x.dias >= DIAS_ALERTA), capDorm = dorm.reduce((a,x)=>a + x.total, 0);
+  const nM = items.filter(x=>x.tipo === 'moto').length, nC = items.length - nM, nSep = items.filter(x=>x.v.separacion).length;
+  const tramos = {nuevo:0, medio:0, pronto:0, alerta:0}; items.forEach(x=>{ const t = invTramo(x.dias); if(t) tramos[t] += x.total; });
+  const h = invHistorial();
+  let html = `<div class="inv-hero">
+    <div class="inv-hero-izq">
+      <div class="inv-k">${mcIco('caja',15)}Capital en inventario</div>
+      <div class="inv-v">${fmt(total)}</div>
+      <div class="inv-s">${[nM ? `${nM} moto${nM!==1?'s':''}` : '', nC ? `${nC} carro${nC!==1?'s':''}` : ''].filter(Boolean).join(' · ')}${nSep ? ` · ${nSep} separado${nSep!==1?'s':''}` : ''}</div>
+      ${total ? `<div class="inv-edad">${['nuevo','medio','pronto','alerta'].map(t=>tramos[t] ? `<i class="t-${t}" style="flex:${tramos[t]}" title="${INV_NIVEL[t]}: ${fmt(tramos[t])}"></i>` : '').join('')}</div>
+      <div class="inv-edad-ley">${['nuevo','medio','pronto','alerta'].map(t=>`<span><i class="t-${t}"></i>${INV_NIVEL[t]} · ${fmt(tramos[t])}</span>`).join('')}</div>` : ''}
+    </div>
+    <div class="inv-hero-der">
+      <div class="inv-kpi"><small>Días promedio en inventario</small><b>${prom == null ? '—' : prom}</b><span>${h.diasProm != null ? `Normalmente vendes en ${h.diasProm} días` : 'Desde la fecha de compra'}</span></div>
+      <div class="inv-kpi"><small>El más antiguo</small><b class="${viejo && viejo.dias >= DIAS_ALERTA ? 'mal' : ''}">${viejo ? viejo.dias + ' días' : '—'}</b><span>${viejo ? ccEsc(viejo.v.nombre||'') : '—'}</span></div>
+      <div class="inv-kpi"><small>Con +${DIAS_ALERTA} días</small><b class="${dorm.length ? 'mal' : 'ok'}">${dorm.length}</b><span>${dorm.length ? fmt(capDorm) + ' quietos' : 'Todo se está moviendo'}</span></div>
+    </div>
+  </div>`;
+  html += mcAvisoDormidos(items, 'todos');
+  const chips = [['todos','Todos', items.length], ['moto','Motos', nM], ['carro','Carros', nC], ['dorm',`+${DIAS_ALERTA} días`, dorm.length], ['sep','Separados', nSep]].filter(c=>c[0] === 'todos' || c[2]);
+  html += `<div class="inv-barra-f">
+    <div class="fp-chips">${chips.map(c=>`<button class="fp-chip ${_invFiltro===c[0]?'activo':''}" onclick="invFiltrar('${c[0]}')">${c[1]} (${c[2]})</button>`).join('')}</div>
+    <input type="text" id="inv-buscar" placeholder="Buscar por nombre, placa o vendedor…" value="${ccEsc(_invBuscar)}" oninput="_invBuscar=this.value;renderInvLista()">
+    <select id="inv-orden" onchange="_invOrden=this.value;renderInvLista()" aria-label="Ordenar">
+      <option value="dias" ${_invOrden==='dias'?'selected':''}>Más días primero</option>
+      <option value="recientes" ${_invOrden==='recientes'?'selected':''}>Más recientes</option>
+      <option value="inversion" ${_invOrden==='inversion'?'selected':''}>Mayor inversión</option>
+      <option value="nombre" ${_invOrden==='nombre'?'selected':''}>Nombre</option>
+    </select>
+  </div>
+  <div id="inv-lista" class="inv-grid"></div>`;
+  box.innerHTML = html;
+  renderInvLista();
+}
+function renderInvLista(){
+  const box = document.getElementById('inv-lista'); if(!box) return;
+  const q = mcSinTildes(_invBuscar.trim());
+  let items = invItems();
+  if(_invFiltro === 'moto' || _invFiltro === 'carro') items = items.filter(x=>x.tipo === _invFiltro);
+  if(_invFiltro === 'dorm') items = items.filter(x=>x.dias != null && x.dias >= DIAS_ALERTA);
+  if(_invFiltro === 'sep') items = items.filter(x=>x.v.separacion);
+  if(q) items = items.filter(x=>[x.v.nombre, x.v.modelo, x.v.placa, x.v.color, x.v.vendedorNombre].some(s=>mcSinTildes(String(s||'')).includes(q)));
+  const o = _invOrden;
+  items.sort((a,b)=> o === 'recientes' ? String(b.v.fechaCompra||'').localeCompare(String(a.v.fechaCompra||''))
+    : o === 'inversion' ? b.total - a.total : o === 'nombre' ? String(a.v.nombre||'').localeCompare(String(b.v.nombre||''), 'es') : (b.dias ?? -1) - (a.dias ?? -1));
+  box.innerHTML = items.length ? items.map(invFicha).join('') : `<div class="inv-vacio">No hay vehículos con ese filtro.</div>`;
+  try { mcHidratarFotos(); } catch(e){}
+}
+
+// ── AVISO DE CAPITAL QUIETO (+100 DÍAS) ──────────────────────────────────────
+// Se muestra en Mis motos, Mis carros e Inventario: cuánto capital está quieto,
+// qué lo libera, los que están por llegar a 100 días y acciones directas.
+var _dormVerTodos = {};
+function mcAvisoDormidos(items, clave){
+  const dorm = items.filter(x=>x.dias != null && x.dias >= DIAS_ALERTA).sort((a,b)=>b.dias - a.dias);
+  const pronto = items.filter(x=>x.dias != null && x.dias >= 80 && x.dias < DIAS_ALERTA).sort((a,b)=>b.dias - a.dias);
+  if(!dorm.length && !pronto.length) return '';
+  const nombreTipo = clave === 'moto' ? ['moto','motos'] : clave === 'carro' ? ['carro','carros'] : ['vehículo','vehículos'];
+  const prontoHtml = pronto.length ? `<div class="dorm-pronto">${mcIco('reloj',14)}<span><b>${pronto.length} ${pronto.length!==1?nombreTipo[1]:nombreTipo[0]} por llegar a ${DIAS_ALERTA} días:</b> ${pronto.slice(0,4).map(x=>`${ccEsc(x.v.nombre||'')} (${x.dias} días)`).join(', ')}${pronto.length > 4 ? '…' : ''}. Muévelos antes de que se queden quietos.</span></div>` : '';
+  if(!dorm.length) return `<div class="dorm dorm-solo-pronto">${prontoHtml}</div>`;
+  const cap = dorm.reduce((a,x)=>a + x.total, 0), h = invHistorial(), maxD = dorm[0].dias;
+  const nivel = maxD >= 200 ? 'urg' : maxD >= 150 ? 'crit' : 'alerta';
+  const cuantas = h.compraProm ? Math.floor(cap / h.compraProm) : 0;
+  const idea = cuantas >= 1
+    ? `Si los vendes, liberas <b>${fmt(cap)}</b>: alcanza para comprar ${cuantas === 1 ? 'otra moto' : `unas ${cuantas} motos`} como las que sueles comprar${h.diasProm != null ? `, que normalmente vendes en <b>${h.diasProm} días</b>` : ''}.`
+    : `Si los vendes, liberas <b>${fmt(cap)}</b> para volver a comprar y vender.`;
+  const todos = !!_dormVerTodos[clave], vis = todos ? dorm : dorm.slice(0, 3);
+  return `<div class="dorm n-${nivel}">
+    <div class="dorm-cab">
+      <i class="dorm-ico">${mcIco('reloj',20)}</i>
+      <div class="dorm-tit"><b>${dorm.length} ${dorm.length!==1?nombreTipo[1]:nombreTipo[0]} con más de ${DIAS_ALERTA} días</b>
+        <span>Capital quieto: <strong>${fmt(cap)}</strong> · el más antiguo lleva ${maxD} días</span></div>
+    </div>
+    <p class="dorm-idea">${idea}</p>
+    <div class="dorm-lista">${vis.map(x=>{ const n = invNivel(x.dias), pct = Math.min(100, Math.round((x.dias - DIAS_ALERTA) / 100 * 100));
+      return `<div class="dorm-fila n-${n}">
+        <div class="dorm-veh"><b>${ccEsc(x.v.nombre||'Vehículo')}${x.v.modelo ? ' <em>' + ccEsc(x.v.modelo) + '</em>' : ''}</b>
+          <span>${x.v.placa ? ccEsc(String(x.v.placa).toUpperCase()) + ' · ' : ''}Invertido ${fmt(x.total)}${x.v.fechaCompra ? ' · comprada el ' + mcFechaCorta(x.v.fechaCompra) : ''}</span>
+          <div class="dorm-barra"><i style="width:${Math.max(6, pct)}%"></i></div></div>
+        <span class="dorm-dias">${x.dias} días</span>
+        <div class="dorm-acc">
+          <button class="btn btn-ghost btn-sm" onclick="invVer('${x.tipo}','${x.v.id}')">Ver</button>
+          <button class="btn btn-ghost btn-sm" onclick="invCopiarPublicacion('${x.tipo}','${x.v.id}')">${mcIco('chat',14)}Publicar</button>
+          <button class="btn btn-primary btn-sm" onclick="sepVender('${x.tipo}','${x.v.id}')">Vender</button>
+        </div>
+      </div>`; }).join('')}</div>
+    ${dorm.length > 3 ? `<button class="dorm-mas" onclick="_dormVerTodos['${clave}']=${!todos};${clave === 'todos' ? 'renderInventario()' : clave === 'carro' ? 'renderCarros()' : 'renderMotos()'}">${todos ? 'Ver menos' : `Ver los ${dorm.length}`}</button>` : ''}
+    ${prontoHtml}
+  </div>`;
+}
+function renderAlertasInventario(lista, tipo, contId){
+  const cont = document.getElementById(contId); if(!cont) return;
+  const ids = new Set(lista.map(v=>v.id));
+  cont.innerHTML = mcAvisoDormidos(invItems().filter(x=>x.tipo === tipo && ids.has(x.v.id)), tipo);
+}
 
 // ── ANÁLISIS MENSUAL ──────────────────────────────────────────────────────────
 function initAnalisis(){
