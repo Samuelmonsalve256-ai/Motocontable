@@ -2238,6 +2238,24 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .av-cobro .av-ir{width:100%;justify-content:flex-end}
 }
 .av-pap-veh .cc-placa,.ivm-veh .cc-placa,.dd-fila .cc-placa,.vc-chips .cc-placa,.inv-chips .cc-placa{color:#111!important;-webkit-text-fill-color:#111}
+/* Ficha con toda la información a la vista */
+.vc-cuerpo{display:flex;flex-direction:column;gap:12px;border-top:1px solid rgba(255,255,255,.07);margin:2px -16px -16px;padding:14px 16px 16px;background:rgba(0,0,0,.12)}
+.vc-cuerpo .vc-sec{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06)}
+.vc-pap-fila{display:grid;grid-template-columns:120px auto 1fr;gap:10px;align-items:center;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.06);font-size:12.5px}
+.vc-pap-fila:last-child{border-bottom:0}
+.vc-pap-nom{display:inline-flex;align-items:center;gap:7px;color:#e8e8f4;font-weight:600}
+.vc-pap-nom i{width:8px;height:8px;border-radius:50%;background:#5b5b78}
+.vc-pap-est{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.06);color:#9a9ab8;white-space:nowrap}
+.vc-pap-det{color:#a9a9c2;text-align:right}
+.vc-pap-fila.ok .vc-pap-nom i{background:#00d68f}.vc-pap-fila.ok .vc-pap-est{color:#5be3b0;background:rgba(0,214,143,.12)}
+.vc-pap-fila.warn .vc-pap-nom i{background:#f5c451}.vc-pap-fila.warn .vc-pap-est{color:#f5c451;background:rgba(245,196,81,.12)}.vc-pap-fila.warn .vc-pap-det{color:#f5c451}
+.vc-pap-fila.mal .vc-pap-nom i{background:#ff4d6d}.vc-pap-fila.mal .vc-pap-est{color:#ff8aa5;background:rgba(255,77,109,.12)}.vc-pap-fila.mal .vc-pap-det{color:#ff8aa5}
+.gasto-nombre small{color:#7a7a98;font-weight:400}
+@media (max-width:760px){
+  html .vc-cuerpo{margin:2px -14px -14px;padding:12px 14px 14px}
+  html .vc-pap-fila{grid-template-columns:1fr auto}
+  html .vc-pap-det{grid-column:1/-1;text-align:left;padding-left:15px;margin-top:-4px}
+}
 </style>
 </head>
 <body>
@@ -6632,11 +6650,19 @@ function renderAlertasResumen(){
 // ── FICHA DE VEHÍCULO (Mis motos / Mis carros) ───────────────────────────────
 // Lo importante a la vista (foto, días, placa, cuánto llevas invertido, papeles y
 // acciones) y lo demás (gastos, nota, a quién se le compró) en "Más detalles".
-function vcPapel(nombre, vig){
-  const est = vig.cls === 'vig-ok' ? 'ok' : vig.cls === 'vig-warn' ? 'warn' : vig.cls === 'vig-venc' ? 'mal' : vig.cls === 'vig-none' ? 'no' : (/debe|pend/i.test(vig.label) ? 'mal' : 'ok');
+function vcPapel(nombre, vig, fecha){
   const limpio = String(vig.label).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]️?/gu,'').trim();
-  const txt = est === 'ok' ? 'Al día' : est === 'warn' ? limpio.replace(/^Impuesto\s*/i, '') : est === 'mal' ? (/Vencido/.test(limpio) ? 'Vencido' : 'Debe') : 'No tiene';
-  return `<span class="vc-pap ${est}" title="${nombre}: ${ccEsc(String(vig.label).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]️?/gu,'').trim())}"><i></i>${nombre}<b>${txt}</b></span>`;
+  const est = vig.cls === 'vig-ok' ? 'ok' : vig.cls === 'vig-warn' ? 'warn' : vig.cls === 'vig-venc' ? 'mal' : vig.cls === 'vig-none' ? 'no' : (/debe|pend/i.test(limpio) ? 'mal' : 'ok');
+  let estado, detalle;
+  if(fecha){
+    const dias = Math.round((new Date(fecha+'T00:00:00') - new Date(hoyLocal()+'T00:00:00')) / 864e5), f = mcFechaCorta(fecha);
+    estado = dias < 0 ? 'Vencido' : dias <= 30 ? 'Por vencer' : 'Vigente';
+    detalle = dias < 0 ? `Venció el ${f} · hace ${-dias} día${dias!==-1?'s':''}` : dias === 0 ? `Vence hoy, ${f}` : `Vence el ${f} · faltan ${dias} día${dias!==1?'s':''}`;
+  } else if(nombre === 'Impuesto'){
+    estado = est === 'ok' ? 'Al día' : 'Pendiente'; detalle = limpio.replace(/^Impuesto\s*/i, '') || '—';
+    if(est === 'ok') detalle = 'Pagado';
+  } else { estado = 'No tiene'; detalle = 'Sin registrar'; }
+  return `<div class="vc-pap-fila ${est}"><span class="vc-pap-nom"><i></i>${nombre}</span><span class="vc-pap-est">${estado}</span><span class="vc-pap-det">${detalle}</span></div>`;
 }
 function vcFicha(tipo, v){
   const esCarro = tipo === 'carro', p = esCarro ? 'carro' : 'moto';
@@ -6665,13 +6691,13 @@ function vcFicha(tipo, v){
     </div>
     <div class="vc-barra"><i style="width:${pct}%"></i></div>
     ${sepCinta(p, v)}${ccSelloRetoma(v)}
-    ${v.nota ? `<button class="vc-nota" onclick="vcAbrirDetalles('${p}','${v.id}','nota-${v.id}')">${mcIco('lapiz',13)}<span>${ccEsc(v.nota)}</span></button>` : ''}
+    ${v.nota ? `<button class="vc-nota" onclick="const t=document.getElementById('nota-${v.id}');t.focus();t.scrollIntoView({block:'center',behavior:'smooth'})">${mcIco('lapiz',13)}<span>${ccEsc(v.nota)}</span></button>` : ''}
     <div class="vc-num">
       <div><small>Compra</small><b>${fmt(compra)}</b></div>
       <div><small>Gastos</small><b>${fmt(totG)}</b></div>
       <div class="vc-tot"><small>Invertido</small><b>${fmt(total)}</b></div>
     </div>
-    <div class="vc-paps">${vcPapel('SOAT', soat)}${vcPapel('Tecno', tecno)}${vcPapel('Impuesto', imp)}</div>
+
     <div class="vc-acc">
       <button class="btn btn-primary btn-sm" onclick="sepVender('${p}','${v.id}')">Vender</button>
       <button class="btn btn-ghost btn-sm btn-sep${v.separacion?' activo':''}" onclick="sepAbrir('${p}','${v.id}')" title="${v.separacion ? 'Ver separación' : 'Separar'}">${v.separacion ? 'Separación' : 'Separar'}</button>
@@ -6679,28 +6705,30 @@ function vcFicha(tipo, v){
       <button class="btn btn-ghost btn-sm btn-icon" onclick="${fn.edit}('${v.id}')" title="Editar">${mcIco('lapiz',14)}</button>
       <button class="btn btn-ghost btn-sm btn-icon vc-borrar" onclick="${fn.elim}('${v.id}')" title="Eliminar">${mcIco('papelera',14)}</button>
     </div>
-    <details class="vc-mas" id="vcm-${p}-${v.id}">
-      <summary><span>Más detalles</span><em>${gList.length ? `${gList.length} gasto${gList.length!==1?'s':''}` : 'Sin gastos'}${v.nota ? ' · nota' : ''}${v.vendedorNombre ? ' · a ' + ccEsc(v.vendedorNombre) : ''}</em>${mcIco('flecha',14)}</summary>
-      <div class="vc-mas-cuerpo">
-        <div class="vc-sec"><div class="vc-sec-tit">Compra</div>
-          <div class="vc-linea"><span>Fecha</span><b>${v.fechaCompra ? mcFechaCorta(v.fechaCompra) : '—'}</b></div>
-          <div class="vc-linea"><span>Comprado a</span><b>${ccEsc(v.vendedorNombre || '—')}${v.vendedorCC ? ' · CC ' + ccEsc(v.vendedorCC) : ''}</b></div>
-          ${v.vendedorTel ? `<div class="vc-linea"><span>Teléfono</span><b>${ccEsc(v.vendedorTel)}</b></div>` : ''}
-        </div>
-        <div class="vc-sec"><div class="vc-sec-tit">Gastos del vehículo <b>${fmt(totG)}</b></div>
-          ${gList.length ? gList.map((g,i)=>`<div class="gasto-item"><span class="gasto-nombre">${ccEsc(g.nombre)}</span><span><span class="gasto-monto">${fmt(g.monto)}</span><button class="gasto-del" onclick="${fn.del}('${v.id}',${i})" title="Quitar">×</button></span></div>`).join('') : '<div class="vc-vacio">Sin gastos registrados.</div>'}
-          <div class="add-gasto-form">
-            <input type="text" id="${fn.gn}${v.id}" placeholder="Ej: cambio de aceite, lavada…">
-            <input type="number" id="${fn.gm}${v.id}" placeholder="$ Valor" min="0">
-            <button class="btn-add-gasto" onclick="${fn.gasto}('${v.id}')">+ Agregar gasto</button>
-          </div>
-        </div>
-        <div class="vc-sec"><div class="vc-sec-tit">Nota interna ${v.nota ? `<button class="vc-nota-borrar" onclick="borrarNota('${p}','${v.id}')">Borrar</button>` : ''}</div>
-          <textarea id="nota-${v.id}" rows="2" placeholder="Ej: debo $5.000.000 de ${esCarro ? 'este carro' : 'esta moto'} a 15 días…">${ccEsc(v.nota || '')}</textarea>
-          <button class="btn-add-gasto" style="margin-top:6px" onclick="guardarNota('${p}','${v.id}',document.getElementById('nota-${v.id}').value)">Guardar nota</button>
+    <div class="vc-cuerpo">
+      <div class="vc-sec"><div class="vc-sec-tit">Vigencia de papeles</div>
+        ${vcPapel('SOAT', soat, v.soatTiene ? v.soat : '')}${vcPapel('Tecnomecánica', tecno, v.tecnoTiene ? v.tecno : '')}${vcPapel('Impuesto', imp, '')}
+      </div>
+      <div class="vc-sec"><div class="vc-sec-tit">Compra</div>
+        <div class="vc-linea"><span>Fecha de compra</span><b>${v.fechaCompra ? mcFechaCorta(v.fechaCompra) : '—'}</b></div>
+        <div class="vc-linea"><span>Precio de compra</span><b>${fmt(compra)}</b></div>
+        <div class="vc-linea"><span>Comprado a</span><b>${ccEsc(v.vendedorNombre || '—')}</b></div>
+        ${v.vendedorCC ? `<div class="vc-linea"><span>Cédula</span><b>${ccEsc(v.vendedorCC)}</b></div>` : ''}
+        ${v.vendedorTel ? `<div class="vc-linea"><span>Teléfono</span><b>${ccEsc(v.vendedorTel)}</b></div>` : ''}
+      </div>
+      <div class="vc-sec"><div class="vc-sec-tit">Gastos del vehículo <b>${fmt(totG)}</b></div>
+        ${gList.length ? gList.map((g,i)=>`<div class="gasto-item"><span class="gasto-nombre">${ccEsc(g.nombre)}${g.fecha ? `<small> · ${mcFechaCorta(g.fecha)}</small>` : ''}</span><span><span class="gasto-monto">${fmt(g.monto)}</span><button class="gasto-del" onclick="${fn.del}('${v.id}',${i})" title="Quitar">×</button></span></div>`).join('') : '<div class="vc-vacio">Sin gastos registrados.</div>'}
+        <div class="add-gasto-form">
+          <input type="text" id="${fn.gn}${v.id}" placeholder="Ej: cambio de aceite, lavada…">
+          <input type="number" id="${fn.gm}${v.id}" placeholder="$ Valor" min="0">
+          <button class="btn-add-gasto" onclick="${fn.gasto}('${v.id}')">+ Agregar gasto</button>
         </div>
       </div>
-    </details>
+      <div class="vc-sec"><div class="vc-sec-tit">Nota interna ${v.nota ? `<button class="vc-nota-borrar" onclick="borrarNota('${p}','${v.id}')">Borrar</button>` : ''}</div>
+        <textarea id="nota-${v.id}" rows="2" placeholder="Ej: debo $5.000.000 de ${esCarro ? 'este carro' : 'esta moto'} a 15 días…">${ccEsc(v.nota || '')}</textarea>
+        <button class="btn-add-gasto" style="margin-top:6px" onclick="guardarNota('${p}','${v.id}',document.getElementById('nota-${v.id}').value)">Guardar nota</button>
+      </div>
+    </div>
   </div>`;
 }
 // Abre "Más detalles" (y enfoca un campo) recordándolo para el siguiente redibujo
