@@ -1959,6 +1959,9 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .cce-msg{margin-top:8px;padding:9px 11px;border-radius:10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);font-size:12px;line-height:1.5;color:#c9c9e0;word-break:break-all;max-height:130px;overflow:auto}
 .cce-acc{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
 .metric-value{white-space:nowrap;overflow:hidden;text-overflow:clip}
+.cel-gan{white-space:nowrap;overflow:hidden;max-width:100%}
+.cel-gan.cel-pop{transform-origin:left center;animation-name:celPopSuave}
+@keyframes celPopSuave{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
 </style>
 </head>
 <body>
@@ -8338,8 +8341,16 @@ function celCifras(v, ganancia){
     ${dias !== null && dias >= 0 ? `<span><small>En inventario</small><b>${dias === 0 ? 'Mismo día' : dias + ' día' + (dias !== 1 ? 's' : '')}</b></span>` : ''}
   </div>`;
 }
+// La ganancia siempre cabe completa en su columna (con la cifra final medida)
+function celAjustarGan(el, texto){
+  el.style.fontSize = ''; const antes = el.textContent; el.textContent = texto;
+  const base = parseFloat(getComputedStyle(el).fontSize) || 60; let t = base;
+  while(el.scrollWidth > el.clientWidth + 1 && t > base * 0.45){ t -= 1; el.style.fontSize = t + 'px'; }
+  el.textContent = antes;
+}
 function celContar(el, hasta, ms){
   if(!el) return;
+  celAjustarGan(el, '+' + fmt(hasta));
   if(mcMovReducido()){ el.textContent = '+' + fmt(hasta); return; }
   const t0 = performance.now();
   const paso = t => { const k = Math.min(1, (t - t0)/ms), e = 1 - Math.pow(1-k, 3); el.textContent = '+' + fmt(Math.round(hasta*e)); if(k < 1) requestAnimationFrame(paso); else el.classList.add('cel-pop'); };
@@ -8386,6 +8397,7 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
       </div>
       <div class="cel-pie"><div class="cel-sub">${m.sub}</div><div class="cel-acc"><button class="btn btn-primary" onclick="cerrarCelebracion()">Seguir adelante</button></div></div>`;
     modal.classList.remove('modal-hidden'); modal.style.display = 'flex';
+    { const g = card.querySelector('.cel-gan'); if(g) celAjustarGan(g, g.textContent); }
     playPianoTriste();
     return;
   }
@@ -8440,6 +8452,8 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
   const msgsCapital = [
     {titulo:'¡Capital liberado!', msg:`"${nombreVehiculo}" llevaba ${diasParado} días reteniendo tu capital y hoy lo moviste. El dinero en movimiento es el que trabaja para ti.`, sub:'Capital liberado = capital productivo. Así se hace.'},
     {titulo:'¡Por fin se movió!', msg:`${diasParado} días parado y hoy ${nombreVehiculo} salió. Acabas de eliminar capital inmovilizado. Bien hecho.`, sub:'Dinero quieto es dinero perdido. Tú lo entendiste.'},
+    {titulo:'¡Dinero despierto!', msg:`"${nombreVehiculo}" estuvo ${diasParado} días quieto, durmiendo con tu plata adentro. Hoy lo despertaste y ese capital vuelve a trabajar para ti. Así se mueve un negocio de verdad.`, sub:'Capital que se mueve, capital que crece.'},
+    {titulo:'¡Inventario sano!', msg:`${diasParado} días esperando y hoy por fin ${nombreVehiculo} tiene dueño. Liberaste plata que estaba frenada y ahora puedes comprar otra que se venda rápido.`, sub:'El que mueve el inventario, mueve el negocio.'},
   ];
   const msgsNormal = [
     {titulo:'¡Negocio cerrado!', msg:`"${nombreVehiculo}" vendido con ganancia. Cada venta te acerca más. Tu Porsche GT3 te está esperando.`, sub:'Un paso más cerca del GT3.'},
@@ -8873,45 +8887,54 @@ function mcRechazarSugerida(i){
 // Van rotando: cada venta toca un sueño distinto y no se repite una frase hasta
 // haber pasado por todas las de ese sueño.
 const MC_SUENOS = {
+  imperio: [
+    {t:'¡Puro fuego!', m:'Así es como se construye un imperio desde cero: venta por venta, moto por moto, carro por carro. La vida de tus sueños está a tan solo unas ventas de distancia.', s:'No se detiene quien tiene claro para dónde va.'},
+    {t:'¡Negocio cerrado!', m:'"{veh}" vendido con {gan} de ganancia. Comprar bien, vender mejor y repetir: esa es la fórmula, y hoy la aplicaste perfecto.', s:'Un paso más cerca de todo lo que quieres.'},
+    {t:'¡Crack del negocio!', m:'Ganaste {gan} con "{veh}". Cada billete que entra es un ladrillo más del camino que estás construyendo con tus propias manos.', s:'El que trabaja así, llega.'},
+    {t:'¡Así se hace!', m:'La vida que imaginas no llega sola: se construye en días como hoy. Cada cierre cuenta, cada ganancia suma, y tú no estás sumando poquito: este mes ya van {ganMes}.', s:'La vida que imaginas ya está en construcción.'},
+    {t:'¡Mente de campeón!', m:'Los campeones no esperan el momento perfecto: lo crean. Hoy creaste otro negocio, otra ganancia y otro paso hacia arriba. Sigue en ese nivel.', s:'Nadie te va a regalar nada. Tú lo estás ganando.'},
+    {t:'¡Imparable!', m:'Venta número {totalVentas}. Mientras otros lo piensan, tú lo haces. Esa es toda la diferencia entre soñar y lograr.', s:'El momentum es tuyo. No lo sueltes.'},
+    {t:'¡El trabajo paga!', m:'Madrugar, negociar, buscar la moto correcta y venderla al precio justo: todo eso se resume en estos {gan}. El trabajo bien hecho siempre paga.', s:'Hoy ganaste. Mañana vas por más.'},
+  ],
   svj: [
-    {t:'El SVJ ya tiene tu nombre', m:'Cada venta como esta es una pieza más del Lamborghini SVJ. Un día vas a escuchar ese V12 y te vas a acordar de este negocio.', s:'Lamborghini SVJ: no es un sueño, es un plan.'},
-    {t:'Rumbo al Aventador SVJ', m:'"{veh}" vendido. Los que manejan un SVJ empezaron exactamente así: un negocio a la vez, sin parar.', s:'770 caballos te están esperando.'},
-    {t:'Las puertas tijera se ganan', m:'Las puertas del SVJ se abren hacia arriba, igual que tu negocio. Hoy sumaste {gan} más al camino.', s:'Sigue subiendo.'},
-    {t:'Huele a Lamborghini', m:'Comprar bien, vender mejor y repetir. Así se llega al garaje con un SVJ adentro.', s:'El toro ya te está mirando.'},
-    {t:'Un paso más al SVJ', m:'Imagínate saliendo del garaje en el SVJ un domingo en la mañana. Esta venta te acercó a ese día.', s:'Visualízalo. Trabájalo. Manéjalo.'},
-    {t:'Modo SVJ activado', m:'Negociaste como los grandes. El Lamborghini no se compra esperando: se compra cerrando negocios como este.', s:'Tu SVJ va tomando forma.'},
+    {t:'El toro ya escuchó tu nombre', m:'Otra venta cerrada y {gan} más en el bolsillo. Cada negocio como este es una pieza del Lamborghini SVJ que vas a sacar del garaje un domingo cualquiera, con el V12 rugiendo y la cabeza en alto. Ese día se está construyendo hoy.', s:'El SVJ no se sueña: se trabaja.'},
+    {t:'Velocidad de campeón', m:'"{veh}" ya tiene nuevo dueño y tú tienes {gan} más para el camino. Así se acelera hacia el SVJ: sin frenar, sin dudar, negocio tras negocio.', s:'770 caballos te están esperando.'},
+    {t:'Puertas hacia el cielo', m:'Las puertas del SVJ se abren hacia arriba, igual que tu negocio cuando cierras ventas como esta. En {mes} ya llevas {ganMes} y apenas estás calentando motores.', s:'Sigue subiendo. El techo no existe.'},
+    {t:'Lo imposible se vuelve rutina', m:'Hubo un tiempo en que un Lamborghini parecía imposible. Hoy, con {totalVentas} ventas encima, es cuestión de seguir haciendo lo que estás haciendo: comprar bien, vender mejor y no parar.', s:'Visualízalo. Trabájalo. Manéjalo.'},
+    {t:'Eso que suena es el V12', m:'Escucha bien: eso no es la caja registradora, es el motor del SVJ acercándose. {gan} más hoy. Mañana, otro paso.', s:'El toro ya te está mirando.'},
+    {t:'Modo SVJ activado', m:'Negociaste como los grandes y ganaste como los grandes. El Lamborghini no se compra esperando: se compra cerrando negocios como "{veh}", uno tras otro.', s:'Tu SVJ va tomando forma.'},
   ],
   gt3: [
-    {t:'Tu GT3 RS se acerca', m:'"{veh}" cerrado con {gan}. El Porsche GT3 RS no es suerte: es la suma de ventas como esta.', s:'Porsche GT3 RS: cada venta cuenta.'},
-    {t:'Aerodinámica de campeón', m:'El alerón del GT3 RS está hecho para ir rápido. Igual que tú: hoy vendiste y ya vas por la siguiente.', s:'Rápido y preciso, como un RS.'},
-    {t:'9.000 vueltas de motor', m:'El motor del GT3 RS sube hasta 9.000 rpm. Tu negocio también tiene que estar siempre acelerado. Hoy aceleraste.', s:'No le bajes el ritmo.'},
-    {t:'Pista despejada', m:'Cada negocio bien hecho es una vuelta rápida en la pista. Un día la vas a dar en tu propio GT3 RS.', s:'La pista ya te está esperando.'},
-    {t:'Porsche en construcción', m:'{mes} va sumando: llevas {ganMes} este mes. Así se arma, mes a mes, el Porsche GT3 RS.', s:'Tu GT3 RS se gana en días como hoy.'},
-    {t:'Disciplina de piloto', m:'Los pilotos ganan por constancia, no por una sola vuelta. Tú vas venta por venta hacia ese GT3 RS.', s:'Constancia = GT3 RS.'},
+    {t:'Vuelta rápida', m:'"{veh}" vendido con {gan} de ganancia. En la pista, el GT3 RS gana por décimas; en el negocio, tú ganas venta a venta. Hoy marcaste otra vuelta rápida.', s:'Rápido y preciso, como un RS.'},
+    {t:'El alerón ya se ve', m:'Cada venta pone una pieza más del Porsche GT3 RS: hoy fue el alerón, mañana las llantas, pasado el motor que sube a 9.000 vueltas. Llevas {ganMes} en {mes} y el carro se está armando solo.', s:'Tu GT3 RS se gana en días como hoy.'},
+    {t:'Piloto de élite', m:'Los pilotos de verdad no celebran una curva: celebran el campeonato. Esta venta fue una curva perfecta; el campeonato es tu GT3 RS parqueado en la puerta de la casa.', s:'Constancia = GT3 RS.'},
+    {t:'La pista es tuya', m:'{gan} más en el marcador. El negocio está acelerado y tú tienes las manos en el timón. No sueltes el pedal ahora que vas tan bien.', s:'A fondo hasta la meta.'},
+    {t:'Porsche en construcción', m:'{mes} va sumando: ya son {ganMes} este mes. Así se arma un Porsche GT3 RS: no de un golpe de suerte, sino mes a mes, venta a venta, con disciplina.', s:'Cada mes, una vuelta más cerca.'},
+    {t:'Nueve mil revoluciones', m:'El motor del GT3 RS vive arriba, a 9.000 revoluciones. Tu negocio también tiene que vivir así: siempre acelerado, siempre buscando la siguiente. Hoy lo demostraste.', s:'No le bajes el ritmo.'},
   ],
   mil: [
-    {t:'Rumbo a los mil millones', m:'Llevas {total} en ganancias. Ese es el {pctMil} de los mil millones. Hoy sumaste {gan}.', s:'Mil millones: un negocio a la vez.'},
-    {t:'El capital crece', m:'El capital que trabaja se multiplica. Cada venta como esta acerca los mil millones que te propusiste.', s:'Dinero en movimiento es dinero que crece.'},
-    {t:'Mil millones no es un número', m:'Es libertad. Es tranquilidad para tu familia. Y hoy, con "{veh}", te acercaste un poco más.', s:'Faltan {faltaMil}. Vas por ellos.'},
-    {t:'Mentalidad de mil millones', m:'Los que llegan a mil millones no paran por una buena venta: celebran y van por la siguiente. Eso eres tú.', s:'Celebra hoy, cierra otra mañana.'},
-    {t:'Ladrillo a ladrillo', m:'Cada venta es un ladrillo del imperio. Ya van {totalVentas} ladrillos y el edificio de los mil millones sigue creciendo.', s:'Construye sin parar.'},
-    {t:'Capital de campeón', m:'Comprar con criterio y vender con margen: esa es la fórmula de los mil millones, y hoy la aplicaste.', s:'Mil millones. Lo dijiste, lo vas a hacer.'},
+    {t:'Rumbo a los mil millones', m:'Llevas {total} en ganancias: ya recorriste el {pctMil} del camino a los mil millones. Hoy sumaste {gan} y el contador no para. Cada venta es un ladrillo de ese imperio.', s:'Mil millones: un negocio a la vez.'},
+    {t:'Mil millones no es un número', m:'Es libertad para escoger. Es tranquilidad para tu familia. Es no volver a preocuparte por la plata. Y hoy, con "{veh}", te acercaste un poco más a eso.', s:'Faltan {faltaMil}. Vas por ellos.'},
+    {t:'Mentalidad de mil millones', m:'Los que llegan a mil millones no se quedan celebrando una buena venta: la disfrutan cinco minutos y salen a buscar la siguiente. Eso es lo que te hace diferente.', s:'Celebra hoy, cierra otra mañana.'},
+    {t:'Ladrillo a ladrillo', m:'Ya van {totalVentas} ventas: {totalVentas} ladrillos de un edificio que algún día va a valer mil millones. Hoy pusiste otro, y quedó firme.', s:'Construye sin parar.'},
+    {t:'El capital trabaja para ti', m:'El dinero que se mueve es el que crece. Compraste bien, vendiste mejor y hoy tu capital tiene {gan} más para volver a multiplicarse.', s:'Mil millones. Lo dijiste, lo vas a hacer.'},
+    {t:'Vas en serio', m:'{total} en ganancias no son suerte: son trabajo, criterio y constancia. Los mil millones ya no son un sueño lejano, son una meta con fecha.', s:'El que es constante, llega.'},
   ],
   mama: [
-    {t:'Esta va por tu mamá', m:'Cada venta acerca el día en que le entregues los 100 millones a tu mamá. Hoy sumaste {gan} a ese regalo.', s:'Ella va a estar orgullosa.'},
-    {t:'El regalo de mamá', m:'Imagínate su cara cuando le des los 100 millones. Ventas como "{veh}" hacen que ese día llegue antes.', s:'Por ella, todo vale la pena.'},
-    {t:'100 millones de gratitud', m:'Llevas {total} en ganancias. {mamaTxt}', s:'Lo que tu mamá hizo por ti no tiene precio. Pero este regalo va a ser enorme.'},
-    {t:'Por quien siempre creyó', m:'Tu mamá siempre creyó en ti. Cada negocio cerrado es una forma de devolverle todo lo que te dio.', s:'Los 100 millones de mamá ya están en camino.'},
-    {t:'Una promesa en marcha', m:'Le prometiste 100 millones y estás cumpliendo, venta por venta. Hoy fue un paso más.', s:'Las promesas a mamá se cumplen.'},
-    {t:'El orgullo de la casa', m:'Cuando tu mamá sepa todo lo que construiste con estas ventas, va a llorar de felicidad.', s:'Sigue así. Ella lo merece.'},
+    {t:'Esta va por tu mamá', m:'Cada venta acerca el día en que le entregues los 100 millones a tu mamá y le veas la cara. Hoy sumaste {gan} a ese regalo. {mamaTxt}', s:'Ella va a estar orgullosa.'},
+    {t:'El regalo de mamá', m:'Imagínate ese momento: le entregas los 100 millones y no le alcanzan las lágrimas. Ventas como "{veh}" hacen que ese día llegue antes.', s:'Por ella, todo vale la pena.'},
+    {t:'Todo lo que te dio', m:'Tu mamá te dio todo cuando no tenía nada. Hoy tú le estás devolviendo, venta a venta, todo ese amor convertido en trabajo. Ya llevas {total} en ganancias.', s:'Lo que ella hizo por ti no tiene precio. Pero este regalo va a ser enorme.'},
+    {t:'Por quien siempre creyó', m:'Ella creyó en ti antes que nadie. Cada negocio cerrado es una forma de decirle "tenías razón". Hoy fueron {gan} más de razón.', s:'Los 100 millones de mamá ya están en camino.'},
+    {t:'Una promesa en marcha', m:'Le prometiste 100 millones y estás cumpliendo, venta por venta, sin excusas. Una promesa así se cumple trabajando, y hoy trabajaste. {mamaTxt}', s:'Las promesas a mamá se cumplen.'},
+    {t:'El orgullo de la casa', m:'Cuando tu mamá sepa todo lo que construiste con estas ventas, va a llorar de felicidad. Y ese día vas a saber que cada madrugada valió la pena.', s:'Sigue así. Ella lo merece.'},
   ],
   garaje: [
-    {t:'El garaje de tus sueños', m:'Un SVJ, un GT3 RS y espacio para más. Cada venta llena un poco ese garaje que ya tienes en la cabeza.', s:'El garaje se llena venta por venta.'},
-    {t:'Luces del garaje encendidas', m:'Imagínate llegar a casa, abrir el garaje y ver tus carros alineados. "{veh}" te acercó a esa imagen.', s:'Ese garaje es tuyo. Solo falta llenarlo.'},
-    {t:'Un espacio más ocupado', m:'Cada negocio es un espacio menos vacío en el garaje de tus sueños. Hoy sumaste {gan}.', s:'Sigue llenando el garaje.'},
-    {t:'Colección en camino', m:'Los grandes coleccionistas empezaron con un primer negocio. Tú ya llevas {totalVentas} ventas: la colección va en serio.', s:'El garaje de los sueños se construye hoy.'},
-    {t:'Tu garaje, tu historia', m:'Cada carro de tu garaje va a tener detrás ventas como esta. Vas a mirar atrás y acordarte de hoy.', s:'Cada venta, un recuerdo en el garaje.'},
-    {t:'Garaje de campeón', m:'Porsche, Lamborghini y lo que venga. Todo empieza aquí, cerrando negocios bien hechos como este.', s:'Sueña grande, vende más.'},
+    {t:'El garaje de tus sueños', m:'Un SVJ, un GT3 RS y espacio para lo que venga. Cada venta llena un poco ese garaje que ya tienes en la cabeza. Hoy le sumaste {gan}.', s:'El garaje se llena venta por venta.'},
+    {t:'Luces del garaje encendidas', m:'Imagínate llegar a casa, abrir el garaje y ver tus carros alineados, brillando. "{veh}" te acercó a esa imagen. Guárdala bien: es tu destino.', s:'Ese garaje es tuyo. Solo falta llenarlo.'},
+    {t:'Colección en camino', m:'Los grandes coleccionistas empezaron con un primer negocio. Tú ya llevas {totalVentas} ventas: la colección va en serio, y cada carro va a tener detrás una historia como la de hoy.', s:'El garaje de los sueños se construye hoy.'},
+    {t:'Tu garaje, tu historia', m:'Cuando estés parado en tu garaje lleno, vas a mirar atrás y te vas a acordar de días como hoy: de cada moto vendida y de cada peso ganado con esfuerzo.', s:'Cada venta, un recuerdo en el garaje.'},
+    {t:'Garaje de campeón', m:'Porsche, Lamborghini y lo que venga. Todo empieza aquí, cerrando negocios bien hechos como este. {gan} más para el garaje.', s:'Sueña grande, vende más.'},
+    {t:'Una llave más cerca', m:'La llave de "{veh}" ya se fue con su nuevo dueño. La de tu garaje de sueños está un poco más cerca de tu mano.', s:'Una llave a la vez.'},
   ],
 };
 const MC_SUENO_TEMAS = Object.keys(MC_SUENOS);
