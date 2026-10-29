@@ -2329,6 +2329,49 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .cth-vacio{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:20px;color:#8a8aa6}
 .cth-vacio b{color:#e8e8f4}
 @media (max-width:760px){ html .cth-res{grid-template-columns:1fr 1fr} html .cth-res div:last-child{grid-column:1/-1} html .cth-fila{grid-template-columns:auto 1fr} html .cth-monto{grid-column:1/-1;text-align:left;display:flex;align-items:baseline;gap:8px} html .cth-monto button{margin-left:auto} }
+/* ── Personalizar paneles (Ajustes) ─────────────────────────────────────── */
+.aj-nav{position:sticky;top:0;z-index:5;display:flex;gap:6px;flex-wrap:wrap;padding:8px 0 12px;margin-bottom:6px;background:linear-gradient(180deg,var(--bg) 70%,transparent)}
+.aj-nav a{padding:6px 13px;border-radius:999px;font-size:12.5px;font-weight:600;color:#c4c4da;text-decoration:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.aj-nav a:hover{color:#fff;border-color:rgba(var(--accent-rgb),.5)}
+.aj-sec{margin-bottom:26px;scroll-margin-top:64px}
+.aj-sec-tit{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.aj-sec-tit > i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;color:#fff;background:var(--grad,linear-gradient(135deg,var(--accent),var(--accent-b)))}
+.aj-sec-tit b{display:block;font:700 16px 'Space Grotesk',sans-serif;color:#fff}
+.aj-sec-tit span{font-size:12.5px;color:#9a9ab8}
+.aj-card{padding:16px;border-radius:18px;background:var(--bg2);border:1px solid rgba(255,255,255,.07);margin-bottom:12px}
+.aj-card-tit{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a8aa6;margin-bottom:10px}
+.aj-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.aj-grid2 .aj-card{margin-bottom:0}
+.aj-grid2 + .aj-card,.aj-card + .aj-grid2{margin-top:12px}
+.aj-fila{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.aj-custom{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);font-size:13px;color:#c4c4da}
+.aj-custom input[type=color]{width:44px;height:34px;padding:2px;border-radius:10px;cursor:pointer}
+.aj-nombre{align-items:flex-end;margin-bottom:10px}
+.aj-nombre .form-group{flex:1;min-width:150px;margin:0}
+.aj-nombre .aj-icono{flex:0 0 110px;min-width:0}
+.aj-acc{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.aj-cuenta{font-size:13px;color:#c4c4da;line-height:1.7;margin-bottom:10px}
+.aj-nota{font-size:12.5px;color:#9a9ab8;line-height:1.5;margin-top:10px}
+.aj-nota b{color:#ff8aa5}
+.aj-chips{display:flex;gap:6px;flex-wrap:wrap}
+.aj-switch{display:inline-flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#c4c4da;font:700 13px 'Inter',sans-serif;cursor:pointer}
+.aj-switch::before{content:"";width:38px;height:22px;border-radius:999px;background:rgba(255,255,255,.12) radial-gradient(circle at 11px 50%,#fff 8px,transparent 8.5px);transition:background .2s}
+.aj-switch.on{color:#fff;border-color:rgba(var(--accent-rgb),.5)}
+.aj-switch.on::before{background:var(--accent) radial-gradient(circle at 27px 50%,#fff 8px,transparent 8.5px)}
+.aj-audio{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#9a9ab8;flex-wrap:wrap}
+.aj-led{width:9px;height:9px;border-radius:50%;background:#5b5b78}
+.aj-led.ok{background:#00d68f;box-shadow:0 0 8px #00d68f}.aj-led.warn{background:#f5c451}.aj-led.off{background:#5b5b78}
+.aj-peligro{border-color:rgba(255,107,141,.25)}
+.aj-textos summary{cursor:pointer;font-weight:700;color:#e8e8f4;font-size:13.5px}
+.aj-paneles{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:12px}
+.aj-panel{padding:12px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06)}
+.aj-panel .form-group{margin-bottom:8px}
+.aj-panel-id{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+@media (max-width:760px){
+  html .aj-grid2{grid-template-columns:1fr}
+  html .aj-nav{top:56px}
+  html .aj-nav a{flex:1 1 auto;text-align:center}
+}
 </style>
 </head>
 <body>
@@ -2775,147 +2818,136 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 </div>
 
 <div class="page" id="page-ajustes">
-  <div class="page-header"><div class="page-title">Personalizar paneles</div><div class="page-sub">Edita títulos, subtítulos, colores de acento y el nombre de la app</div></div>
+  <div class="page-header"><div class="page-title">Personalizar paneles</div><div class="page-sub">Apariencia, cuenta, sonidos, respaldos y fotos de tu sistema</div></div>
 
-  <div class="card">
-    <div class="card-head"><span class="card-head-title">🏷 Nombre de la aplicación</span></div>
-    <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
-      <div class="form-group" style="flex:1;min-width:180px">
-        <label class="form-label">Nombre / marca</label>
-        <input type="text" id="cfg-appname" placeholder="MotoContable">
+  <nav class="aj-nav" aria-label="Secciones">
+    <a href="#aj-apariencia" onclick="return ajIr('aj-apariencia')">Apariencia</a>
+    <a href="#aj-cuenta" onclick="return ajIr('aj-cuenta')">Cuenta y nube</a>
+    <a href="#aj-sonidos" onclick="return ajIr('aj-sonidos')">Sonidos</a>
+    <a href="#aj-datos" onclick="return ajIr('aj-datos')">Tus datos</a>
+    <a href="#aj-fotos" onclick="return ajIr('aj-fotos')">Fotos</a>
+    <a href="#aj-textos" onclick="return ajIr('aj-textos')">Textos de pantallas</a>
+  </nav>
+
+  <!-- APARIENCIA -->
+  <section class="aj-sec" id="aj-apariencia">
+    <div class="aj-sec-tit"><i data-ico="ajustes"></i><div><b>Apariencia</b><span>Colores, nombre y tamaño del texto. Se guarda en la nube y se ve igual en todos tus dispositivos.</span></div></div>
+    <div class="aj-card">
+      <div class="aj-card-tit">Paleta del sistema</div>
+      <div id="color-paleta"></div>
+      <div class="aj-fila aj-custom">
+        <span>Color personalizado</span>
+        <input type="color" id="cfg-color-custom" oninput="aplicarColor(this.value,false)">
+        <button class="btn btn-ghost btn-sm" onclick="aplicarColor(document.getElementById('cfg-color-custom').value,true)">Aplicar</button>
       </div>
-      <div class="form-group" style="flex:1;min-width:120px">
-        <label class="form-label">Icono (emoji)</label>
-        <input type="text" id="cfg-appicon" placeholder="🏍️" maxlength="4">
-      </div>
-      <button class="btn btn-primary" onclick="guardarNombreApp()">✓ Guardar</button>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="card-head"><span class="card-head-title">Paleta del sistema</span></div>
-    <div class="card-body">
-      <p style="font-size:12px;color:var(--text3);margin-bottom:12px">Elige la paleta del sistema: se aplica al menú, los botones, las gráficas y los brillos. Se guarda en la nube y se ve igual en el Mac y en el iPhone.</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <div id="color-paleta" style="display:flex;gap:8px;flex-wrap:wrap"></div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <label class="form-label" style="margin:0">Personalizado:</label>
-          <input type="color" id="cfg-color-custom" style="width:44px;height:36px;padding:2px;cursor:pointer" oninput="aplicarColor(this.value,false)">
-          <button class="btn btn-ghost btn-sm" onclick="aplicarColor(document.getElementById('cfg-color-custom').value,true)">Aplicar</button>
+    <div class="aj-grid2">
+      <div class="aj-card">
+        <div class="aj-card-tit">Nombre de la aplicación</div>
+        <div class="aj-fila aj-nombre">
+          <div class="form-group"><label class="form-label">Nombre o marca</label><input type="text" id="cfg-appname" placeholder="MotoContable"></div>
+          <div class="form-group aj-icono"><label class="form-label">Ícono (emoji)</label><input type="text" id="cfg-appicon" placeholder="🏍️" maxlength="4"></div>
         </div>
+        <button class="btn btn-primary btn-sm" onclick="guardarNombreApp()">Guardar nombre</button>
+      </div>
+      <div class="aj-card">
+        <div class="aj-card-tit">Tamaño del texto</div>
+        <div class="form-group"><label class="form-label">Tamaño base</label>
+          <select id="cfg-fontsize">
+            <option value="13px">Pequeño (13px)</option>
+            <option value="14px" selected>Normal (14px)</option>
+            <option value="15px">Grande (15px)</option>
+            <option value="16px">Muy grande (16px)</option>
+          </select></div>
+        <button class="btn btn-primary btn-sm" onclick="aplicarFuente()">Aplicar tamaño</button>
       </div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="card-head"><span class="card-head-title">📋 Títulos y subtítulos de paneles</span></div>
-    <div class="card-body">
-      <p style="font-size:12px;color:var(--text3);margin-bottom:14px">Personaliza el título y descripción que aparece en la cabecera de cada sección.</p>
-      <div id="cfg-paneles-list" style="display:flex;flex-direction:column;gap:14px"></div>
-      <div style="margin-top:1rem">
-        <button class="btn btn-primary" onclick="guardarPaneles()">✓ Guardar cambios</button>
-        <button class="btn btn-ghost" onclick="resetPaneles()" style="margin-left:8px">↩ Restablecer</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-head"><span class="card-head-title">🔤 Fuente principal</span></div>
-    <div class="card-body" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
-      <div class="form-group" style="flex:1;min-width:180px">
-        <label class="form-label">Tamaño base del texto</label>
-        <select id="cfg-fontsize">
-          <option value="13px">Pequeño (13px)</option>
-          <option value="14px" selected>Normal (14px)</option>
-          <option value="15px">Grande (15px)</option>
-          <option value="16px">Muy grande (16px)</option>
-        </select>
-      </div>
-      <button class="btn btn-primary" onclick="aplicarFuente()">✓ Aplicar</button>
-    </div>
-  </div>
+  </section>
 
   <!-- CUENTA Y SINCRONIZACIÓN -->
-  <div class="card">
-    <div class="card-head"><span class="card-head-title">☁️ Cuenta y sincronización</span></div>
-    <div class="card-body">
-      <div id="mc-cuenta-info" style="font-size:13px;color:var(--text2);margin-bottom:.85rem;line-height:1.7"></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-primary" onclick="sincronizarAhora()">🔄 Sincronizar ahora</button>
-        <button class="btn btn-ghost" id="mc-btn-sesion" onclick="mcBotonSesion()">Cerrar sesión</button>
+  <section class="aj-sec" id="aj-cuenta">
+    <div class="aj-sec-tit"><i data-ico="nube"></i><div><b>Cuenta y nube</b><span>Tu sesión y la sincronización entre la Mac y el iPhone.</span></div></div>
+    <div class="aj-card">
+      <div id="mc-cuenta-info" class="aj-cuenta"></div>
+      <div class="aj-acc">
+        <button class="btn btn-primary btn-sm" onclick="sincronizarAhora()">Sincronizar ahora</button>
+        <button class="btn btn-ghost btn-sm" id="mc-btn-sesion" onclick="mcBotonSesion()">Cerrar sesión</button>
       </div>
     </div>
-  </div>
-
-  <!-- BACKUP Y RESTAURACIÓN -->
-  <div class="card">
-    <div class="card-head"><span class="card-head-title">💾 Backup y restauración de datos</span></div>
-    <div class="card-body">
-      <p style="font-size:13px;color:var(--text2);margin-bottom:1rem">Exporta todos tus datos a un archivo JSON para hacer backup o para transferirlos a otro dispositivo o navegador.</p>
-
-      <!-- Exportar -->
-      <div style="background:var(--bg3);border-radius:10px;padding:1rem;margin-bottom:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px">📤 Exportar datos</div>
-        <div style="font-size:12px;color:var(--text3);margin-bottom:.75rem">Descarga un archivo con todas tus motos, carros, ventas, contactos y metas.</div>
-        <button class="btn btn-primary" onclick="exportarDatos()" style="width:100%;justify-content:center">
-          ⬇️ Descargar backup completo
-        </button>
-      </div>
-
-      <!-- Importar -->
-      <div style="background:var(--bg3);border-radius:10px;padding:1rem">
-        <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px">📥 Importar datos</div>
-        <div style="font-size:12px;color:var(--text3);margin-bottom:.75rem">Carga un archivo de backup previo. <strong style="color:var(--red)">Esto reemplaza todos los datos actuales.</strong></div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <input type="file" id="import-file" accept=".json" onchange="importarDatos(this)" style="display:none">
-          <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()" style="width:100%;justify-content:center">
-            ⬆️ Cargar archivo de backup
-          </button>
-        </div>
-        <div id="import-status" style="font-size:12px;margin-top:8px;display:none"></div>
-      </div>
-
-    </div>
-  </div>
+  </section>
 
   <!-- SONIDOS -->
-  <div class="card">
-    <div class="card-head"><span class="card-head-title">🔊 Sonidos y notificaciones</span></div>
-    <div class="card-body">
-      <p style="font-size:13px;color:var(--text2);margin-bottom:.75rem">Cada acción tiene su sonido y una notificación en pantalla: ingresar o modificar un vehículo, agregar un gasto, agregar una foto, eliminar y restaurar. En el iPhone no se oyen si está en silencio.</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-ghost" id="btn-sonidos" onclick="mcAlternarSonidos()">🔊 Sonidos activados</button>
+  <section class="aj-sec" id="aj-sonidos">
+    <div class="aj-sec-tit"><i data-ico="campana"></i><div><b>Sonidos y notificaciones</b><span>Cada acción tiene su sonido y su aviso en pantalla: ingresar o modificar un vehículo, gastos, fotos, eliminar y restaurar.</span></div></div>
+    <div class="aj-card">
+      <div class="aj-fila aj-sonido">
+        <button class="aj-switch" id="btn-sonidos" onclick="mcAlternarSonidos()">Sonidos activados</button>
+        <div id="aj-audio-estado" class="aj-audio"></div>
+      </div>
+      <div class="aj-card-tit" style="margin-top:14px">Probar los sonidos</div>
+      <div class="aj-chips">
         <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('agregar')">Ingresar</button>
         <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('guardar')">Modificar</button>
+        <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('confirmar')">Listo</button>
         <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('foto')">Foto</button>
         <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('borrar')">Eliminar</button>
         <button class="btn btn-ghost btn-sm" onclick="mcProbarSonido('restaurar')">Restaurar</button>
+        <button class="btn btn-ghost btn-sm" onclick="ajProbarVenta()">Venta</button>
+        <button class="btn btn-ghost btn-sm" onclick="ajProbarLogro()">Logro</button>
       </div>
+      <p class="aj-nota">En el iPhone, si no oyes nada: sube el volumen y revisa que el modo "No molestar" o el modo silencio no estén activos.</p>
     </div>
-  </div>
+  </section>
 
-  <!-- RESPALDO SEMANAL -->
-  <div class="card">
-    <div class="card-head"><span class="card-head-title">☁️ Respaldo semanal en la nube</span></div>
-    <div class="card-body">
-      <p style="font-size:13px;color:var(--text2);margin-bottom:.5rem">Aparte de la sincronización, cada semana se guarda sola una copia completa de tus datos en la nube. Si algo se borra por error, desde aquí lo recuperas sin tocar lo demás.</p>
+  <!-- TUS DATOS -->
+  <section class="aj-sec" id="aj-datos">
+    <div class="aj-sec-tit"><i data-ico="caja"></i><div><b>Tus datos</b><span>Respaldo automático en la nube y copias que puedes descargar.</span></div></div>
+    <div class="aj-card">
+      <div class="aj-card-tit">Respaldo semanal en la nube</div>
+      <p class="aj-nota" style="margin-top:0">Aparte de la sincronización, cada semana se guarda sola una copia completa de tus datos. Si algo se borra por error, desde aquí lo recuperas.</p>
       <div id="resp-contenido"></div>
     </div>
-  </div>
-
-  <!-- FOTOS -->
-  <div class="card">
-    <div class="card-head"><span class="card-head-title">📷 Fotos de los vehículos</span></div>
-    <div class="card-body">
-      <p style="font-size:13px;color:var(--text2);margin-bottom:.75rem">Las fotos se guardan en la nube (Supabase), no en este dispositivo: no llenan el sistema y las ves en el Mac y en el iPhone. Si tomas una foto sin internet, se guarda aquí un momento y se sube sola cuando vuelva la conexión.</p>
-      <div id="espacio-info" style="font-size:12px;color:var(--text3);margin-bottom:.85rem"></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-ghost" onclick="subirFotosAhora()">☁️ Subir fotos pendientes</button>
-        <button class="btn btn-ghost" onclick="verEspacioFotos()">📊 Ver estado</button>
-        <button class="btn btn-danger" onclick="liberarEspacioFotos()">🗑 Borrar fotos que no están en la nube</button>
+    <div class="aj-grid2">
+      <div class="aj-card">
+        <div class="aj-card-tit">Descargar copia</div>
+        <p class="aj-nota" style="margin-top:0">Un archivo con todas tus motos, carros, ventas, contactos y metas.</p>
+        <button class="btn btn-primary btn-sm" onclick="exportarDatos()">Descargar backup completo</button>
+      </div>
+      <div class="aj-card aj-peligro">
+        <div class="aj-card-tit">Cargar copia</div>
+        <p class="aj-nota" style="margin-top:0">Carga un archivo de backup. <b>Reemplaza todos los datos actuales.</b></p>
+        <input type="file" id="import-file" accept=".json" onchange="importarDatos(this)" style="display:none">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()">Cargar archivo de backup</button>
+        <div id="import-status" style="font-size:12px;margin-top:8px;display:none"></div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- FOTOS -->
+  <section class="aj-sec" id="aj-fotos">
+    <div class="aj-sec-tit"><i data-ico="moto"></i><div><b>Fotos de los vehículos</b><span>Se guardan en tu nube privada: no llenan el dispositivo y las ves en la Mac y en el iPhone.</span></div></div>
+    <div class="aj-card">
+      <div id="espacio-info" class="aj-nota" style="margin-top:0"></div>
+      <div class="aj-acc">
+        <button class="btn btn-ghost btn-sm" onclick="subirFotosAhora()">Subir fotos pendientes</button>
+        <button class="btn btn-ghost btn-sm" onclick="verEspacioFotos()">Ver estado</button>
+        <button class="btn btn-danger btn-sm" onclick="liberarEspacioFotos()">Borrar fotos que no están en la nube</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEXTOS -->
+  <section class="aj-sec" id="aj-textos">
+    <div class="aj-sec-tit"><i data-ico="lapiz"></i><div><b>Textos de las pantallas</b><span>El título y la descripción de la cabecera de cada sección.</span></div></div>
+    <details class="aj-card aj-textos">
+      <summary>Editar títulos y subtítulos</summary>
+      <div id="cfg-paneles-list" class="aj-paneles"></div>
+      <div class="aj-acc" style="margin-top:12px">
+        <button class="btn btn-primary btn-sm" onclick="guardarPaneles()">Guardar cambios</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetPaneles()">Restablecer</button>
+      </div>
+    </details>
+  </section>
 </div>
 </div>
 
@@ -4086,7 +4118,8 @@ function mcSonido(tipo){
 }
 function mcActualizarBotonSonidos(){
   const b = document.getElementById('btn-sonidos');
-  if(b) b.textContent = mcSonidosActivos() ? '🔊 Sonidos activados' : '🔇 Sonidos desactivados';
+  if(b){ b.textContent = mcSonidosActivos() ? 'Sonidos activados' : 'Sonidos desactivados'; b.classList.toggle('on', mcSonidosActivos()); }
+  if(typeof ajEstadoAudio === 'function') ajEstadoAudio();
 }
 function mcAlternarSonidos(){
   try { localStorage.setItem(MC_SONIDOS_KEY, mcSonidosActivos() ? '0' : '1'); } catch(e){}
@@ -9649,15 +9682,27 @@ function renderPaletaColores(){
 function renderPanelesEditor(){
   const saved=cfgData.paneles||PANEL_DEFAULTS;
   document.getElementById('cfg-paneles-list').innerHTML=saved.map((p,i)=>`
-    <div style="background:var(--bg3);border-radius:10px;padding:.9rem 1rem;border:1px solid var(--border)">
-      <div style="font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.6rem">${p.id.toUpperCase()}</div>
-      <div class="form-grid" style="gap:10px">
-        <div class="form-group"><label class="form-label">Título</label><input type="text" id="pan-t-${i}" value="${p.titulo}"></div>
-        <div class="form-group"><label class="form-label">Subtítulo</label><input type="text" id="pan-s-${i}" value="${p.sub}"></div>
-      </div>
+    <div class="aj-panel">
+      <div class="aj-panel-id">${ccEsc(p.id)}</div>
+      <div class="form-group"><label class="form-label">Título</label><input type="text" id="pan-t-${i}" value="${ccEsc(p.titulo)}"></div>
+      <div class="form-group"><label class="form-label">Subtítulo</label><input type="text" id="pan-s-${i}" value="${ccEsc(p.sub)}"></div>
     </div>`).join('');
+  ajPintar();
 }
-
+// Ajustes: íconos de las secciones, estado del sonido y saltos a cada sección
+function ajPintar(){
+  document.querySelectorAll('#page-ajustes [data-ico]').forEach(i=>{ if(!i.innerHTML) i.innerHTML = mcIco(i.dataset.ico, 18); });
+  ajEstadoAudio();
+}
+function ajIr(id){ const el = document.getElementById(id); if(el) el.scrollIntoView({behavior: mcMovReducido() ? 'auto' : 'smooth', block:'start'}); return false; }
+function ajEstadoAudio(){
+  const el = document.getElementById('aj-audio-estado'); if(!el) return;
+  const act = mcSonidosActivos(), ctx = _mcAudioAviso;
+  const listo = ctx && ctx.state === 'running';
+  el.innerHTML = !act ? `<span class="aj-led off"></span>Apagados` : listo ? `<span class="aj-led ok"></span>Audio listo` : `<span class="aj-led warn"></span>En pausa · se activa al tocar la pantalla <button class="btn btn-ghost btn-sm" onclick="mcDesbloquearAudio();setTimeout(ajEstadoAudio,150);mcSonido('confirmar')">Activar ahora</button>`;
+}
+function ajProbarVenta(){ if(!mcSonidosActivos()){ toast('Los sonidos están desactivados','err'); return; } celSonido(CEL_RANGOS[2], false); }
+function ajProbarLogro(){ if(!mcSonidosActivos()){ toast('Los sonidos están desactivados','err'); return; } mcSonidoLogro(2); }
 function guardarPaneles(){
   const saved=cfgData.paneles||PANEL_DEFAULTS.map(p=>({...p}));
   saved.forEach((p,i)=>{
@@ -10160,12 +10205,30 @@ document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && mcAvisoAbiert
 let _mcAudioAviso = null;
 function mcAudioAviso(){
   try {
-    if(!_mcAudioAviso){ const C = window.AudioContext || window.webkitAudioContext; if(!C) return null; _mcAudioAviso = new C(); }
+    if(!_mcAudioAviso){ const C = window.AudioContext || window.webkitAudioContext; if(!C) return null; _mcAudioAviso = new C();
+      _mcAudioAviso.onstatechange = ()=>{ if(_mcAudioAviso.state !== 'running') _mcAudioAviso._mcListo = false; if(typeof ajEstadoAudio === 'function') ajEstadoAudio(); }; }
     if(_mcAudioAviso.state !== 'running') _mcAudioAviso.resume().catch(()=>{});
     return _mcAudioAviso;
   } catch(e){ return null; }
 }
-['pointerdown','touchend','keydown'].forEach(ev => document.addEventListener(ev, ()=>mcAudioAviso(), {once:true, passive:true}));
+// Safari pausa el audio cada vez que la pestaña se va al fondo, se bloquea el
+// iPhone, suena otra app o pasa un rato sin usarlo. Por eso se desbloquea con
+// CADA toque (no solo con el primero) y, en iOS, con un sonido mudo dentro del
+// toque. Además el audio se marca como "reproducción" para que el interruptor de
+// silencio del iPhone no lo apague.
+try { if(navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
+function mcDesbloquearAudio(){
+  if(typeof mcSonidosActivos === 'function' && !mcSonidosActivos()) return;
+  const ctx = mcAudioAviso(); if(!ctx || ctx.state === 'running' && ctx._mcListo) return;
+  try {
+    const b = ctx.createBuffer(1, 1, 22050), src = ctx.createBufferSource();
+    src.buffer = b; src.connect(ctx.destination); src.start(0);
+    ctx._mcListo = true;
+  } catch(e){}
+  if(ctx.state !== 'running') ctx.resume().catch(()=>{});
+}
+['pointerdown','touchend','keydown','click'].forEach(ev => document.addEventListener(ev, mcDesbloquearAudio, {passive:true, capture:true}));
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'visible' && _mcAudioAviso && _mcAudioAviso.state !== 'running'){ _mcAudioAviso._mcListo = false; _mcAudioAviso.resume().catch(()=>{}); } });
 function mcSonarAviso(){
   const ctx = mcAudioAviso();
   if(!ctx) return;
