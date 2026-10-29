@@ -2256,6 +2256,45 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .vc-pap-fila{grid-template-columns:1fr auto}
   html .vc-pap-det{grid-column:1/-1;text-align:left;padding-left:15px;margin-top:-4px}
 }
+/* ── Desempeño por vehículo ─────────────────────────────────────────────── */
+.dp-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;padding:1rem 1.4rem .6rem}
+.dp-ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.dp-ctrl select{width:auto}
+.dp{padding:0 1.4rem 1rem}
+.dp-res{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:.2rem 0 .8rem}
+.dp-res span{padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.dp-res small{display:block;font-size:10.5px;color:#8a8aa6;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.dp-res b{font:800 16px 'Space Grotesk',sans-serif;color:#fff;font-variant-numeric:tabular-nums}
+.dp-res b.pos,.dp-gan b.pos{color:#00d68f}.dp-res b.neg,.dp-gan b.neg{color:#ff6b8d}
+.dp-fila{display:grid;grid-template-columns:1fr 130px 130px 200px;gap:14px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid transparent;transition:background .15s,border-color .15s}
+.dp-fila + .dp-fila{margin-top:4px}
+.dp-fila:hover{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
+.dp-fila.top{background:rgba(0,214,143,.06);border-color:rgba(0,214,143,.25)}
+.dp-fila.inv{cursor:pointer}
+.dp-veh{min-width:0}
+.dp-veh b{display:flex;align-items:center;gap:8px;color:#fff;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-veh b em{font-style:normal;color:#8a8aa6;font-weight:500}
+.dp-veh span{display:block;font-size:12px;color:#8a8aa6;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-veh .cc-placa{color:#111!important;-webkit-text-fill-color:#111}
+.dp-col small,.dp-gan small{display:block;font-size:10.5px;color:#8a8aa6}
+.dp-col b{font:700 13.5px 'Space Grotesk',sans-serif;color:#d8d8ea;white-space:nowrap}
+.dp-gan-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.dp-gan-top b{font:800 14.5px 'Space Grotesk',sans-serif;color:#fff;white-space:nowrap}
+.dp-gan-top span{font-size:11.5px;font-weight:700;color:#9a9ab8}
+.dp-bar{height:5px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:5px}
+.dp-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#00b377,#00d68f)}
+.dp-fila.neg .dp-bar i{background:#ff4d6d}
+.dp-fila.inv .dp-bar i{background:var(--n,var(--accent))}
+.dp-fila.inv.n-nuevo{--n:#00d68f}.dp-fila.inv.n-medio{--n:var(--accent)}.dp-fila.inv.n-pronto{--n:#f5c451}.dp-fila.inv.n-alerta{--n:#ff8a5c}.dp-fila.inv.n-crit,.dp-fila.inv.n-urg{--n:#ff4d6d}
+.dp-dias{color:var(--n)!important}
+.dp-mas{text-align:center;padding:0 0 1rem}
+.dp-vacio{text-align:center;color:#9a9ab8;padding:24px}
+@media (max-width:760px){
+  html .dp-cab,html .dp{padding-left:1rem;padding-right:1rem}
+  html .dp-res{grid-template-columns:1fr 1fr}
+  html .dp-fila{grid-template-columns:1fr 1fr;row-gap:6px}
+  html .dp-veh,html .dp-gan{grid-column:1/-1}
+}
 </style>
 </head>
 <body>
@@ -2316,8 +2355,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   <div class="page-header"><div class="page-title">Resumen general</div><div class="page-sub">Visión consolidada de todas tus motos</div></div>
   <div class="mc-hero" id="mc-hero"></div>
   <div class="metrics-grid" id="metrics-general"></div>
-  <div class="card">
-    <div class="card-head"><span class="card-head-title">Desempeño por moto</span></div>
+  <div class="card dp-card">
+    <div class="dp-cab">
+      <div><div class="an-card-tit"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Desempeño por vehículo</div><div class="an-card-sub">Cuánto te dejó cada venta y cómo va lo que tienes en inventario</div></div>
+      <div id="dp-ctrl"></div>
+    </div>
     <div id="resumen-tabla"></div>
   </div>
 </div>
@@ -6545,60 +6587,70 @@ function renderResumen(){
     document.getElementById('resumen-tabla').innerHTML=`<div class="empty-state"><div class="empty-icon">🏍️</div><div class="empty-title">Sin motos aún</div><div class="empty-sub">Ve a "Nueva moto" para comenzar.</div></div>`;
     return;
   }
-  const rowsA = motos.map(mo=>{
-    const c = calcMoto(mo.id);
-    return `<tr>
-      <td><div class="tbl-name">🏍️ ${mo.nombre}</div><div class="tbl-sub">${mo.modelo||'Sin modelo'} · ${mo.placa||'Sin placa'}</div></td>
-      <td><span class="badge badge-blue">Activa</span></td>
-      <td style="color:var(--green);font-family:'DM Mono',monospace">${fmt(c.ingreso)}</td>
-      <td style="color:var(--amber);font-family:'DM Mono',monospace">${fmt(c.gastosCard)}<br><span style="font-size:10px;color:var(--text3)">acumulado</span></td>
-      <td style="color:var(--blue);font-family:'DM Mono',monospace">${fmt(c.compra)}</td>
-      <td style="color:var(--blue);font-family:'DM Mono',monospace;font-weight:600">${fmt(c.inversionAcum)}</td>
-      <td>—</td>
-      <td style="font-weight:600;font-family:'DM Mono',monospace;color:var(--text3)">Pendiente venta</td>
-    </tr>`;
-  }).join('');
-  const rowsCA = carros.map(ca=>{
-    const compraBase = parseFloat(ca.precioCompra)||0;
-    const totG = (ca.gastos||[]).reduce((a,g)=>a+g.monto,0);
-    return `<tr>
-      <td><div class="tbl-name">🚗 ${ca.nombre}</div><div class="tbl-sub">${ca.modelo||'Sin modelo'} · ${ca.placa||'Sin placa'}</div></td>
-      <td><span class="badge badge-blue">Activo</span></td>
-      <td style="color:var(--text3)">—</td>
-      <td style="color:var(--amber);font-family:'DM Mono',monospace">${fmt(totG)}<br><span style="font-size:10px;color:var(--text3)">acumulado</span></td>
-      <td style="color:var(--blue);font-family:'DM Mono',monospace">${fmt(compraBase)}</td>
-      <td style="color:var(--blue);font-family:'DM Mono',monospace;font-weight:600">${fmt(compraBase+totG)}</td>
-      <td>—</td>
-      <td style="font-weight:600;font-family:'DM Mono',monospace;color:var(--text3)">Pendiente venta</td>
-    </tr>`;
-  }).join('');
-  // Con muchas ventas, la tabla muestra las más recientes y el resto con un toque
-  const RES_MAX = 40, recientes = new Set([...ventas].sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||''))).slice(0, RES_MAX));
-  const ventasTabla = _resTodas || ventas.length <= RES_MAX ? ventas : ventas.filter(v=>recientes.has(v));
-  const rowsV = ventasTabla.map(v=>{
-    const gastosExtra = (v.gastosList||[]).reduce((a,g)=>a+g.monto,0);
-    const totalGastos = v.gastos + gastosExtra;
-    const totalInv    = v.inversionCompra + totalGastos;
-    const ganReal     = v.precioVenta - totalInv;
-    const ico = v.tipoVehiculo==='carro' ? '🚗' : '🏍️';
-    return `<tr>
-      <td><div class="tbl-name">${ico} ${v.motoNombre}</div><div class="tbl-sub">${v.motoModelo||''} · ${v.motoPlaca||''}</div></td>
-      <td><span class="badge badge-green">Vendido</span></td>
-      <td style="color:var(--text3)">—</td>
-      <td style="color:var(--amber);font-family:'DM Mono',monospace">${fmt(totalGastos)}</td>
-      <td style="color:var(--blue);font-family:'DM Mono',monospace">${fmt(v.inversionCompra)}</td>
-      <td style="color:var(--blue);font-family:'DM Mono',monospace">${fmt(totalInv)}</td>
-      <td style="color:var(--green);font-family:'DM Mono',monospace">${fmt(v.precioVenta)}</td>
-      <td style="font-weight:600;font-family:'DM Mono',monospace;color:${ganReal>=0?'var(--green)':'var(--red)'}">${ganReal>=0?'+':''}${fmt(ganReal)}</td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('resumen-tabla').innerHTML=`
-    <table><thead><tr><th>Vehículo</th><th>Estado</th><th>Ingresos</th><th>Gastos</th><th>Compra</th><th>💰 Total invertido</th><th>Precio venta</th><th>Ganancia neta</th></tr></thead>
-    <tbody>${rowsA}${rowsCA}${rowsV}</tbody></table>
-    ${ventas.length > RES_MAX ? `<div style="text-align:center;padding:.8rem"><button class="btn btn-ghost" onclick="_resTodas=!_resTodas;renderResumen()">${_resTodas ? 'Mostrar solo las ' + RES_MAX + ' ventas más recientes' : 'Ver todas las ventas (' + ventas.length + ')'}</button></div>` : ''}`;
+  renderDesempeno();
 }
 var _resTodas = false;
+// ── DESEMPEÑO POR VEHÍCULO (Resumen) ─────────────────────────────────────────
+// Dos vistas: lo vendido (ganancia y rentabilidad de cada venta, con barra) y lo
+// que está en inventario (días e invertido). Orden elegible y "ver todas".
+var _dpVista = 'vendidos', _dpOrden = 'recientes';
+function dpVista(v){ _dpVista = v; _resTodas = false; renderDesempeno(); }
+function dpOrden(o){ _dpOrden = o; renderDesempeno(); }
+function renderDesempeno(){
+  const box = document.getElementById('resumen-tabla'), ctrl = document.getElementById('dp-ctrl'); if(!box) return;
+  const inv = invItems(), RES_MAX = 15;
+  const vend = ventas.map(v=>{ const g = mcGanVenta(v), pv = ccNum(v.precioVenta), invertido = pv - g; return {v, g, pv, invertido, rent: invertido > 0 ? g / invertido * 100 : 0, dias: lgDias(v.fechaCompra, v.fecha)}; });
+  if(_dpVista === 'inventario' && !inv.length && vend.length) _dpVista = 'vendidos';
+  if(_dpVista === 'vendidos' && !vend.length && inv.length) _dpVista = 'inventario';
+  const ordenes = _dpVista === 'vendidos'
+    ? [['recientes','Más recientes'],['ganancia','Mayor ganancia'],['rentabilidad','Mayor rentabilidad'],['rapidas','Vendidas más rápido']]
+    : [['dias','Más días primero'],['inversion','Mayor inversión'],['recientes','Más recientes']];
+  if(!ordenes.some(o=>o[0] === _dpOrden)) _dpOrden = ordenes[0][0];
+  if(ctrl) ctrl.innerHTML = `<div class="dp-ctrl">
+    <div class="dia-vista"><button class="${_dpVista==='vendidos'?'on':''}" onclick="dpVista('vendidos')">Vendidos (${vend.length})</button><button class="${_dpVista==='inventario'?'on':''}" onclick="dpVista('inventario')">En inventario (${inv.length})</button></div>
+    <select onchange="dpOrden(this.value)" aria-label="Ordenar">${ordenes.map(o=>`<option value="${o[0]}" ${_dpOrden===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></div>`;
+  let filas = '', total = 0;
+  if(_dpVista === 'vendidos'){
+    const l = vend.slice();
+    l.sort((a,b)=> _dpOrden === 'ganancia' ? b.g - a.g : _dpOrden === 'rentabilidad' ? b.rent - a.rent : _dpOrden === 'rapidas' ? (a.dias ?? 1e9) - (b.dias ?? 1e9) : String(b.v.fecha||'').localeCompare(String(a.v.fecha||'')));
+    total = l.length;
+    const maxG = Math.max(1, ...l.map(x=>x.g)), vis = _resTodas ? l : l.slice(0, RES_MAX);
+    const promR = l.length ? l.reduce((a,x)=>a + x.rent, 0) / l.length : 0;
+    filas = `<div class="dp-res">
+        <span><small>Ganancia total</small><b class="pos">${fmt(l.reduce((a,x)=>a + x.g, 0))}</b></span>
+        <span><small>Ganancia promedio</small><b>${fmt(l.length ? l.reduce((a,x)=>a + x.g, 0) / l.length : 0)}</b></span>
+        <span><small>Rentabilidad promedio</small><b>${promR.toFixed(1).replace('.', ',')}%</b></span>
+        <span><small>Mejor venta</small><b>${l.length ? fmt(maxG) : '—'}</b></span></div>` +
+      vis.map(x=>{ const v = x.v, w = Math.max(3, Math.round(Math.max(0, x.g) / maxG * 100));
+        return `<div class="dp-fila${x.g < 0 ? ' neg' : x.g === maxG ? ' top' : ''}">
+          <div class="dp-veh"><b>${v.motoPlaca ? `<span class="cc-placa">${ccEsc(String(v.motoPlaca).toUpperCase())}</span>` : ''}${ccEsc(v.motoNombre||'Vehículo')}${v.motoModelo ? ` <em>${ccEsc(v.motoModelo)}</em>` : ''}</b>
+            <span>Vendida el ${mcFechaCorta(v.fecha)}${x.dias != null && x.dias >= 0 ? ` · en ${x.dias} día${x.dias!==1?'s':''}` : ''}${v.formaPago ? ' · ' + (v.formaPago === 'financiado' ? 'financiada' : 'de contado') : ''}</span></div>
+          <div class="dp-col"><small>Invertido</small><b>${fmt(x.invertido)}</b></div>
+          <div class="dp-col"><small>Vendida en</small><b>${fmt(x.pv)}</b></div>
+          <div class="dp-gan"><div class="dp-gan-top"><b class="${x.g >= 0 ? 'pos' : 'neg'}">${x.g >= 0 ? '+' : ''}${fmt(x.g)}</b><span>${x.rent.toFixed(1).replace('.', ',')}%</span></div><div class="dp-bar"><i style="width:${w}%"></i></div></div>
+        </div>`; }).join('');
+  } else {
+    const l = inv.slice();
+    l.sort((a,b)=> _dpOrden === 'inversion' ? b.total - a.total : _dpOrden === 'recientes' ? String(b.v.fechaCompra||'').localeCompare(String(a.v.fechaCompra||'')) : (b.dias ?? -1) - (a.dias ?? -1));
+    total = l.length;
+    const vis = _resTodas ? l : l.slice(0, RES_MAX);
+    filas = `<div class="dp-res">
+        <span><small>Capital en inventario</small><b>${fmt(l.reduce((a,x)=>a + x.total, 0))}</b></span>
+        <span><small>Vehículos</small><b>${l.length}</b></span>
+        <span><small>Con +${DIAS_ALERTA} días</small><b class="${l.some(x=>x.dias >= DIAS_ALERTA) ? 'neg' : 'pos'}">${l.filter(x=>x.dias != null && x.dias >= DIAS_ALERTA).length}</b></span>
+        <span><small>Separados</small><b>${l.filter(x=>x.v.separacion).length}</b></span></div>` +
+      vis.map(x=>{ const v = x.v, n = invNivel(x.dias), pct = x.dias == null ? 0 : Math.min(100, Math.round(x.dias / DIAS_ALERTA * 100));
+        return `<div class="dp-fila inv n-${n}" onclick="invVer('${x.tipo}','${v.id}')" role="button">
+          <div class="dp-veh"><b>${v.placa ? `<span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span>` : ''}${ccEsc(v.nombre||'Vehículo')}${v.modelo ? ` <em>${ccEsc(v.modelo)}</em>` : ''}${v.separacion ? ' <span class="inv-chip sep">Separada</span>' : ''}</b>
+            <span>${v.fechaCompra ? 'Comprada el ' + mcFechaCorta(v.fechaCompra) : 'Sin fecha de compra'}${v.vendedorNombre ? ' · a ' + ccEsc(v.vendedorNombre) : ''}</span></div>
+          <div class="dp-col"><small>Compra</small><b>${fmt(x.compra)}</b></div>
+          <div class="dp-col"><small>Gastos</small><b>${fmt(x.gastos)}</b></div>
+          <div class="dp-gan"><div class="dp-gan-top"><b>${fmt(x.total)}</b><span class="dp-dias">${x.dias == null ? '—' : x.dias + ' días'}</span></div><div class="dp-bar"><i style="width:${pct}%"></i></div></div>
+        </div>`; }).join('');
+  }
+  if(!total) filas = `<div class="dp-vacio">${_dpVista === 'vendidos' ? 'Todavía no hay ventas.' : 'No hay vehículos en inventario.'}</div>`;
+  box.innerHTML = `<div class="dp">${filas}</div>${total > RES_MAX ? `<div class="dp-mas"><button class="btn btn-ghost btn-sm" onclick="_resTodas=!_resTodas;renderDesempeno()">${_resTodas ? 'Ver menos' : `Ver todos (${total})`}</button></div>` : ''}`;
+}
 
 // ── ALERTAS DE CAPITAL DORMIDO ────────────────────────────────────────────────
 const DIAS_ALERTA = 100;
