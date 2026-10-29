@@ -2295,6 +2295,40 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .dp-fila{grid-template-columns:1fr 1fr;row-gap:6px}
   html .dp-veh,html .dp-gan{grid-column:1/-1}
 }
+/* Historial de contacto */
+.ct-btn.hist{color:#c4b5fd;border-color:rgba(167,139,250,.35);background:rgba(167,139,250,.08);cursor:pointer;font-family:inherit}
+#modal-cc.cth-modal .cc-modal{max-width:640px;width:100%}
+.cth-cab{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.cth-cab .ct-av{width:48px;height:48px;flex:none}
+.cth-cab b{display:block;color:#fff;font-size:16px}
+.cth-cab span{display:block;font-size:12.5px;color:#9a9ab8}
+.cth-res{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.cth-res div{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+.cth-res small{display:block;font-size:10.5px;color:#8a8aa6;text-transform:uppercase;letter-spacing:.07em;font-weight:700}
+.cth-res b{display:block;font:800 18px 'Space Grotesk',sans-serif;color:#fff}
+.cth-res b.pos{color:#00d68f}.cth-res b.neg{color:#ff6b8d}
+.cth-res span{font-size:12px;color:#9a9ab8}
+.cth-lista{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto;padding-right:2px}
+.cth-fila{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-left:3px solid #4d9fff}
+.cth-fila.compra{border-left-color:#00d68f}
+.cth-fecha{width:44px;text-align:center;padding:4px 0;border-radius:10px;background:rgba(255,255,255,.05)}
+.cth-fecha b{display:block;font:800 15px 'Space Grotesk',sans-serif;color:#fff;line-height:1.1}
+.cth-fecha span{font-size:10px;color:#8a8aa6;text-transform:uppercase}
+.cth-info{min-width:0}
+.cth-rol{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#7cb6ff}
+.cth-fila.compra .cth-rol{color:#5be3b0}
+.cth-info > b{display:flex;align-items:center;gap:8px;color:#fff;font-size:13.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cth-info > b em{font-style:normal;color:#8a8aa6;font-weight:500}
+.cth-info .cc-placa{color:#111!important;-webkit-text-fill-color:#111}
+.cth-info small{display:block;font-size:12px;color:#9a9ab8;margin-top:2px}
+.cth-info small b.pos{color:#00d68f}.cth-info small b.neg{color:#ff6b8d}
+.cth-monto{text-align:right}
+.cth-monto small{display:block;font-size:10.5px;color:#8a8aa6}
+.cth-monto b{display:block;font:700 14px 'Space Grotesk',sans-serif;color:#e8e8f4;white-space:nowrap}
+.cth-monto button{margin-top:3px;display:inline-flex;align-items:center;gap:4px;background:none;border:0;color:var(--accent);font:700 11.5px 'Inter',sans-serif;cursor:pointer;padding:0}
+.cth-vacio{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:20px;color:#8a8aa6}
+.cth-vacio b{color:#e8e8f4}
+@media (max-width:760px){ html .cth-res{grid-template-columns:1fr 1fr} html .cth-res div:last-child{grid-column:1/-1} html .cth-fila{grid-template-columns:auto 1fr} html .cth-monto{grid-column:1/-1;text-align:left;display:flex;align-items:baseline;gap:8px} html .cth-monto button{margin-left:auto} }
 </style>
 </head>
 <body>
@@ -5150,6 +5184,7 @@ function ccAbrirModal(titulo, html){
 }
 function ccCerrarModal(){
   document.getElementById('modal-cc').classList.add('modal-hidden');
+  document.getElementById('modal-cc').classList.remove('cth-modal');
   document.getElementById('cc-modal-cuerpo').innerHTML = '';
   _ccAj = null;
 }
@@ -6274,6 +6309,55 @@ function mcActividadContacto(c){
 }
 function mcIniciales(nombre){ const p = String(nombre||'').trim().split(/\s+/).filter(Boolean); return ((p[0]||'?')[0] + (p.length > 1 ? p[p.length-1][0] : '')).toUpperCase(); }
 function mcTonoNombre(nombre){ let h = 0; for(const ch of String(nombre||'')) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; }
+// Historial de un contacto: todo lo que te ha vendido y todo lo que te ha comprado
+function ctMovimientos(c){
+  const n = mcSinTildes(c.nombre), cc = String(c.cc||'').replace(/\D/g,'');
+  const es = (nom, ced) => (n && mcSinTildes(nom) === n) || (cc && String(ced||'').replace(/\D/g,'') === cc);
+  const m = [];
+  // Te vendió: los que siguen en inventario y los que ya vendiste
+  [...motos.map(x=>({x, tipo:'moto'})), ...carros.map(x=>({x, tipo:'carro'}))].filter(o=>es(o.x.vendedorNombre, o.x.vendedorCC)).forEach(o=>{
+    const g = (o.x.gastos||[]).reduce((a,y)=>a + ccNum(y.monto), 0);
+    m.push({rol:'vende', fecha:o.x.fechaCompra || '', nombre:o.x.nombre, modelo:o.x.modelo, placa:o.x.placa, monto:ccNum(o.x.precioCompra), estado:'inv', dias:diasEnInventario(o.x.fechaCompra), invertido:ccNum(o.x.precioCompra) + g, ir:`invVer('${o.tipo}','${o.x.id}')`});
+  });
+  ventas.filter(v=>es(v.vendedorNombre, v.vendedorCC)).forEach(v=>{
+    m.push({rol:'vende', fecha:v.fechaCompra || v.fecha || '', nombre:v.motoNombre, modelo:v.motoModelo, placa:v.motoPlaca, monto:ccNum(v.inversionCompra), estado:'vendida', vendidaEl:v.fecha, gan:mcGanVenta(v), ir:`ccIr('${v.id}')`});
+  });
+  // Te compró
+  ventas.filter(v=>es(v.comprador, v.compradorCC)).forEach(v=>{
+    m.push({rol:'compra', fecha:v.fecha || '', nombre:v.motoNombre, modelo:v.motoModelo, placa:v.motoPlaca, monto:ccNum(v.precioVenta), gan:mcGanVenta(v), forma:v.formaPago, ir:`ccIr('${v.id}')`});
+  });
+  return m.sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
+}
+function ctHistorial(id){
+  const c = contactos.find(x=>x.id === id); if(!c) return;
+  const m = ctMovimientos(c), vende = m.filter(x=>x.rol === 'vende'), compra = m.filter(x=>x.rol === 'compra');
+  const ganancia = compra.reduce((a,x)=>a + x.gan, 0) + vende.filter(x=>x.estado === 'vendida').reduce((a,x)=>a + x.gan, 0);
+  const fechas = m.map(x=>x.fecha).filter(Boolean).sort();
+  const fila = x=>`<div class="cth-fila ${x.rol}">
+    <div class="cth-fecha"><b>${x.fecha ? new Date(x.fecha+'T00:00:00').getDate() : '—'}</b><span>${x.fecha ? MESES[new Date(x.fecha+'T00:00:00').getMonth()].slice(0,3) + ' ' + String(x.fecha).slice(2,4) : ''}</span></div>
+    <div class="cth-info">
+      <span class="cth-rol">${x.rol === 'vende' ? 'Te vendió' : 'Te compró'}</span>
+      <b>${x.placa ? `<span class="cc-placa">${ccEsc(String(x.placa).toUpperCase())}</span>` : ''}${ccEsc(x.nombre||'Vehículo')}${x.modelo ? ` <em>${ccEsc(x.modelo)}</em>` : ''}</b>
+      <small>${x.rol === 'vende'
+        ? (x.estado === 'inv' ? `En tu inventario · ${x.dias == null ? 'sin fecha' : x.dias + ' día' + (x.dias!==1?'s':'')}` : `La vendiste el ${mcFechaCorta(x.vendidaEl)} · te dejó <b class="${x.gan >= 0 ? 'pos' : 'neg'}">${x.gan >= 0 ? '+' : ''}${fmt(x.gan)}</b>`)
+        : `${x.forma ? (x.forma === 'financiado' ? 'Financiada' : 'De contado') + ' · ' : ''}te dejó <b class="${x.gan >= 0 ? 'pos' : 'neg'}">${x.gan >= 0 ? '+' : ''}${fmt(x.gan)}</b>`}</small>
+    </div>
+    <div class="cth-monto"><small>${x.rol === 'vende' ? 'Se la compraste en' : 'Te la compró en'}</small><b>${fmt(x.monto)}</b><button onclick="ccCerrarModal();${x.ir}">Ver ${mcIco('flecha',12)}</button></div>
+  </div>`;
+  const h = mcTonoNombre(c.nombre);
+  ccAbrirModal(`Historial de ${c.nombre}`, `
+    <div class="cth-cab"><div class="ct-av" style="background:linear-gradient(135deg,hsl(${h},72%,58%),hsl(${(h+50)%360},70%,42%))">${ccEsc(mcIniciales(c.nombre))}</div>
+      <div><b>${ccEsc(c.nombre)}</b><span>${c.cc ? 'CC ' + ccEsc(c.cc) : 'Sin cédula'}${c.tel ? ' · ' + ccEsc(c.tel) : ''}</span>
+      <span>${fechas.length ? `Primer negocio el ${mcFechaCorta(fechas[0])}${fechas.length > 1 ? ` · el último el ${mcFechaCorta(fechas[fechas.length-1])}` : ''}` : 'Sin movimientos todavía'}</span></div></div>
+    <div class="cth-res">
+      <div><small>Te ha vendido</small><b>${vende.length}</b><span>${fmt(vende.reduce((a,x)=>a + x.monto, 0))}</span></div>
+      <div><small>Te ha comprado</small><b>${compra.length}</b><span>${fmt(compra.reduce((a,x)=>a + x.monto, 0))}</span></div>
+      <div><small>Ganancia que te dejó</small><b class="${ganancia >= 0 ? 'pos' : 'neg'}">${ganancia >= 0 ? '+' : ''}${fmt(ganancia)}</b><span>en ventas cerradas</span></div>
+    </div>
+    ${m.length ? `<div class="cth-lista">${m.map(fila).join('')}</div>` : `<div class="cth-vacio">${mcIco('historia',28)}<b>Todavía no hay movimientos con ${ccEsc(c.nombre)}</b><span>Cuando registres una compra o una venta con su nombre o su cédula, aparece aquí.</span></div>`}
+  `);
+  const box = document.getElementById('modal-cc'); if(box) box.classList.add('cth-modal');
+}
 function renderContactos(){
   const q = mcSinTildes(document.getElementById('contacto-buscar')?.value || '');
   const cont = document.getElementById('lista-contactos'); if(!cont) return;
@@ -6303,6 +6387,7 @@ function renderContactos(){
       ${a.nombres.length ? `<div class="ct-veh">${a.nombres.slice(0,3).map(n=>`<span>${ccEsc(n)}</span>`).join('')}${a.nombres.length > 3 ? `<span>+${a.nombres.length - 3}</span>` : ''}</div>` : ''}
       ${c.nota ? `<div class="ct-nota">${ccEsc(c.nota)}</div>` : ''}
       <div class="ct-acc">
+        <button class="ct-btn hist" onclick="ctHistorial('${c.id}')">${mcIco('historia',15)}Historial${a.n ? ` (${a.n})` : ''}</button>
         ${tel ? `<a class="ct-btn wa" href="https://wa.me/${tel.length === 10 ? '57' + tel : tel}" target="_blank" rel="noopener">${mcIco('chat',15)}WhatsApp</a><a class="ct-btn" href="tel:${tel}">${mcIco('telefono',15)}Llamar</a>` : `<span class="ct-sin">Sin teléfono</span>`}
       </div>
     </div>`; }).join('');
