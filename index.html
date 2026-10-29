@@ -4097,10 +4097,7 @@ const MC_NOTAS = {
 function mcSonido(tipo){
   if(!mcSonidosActivos()) return;
   const notas = MC_NOTAS[tipo] || MC_NOTAS.guardar;
-  const ctx = mcAudioAviso();
-  if(!ctx) return;
-  const tocar = ()=>{
-    const t0 = ctx.currentTime + 0.01;
+  mcAudioTocar((ctx, t0)=>{
     notas.forEach(([f,d,dur])=>{
       const o = ctx.createOscillator(), g = ctx.createGain();
       o.type = tipo==='foto' ? 'square' : 'sine';
@@ -4112,9 +4109,7 @@ function mcSonido(tipo){
       o.connect(g); g.connect(ctx.destination);
       o.start(t0+d); o.stop(t0+d+dur+0.02);
     });
-  };
-  // Safari puede pausar el audio (por ejemplo, tras una ventana): se reanuda y suena
-  if(ctx.state === 'running') tocar(); else ctx.resume().then(tocar).catch(()=>{});
+  }, 0.9);
 }
 function mcActualizarBotonSonidos(){
   const b = document.getElementById('btn-sonidos');
@@ -4126,7 +4121,7 @@ function mcAlternarSonidos(){
   mcActualizarBotonSonidos();
   if(mcSonidosActivos()) mcSonido('confirmar');
 }
-function mcProbarSonido(t){ const antes = mcSonidosActivos(); if(!antes){ toast('Los sonidos están desactivados','err'); return; } mcSonido(t); }
+function mcProbarSonido(t){ const antes = mcSonidosActivos(); if(!antes){ toast('Los sonidos están desactivados','err'); return; } mcSonido(t); setTimeout(()=>{ if(typeof ajEstadoAudio === 'function') ajEstadoAudio(); }, 600); }
 
 // ── NOTIFICACIONES EN PANTALLA ───────────────────────────────────────────────
 // Tarjeta que aparece arriba con ícono, título, detalle y (opcional) botones,
@@ -8860,11 +8855,50 @@ async function mcEnviarATraspasosNube(traspaso){
 // ── SONIDOS DE CELEBRACIÓN ────────────────────────────────────────────────────
 // Todos los sonidos grandes usan el mismo parlante que ya quedó desbloqueado con
 // el primer toque (Safari bloquea los que se crean después de esperar la nube).
-function mcAudioTocar(fn){
-  if(typeof mcSonidosActivos === 'function' && !mcSonidosActivos()) return;
-  const ac = mcAudioAviso(); if(!ac) return;
-  const ir = ()=>{ try { fn(ac, ac.currentTime + .02); } catch(e){} };
-  if(ac.state === 'running') ir(); else ac.resume().then(ir).catch(()=>{});
+// Dos caminos para que el sonido salga siempre:
+//  1) en vivo con Web Audio, si el motor está despierto (la forma normal);
+//  2) si Safari lo tiene en pausa (o es un iPhone, donde el modo silencio apaga
+//     Web Audio), el mismo sonido se "graba" en un instante sin necesitar toque
+//     (OfflineAudioContext) y se reproduce como un audio normal (<audio>), que
+//     queda desbloqueado con el primer toque y suena aunque el iPhone esté en silencio.
+const MC_ES_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+const MC_WAV_SILENCIO = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+let _mcAudioEl = null;
+function mcAudioEl(){
+  if(!_mcAudioEl){ _mcAudioEl = new Audio(); _mcAudioEl.preload = 'auto'; _mcAudioEl.setAttribute('playsinline', ''); _mcAudioEl.setAttribute('webkit-playsinline', ''); }
+  return _mcAudioEl;
+}
+function mcWav(buf){
+  const d = buf.getChannelData(0), n = d.length, sr = buf.sampleRate, ab = new ArrayBuffer(44 + n * 2), v = new DataView(ab);
+  const txt = (o, t)=>{ for(let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  txt(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); txt(8, 'WAVE'); txt(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); txt(36, 'data'); v.setUint32(40, n * 2, true);
+  for(let i = 0; i < n; i++){ const x = Math.max(-1, Math.min(1, d[i] * 1.6)); v.setInt16(44 + i * 2, x < 0 ? x * 0x8000 : x * 0x7fff, true); }
+  return ab;
+}
+let _mcUltimoSonido = '';
+async function mcTocarGrabado(fn, dur){
+  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext; if(!OAC) return false;
+  try {
+    const sr = 44100, oac = new OAC(1, Math.ceil(sr * dur), sr);
+    fn(oac, 0.02);
+    const buf = await new Promise((ok, mal)=>{ oac.oncomplete = e=>ok(e.renderedBuffer); const r = oac.startRendering(); if(r && r.then) r.then(ok, mal); });
+    const url = URL.createObjectURL(new Blob([mcWav(buf)], {type:'audio/wav'})), el = mcAudioEl();
+    el.src = url; el.currentTime = 0;
+    await el.play();
+    _mcUltimoSonido = 'grabado';
+    setTimeout(()=>URL.revokeObjectURL(url), (dur + 3) * 1000);
+    return true;
+  } catch(e){ _mcUltimoSonido = 'falló: ' + (e && e.name || e); return false; }
+}
+function mcAudioTocar(fn, dur, siempre){
+  if(!siempre && typeof mcSonidosActivos === 'function' && !mcSonidosActivos()) return;
+  dur = dur || 2.6;
+  const ac = mcAudioAviso();
+  const vivo = ()=>{ try { fn(ac, ac.currentTime + .02); _mcUltimoSonido = 'en vivo'; } catch(e){} };
+  if(ac && ac.state === 'running' && !(MC_ES_IOS && _mcAudioEl && _mcAudioEl._ok)){ vivo(); return; }
+  if(ac && ac.state !== 'running') ac.resume().catch(()=>{});
+  mcTocarGrabado(fn, dur).then(ok=>{ if(!ok && ac && ac.state === 'running') vivo(); });
 }
 function mcNota(ac, f, t, d, tipo, vol){
   const o = ac.createOscillator(), g = ac.createGain(); o.type = tipo||'triangle'; o.frequency.value = f; o.connect(g); g.connect(ac.destination);
@@ -9390,7 +9424,7 @@ function mcSonidoGrandesLigas(){
     [392,523.3,659.3,784,1046.5,1318.5].forEach(f=>mcNota(ac, f, t1+1.12, 2.4, 'triangle', .055));
     // Lluvia de brillo
     for(let i = 0; i < 12; i++) mcNota(ac, [2093,2349,2637,3136,3520,4186][i%6] * (i > 5 ? 1.5 : 1), t1 + 1.3 + i*.11, .6, 'sine', .035);
-  });
+  }, 5);
 }
 // La ceremonia: se ve una vez al completar la temporada, y se puede volver a abrir
 function lgAbrirFinal(){
@@ -9699,7 +9733,8 @@ function ajEstadoAudio(){
   const el = document.getElementById('aj-audio-estado'); if(!el) return;
   const act = mcSonidosActivos(), ctx = _mcAudioAviso;
   const listo = ctx && ctx.state === 'running';
-  el.innerHTML = !act ? `<span class="aj-led off"></span>Apagados` : listo ? `<span class="aj-led ok"></span>Audio listo` : `<span class="aj-led warn"></span>En pausa · se activa al tocar la pantalla <button class="btn btn-ghost btn-sm" onclick="mcDesbloquearAudio();setTimeout(ajEstadoAudio,150);mcSonido('confirmar')">Activar ahora</button>`;
+  const alt = _mcAudioEl && _mcAudioEl._ok;
+  el.innerHTML = !act ? `<span class="aj-led off"></span>Apagados` : (listo || alt) ? `<span class="aj-led ok"></span>Audio listo${_mcUltimoSonido ? ` · último sonido: ${_mcUltimoSonido}` : ''}` : `<span class="aj-led warn"></span>En pausa · se activa al tocar la pantalla <button class="btn btn-ghost btn-sm" onclick="mcDesbloquearAudio();setTimeout(ajEstadoAudio,300);mcSonido('confirmar')">Activar ahora</button>`;
 }
 function ajProbarVenta(){ if(!mcSonidosActivos()){ toast('Los sonidos están desactivados','err'); return; } celSonido(CEL_RANGOS[2], false); }
 function ajProbarLogro(){ if(!mcSonidosActivos()){ toast('Los sonidos están desactivados','err'); return; } mcSonidoLogro(2); }
@@ -10216,9 +10251,10 @@ function mcAudioAviso(){
 // CADA toque (no solo con el primero) y, en iOS, con un sonido mudo dentro del
 // toque. Además el audio se marca como "reproducción" para que el interruptor de
 // silencio del iPhone no lo apague.
-try { if(navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
+try { if(navigator.audioSession && /iPhone|iPad|iPod/.test(navigator.userAgent)) navigator.audioSession.type = 'playback'; } catch(e){}
 function mcDesbloquearAudio(){
   if(typeof mcSonidosActivos === 'function' && !mcSonidosActivos()) return;
+  try { const el = mcAudioEl(); if(!el._ok && !el._probando){ el._probando = true; el.src = MC_WAV_SILENCIO; el.play().then(()=>{ el._ok = true; }).catch(()=>{}).finally(()=>{ el._probando = false; }); } } catch(e){}
   const ctx = mcAudioAviso(); if(!ctx || ctx.state === 'running' && ctx._mcListo) return;
   try {
     const b = ctx.createBuffer(1, 1, 22050), src = ctx.createBufferSource();
@@ -10230,10 +10266,7 @@ function mcDesbloquearAudio(){
 ['pointerdown','touchend','keydown','click'].forEach(ev => document.addEventListener(ev, mcDesbloquearAudio, {passive:true, capture:true}));
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'visible' && _mcAudioAviso && _mcAudioAviso.state !== 'running'){ _mcAudioAviso._mcListo = false; _mcAudioAviso.resume().catch(()=>{}); } });
 function mcSonarAviso(){
-  const ctx = mcAudioAviso();
-  if(!ctx) return;
-  const tocar = ()=>{
-    const t0 = ctx.currentTime + 0.01;
+  mcAudioTocar((ctx, t0)=>{
     [[880,0,.2],[1109,.14,.2],[1319,.28,.5],[880,.95,.2],[1109,1.09,.2],[1319,1.23,.65]].forEach(([f,d,dur])=>{
       const o = ctx.createOscillator(), g = ctx.createGain();
       o.type = 'triangle'; o.frequency.setValueAtTime(f, t0+d);
@@ -10243,9 +10276,7 @@ function mcSonarAviso(){
       o.connect(g); g.connect(ctx.destination);
       o.start(t0+d); o.stop(t0+d+dur+0.02);
     });
-  };
-  if(ctx.state === 'running') tocar();
-  else { const t = Date.now(); ctx.resume().then(()=>{ if(Date.now()-t < 500 && mcAvisoAbierto()) tocar(); }).catch(()=>{}); }
+  }, 2, true);
 }
 
 mcActualizarBotonSonidos();
