@@ -2439,6 +2439,66 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .av-int .av-pap-cab{flex-wrap:wrap}
   html .av-int .av-ir{margin-left:auto}
 }
+
+.av-match{--a:#00d68f}
+.av-match .av-ico{animation:inLatido 2.4s ease-in-out infinite}
+@keyframes inLatido{0%,100%{box-shadow:0 0 0 0 rgba(0,214,143,.45)}50%{box-shadow:0 0 0 8px rgba(0,214,143,0)}}
+@media (prefers-reduced-motion:reduce){.av-match .av-ico{animation:none}}
+.in-match-fila .av-pap-veh span{margin-top:3px}
+.in-busca{color:#e6e6f5!important;font-style:normal}
+.in-entro{display:flex!important;align-items:center;gap:6px;flex-wrap:wrap;color:#5be3b0!important}
+.in-entro b{color:#fff;font-size:12.5px}
+.in-entro svg{flex:none}
+.in-ofrecida{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#5eead4;padding:0 6px}
+.in-si{color:#2ee6a6!important;border-color:rgba(0,214,143,.35)!important;background:rgba(0,214,143,.1)!important}
+.in-no{color:#9a9ab8!important}
+.in-hay{color:#2ee6a6;font-weight:700}
+.in-similar{flex:none;min-height:30px!important;font-size:12px!important}
+.in-ingreso{display:flex;gap:14px;align-items:center;padding:14px;margin-bottom:12px;border-radius:16px;background:linear-gradient(135deg,rgba(0,214,143,.16),rgba(0,214,143,.03));border:1px solid rgba(0,214,143,.35)}
+.in-ingreso>i{width:52px;height:52px;flex:none;display:grid;place-items:center;border-radius:15px;color:#fff;background:linear-gradient(135deg,#00d68f,#0ea372);box-shadow:0 10px 24px -10px rgba(0,214,143,.8)}
+.in-ingreso b{display:block;font-size:15.5px;color:#fff}
+.in-ingreso span{display:block;font-size:13px;color:#a9a9c2;margin-top:3px}
+.in-sub{font-size:11.5px;font-weight:700;color:#8a8aa8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.in-mini{font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;margin-left:4px}
+.in-mini.t-caliente{color:#ff8a5c;background:rgba(255,107,74,.13)}.in-mini.t-tibio{color:#f5c451;background:rgba(245,196,81,.12)}.in-mini.t-frio{color:#7cc4ff;background:rgba(94,180,255,.12)}
+.vc-chip.in-chip{display:inline-flex;align-items:center;gap:4px;border:0;cursor:pointer;color:#c4b5fd;background:rgba(167,139,250,.15);font-family:'Inter',sans-serif}
+.vc-chip.in-chip.cal{color:#ff8a5c;background:rgba(255,107,74,.14)}
+.vc-chip.in-chip.busca{color:#2ee6a6;background:rgba(0,214,143,.14)}
+.in-venta{margin:-2px 0 12px;padding:.65rem .85rem;border-radius:12px;border:1px solid rgba(167,139,250,.4);background:rgba(167,139,250,.07)}
+.in-venta[hidden]{display:none}
+.in-venta-tit{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#c4b5fd;font-weight:600;margin-bottom:8px}
+.in-venta-lista{display:flex;gap:6px;flex-wrap:wrap}
+.in-venta-lista button{display:flex;flex-direction:column;align-items:flex-start;padding:7px 11px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:var(--bg2);color:#fff;cursor:pointer;font:600 13px 'Inter',sans-serif}
+.in-venta-lista button:hover{border-color:rgba(167,139,250,.6)}
+.in-venta-lista small{font-size:11px;color:#8a8aa8;font-weight:500}
+.in-cifras{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.in-cif{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:18px;background:var(--bg2);border:1px solid rgba(255,255,255,.07)}
+.in-cif>small{font-size:11.5px;font-weight:700;color:#8a8aa8;text-transform:uppercase;letter-spacing:.06em}
+.in-cif>b{font:700 30px 'Space Grotesk',sans-serif;color:#fff}
+.in-cif>span{font-size:12px;color:#8a8aa8}
+.in-cif.alerta>b{color:#f5c451}
+.in-cif.ancho{grid-column:span 2}
+.in-barra{display:grid;grid-template-columns:minmax(90px,38%) 1fr auto;align-items:center;gap:10px;font-size:12.5px;color:#d6d6ea}
+.in-barra>span{display:flex;align-items:center;gap:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.in-barra>i{height:8px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+.in-barra>i u{display:block;height:100%;border-radius:99px}
+.in-barra>b{font-variant-numeric:tabular-nums;color:#fff;min-width:28px;text-align:right}
+.in-pt{width:8px;height:8px;border-radius:50%;display:inline-block}
+.in-pt.t-caliente{background:#ff6b4a}.in-pt.t-tibio{background:#f5c451}.in-pt.t-frio{background:#5eb4ff}
+.in-pista{margin-top:4px;font-size:11.5px!important;color:#7a7a98!important}
+.in-vacio-c{font-size:12.5px;color:#7a7a98}
+#in-match:empty{display:none}
+.ct-buscar[hidden]{display:none}
+@media (max-width:1100px){.in-cifras{grid-template-columns:1fr 1fr}}
+@media (max-width:760px){
+  html .in-cifras{grid-template-columns:1fr 1fr}
+  html .in-cif.ancho{grid-column:1/-1}
+  html .in-cif>b{font-size:24px}
+  html .in-match-fila .av-pap-btns{width:100%}
+  html .in-match-fila .av-pap-btns .ct-btn{flex:1 1 auto;justify-content:center;white-space:nowrap;padding:0 9px;font-size:12px}
+  html .in-entro{gap:4px}
+  html #in-seg button{padding:0 8px}
+}
 </style>
 </head>
 <body>
@@ -2498,6 +2558,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
     <div class="ct-buscar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg><input type="text" id="in-buscar" placeholder="Buscar por cliente, vehículo o teléfono…" oninput="renderInteresados()"></div>
     <button class="btn btn-primary" onclick="intAbrir()">+ Nuevo interesado</button>
   </div>
+  <div id="in-match"></div>
   <div id="in-lista"></div>
 </div>
 
@@ -2809,6 +2870,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
           <div class="form-section-title">El vehículo y el precio</div>
           <div class="form-group" style="margin-bottom:12px"><label class="form-label" id="lbl-vta-tipo">Vehículo <span>*</span></label><select id="vta-moto" onchange="calcularVenta()"><option value="">Seleccionar vehículo…</option></select></div>
           <div class="sep-aviso" id="vta-sep-aviso" hidden></div>
+          <div class="in-venta" id="vta-int-aviso" hidden></div>
           <input type="hidden" id="vta-anticipo">
           <div class="form-grid">
             <div class="form-group"><label class="form-label">Precio de venta ($) <span>*</span></label><input type="number" id="vta-precio" placeholder="0" min="0" oninput="calcularVenta()"></div>
@@ -6560,7 +6622,7 @@ function intVehNombre(x){
 const intPendiente = x => intActivo(x) && x.seguimiento && intDias(x.seguimiento) <= 0;
 function intPendientes(){ return intLista().filter(intPendiente).sort((a,b)=>String(a.seguimiento).localeCompare(String(b.seguimiento))); }
 function intContador(){
-  const n = intPendientes().length;
+  const n = intPendientes().length + intCoincidencias().filter(m=>!m.ofrecida).length;
   ['nav-int-n','mc-mas-int-n'].forEach(id=>{ const el = document.getElementById(id); if(el) el.textContent = n || ''; });
 }
 function intTel(x){ const t = String(x.tel||'').replace(/\D/g,''); return t.length >= 7 ? t : ''; }
@@ -6591,8 +6653,11 @@ function renderInteresados(){
   const r = document.getElementById('in-resumen');
   if(r) r.innerHTML = `<div><b>${act.length}</b><small>negocios activos</small></div><div class="cal"><b>${act.filter(x=>x.temp === 'caliente').length}</b><small>calientes</small></div><div class="${pend.length ? 'pend' : ''}"><b>${pend.length}</b><small>para contactar hoy</small></div><div><b>${vendMes}</b><small>cerrados este mes</small></div>`;
   const seg = document.getElementById('in-seg');
-  if(seg) seg.innerHTML = [['activos','Activos',act.length],['hoy','Para hoy',pend.length],['cerrados','Cerrados',cerr.length]]
-    .map(([k,n,c])=>`<button class="${_intVista === k ? 'activo' : ''}" onclick="intVista('${k}')">${n}<i>${c}</i></button>`).join('');
+  if(seg) seg.innerHTML = [['activos','Activos',act.length],['hoy','Para hoy',pend.length],['cerrados','Cerrados',cerr.length],['cifras','Cifras','']]
+    .map(([k,n,c])=>`<button class="${_intVista === k ? 'activo' : ''}" onclick="intVista('${k}')">${n}${c !== '' ? `<i>${c}</i>` : ''}</button>`).join('');
+  const bus = document.querySelector('#page-interesados .ct-buscar'); if(bus) bus.hidden = _intVista === 'cifras';
+  const mt = document.getElementById('in-match'); if(mt) mt.innerHTML = _intVista === 'cerrados' ? '' : intPanelCoincidencias(intCoincidencias());
+  if(_intVista === 'cifras'){ cont.innerHTML = intCifras(); return; }
   const q = mcSinTildes(document.getElementById('in-buscar')?.value || '');
   let lista = _intVista === 'hoy' ? pend : _intVista === 'cerrados' ? cerr : act;
   if(q) lista = lista.filter(x=>mcSinTildes(x.nombre).includes(q) || mcSinTildes(intVehNombre(x)).includes(q) || String(x.tel||'').includes(q));
@@ -6612,9 +6677,13 @@ function renderInteresados(){
   }
   cont.innerHTML = lista.map(intTarjeta).join('');
 }
+function intVendidaTxt(x){
+  const vta = ventas.find(o=>o.vehiculoId === x.vehId);
+  return vta ? `Se vendió el ${mcFechaCorta(vta.fecha)}${vta.comprador ? ' a ' + ccEsc(vta.comprador) : ''}` : 'Ya no está en tu inventario';
+}
 function intTarjeta(x){
   const h = mcTonoNombre(x.nombre), tel = intTel(x), v = intVeh(x), vn = intVehNombre(x), s = intSegTxt(x), cerrado = !intActivo(x);
-  const vehLinea = vn ? `<div class="in-veh">${mcIco(x.vehTipo === 'carro' ? 'carro' : 'moto', 15)}<span><b>${ccEsc(vn)}</b>${v && v.placa ? ` <span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span>` : ''}<small>${v ? (v.separacion ? 'En tu inventario · separada' : 'En tu inventario') : x.vehId ? 'Ya no está en tu inventario' : 'Lo está buscando'}</small></span>${v ? `<button class="in-ver" onclick="invVer('${x.vehTipo}','${x.vehId}')" title="Ver el vehículo">${mcIco('flecha',13)}</button>` : ''}</div>`
+  const vehLinea = vn ? `<div class="in-veh">${mcIco(x.vehTipo === 'carro' ? 'carro' : 'moto', 15)}<span><b>${ccEsc(vn)}</b>${v && v.placa ? ` <span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span>` : ''}<small>${v ? (v.separacion ? 'En tu inventario · separada' : 'En tu inventario') : x.vehId ? intVendidaTxt(x) : (intActivo(x) ? (intCoincidencias().some(m=>m.x === x) ? '<span class="in-hay">Ya te entró uno que coincide</span>' : 'Lo está buscando · te aviso cuando entre') : 'Lo estaba buscando')}</small></span>${v ? `<button class="in-ver" onclick="invVer('${x.vehTipo}','${x.vehId}')" title="Ver el vehículo">${mcIco('flecha',13)}</button>` : x.vehId && intActivo(x) ? `<button class="ct-btn in-similar" onclick="intSimilar('${x.id}')">Buscar similar</button>` : ''}</div>`
     : `<div class="in-veh nada">${mcIco('moto', 15)}<span><b>Sin vehículo definido</b><small>Edita para anotar qué busca</small></span></div>`;
   const datos = [x.presupuesto ? `<span>${mcIco('billete',13)}${fmt(x.presupuesto)}</span>` : '', x.pago ? `<span>${INT_PAGO[x.pago] || ''}</span>` : '', `<span class="est e-${x.estado||'nuevo'}">${INT_ESTADOS[x.estado||'nuevo']}</span>`].filter(Boolean).join('');
   const ult = x.ultimoContacto ? `Último contacto ${intHace(x.ultimoContacto)}` : `Anotado ${intHace(x.creado)}`;
@@ -6642,10 +6711,10 @@ function intTarjeta(x){
 }
 
 // Nuevo / editar
-function intAbrir(id){
+function intAbrir(id, pre){
   const x = id ? intLista().find(i=>i.id === id) : null; if(id && !x) return;
   const e = x || {temp:'tibio', seguimiento: hoyLocal(new Date(Date.now() + 86400000))};
-  const items = invItems(), selVal = e.vehId ? e.vehTipo + ':' + e.vehId : (e.vehTexto ? 'otro' : '');
+  const items = invItems(), selVal = e.vehId ? e.vehTipo + ':' + e.vehId : (e.vehTexto ? 'otro' : (pre || ''));
   const opt = (tipo, rot) => { const its = items.filter(i=>i.tipo === tipo); return its.length ? `<optgroup label="${rot}">${its.map(i=>`<option value="${tipo}:${i.v.id}"${selVal === tipo + ':' + i.v.id ? ' selected' : ''}>${ccEsc(i.v.nombre||'')}${i.v.modelo ? ' ' + ccEsc(i.v.modelo) : ''}${i.v.placa ? ' · ' + ccEsc(String(i.v.placa).toUpperCase()) : ''}</option>`).join('')}</optgroup>` : ''; };
   const perdidoSel = e.vehId && !intVeh(e) ? `<option value="${e.vehTipo}:${e.vehId}" selected>${ccEsc(e.vehNombre || 'Vehículo')} (ya no está)</option>` : '';
   const compradores = contactos.filter(c=>c.tipo === 'comprador');
@@ -6703,6 +6772,7 @@ function intGuardar(id){
     seguimiento: val('fseg'), estado: val('estado') || 'nuevo', nota: val('nota'), actualizado: new Date().toISOString()};
   if(x){
     const antes = x.estado;
+    if(x.vehId !== data.vehId) delete x.vendidoAOtro;
     Object.assign(x, data);
     if(!intActivo(x) && antes !== x.estado) x.cerradoEl = hoyLocal();
     if(intActivo(x)){ delete x.cerradoEl; delete x.motivo; }
@@ -6715,9 +6785,12 @@ function intGuardar(id){
     }
     mcNotificar({tipo:'agregar', titulo:'Interesado agregado', texto: data.seguimiento ? `${nombre} · seguimiento ${intSegTxt({seguimiento:data.seguimiento}).corto.toLowerCase()}` : nombre});
   }
-  saveCfg(); ccCerrarModal(); intRefrescar();
+  _intCoinCache = null; saveCfg(); ccCerrarModal(); intRefrescar();
+  if(!x && data.vehTexto){ const n = intCoincidencias().filter(m=>m.x.id === lista[0].id).length;
+    if(n) setTimeout(()=>mcNotificar({tipo:'confirmar', titulo:'Ya tienes lo que busca', texto:`${n === 1 ? 'Hay 1 vehículo' : 'Hay ' + n + ' vehículos'} en tu inventario que coinciden con lo que busca ${nombre}`}), 1600); }
 }
 function intRefrescar(){
+  _intCoinCache = null;
   intContador();
   const activa = (document.querySelector('.page.active')||{}).id;
   if(activa === 'page-interesados') renderInteresados();
@@ -6820,13 +6893,24 @@ function intSeparar(id){
   setTimeout(()=>{ const c = document.getElementById('sep-cliente'), t = document.getElementById('sep-cel'); if(c && !c.value) c.value = x.nombre; if(t && !t.value) t.value = x.tel || ''; document.getElementById('sep-valor')?.focus(); }, 80);
 }
 // Aviso en el Resumen: a quién hay que escribirle hoy
+// Coincidencias que llegaron desde otro dispositivo: avisar una sola vez
+function intAvisarNuevas(co){
+  let vistas = []; try { vistas = JSON.parse(localStorage.getItem('mc_int_vistas') || '[]'); } catch(e){}
+  const claves = co.map(m=>m.x.id + '|' + m.k), nuevas = co.filter(m=>!vistas.includes(m.x.id + '|' + m.k));
+  try { localStorage.setItem('mc_int_vistas', JSON.stringify(claves)); } catch(e){}
+  if(!nuevas.length || !localStorage.getItem('mc_int_vistas_ok')){ try { localStorage.setItem('mc_int_vistas_ok','1'); } catch(e){} return; }
+  const m = nuevas[0];
+  mcNotificar({tipo:'confirmar', titulo:'Posible venta', texto:`${m.x.nombre} buscaba ${m.x.vehTexto} y te entró ${intNomV(m.v)}`, ms:9000});
+}
 function intAvisoResumen(){
   intContador();
   const el = document.getElementById('res-interesados'); if(!el) return;
-  const p = intPendientes();
-  if(!p.length){ el.innerHTML = ''; return; }
+  const p = intPendientes(), co = intCoincidencias();
+  intAvisarNuevas(co);
+  const match = intPanelCoincidencias(co.slice(0,3)) + (co.length > 3 ? '' : '');
+  if(!p.length){ el.innerHTML = match; return; }
   const atr = p.filter(x=>intDias(x.seguimiento) < 0).length;
-  el.innerHTML = `<div class="av-tarjeta av-int">
+  el.innerHTML = match + `<div class="av-tarjeta av-int">
     <div class="av-pap-cab"><i class="av-ico">${mcIco('embudo',20)}</i>
       <div class="av-txt"><b>Hoy tienes ${p.length === 1 ? '1 cliente' : p.length + ' clientes'} por contactar</b><span>${atr ? `<em class="mal">${atr} atrasado${atr !== 1 ? 's' : ''}</em> · ` : ''}Que no se te enfríe ningún negocio</span></div>
       <button class="av-ir" onclick="_intVista='hoy';go('interesados')">Ver todos ${mcIco('flecha',14)}</button></div>
@@ -6834,6 +6918,215 @@ function intAvisoResumen(){
       <div class="av-pap-veh"><b>${ccEsc(x.nombre)}${x.temp === 'caliente' ? ` <span class="in-mini-cal">${mcIco('fuego',11)}Caliente</span>` : ''}</b><span>${vn ? ccEsc(vn) + ' · ' : ''}<em class="${s.cls === 'mal' ? 'mal' : 'medio'}">${s.corto}</em></span></div>
       <div class="av-pap-btns">${tel ? `<a class="ct-btn wa" href="${intWaUrl(x)}" target="_blank" rel="noopener" onclick="setTimeout(()=>intSeguimiento('${x.id}'),400)">${mcIco('chat',14)}WhatsApp</a>` : ''}<button class="ct-btn" onclick="intSeguimiento('${x.id}')">${mcIco('check',14)}Listo</button></div>
     </div>`; }).join('')}${p.length > 4 ? `<button class="av-mas" style="color:#5eead4" onclick="_intVista='hoy';go('interesados')">Ver ${p.length - 4} más</button>` : ''}</div>
+  </div>`;
+}
+// ── Lo que busca cada cliente y lo que entra al inventario ───────────────────
+// Un cliente que busca algo que no tienes (por ejemplo "NMAX 2022 negra") queda
+// esperando: cuando entra a tu inventario un vehículo que coincide, el sistema
+// te avisa (al guardarlo, en el Resumen, en Interesados y en la ficha).
+const INT_GENERICAS = new Set('moto motos carro carros la el las los una un de del color modelo busca buscando que con y en para cc o a mas ano anos tipo version linea mismo misma algo similar parecida parecido'.split(' '));
+const INT_COLORES = new Set('negra negro blanca blanco roja rojo azul gris plateada plateado plata verde amarilla amarillo naranja cafe dorada dorado morada morado beige vinotinto mate'.split(' '));
+const INT_MARCAS = new Set('yamaha honda suzuki bajaj kawasaki ktm akt hero tvs royal enfield auteco victory kymco bmw ducati harley benelli cfmoto vespa piaggio sym kia mazda chevrolet renault toyota nissan ford hyundai volkswagen mitsubishi mercedes audi peugeot jeep subaru'.split(' '));
+const intEsAnio = w => /^(19|20)\d\d$/.test(w);
+function intPalabras(t){ return mcSinTildes(t).split(/[^a-z0-9]+/).filter(Boolean); }
+function intCoincide(busca, veh){
+  const q = intPalabras(busca); if(!q.length || !veh) return false;
+  const vt = intPalabras([veh.nombre, veh.modelo, veh.color, veh.cilindraje].filter(Boolean).join(' ')), junto = vt.filter(w=>!intEsAnio(w)).join('');
+  const claves = q.filter(w=>!INT_GENERICAS.has(w) && !INT_COLORES.has(w) && !intEsAnio(w));
+  const fuertes = claves.filter(w=>!INT_MARCAS.has(w)), usar = fuertes.length ? fuertes : claves;
+  if(!usar.length) return false;
+  const esta = w => vt.includes(w) || junto.includes(w) || (w.length >= 3 && vt.some(p=>p.length >= 3 && !intEsAnio(p) && (p.startsWith(w) || w.startsWith(p))));
+  if(!usar.every(esta)) return false;
+  // Si dijo la marca y el vehículo es de otra marca, no es lo que busca
+  const marcasQ = claves.filter(w=>INT_MARCAS.has(w)), marcasV = vt.filter(w=>INT_MARCAS.has(w));
+  if(marcasQ.length && marcasV.length && !marcasQ.some(m=>marcasV.includes(m))) return false;
+  // Año: sirve del mismo año o uno menos en adelante
+  const anios = q.filter(intEsAnio).map(Number), va = vt.filter(intEsAnio).map(Number);
+  if(anios.length && va.length && Math.max(...va) < Math.min(...anios) - 1) return false;
+  return true;
+}
+const intBusca = x => intActivo(x) && !x.vehId && x.vehTexto ? x.vehTexto : '';
+const intNomV = v => `${v.nombre || ''}${v.modelo ? ' ' + v.modelo : ''}`.trim();
+let _intCoinCache = null;
+function intCoincidencias(){
+  if(_intCoinCache && Date.now() - _intCoinCache.t < 400) return _intCoinCache.r;
+  const r = [], inv = invItems();
+  intLista().forEach(x=>{
+    const b = intBusca(x); if(!b) return;
+    inv.forEach(i=>{ const k = i.tipo + ':' + i.v.id; if((x.descartes||[]).includes(k)) return;
+      if(intCoincide(b, i.v)) r.push({x, tipo:i.tipo, v:i.v, k, dias:i.dias, ofrecida:(x.ofrecidos||[]).find(o=>o.k === k)}); });
+  });
+  _intCoinCache = {t: Date.now(), r};
+  return r;
+}
+function intWaOferta(x, tipo, v){
+  const t = intTel(x), nombre = String(x.nombre||'').trim().split(/\s+/)[0] || '', art = tipo === 'carro' ? 'el' : 'la';
+  const msg = `Hola ${nombre}, ¿cómo vas? Te cuento que me acaba de llegar ${art} ${intNomV(v)}${v.color ? ' ' + v.color : ''}. Me acordé que estabas buscando algo así. ¿Te gustaría ${tipo === 'carro' ? 'verlo' : 'verla'}?`;
+  return `https://wa.me/${t.length === 10 ? '57' + t : t}?text=${encodeURIComponent(msg)}`;
+}
+function intFilaCoincidencia(m){
+  const {x, tipo, v, k} = m, tel = intTel(x), d = m.dias;
+  return `<div class="av-pap-fila in-match-fila">
+    <div class="av-pap-veh"><b>${ccEsc(x.nombre)}${x.temp === 'caliente' ? ` <span class="in-mini-cal">${mcIco('fuego',11)}Caliente</span>` : ''}</b>
+      <span>Buscaba <em class="in-busca">${ccEsc(x.vehTexto)}</em>${x.presupuesto ? ` · presupuesto ${fmt(x.presupuesto)}` : ''}</span>
+      <span class="in-entro">${mcIco(tipo, 13)}Entró: ${v.placa ? `<span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span> ` : ''}<b>${ccEsc(intNomV(v))}</b>${v.color ? ' · ' + ccEsc(v.color) : ''}${d != null ? ` · ${d === 0 ? 'hoy' : 'hace ' + d + ' día' + (d !== 1 ? 's' : '')}` : ''}</span></div>
+    <div class="av-pap-btns">
+      ${m.ofrecida ? `<span class="in-ofrecida">${mcIco('check',12)}Ofrecida ${intHace(m.ofrecida.fecha)}</span>`
+        : tel ? `<a class="ct-btn wa" href="${intWaOferta(x, tipo, v)}" target="_blank" rel="noopener" onclick="intOfrecer('${x.id}','${k}')">${mcIco('chat',14)}Ofrecérsela</a>` : `<button class="ct-btn" onclick="intOfrecer('${x.id}','${k}')">${mcIco('check',14)}Ya se la ofrecí</button>`}
+      <button class="ct-btn in-si" onclick="intAsignar('${x.id}','${k}')">${mcIco('check',14)}Le interesa</button>
+      <button class="ct-btn in-no" onclick="intDescartar('${x.id}','${k}')">No le sirve</button>
+    </div>
+  </div>`;
+}
+function intPanelCoincidencias(lista){
+  if(!lista.length) return '';
+  const nCli = new Set(lista.map(m=>m.x.id)).size;
+  return `<div class="av-tarjeta av-match">
+    <div class="av-pap-cab"><i class="av-ico">${mcIco('rayo',20)}</i>
+      <div class="av-txt"><b>Posible venta: te entró lo que ${nCli === 1 ? 'buscaba un cliente' : `buscaban ${nCli} clientes`}</b><span>Ofrécesela antes de que la vendas a otro</span></div></div>
+    <div class="av-pap-lista">${lista.map(intFilaCoincidencia).join('')}</div>
+  </div>`;
+}
+function intOfrecer(id, k){
+  const x = intLista().find(i=>i.id === id); if(!x) return;
+  const [tipo, vid] = k.split(':'), v = (tipo === 'carro' ? carros : motos).find(o=>o.id === vid);
+  x.ofrecidos = [...(x.ofrecidos||[]).filter(o=>o.k !== k), {k, fecha: hoyLocal()}];
+  x.historial = [{fecha: hoyLocal(), nota: `Le ofrecí ${v ? intNomV(v) : 'un vehículo'}`}, ...(x.historial||[])].slice(0, 30);
+  x.ultimoContacto = hoyLocal();
+  const manana = hoyLocal(new Date(Date.now() + 86400000));
+  if(!x.seguimiento || x.seguimiento < manana) x.seguimiento = manana;
+  if((x.estado||'nuevo') === 'nuevo') x.estado = 'conversacion';
+  _intCoinCache = null; saveCfg();
+  setTimeout(()=>{ intRefrescar(); mcNotificar({tipo:'guardar', titulo:'Oferta registrada', texto:`Mañana le preguntas a ${x.nombre} qué le pareció`}); }, 300);
+}
+function intAsignar(id, k){
+  const x = intLista().find(i=>i.id === id); if(!x) return;
+  const [tipo, vid] = k.split(':'), v = (tipo === 'carro' ? carros : motos).find(o=>o.id === vid); if(!v) return;
+  x.buscaba = x.vehTexto; x.vehTexto = ''; x.vehTipo = tipo; x.vehId = vid; x.vehNombre = intNomV(v);
+  if((x.estado||'nuevo') === 'nuevo') x.estado = 'conversacion';
+  if(!x.seguimiento || intDias(x.seguimiento) > 0) x.seguimiento = hoyLocal();
+  if(x.temp === 'frio') x.temp = 'tibio';
+  _intCoinCache = null; saveCfg(); ccCerrarModal(); intRefrescar();
+  mcNotificar({tipo:'confirmar', titulo:`${x.nombre} quedó interesado`, texto:`En ${intNomV(v)} · ahora aparece en la ficha del vehículo`});
+}
+function intDescartar(id, k){
+  const x = intLista().find(i=>i.id === id); if(!x) return;
+  x.descartes = [...new Set([...(x.descartes||[]), k])];
+  _intCoinCache = null; saveCfg(); intRefrescar();
+  const quedan = document.querySelectorAll('#cc-modal-cuerpo .in-match-fila').length;
+  if(quedan) intAlIngresar(...k.split(':'), true);
+}
+// Al guardar un vehículo nuevo: ¿alguien lo estaba buscando?
+function intAlIngresar(tipo, id, reabrir){
+  _intCoinCache = null;
+  const lista = intCoincidencias().filter(m=>m.tipo === tipo && m.v.id === id);
+  if(!lista.length){ if(reabrir) ccCerrarModal(); return; }
+  try { const vistas = JSON.parse(localStorage.getItem('mc_int_vistas') || '[]'); localStorage.setItem('mc_int_vistas', JSON.stringify([...new Set([...vistas, ...lista.map(m=>m.x.id + '|' + m.k)])])); } catch(e){}
+  const v = lista[0].v;
+  setTimeout(()=>{
+    ccAbrirModal('Posible venta', `
+      <div class="in-ingreso"><i>${mcIco('rayo',26)}</i><div><b>${lista.length === 1 ? `${ccEsc(lista[0].x.nombre)} estaba buscando ${tipo === 'carro' ? 'un carro' : 'una moto'} así` : `${lista.length} clientes estaban buscando ${tipo === 'carro' ? 'un carro' : 'una moto'} así`}</b>
+        <span>Acaba de entrar ${ccEsc(intNomV(v))}${v.placa ? ' · ' + ccEsc(String(v.placa).toUpperCase()) : ''}. Escríbeles antes que nadie.</span></div></div>
+      <div class="av-pap-lista">${lista.map(intFilaCoincidencia).join('')}</div>
+      <div class="cc-modal-acc"><button class="btn btn-ghost" onclick="ccCerrarModal()">Después</button></div>`);
+    if(!reabrir){ try { mcSonidoBrillo(); } catch(e){} }
+  }, reabrir ? 0 : 700);
+}
+// Interesados de un vehículo (chip en la ficha)
+function intDeVeh(tipo, id){
+  const k = tipo + ':' + id;
+  return {ligados: intLista().filter(x=>intActivo(x) && x.vehId === id && (x.vehTipo || 'moto') === tipo), buscan: intCoincidencias().filter(m=>m.k === k)};
+}
+function intChipVeh(tipo, id){
+  const d = intDeVeh(tipo, id), n = d.ligados.length + d.buscan.length;
+  if(!n) return '';
+  const cal = d.ligados.some(x=>x.temp === 'caliente');
+  return `<button class="vc-chip in-chip${d.buscan.length ? ' busca' : ''}${cal ? ' cal' : ''}" onclick="intVerVeh('${tipo}','${id}')" title="Ver quién está interesado">${mcIco(d.buscan.length ? 'rayo' : 'embudo',11)}${n} interesado${n !== 1 ? 's' : ''}</button>`;
+}
+function intVerVeh(tipo, id){
+  const v = (tipo === 'carro' ? carros : motos).find(o=>o.id === id); if(!v) return;
+  const d = intDeVeh(tipo, id);
+  ccAbrirModal(`Interesados en ${intNomV(v)}`, `
+    ${d.ligados.length ? `<div class="in-sub">Ya preguntaron por ${tipo === 'carro' ? 'este carro' : 'esta moto'}</div><div class="av-pap-lista">${d.ligados.map(x=>{ const s = intSegTxt(x), tel = intTel(x); return `<div class="av-pap-fila">
+      <div class="av-pap-veh"><b>${ccEsc(x.nombre)} <span class="in-mini t-${x.temp||'tibio'}">${INT_TEMP[x.temp||'tibio']}</span></b><span>${INT_ESTADOS[x.estado||'nuevo']}${x.presupuesto ? ' · ' + fmt(x.presupuesto) : ''}${x.pago ? ' · ' + INT_PAGO[x.pago] : ''} · <em class="${s.cls === 'mal' ? 'mal' : s.cls === 'hoy' ? 'medio' : ''}">${s.corto}</em></span>${x.nota ? `<span>${ccEsc(x.nota)}</span>` : ''}</div>
+      <div class="av-pap-btns">${tel ? `<a class="ct-btn wa" href="${intWaUrl(x)}" target="_blank" rel="noopener" onclick="setTimeout(()=>intSeguimiento('${x.id}'),400)">${mcIco('chat',14)}WhatsApp</a>` : ''}<button class="ct-btn" onclick="intSeguimiento('${x.id}')">${mcIco('check',14)}Seguimiento</button></div>
+    </div>`; }).join('')}</div>` : ''}
+    ${d.buscan.length ? `<div class="in-sub" style="margin-top:${d.ligados.length ? 14 : 0}px">Estaban buscando algo así</div><div class="av-pap-lista">${d.buscan.map(intFilaCoincidencia).join('')}</div>` : ''}
+    <div class="cc-modal-acc"><button class="btn btn-ghost" onclick="ccCerrarModal()">Cerrar</button><button class="btn btn-primary" onclick="intAbrir('','${tipo}:${id}')">+ Anotar otro interesado</button></div>`);
+}
+// En el formulario de venta: quién estaba interesado, para usar sus datos
+function intFormVenta(){
+  const box = document.getElementById('vta-int-aviso'); if(!box) return;
+  const sel = document.getElementById('vta-moto')?.value || '';
+  if(!sel){ box.hidden = true; box.innerHTML = ''; return; }
+  const [tipo, id] = sel.split(':'), d = intDeVeh(tipo, id), todos = [...d.ligados, ...d.buscan.map(m=>m.x)];
+  if(!todos.length){ box.hidden = true; box.innerHTML = ''; return; }
+  box.hidden = false;
+  box.innerHTML = `<div class="in-venta-tit">${mcIco('embudo',14)}Interesados en ${tipo === 'carro' ? 'este carro' : 'esta moto'}: toca uno para usar sus datos</div>
+    <div class="in-venta-lista">${todos.map(x=>`<button type="button" onclick="intUsarEnVenta('${x.id}')"><b>${ccEsc(x.nombre)}</b><small>${x.tel ? ccEsc(x.tel) : 'Sin teléfono'} · ${INT_TEMP[x.temp||'tibio']}</small></button>`).join('')}</div>`;
+}
+function intUsarEnVenta(id){
+  const x = intLista().find(i=>i.id === id); if(!x) return;
+  const c = document.getElementById('vta-comprador'), t = document.getElementById('vta-celular');
+  if(c) c.value = x.nombre; if(t) t.value = x.tel || '';
+  const ct = contactos.find(k=>mcSinTildes(k.nombre) === mcSinTildes(x.nombre)), cc = document.getElementById('vta-cc');
+  if(ct && cc && !cc.value && ct.cc) cc.value = ct.cc;
+  toast(`Datos de ${x.nombre} listos en la venta`);
+}
+// Después de registrar una venta: el comprador queda como "vendido" y los demás
+// interesados en ese vehículo quedan para contactar hoy (ofrecerles algo similar)
+function intTrasVenta(vta){
+  if(!vta || !vta.vehiculoId) return;
+  const n = mcSinTildes(vta.comprador||''), tel = String(vta.compradorCel||'').replace(/\D/g,'');
+  const esComprador = x => (n && mcSinTildes(x.nombre) === n) || (tel.length >= 7 && intTel(x) === tel);
+  let cambio = false; const otros = [], cerrados = [];
+  intLista().filter(intActivo).forEach(x=>{
+    if(esComprador(x)){
+      x.estado = 'vendido'; x.cerradoEl = vta.fecha || hoyLocal();
+      if(!x.vehId){ x.buscaba = x.buscaba || x.vehTexto; x.vehTexto = ''; x.vehTipo = vta.tipoVehiculo || 'moto'; x.vehId = vta.vehiculoId; }
+      x.vehNombre = `${vta.motoNombre||''}${vta.motoModelo ? ' ' + vta.motoModelo : ''}`.trim();
+      cerrados.push(x); cambio = true; return;
+    }
+    if(x.vehId === vta.vehiculoId){ x.vendidoAOtro = {fecha: vta.fecha || hoyLocal(), comprador: vta.comprador || ''}; x.seguimiento = hoyLocal(); otros.push(x); cambio = true; }
+  });
+  if(!cambio) return;
+  _intCoinCache = null; saveCfg(); intContador();
+  setTimeout(()=>{
+    if(cerrados.length) mcNotificar({tipo:'confirmar', titulo:'Negocio cerrado', texto:`${cerrados[0].nombre} pasó a vendido en Interesados`});
+    if(otros.length) setTimeout(()=>mcNotificar({tipo:'guardar', titulo: otros.length === 1 ? `${otros[0].nombre} también estaba interesado` : `${otros.length} clientes más estaban interesados`,
+      texto:'Quedaron para contactar hoy: ofréceles algo similar', acciones:[{label:'Ver', fn:()=>{ _intVista = 'hoy'; go('interesados'); }}], ms:12000}), cerrados.length ? 3500 : 0);
+  }, 5000);
+}
+// El vehículo se vendió a otro: buscarle uno parecido
+function intSimilar(id){
+  const x = intLista().find(i=>i.id === id); if(!x) return;
+  x.vehTexto = x.vehNombre || x.buscaba || ''; x.vehId = ''; delete x.vendidoAOtro;
+  if(!x.seguimiento || intDias(x.seguimiento) < 0) x.seguimiento = hoyLocal();
+  _intCoinCache = null; saveCfg(); intRefrescar();
+  mcNotificar({tipo:'guardar', titulo:`Buscando para ${x.nombre}`, texto:`Te aviso cuando entre ${x.vehTexto || 'algo similar'}`});
+  setTimeout(()=>intAbrir(x.id), 200);
+}
+// Cifras de los negocios
+function intCifras(){
+  const L = intLista(), vend = L.filter(x=>x.estado === 'vendido'), perd = L.filter(x=>x.estado === 'perdido'), act = L.filter(intActivo);
+  const cerr = vend.length + perd.length, tasa = cerr ? Math.round(vend.length / cerr * 100) : null;
+  const dias = vend.map(x=>x.creado && x.cerradoEl ? lgDias(x.creado, x.cerradoEl) : null).filter(d=>d != null && d >= 0);
+  const prom = dias.length ? Math.round(dias.reduce((a,b)=>a + b, 0) / dias.length) : null;
+  const mes = hoyLocal().slice(0,7), segMes = L.reduce((a,x)=>a + (x.historial||[]).filter(h=>String(h.fecha).slice(0,7) === mes).length, 0);
+  const sinFecha = act.filter(x=>!x.seguimiento).length;
+  const motivos = {}; perd.forEach(x=>{ const m = x.motivo || 'Sin motivo'; motivos[m] = (motivos[m]||0) + 1; });
+  const pedidos = {}; L.forEach(x=>{ const t = (x.buscaba || x.vehTexto || x.vehNombre || '').trim(); if(!t) return; const cl = intPalabras(t).filter(w=>!INT_GENERICAS.has(w) && !INT_COLORES.has(w) && !intEsAnio(w)), fu = cl.filter(w=>!INT_MARCAS.has(w)); const k = (fu.length ? fu : cl).slice(0,3).join(' ').toUpperCase(); if(!k) return; pedidos[k] = (pedidos[k]||0) + 1; });
+  const porTemp = ['caliente','tibio','frio'].map(t=>{ const v = vend.filter(x=>x.temp === t).length, c = v + perd.filter(x=>x.temp === t).length; return {t, act: act.filter(x=>(x.temp||'tibio') === t).length, pct: c ? Math.round(v / c * 100) : null}; });
+  const barras = (obj, color) => { const e = Object.entries(obj).sort((a,b)=>b[1] - a[1]).slice(0,6), max = e.length ? e[0][1] : 1;
+    return e.length ? e.map(([k,n])=>`<div class="in-barra"><span>${ccEsc(k)}</span><i><u style="width:${Math.round(n / max * 100)}%;background:${color}"></u></i><b>${n}</b></div>`).join('') : '<div class="in-vacio-c">Todavía no hay datos</div>'; };
+  return `<div class="in-cifras">
+    <div class="in-cif"><small>Tasa de cierre</small><b>${tasa == null ? '—' : tasa + '%'}</b><span>${vend.length} vendido${vend.length !== 1 ? 's' : ''} de ${cerr} negocio${cerr !== 1 ? 's' : ''} cerrado${cerr !== 1 ? 's' : ''}</span></div>
+    <div class="in-cif"><small>Días para cerrar</small><b>${prom == null ? '—' : prom}</b><span>en promedio, desde que lo anotas hasta que compra</span></div>
+    <div class="in-cif"><small>Seguimientos este mes</small><b>${segMes}</b><span>mensajes y llamadas registrados</span></div>
+    <div class="in-cif${sinFecha ? ' alerta' : ''}"><small>Activos sin fecha</small><b>${sinFecha}</b><span>${sinFecha ? 'ponles fecha para que no se enfríen' : 'todos tienen próximo seguimiento'}</span></div>
+    <div class="in-cif ancho"><small>Lo que más te piden</small>${barras(pedidos, 'linear-gradient(90deg,var(--accent),var(--accent-b,#7c5cff))')}<span class="in-pista">Úsalo para saber qué comprar: es lo que tus clientes están buscando.</span></div>
+    <div class="in-cif ancho"><small>Por qué se pierden los negocios</small>${barras(motivos, 'linear-gradient(90deg,#ff6b8d,#ff8c3c)')}</div>
+    <div class="in-cif ancho"><small>Según qué tan interesados estaban</small>${porTemp.map(p=>`<div class="in-barra"><span><i class="in-pt t-${p.t}"></i>${INT_TEMP[p.t]}</span><i><u style="width:${p.pct || 0}%;background:${p.t === 'caliente' ? '#ff6b4a' : p.t === 'tibio' ? '#f5c451' : '#5eb4ff'}"></u></i><b>${p.pct == null ? '—' : p.pct + '%'}</b></div>`).join('')}<span class="in-pista">Porcentaje que terminó en venta · activos ahora: ${porTemp.map(p=>`${p.act} ${INT_TEMP[p.t].toLowerCase()}${p.act !== 1 ? 's' : ''}`).join(', ')}</span></div>
   </div>`;
 }
 mcAplicarIconos();
@@ -7242,7 +7535,7 @@ function vcFicha(tipo, v){
         <div class="vc-det">${detalle || 'Sin modelo'}</div>
         <div class="vc-chips">
           ${v.placa ? `<span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span>` : '<span class="vc-chip">Sin placa</span>'}
-          ${v.separacion ? '<span class="vc-chip sep">Separada</span>' : ''}${v.retoma ? '<span class="vc-chip ret">Retoma</span>' : ''}
+          ${v.separacion ? '<span class="vc-chip sep">Separada</span>' : ''}${v.retoma ? '<span class="vc-chip ret">Retoma</span>' : ''}${typeof intChipVeh === 'function' ? intChipVeh(p, v.id) : ''}
         </div>
       </div>
       <div class="vc-dias" title="${dias == null ? 'Sin fecha de compra' : dias + ' días en inventario'}"><b>${dias == null ? '—' : dias}</b><span>${dias === 1 ? 'día' : 'días'}</span></div>
@@ -7423,10 +7716,12 @@ async function guardarMoto(){
     document.getElementById('nm-edit-id').value='';
     mcNotificar({tipo:'guardar', titulo:'Cambios guardados', texto:`${nombre}${mcDescVeh(data) ? ' · '+mcDescVeh(data) : ''}`});
   } else {
-    motos.unshift({id:uid(), gastos:[], ...data});
+    var nuevaId = uid();
+    motos.unshift({id:nuevaId, gastos:[], ...data});
     mcNotificar({tipo:'agregar', titulo:'Moto ingresada al inventario', texto:`${nombre}${mcDescVeh(data) ? ' · '+mcDescVeh(data) : ''}${Number(data.precioCompra) > 0 ? ' · '+fmt(Number(data.precioCompra)) : ''}`});
   }
   saveMotos(); go('motos');
+  if(nuevaId) intAlIngresar('moto', nuevaId);
 }
 
 function editarMoto(id){
@@ -7489,6 +7784,7 @@ function populateVentaSelect(){
 
 function calcularVenta(){
   sepFormVenta();
+  try { intFormVenta(); } catch(e){}
   ccResumenForm('vta');
   const sel=document.getElementById('vta-moto').value;
   const precio=parseFloat(document.getElementById('vta-precio').value)||0;
@@ -7622,6 +7918,7 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
   const diasParado = vehiculo?.fechaCompra ? diasEnInventario(vehiculo.fechaCompra) : 0;
   mostrarCelebracion(gananciaNeta, vehiculo?vehiculo.nombre:'', fecha, diasParado, ventaNueva);
   ccAvisarVentaNueva(ventaNueva);
+  try { intTrasVenta(ventaNueva); } catch(e){}
 }
 
 function renderVentas(){
@@ -10448,10 +10745,12 @@ async function guardarCarro(){
     document.getElementById('nc-edit-id').value='';
     mcNotificar({tipo:'guardar', titulo:'Cambios guardados', texto:`${nombre}${mcDescVeh(data) ? ' · '+mcDescVeh(data) : ''}`});
   } else {
-    carros.unshift({id:uid(),gastos:[],...data});
+    var nuevaId = uid();
+    carros.unshift({id:nuevaId,gastos:[],...data});
     mcNotificar({tipo:'agregar', titulo:'Carro ingresado al inventario', texto:`${nombre}${mcDescVeh(data) ? ' · '+mcDescVeh(data) : ''}${Number(data.precioCompra) > 0 ? ' · '+fmt(Number(data.precioCompra)) : ''}`});
   }
   saveCarros(); go('carros');
+  if(nuevaId) intAlIngresar('carro', nuevaId);
 }
 
 function editarCarro(id){
@@ -10669,10 +10968,13 @@ function mcMostrarAviso(){
     dato(fmt(ganMes), 'ganancia del mes') +
     dato(inventario.length, inventario.length === 1 ? 'vehículo en inventario' : 'vehículos en inventario') +
     (papeles ? dato(papeles, papeles === 1 ? 'papel pendiente' : 'papeles pendientes') : '') +
-    (ccTotales().falta > 0 ? dato(fmt(ccTotales().falta), 'te debe ' + FP_FINANCIERA) : '');
+    (ccTotales().falta > 0 ? dato(fmt(ccTotales().falta), 'te debe ' + FP_FINANCIERA) : '') +
+    (intPendientes().length ? dato(intPendientes().length, intPendientes().length === 1 ? 'cliente por contactar' : 'clientes por contactar') : '');
+  const _intCo = intCoincidencias();
   document.getElementById('mc-aviso-extra').innerHTML = quieto && diasEnInventario(quieto.fechaCompra) >= 30
     ? `${nomVeh(quieto._t,'ico')} <strong>${quieto.nombre}</strong> lleva <strong>${diasEnInventario(quieto.fechaCompra)} días</strong> en el inventario: es el que más capital tiene quieto.`
     : '';
+  if(_intCo.length) document.getElementById('mc-aviso-extra').innerHTML = `<strong>Posible venta:</strong> ${ccEsc(_intCo[0].x.nombre)} buscaba ${ccEsc(_intCo[0].x.vehTexto)} y en tu inventario está <strong>${ccEsc(intNomV(_intCo[0].v))}</strong>.${_intCo.length > 1 ? ` Y ${_intCo.length - 1} coincidencia${_intCo.length > 2 ? 's' : ''} más en Interesados.` : ''}` + (document.getElementById('mc-aviso-extra').innerHTML ? '<br>' + document.getElementById('mc-aviso-extra').innerHTML : '');
   const el = document.getElementById('mc-aviso');
   el.style.display = 'flex';
   el.classList.remove('show');
