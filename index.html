@@ -8855,50 +8855,111 @@ async function mcEnviarATraspasosNube(traspaso){
 // ── SONIDOS DE CELEBRACIÓN ────────────────────────────────────────────────────
 // Todos los sonidos grandes usan el mismo parlante que ya quedó desbloqueado con
 // el primer toque (Safari bloquea los que se crean después de esperar la nube).
-// Dos caminos para que el sonido salga siempre:
-//  1) en vivo con Web Audio, si el motor está despierto (la forma normal);
-//  2) si Safari lo tiene en pausa (o es un iPhone, donde el modo silencio apaga
-//     Web Audio), el mismo sonido se "graba" en un instante sin necesitar toque
-//     (OfflineAudioContext) y se reproduce como un audio normal (<audio>), que
-//     queda desbloqueado con el primer toque y suena aunque el iPhone esté en silencio.
-const MC_ES_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
-const MC_WAV_SILENCIO = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-let _mcAudioEl = null;
-function mcAudioEl(){
-  if(!_mcAudioEl){ _mcAudioEl = new Audio(); _mcAudioEl.preload = 'auto'; _mcAudioEl.setAttribute('playsinline', ''); _mcAudioEl.setAttribute('webkit-playsinline', ''); }
-  return _mcAudioEl;
+// Los sonidos se "graban" al instante en el propio JavaScript (un mini
+// sintetizador que entiende las mismas órdenes de Web Audio: osciladores,
+// volumen, ruido) y se reproducen como un audio normal (<audio>). Así no
+// dependen del motor de audio de Safari, que en la Mac y el iPhone se queda en
+// pausa o mudo (por ejemplo, al cambiar a audífonos o al volver del reposo).
+// El <audio> se desbloquea con el primer toque y en el iPhone suena aunque esté
+// en modo silencio. Si el navegador no deja reproducirlo, se usa Web Audio.
+const MC_SR = 44100;
+function McParam(v){ this.value = v; this.ev = []; }
+McParam.prototype.setValueAtTime = function(v, t){ this.ev.push({k:'s', v, t}); return this; };
+McParam.prototype.linearRampToValueAtTime = function(v, t){ this.ev.push({k:'l', v, t}); return this; };
+McParam.prototype.exponentialRampToValueAtTime = function(v, t){ this.ev.push({k:'e', v, t}); return this; };
+// Valor en cada muestra [i0, i1) siguiendo las mismas reglas de Web Audio
+McParam.prototype.curva = function(i0, i1){
+  const n = i1 - i0, out = new Float32Array(n), ev = this.ev.slice().sort((a,b)=>a.t - b.t);
+  let pv = this.value, pt = 0, j = 0;
+  for(let i = 0; i < n; i++){
+    const t = (i0 + i) / MC_SR;
+    while(j < ev.length && ev[j].t <= t){ pv = ev[j].v; pt = ev[j].t; j++; }
+    const e = ev[j];
+    if(e && e.k !== 's' && e.t > pt){
+      const r = (t - pt) / (e.t - pt);
+      out[i] = e.k === 'l' ? pv + (e.v - pv) * r : (pv > 0 && e.v > 0 ? pv * Math.pow(e.v / pv, r) : pv);
+    } else out[i] = pv;
+  }
+  return out;
+};
+function McNodo(ctx){ this.ctx = ctx; this.sal = null; }
+McNodo.prototype.connect = function(n){ this.sal = n; return n; };
+McNodo.prototype.disconnect = function(){ this.sal = null; };
+class McSinte {
+  constructor(dur){ this.sampleRate = MC_SR; this.currentTime = 0; this.state = 'running'; this.destination = {destino:true}; this.n = Math.ceil(dur * MC_SR); this.fuentes = []; }
+  createGain(){ const g = new McNodo(this); g.gain = new McParam(1); return g; }
+  createOscillator(){ const o = new McNodo(this); o.type = 'sine'; o.frequency = new McParam(440); o.ini = 0; o.fin = Infinity;
+    o.start = t=>{ o.ini = t || 0; this.fuentes.push(o); }; o.stop = t=>{ o.fin = t; }; return o; }
+  createBuffer(c, len, sr){ const d = new Float32Array(Math.max(1, Math.round(len))); return {length:d.length, sampleRate:sr, getChannelData:()=>d}; }
+  createBufferSource(){ const s = new McNodo(this); s.buffer = null; s.ini = 0; s.fin = Infinity;
+    s.start = t=>{ s.ini = t || 0; this.fuentes.push(s); }; s.stop = t=>{ s.fin = t; }; return s; }
+  resume(){ return Promise.resolve(); }
+  render(){
+    const out = new Float32Array(this.n);
+    this.fuentes.forEach(f=>{
+      const i0 = Math.max(0, Math.round(f.ini * MC_SR));
+      let i1 = Math.min(this.n, f.fin === Infinity ? this.n : Math.round(f.fin * MC_SR));
+      if(f.buffer) i1 = Math.min(i1, i0 + f.buffer.length);
+      if(i1 <= i0) return;
+      const sig = new Float32Array(i1 - i0);
+      if(f.buffer){ const d = f.buffer.getChannelData(0); for(let i = 0; i < sig.length; i++) sig[i] = d[i]; }
+      else {
+        const ev = f.frequency.ev, fr = ev.length ? ev[0].v : f.frequency.value, inc = fr / MC_SR;
+        for(let i = 0; i < sig.length; i++){
+          const ph = (i * inc) % 1;
+          sig[i] = f.type === 'square' ? (ph < .5 ? .8 : -.8) : f.type === 'triangle' ? 1 - 4 * Math.abs(ph - .5) : f.type === 'sawtooth' ? 2 * ph - 1 : Math.sin(2 * Math.PI * ph);
+        }
+      }
+      // Pasa por los volúmenes conectados hasta la salida
+      let n = f.sal, vueltas = 0;
+      while(n && !n.destino && vueltas++ < 8){
+        if(n.gain){ const g = n.gain.curva(i0, i1); for(let i = 0; i < sig.length; i++) sig[i] *= g[i]; }
+        n = n.sal;
+      }
+      if(!n || !n.destino) return;
+      for(let i = 0; i < sig.length; i++) out[i0 + i] += sig[i];
+    });
+    return out;
+  }
 }
-function mcWav(buf){
-  const d = buf.getChannelData(0), n = d.length, sr = buf.sampleRate, ab = new ArrayBuffer(44 + n * 2), v = new DataView(ab);
+function mcWav(d){
+  const n = d.length, ab = new ArrayBuffer(44 + n * 2), v = new DataView(ab);
   const txt = (o, t)=>{ for(let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  // Se sube el volumen para que se oiga bien sin distorsionar
+  let pico = 0; for(let i = 0; i < n; i++){ const a = Math.abs(d[i]); if(a > pico) pico = a; }
+  const k = pico > 0 ? Math.min(6, .8 / pico) : 1;
   txt(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); txt(8, 'WAVE'); txt(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-  v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); txt(36, 'data'); v.setUint32(40, n * 2, true);
-  for(let i = 0; i < n; i++){ const x = Math.max(-1, Math.min(1, d[i] * 1.6)); v.setInt16(44 + i * 2, x < 0 ? x * 0x8000 : x * 0x7fff, true); }
-  return ab;
+  v.setUint32(24, MC_SR, true); v.setUint32(28, MC_SR * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); txt(36, 'data'); v.setUint32(40, n * 2, true);
+  for(let i = 0; i < n; i++){ const x = Math.max(-1, Math.min(1, d[i] * k)); v.setInt16(44 + i * 2, x < 0 ? x * 0x8000 : x * 0x7fff, true); }
+  return URL.createObjectURL(new Blob([ab], {type:'audio/wav'}));
 }
+let _mcSilencio = null;
+function mcWavSilencio(){ return _mcSilencio || (_mcSilencio = mcWav(new Float32Array(2205))); }
+// Varios <audio> para que dos sonidos seguidos no se corten entre sí
+const _mcAudios = [];
+function mcAudioEl(i){
+  while(_mcAudios.length < 3){ const a = new Audio(); a.preload = 'auto'; a.setAttribute('playsinline', ''); a.setAttribute('webkit-playsinline', ''); _mcAudios.push(a); }
+  if(i != null) return _mcAudios[i];
+  return _mcAudios.find(a=>a.paused || a.ended) || _mcAudios.reduce((x, y)=>(x._desde || 0) < (y._desde || 0) ? x : y);
+}
+function mcAudioListo(){ return _mcAudios.some(a=>a._ok); }
 let _mcUltimoSonido = '';
-async function mcTocarGrabado(fn, dur){
-  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext; if(!OAC) return false;
-  try {
-    const sr = 44100, oac = new OAC(1, Math.ceil(sr * dur), sr);
-    fn(oac, 0.02);
-    const buf = await new Promise((ok, mal)=>{ oac.oncomplete = e=>ok(e.renderedBuffer); const r = oac.startRendering(); if(r && r.then) r.then(ok, mal); });
-    const url = URL.createObjectURL(new Blob([mcWav(buf)], {type:'audio/wav'})), el = mcAudioEl();
-    el.src = url; el.currentTime = 0;
-    await el.play();
-    _mcUltimoSonido = 'grabado';
-    setTimeout(()=>URL.revokeObjectURL(url), (dur + 3) * 1000);
-    return true;
-  } catch(e){ _mcUltimoSonido = 'falló: ' + (e && e.name || e); return false; }
-}
 function mcAudioTocar(fn, dur, siempre){
   if(!siempre && typeof mcSonidosActivos === 'function' && !mcSonidosActivos()) return;
   dur = dur || 2.6;
-  const ac = mcAudioAviso();
-  const vivo = ()=>{ try { fn(ac, ac.currentTime + .02); _mcUltimoSonido = 'en vivo'; } catch(e){} };
-  if(ac && ac.state === 'running' && !(MC_ES_IOS && _mcAudioEl && _mcAudioEl._ok)){ vivo(); return; }
-  if(ac && ac.state !== 'running') ac.resume().catch(()=>{});
-  mcTocarGrabado(fn, dur).then(ok=>{ if(!ok && ac && ac.state === 'running') vivo(); });
+  const vivo = ()=>{ const ac = mcAudioAviso(); if(!ac) return; try { fn(ac, ac.currentTime + .02); _mcUltimoSonido = 'web audio'; } catch(e){} if(typeof ajEstadoAudio === 'function') ajEstadoAudio(); };
+  let url;
+  try { const s = new McSinte(dur); fn(s, .02); url = mcWav(s.render()); }
+  catch(e){ vivo(); return; }
+  const el = mcAudioEl(), viejo = el._url;
+  el._url = url; el._desde = Date.now();
+  try { el.pause(); } catch(e){}
+  el.src = url; el.volume = 1; el.muted = false;
+  try { el.currentTime = 0; } catch(e){}
+  const p = el.play();
+  const listo = ()=>{ el._ok = true; _mcUltimoSonido = 'audio'; if(typeof ajEstadoAudio === 'function') ajEstadoAudio(); };
+  if(p && p.then) p.then(listo, e=>{ _mcUltimoSonido = 'bloqueado (' + (e && e.name || 'error') + ')'; vivo(); }); else listo();
+  if(viejo) setTimeout(()=>URL.revokeObjectURL(viejo), 500);
 }
 function mcNota(ac, f, t, d, tipo, vol){
   const o = ac.createOscillator(), g = ac.createGain(); o.type = tipo||'triangle'; o.frequency.value = f; o.connect(g); g.connect(ac.destination);
@@ -9733,7 +9794,7 @@ function ajEstadoAudio(){
   const el = document.getElementById('aj-audio-estado'); if(!el) return;
   const act = mcSonidosActivos(), ctx = _mcAudioAviso;
   const listo = ctx && ctx.state === 'running';
-  const alt = _mcAudioEl && _mcAudioEl._ok;
+  const alt = mcAudioListo();
   el.innerHTML = !act ? `<span class="aj-led off"></span>Apagados` : (listo || alt) ? `<span class="aj-led ok"></span>Audio listo${_mcUltimoSonido ? ` · último sonido: ${_mcUltimoSonido}` : ''}` : `<span class="aj-led warn"></span>En pausa · se activa al tocar la pantalla <button class="btn btn-ghost btn-sm" onclick="mcDesbloquearAudio();setTimeout(ajEstadoAudio,300);mcSonido('confirmar')">Activar ahora</button>`;
 }
 function ajProbarVenta(){ if(!mcSonidosActivos()){ toast('Los sonidos están desactivados','err'); return; } celSonido(CEL_RANGOS[2], false); }
@@ -10254,7 +10315,7 @@ function mcAudioAviso(){
 try { if(navigator.audioSession && /iPhone|iPad|iPod/.test(navigator.userAgent)) navigator.audioSession.type = 'playback'; } catch(e){}
 function mcDesbloquearAudio(){
   if(typeof mcSonidosActivos === 'function' && !mcSonidosActivos()) return;
-  try { const el = mcAudioEl(); if(!el._ok && !el._probando){ el._probando = true; el.src = MC_WAV_SILENCIO; el.play().then(()=>{ el._ok = true; }).catch(()=>{}).finally(()=>{ el._probando = false; }); } } catch(e){}
+  try { mcAudioEl(); _mcAudios.forEach(el=>{ if(!el._ok && !el._probando && el.paused){ el._probando = true; el.src = mcWavSilencio(); el.play().then(()=>{ el._ok = true; }).catch(()=>{}).finally(()=>{ el._probando = false; }); } }); } catch(e){}
   const ctx = mcAudioAviso(); if(!ctx || ctx.state === 'running' && ctx._mcListo) return;
   try {
     const b = ctx.createBuffer(1, 1, 22050), src = ctx.createBufferSource();
