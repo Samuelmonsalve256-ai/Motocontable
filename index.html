@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>MotoContable – Control Financiero</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&family=Great+Vibes&family=Lora:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 
@@ -2497,8 +2497,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .in-match-fila .av-pap-btns{width:100%}
   html .in-match-fila .av-pap-btns .ct-btn{flex:1 1 auto;justify-content:center;white-space:nowrap;padding:0 9px;font-size:12px}
   html .in-entro{gap:4px}
-  html #in-seg{overflow-x:auto;scrollbar-width:none}
-  html #in-seg button{padding:0 10px;white-space:nowrap;flex:none}
+  html #in-seg,html #pap-seg{overflow-x:auto;scrollbar-width:none}
+  html #in-seg button,html #pap-seg button{padding:0 10px;white-space:nowrap;flex:none}
 }
 
 .in-paso{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#c9c9de;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
@@ -2559,6 +2559,65 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .in-plan-cab{flex-wrap:wrap}
   html .in-plan .av-ir{margin-left:auto}
 }
+
+/* ── Papeles ─────────────────────────────────────────────────────────────── */
+.pap-resumen .mal b{color:#ff8aa5}.pap-resumen .mal{border-color:rgba(255,107,141,.4);background:rgba(255,107,141,.07)}
+.pap-resumen .sem b{color:#f5c451}.pap-resumen .sem{border-color:rgba(245,196,81,.4);background:rgba(245,196,81,.06)}
+.pap-resumen .cli b{color:#c4b5fd}
+.pap-tabla{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.pap-fila{--c:#5eb4ff;display:grid;grid-template-columns:150px 1fr auto auto;align-items:center;gap:14px;padding:12px 16px;border-radius:14px;background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-left:3px solid var(--c)}
+.pap-fila.e-mal{--c:#ff6b8d}.pap-fila.e-semana{--c:#f5c451}.pap-fila.e-mes{--c:#7cb6ff}.pap-fila.e-ok{--c:#2ee6a6}.pap-fila.e-sin{--c:#6b6b88}
+.pap-doc{display:flex;align-items:center;gap:9px}
+.pap-doc i{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+.pap-doc b{font-size:13.5px;color:#fff}
+.pap-veh{min-width:0}
+.pap-veh b{display:flex;align-items:center;gap:8px;font-size:13.5px;color:#fff}
+.pap-veh>span{display:block;font-size:12px;color:#8a8aa8;margin-top:2px}
+.pap-tip{display:flex!important;align-items:center;gap:5px;color:#f5c451!important;font-size:11.5px!important;margin-top:4px!important}
+.pap-est{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent)}
+.pap-acc{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pap-ok{color:#2ee6a6!important;border-color:rgba(0,214,143,.35)!important;background:rgba(0,214,143,.1)!important;min-height:32px;white-space:nowrap}
+.pap-cli{--a:#a78bfa}
+.pap-venta{display:flex;gap:9px;align-items:flex-start;margin:-2px 0 12px;padding:.65rem .85rem;border-radius:12px;border:1px solid rgba(255,107,141,.4);background:rgba(255,107,141,.07);font-size:12.5px;color:#ffb3c4}
+.pap-venta[hidden]{display:none}.pap-venta svg{flex:none;margin-top:1px}.pap-venta b{color:#fff}
+.in-paso-plan.t-cum{--c:#f472b6}
+/* ── Cumpleaños y cartas ─────────────────────────────────────────────────── */
+.cum-panel{--a:#f472b6}
+.cum-panel .av-ir{background:none;border:0;cursor:pointer;color:#f9a8d4;font-family:'Inter',sans-serif}
+.cum-fila{flex-wrap:nowrap}
+.cum-dia{flex:none;width:48px;text-align:center;padding:6px 0;border-radius:12px;background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.25)}
+.cum-dia b{display:block;font:700 19px 'Space Grotesk',sans-serif;color:#fff;line-height:1.1}
+.cum-dia span{font-size:10.5px;color:#f9a8d4;text-transform:uppercase;font-weight:700}
+.cum-dia.hoy{background:linear-gradient(135deg,#f472b6,#a855f7);border-color:transparent}.cum-dia.hoy span{color:#fff}
+.cum-fila .av-pap-veh{flex:1}
+.cum-fila .av-pap-veh span svg{vertical-align:-1px}
+.cum-btn{color:#fff!important;border-color:rgba(244,114,182,.5)!important;background:linear-gradient(135deg,rgba(244,114,182,.35),rgba(168,85,247,.3))!important}
+.ct-cum{display:inline-flex!important;align-items:center;gap:4px;color:#f9a8d4!important;font-size:11.5px!important;margin-top:2px}
+.cum-comp{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow:auto}
+.cum-comp-fila{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.cum-comp-fila.ok{border-color:rgba(0,214,143,.45);background:rgba(0,214,143,.07)}
+.cum-comp-fila b{display:block;font-size:13.5px}.cum-comp-fila small{font-size:11.5px;color:#8a8aa8}
+.cum-comp-fila input{width:170px;flex:none}
+#modal-cc.cum-modal .cc-modal{max-width:980px}
+.cum-editor{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.cum-prev{border-radius:14px;overflow:hidden;box-shadow:0 20px 50px -20px rgba(0,0,0,.9);background:#000}
+.cum-prev canvas{display:block;width:100%;height:auto}
+.cum-dis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.cum-dis button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#c9c9de;font:600 12px 'Inter',sans-serif;cursor:pointer}
+.cum-dis button i{width:100%;height:34px;border-radius:8px;border:2px solid}
+.cum-dis button.activo{border-color:rgba(var(--accent-rgb),.7);color:#fff;background:rgba(var(--accent-rgb),.14)}
+.cum-ctrl textarea{font-size:13px;line-height:1.5}
+.cum-acc{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.cum-acc .btn{justify-content:center;width:100%}
+.cum-wa{color:#4ade80!important;border-color:rgba(37,211,102,.35)!important;text-decoration:none!important}
+@media (max-width:760px){
+  html .pap-fila{grid-template-columns:1fr auto;gap:8px 10px;padding:12px}
+  html .pap-veh{grid-column:1/-1;order:-1}
+  html .pap-acc{grid-column:1/-1;justify-content:flex-start}
+  html .cum-editor{grid-template-columns:1fr}
+  html .cum-fila .av-pap-btns{width:auto}
+  html .cum-comp-fila{flex-wrap:wrap}.cum-comp-fila input{width:100%}
+}
 </style>
 </head>
 <body>
@@ -2580,6 +2639,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
     <div class="nav-item" onclick="go('cobros')"><span class="nav-ico">💰</span>Por cobrar<span class="nav-count cc-nav-n" id="nav-cobros-n"></span><div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('interesados')"><span class="nav-ico"></span>Interesados<span class="nav-count in-nav-n" id="nav-int-n"></span><div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('inventario')"><span class="nav-ico">📦</span>Inventario<div class="nav-dot" style="margin-left:auto"></div></div>
+    <div class="nav-item" onclick="go('papeles')"><span class="nav-ico"></span>Papeles<span class="nav-count" id="nav-pap-n"></span><div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-item" onclick="go('analisis')"><span class="nav-ico">📈</span>Análisis<div class="nav-dot" style="margin-left:auto"></div></div>
     <div class="nav-label">Registrar</div>
     <div class="nav-item" onclick="go('nueva-moto')"><span class="nav-ico">🏍️</span>Nueva moto<div class="nav-dot" style="margin-left:auto"></div></div>
@@ -2620,6 +2680,16 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   </div>
   <div id="in-match"></div>
   <div id="in-lista"></div>
+</div>
+
+<div class="page" id="page-papeles">
+  <div class="page-header">
+    <div class="page-title">Papeles de los vehículos</div>
+    <div class="page-sub">SOAT, tecnomecánica e impuesto de tu inventario en orden de urgencia, y los recordatorios para tus clientes</div>
+  </div>
+  <div id="pap-resumen" class="ct-resumen pap-resumen"></div>
+  <div class="ct-barra"><div class="ct-seg" id="pap-seg" role="tablist" aria-label="Ver"></div></div>
+  <div id="pap-lista"></div>
 </div>
 
 <div class="page" id="page-papelera">
@@ -2931,6 +3001,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
           <div class="form-group" style="margin-bottom:12px"><label class="form-label" id="lbl-vta-tipo">Vehículo <span>*</span></label><select id="vta-moto" onchange="calcularVenta()"><option value="">Seleccionar vehículo…</option></select></div>
           <div class="sep-aviso" id="vta-sep-aviso" hidden></div>
           <div class="in-venta" id="vta-int-aviso" hidden></div>
+          <div class="pap-venta" id="vta-pap-aviso" hidden></div>
           <input type="hidden" id="vta-anticipo">
           <div class="form-grid">
             <div class="form-group"><label class="form-label">Precio de venta ($) <span>*</span></label><input type="number" id="vta-precio" placeholder="0" min="0" oninput="calcularVenta()"></div>
@@ -2956,6 +3027,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             <div class="form-group"><label class="form-label">CC del comprador</label><input type="text" id="vta-cc" placeholder="Número de cédula"></div>
             <div class="form-group"><label class="form-label">Celular del comprador</label><input type="text" id="vta-celular" placeholder="Ej: 3001234567"></div>
           </div>
+          <div class="form-group" style="margin-bottom:12px"><label class="form-label">Cumpleaños del comprador (opcional)</label><input type="date" id="vta-nac"><div class="form-hint" style="font-size:11.5px;color:var(--text3);margin-top:4px">Para enviarle una carta en su cumpleaños.</div></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button type="button" onclick="abrirBuscarContacto('comprador','venta')" class="btn btn-ghost btn-sm" title="Buscar comprador en contactos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>Buscar comprador</button>
             <button type="button" onclick="guardarContactoDesdeForm('venta')" class="btn btn-ghost btn-sm" title="Guardar comprador en contactos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>Guardar comprador</button>
@@ -3010,6 +3082,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
     <div class="page-title">Contactos</div>
     <div class="page-sub">Quién te vende y quién te compra, con todo lo que han hecho contigo</div>
   </div>
+  <div id="ct-fechas"></div>
   <div id="ct-resumen" class="ct-resumen"></div>
   <div class="ct-barra">
     <div class="ct-seg" role="tablist" aria-label="Tipo de contacto">
@@ -3313,6 +3386,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('interesados')"><span></span>Interesados<i class="mtab-n" id="mc-mas-int-n"></i></button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('carros')"><span>🚗</span>Mis carros</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('inventario')"><span>📦</span>Inventario</button>
+    <button class="mh-cuadro" onclick="mcCerrarHojas();go('papeles')"><span></span>Papeles<i class="mtab-n" id="mc-mas-pap-n"></i></button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('analisis')"><span>📈</span>Análisis</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('metas')"><span>🎯</span>Metas</button>
     <button class="mh-cuadro" onclick="mcCerrarHojas();go('contactos')"><span>👥</span>Contactos</button>
@@ -4237,7 +4311,7 @@ function calcMoto(id){
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────────
-const NAV_PAGES = ['resumen','motos','carros','ventas','cobros','interesados','inventario','analisis','nueva-moto','nuevo-carro','nueva-venta','metas','contactos','ajustes','papelera'];
+const NAV_PAGES = ['resumen','motos','carros','ventas','cobros','interesados','inventario','papeles','analisis','nueva-moto','nuevo-carro','nueva-venta','metas','contactos','ajustes','papelera'];
 function go(page){
   // "Contado vs financiado" ahora es una pestaña dentro de Análisis
   if(page==='analisis-ventas'){ anGuardarTab('pago'); page = 'analisis'; }
@@ -4261,9 +4335,11 @@ function go(page){
   if(page==='papelera')    renderPapelera();
   if(page==='cobros')      renderCobros();
   if(page==='interesados') renderInteresados();
+  if(page==='papeles')     renderPapeles();
   mcContadorPapelera();
   ccContador();
   intContador();
+  papContador();
   if(typeof mcTabActiva === 'function') mcTabActiva(page);
   if(page==='ajustes')    { renderPaletaColores(); renderPanelesEditor(); mcRenderRespaldos();
     document.getElementById('cfg-appname').value=cfgData.appName||'';
@@ -6596,6 +6672,7 @@ function ctHistorial(id){
   const box = document.getElementById('modal-cc'); if(box) box.classList.add('cth-modal');
 }
 function renderContactos(){
+  try { cumPanel(); } catch(e){}
   const q = mcSinTildes(document.getElementById('contacto-buscar')?.value || '');
   const cont = document.getElementById('lista-contactos'); if(!cont) return;
   const nV = contactos.filter(c=>c.tipo === 'vendedor').length, nC = contactos.filter(c=>c.tipo === 'comprador').length, nW = contactos.filter(c=>String(c.tel||'').replace(/\D/g,'').length >= 7).length;
@@ -6617,7 +6694,7 @@ function renderContactos(){
     return `<div class="ct-card">
       <div class="ct-top">
         <div class="ct-av" style="background:linear-gradient(135deg,hsl(${h},72%,58%),hsl(${(h+50)%360},70%,42%))">${ccEsc(mcIniciales(c.nombre))}</div>
-        <div class="ct-id"><b>${ccEsc(c.nombre)}</b><span>${c.cc ? 'CC ' + ccEsc(c.cc) : 'Sin cédula'}${c.tel ? ' · ' + ccEsc(c.tel) : ''}</span></div>
+        <div class="ct-id"><b>${ccEsc(c.nombre)}</b><span>${c.cc ? 'CC ' + ccEsc(c.cc) : 'Sin cédula'}${c.tel ? ' · ' + ccEsc(c.tel) : ''}</span>${c.nac ? `<span class="ct-cum">${mcIco('regalo',11)}Cumple el ${Number(c.nac.slice(8,10))} de ${MESES[Number(c.nac.slice(5,7)) - 1].toLowerCase()}</span>` : ''}</div>
         <span class="ct-ed"><button class="ct-ic" onclick="editarContacto('${c.id}')" aria-label="Editar ${ccEsc(c.nombre)}">${mcIco('lapiz',15)}</button><button class="ct-ic mt-borrar" onclick="eliminarContacto('${c.id}')" aria-label="Eliminar ${ccEsc(c.nombre)}">${mcIco('papelera',15)}</button></span>
       </div>
       <div class="ct-act ${a.n ? '' : 'nada'}">${mcIco(c.tipo === 'vendedor' ? 'moto' : 'llave', 14)}<span>${act}</span><i class="ct-rol ${c.tipo === 'vendedor' ? 'v' : 'c'}">${c.tipo === 'vendedor' ? 'Me vende' : 'Me compra'}</i></div>
@@ -6682,7 +6759,7 @@ function intVehNombre(x){
 const intPendiente = x => intActivo(x) && x.seguimiento && intDias(x.seguimiento) <= 0;
 function intPendientes(){ return intLista().filter(intPendiente).sort((a,b)=>String(a.seguimiento).localeCompare(String(b.seguimiento))); }
 function intContador(){
-  const n = intPlan().filter(p=>p.prio < 4).length;
+  const n = intPlan().filter(p=>p.prio < 4 && !p.area).length;
   ['nav-int-n','mc-mas-int-n'].forEach(id=>{ const el = document.getElementById(id); if(el) el.textContent = n || ''; });
 }
 function intTel(x){ const t = String(x.tel||'').replace(/\D/g,''); return t.length >= 7 ? t : ''; }
@@ -6796,6 +6873,7 @@ function intAbrir(id, pre){
       <div class="form-group"><label class="form-label">Nombre <span>*</span></label><input type="text" id="in-nombre" list="in-contactos" placeholder="Nombre del cliente" value="${ccEsc(e.nombre||'')}" oninput="intContactoElegido()"></div>
       <div class="form-group"><label class="form-label">Celular</label><input type="text" id="in-tel" placeholder="Ej: 3001234567" inputmode="tel" value="${ccEsc(e.tel||'')}"></div>
     </div>
+    <div class="form-group" style="margin:-4px 0 14px"><label class="form-label">Cumpleaños (opcional)</label><input type="date" id="in-nac" value="${e.nac||''}"></div>
     <datalist id="in-contactos">${compradores.map(c=>`<option value="${ccEsc(c.nombre)}">`).join('')}</datalist>
     <div class="in-paso"><span>2</span>¿Qué vehículo quiere?</div>
     <div class="in-modo" id="in-modo">
@@ -6894,7 +6972,7 @@ function intGuardar(id){
   const data = {nombre, tel: val('tel'), vehTipo: vehId ? vehTipo : (busca ? busca.tipo : ''), vehId: vehId || '',
     vehNombre: veh ? `${veh.nombre||''}${veh.modelo ? ' ' + veh.modelo : ''}`.trim() : (vehId && x ? x.vehNombre : ''),
     busca, vehTexto: busca ? intBuscaTexto(busca) : '', presupuesto: ccNum(val('presu')) || 0, pago: val('pago'), temp,
-    seguimiento: val('fseg'), estado: val('estado') || 'nuevo', nota: val('nota'), actualizado: new Date().toISOString()};
+    seguimiento: val('fseg'), estado: val('estado') || 'nuevo', nota: val('nota'), nac: val('nac'), actualizado: new Date().toISOString()};
   if(x){
     const antes = x.estado;
     if(x.vehId !== data.vehId) delete x.vendidoAOtro;
@@ -7354,7 +7432,7 @@ function intPlan(){
   const sinF = act.filter(x=>!x.seguimiento && !usados.has(x.id));
   if(sinF.length) add({k:'sinf|' + sinF.map(x=>x.id).join(','), prio:6, tono:'medio', ico:'calendario', titulo:`${sinF.length === 1 ? ccEsc(sinF[0].nombre) + ' no tiene' : sinF.length + ' negocios no tienen'} fecha de seguimiento`,
     texto:'Sin fecha, el sistema no te puede recordar cuándo escribirles.', acc:[{label:'Ponerle fecha', fn:`intSeguimiento('${sinF[0].id}')`, cls:'listo'}]});
-  return P.sort((a,b)=>a.prio - b.prio);
+  return P.concat(typeof relPlan === 'function' ? relPlan().filter(it=>pos[it.k] !== hoy) : []).sort((a,b)=>a.prio - b.prio);
 }
 function intPonerTemp(id, t){ const x = intLista().find(i=>i.id === id); if(!x) return; x.temp = t; x.ultimoContacto = x.ultimoContacto || x.creado; saveCfg(); intRefrescar(); mcNotificar({tipo:'guardar', titulo:`${x.nombre} ahora está ${INT_TEMP[t].toLowerCase()}`, texto:'Lo puedes cambiar cuando quieras'}); }
 function intBuscarEnLista(q){ _intVista = 'activos'; go('interesados'); const b = document.getElementById('in-buscar'); if(b){ b.value = q; renderInteresados(); } }
@@ -7397,6 +7475,419 @@ function intCifras(){
     <div class="in-cif ancho"><small>Por qué se pierden los negocios</small>${barras(motivos, 'linear-gradient(90deg,#ff6b8d,#ff8c3c)')}</div>
     <div class="in-cif ancho"><small>Según qué tan interesados estaban</small>${porTemp.map(p=>`<div class="in-barra"><span><i class="in-pt t-${p.t}"></i>${INT_TEMP[p.t]}</span><i><u style="width:${p.pct || 0}%;background:${p.t === 'caliente' ? '#ff6b4a' : p.t === 'tibio' ? '#f5c451' : '#5eb4ff'}"></u></i><b>${p.pct == null ? '—' : p.pct + '%'}</b></div>`).join('')}<span class="in-pista">Porcentaje que terminó en venta · activos ahora: ${porTemp.map(p=>`${p.act} ${INT_TEMP[p.t].toLowerCase()}${p.act !== 1 ? 's' : ''}`).join(', ')}</span></div>
   </div>`;
+}
+mcAplicarIconos();
+
+// ── PAPELES DE LOS VEHÍCULOS ─────────────────────────────────────────────────
+// SOAT, tecnomecánica e impuesto de todo el inventario en un solo lugar, en orden
+// de urgencia, con "Ya lo renové" en un toque (la nueva fecha queda a un año y lo
+// pagado se suma a los gastos del vehículo). También recuerda a los clientes que
+// te compraron cuándo se les vence el SOAT o la tecnomecánica (postventa).
+Object.assign(MC_ICONOS, {
+  documento: '<path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10A.5.5 0 0 1 7 20z"/><path d="M14 3.5V8h4"/><path d="M9.5 12.5h5M9.5 16h5"/>',
+  regalo:    '<rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M3 9h18v-.5A1.5 1.5 0 0 0 19.5 7h-15A1.5 1.5 0 0 0 3 8.5z"/><path d="M12 7v13"/><path d="M12 7c-1.5-3.5-5.5-3.5-5 0M12 7c1.5-3.5 5.5-3.5 5 0"/>',
+  corazon:   '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>'
+});
+MC_ICONO_DE_PAGINA.papeles = 'documento';
+MC_MONTOS.add('pp-valor');
+const PAP_DOCS = {soat:'SOAT', tecno:'Tecnomecánica', imp:'Impuesto'};
+function papDias(f){ return f ? Math.round((new Date(f + 'T00:00:00') - new Date(hoyLocal() + 'T00:00:00')) / 86400000) : null; }
+function papMasAnio(f){ const d = new Date(f + 'T00:00:00'); d.setFullYear(d.getFullYear() + 1); return hoyLocal(d); }
+// Todos los papeles del inventario, con su estado
+function papItems(){
+  const r = [];
+  invItems().forEach(({v, tipo, dias})=>{
+    const base = {v, tipo, diasInv: dias};
+    ['soat','tecno'].forEach(doc=>{
+      const tiene = doc === 'soat' ? v.soatTiene : v.tecnoTiene, f = doc === 'soat' ? v.soat : v.tecno;
+      if(!tiene || !f){ r.push({...base, doc, estado:'sin', d:null}); return; }
+      const d = papDias(f);
+      r.push({...base, doc, fecha:f, d, estado: d < 0 ? 'vencido' : d <= 7 ? 'semana' : d <= 30 ? 'mes' : 'ok'});
+    });
+    const debe = String(v.impuesto||'').startsWith('debe:') ? v.impuesto.slice(5).split(',').filter(Boolean) : (Array.isArray(v.impPagados) ? v.impPagados : []);
+    r.push({...base, doc:'imp', debe, estado: debe.length ? 'vencido' : 'ok', d: null});
+  });
+  return r;
+}
+const PAP_ORDEN = {vencido:0, semana:1, mes:2, sin:3, ok:4};
+function papUrgentes(){ return papItems().filter(i=>i.estado === 'vencido' || i.estado === 'semana'); }
+function papContador(){
+  const n = papUrgentes().length;
+  const el = document.getElementById('nav-pap-n'); if(el) el.textContent = n || '';
+  const m = document.getElementById('mc-mas-pap-n'); if(m) m.textContent = n || '';
+}
+// Clientes que te compraron: SOAT y tecno estimados (se renuevan cada año)
+function papClientes(){
+  const avisos = cfgData.papAvisos || {}, r = [];
+  ventas.forEach(vta=>{
+    const o = vta.vehiculoOriginal || {}, tel = String(vta.compradorCel||'').replace(/\D/g,'');
+    if(!vta.comprador) return;
+    ['soat','tecno'].forEach(doc=>{
+      const f0 = doc === 'soat' ? (o.soatTiene && o.soat) : (o.tecnoTiene && o.tecno); if(!f0) return;
+      let f = f0, guard = 0; while(papDias(f) < -7 && guard++ < 30) f = papMasAnio(f);
+      const d = papDias(f); if(d > 30) return;
+      const k = vta.id + '|' + doc + '|' + f;
+      r.push({vta, doc, fecha:f, d, tel, k, avisado: avisos[k]});
+    });
+  });
+  return r.sort((a,b)=>a.d - b.d);
+}
+function papMsgCliente(c){
+  const n = String(c.vta.comprador).trim().split(/\s+/)[0], veh = `${c.vta.motoNombre||''}${c.vta.motoModelo ? ' ' + c.vta.motoModelo : ''}`.trim(), art = c.vta.tipoVehiculo === 'carro' ? 'del' : 'de la';
+  return c.d < 0
+    ? `Hola ${n}, ¿cómo vas? Te escribo de Compraventa SID. Según nuestros registros, ${c.doc === 'soat' ? 'el SOAT' : 'la tecnomecánica'} ${art} ${veh} venció el ${mcFechaCorta(c.fecha)}. Si todavía no lo has renovado, con gusto te ayudamos con el trámite. ¡Que andes seguro!`
+    : `Hola ${n}, ¿cómo vas? Te escribo de Compraventa SID para recordarte que ${c.doc === 'soat' ? 'el SOAT' : 'la tecnomecánica'} ${art} ${veh} vence el ${mcFechaCorta(c.fecha)}${c.d === 0 ? ' (hoy)' : c.d === 1 ? ' (mañana)' : ''}. Si quieres, te ayudamos a renovarl${c.doc === 'soat' ? 'o' : 'a'} sin filas ni vueltas. ¡Que andes seguro!`;
+}
+function papAvisar(k){ cfgData.papAvisos = {...(cfgData.papAvisos||{}), [k]: hoyLocal()}; saveCfg(); setTimeout(()=>{ papRefrescar(); mcNotificar({tipo:'guardar', titulo:'Recordatorio enviado', texto:'Quedó anotado para no repetirlo'}); }, 300); }
+function papRefrescar(){
+  papContador(); intContador && intContador();
+  const a = (document.querySelector('.page.active')||{}).id;
+  if(a === 'page-papeles') renderPapeles();
+  if(a === 'page-resumen') intAvisoResumen();
+  if(a === 'page-motos') renderMotos();
+  if(a === 'page-carros') renderCarros();
+}
+function papEstadoTxt(i){
+  if(i.doc === 'imp') return i.debe.length ? {cls:'mal', txt:`Debe ${i.debe.join(', ')}`} : {cls:'ok', txt:'Al día'};
+  if(i.estado === 'sin') return {cls:'sin', txt:'No registrado'};
+  if(i.d < 0) return {cls:'mal', txt:`Venció hace ${-i.d} día${i.d !== -1 ? 's' : ''}`};
+  if(i.d === 0) return {cls:'mal', txt:'Vence hoy'};
+  if(i.d <= 7) return {cls:'semana', txt:`Vence en ${i.d} día${i.d !== 1 ? 's' : ''}`};
+  if(i.d <= 30) return {cls:'mes', txt:`Vence en ${i.d} días`};
+  return {cls:'ok', txt:`Al día · ${Math.round(i.d / 30)} meses`};
+}
+let _papVer = 'pend';
+function renderPapeles(){
+  papContador();
+  const cont = document.getElementById('pap-lista'); if(!cont) return;
+  const items = papItems(), cli = papClientes();
+  const n = e => items.filter(i=>i.estado === e && !(i.doc === 'imp' && e === 'ok')).length;
+  const r = document.getElementById('pap-resumen');
+  if(r) r.innerHTML = `<div class="${n('vencido') ? 'mal' : ''}"><b>${n('vencido')}</b><small>vencidos o debe</small></div><div class="${n('semana') ? 'sem' : ''}"><b>${n('semana')}</b><small>vencen esta semana</small></div><div><b>${n('mes')}</b><small>vencen este mes</small></div><div class="cli"><b>${cli.filter(c=>!c.avisado).length}</b><small>clientes por recordar</small></div>`;
+  const ver = _papVer, vis = items.filter(i=>ver === 'todos' ? true : ver === 'sin' ? i.estado === 'sin' : ['vencido','semana','mes'].includes(i.estado))
+    .sort((a,b)=>PAP_ORDEN[a.estado] - PAP_ORDEN[b.estado] || (a.d ?? 999) - (b.d ?? 999));
+  const seg = document.getElementById('pap-seg');
+  if(seg) seg.innerHTML = [['pend','Por renovar', items.filter(i=>['vencido','semana','mes'].includes(i.estado)).length],['sin','Sin registrar', n('sin')],['todos','Todos', items.length]]
+    .map(([k,t,c])=>`<button class="${ver === k ? 'activo' : ''}" onclick="_papVer='${k}';renderPapeles()">${t}<i>${c}</i></button>`).join('');
+  const fila = i => { const e = papEstadoTxt(i), v = i.v, consejo = i.doc === 'soat' && i.diasInv != null && i.diasInv >= 100 && ['vencido','semana','mes'].includes(i.estado) ? `<span class="pap-tip">${mcIco('objetivo',12)}Lleva ${i.diasInv} días: renuévalo, con SOAT al día se vende más fácil</span>` : '';
+    return `<div class="pap-fila e-${e.cls}">
+      <div class="pap-doc"><i>${mcIco(i.doc === 'imp' ? 'recibo' : 'documento',16)}</i><b>${PAP_DOCS[i.doc]}</b></div>
+      <div class="pap-veh"><b>${v.placa ? `<span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span>` : ''}${ccEsc(intNomV(v))}</b><span>${i.fecha ? 'Vence el ' + mcFechaCorta(i.fecha) : i.doc === 'imp' ? 'Impuesto vehicular' : 'Sin fecha registrada'}${i.diasInv != null ? ' · ' + i.diasInv + ' días en inventario' : ''}</span>${consejo}</div>
+      <span class="pap-est ${e.cls}">${e.txt}</span>
+      <div class="pap-acc">${i.doc === 'imp'
+        ? (i.debe.length ? i.debe.map(y=>`<button class="ct-btn pap-ok" onclick="papPagarImp('${i.tipo}','${v.id}','${y}')">${mcIco('check',13)}Pagué ${y}</button>`).join('') : '')
+        : `<button class="ct-btn pap-ok" onclick="papRenovar('${i.tipo}','${v.id}','${i.doc}')">${mcIco('check',13)}${i.estado === 'sin' ? 'Registrar' : 'Ya lo renové'}</button>`}</div>
+    </div>`; };
+  const cliHtml = cli.length ? `<div class="av-tarjeta pap-cli">
+      <div class="av-pap-cab"><i class="av-ico">${mcIco('corazon',20)}</i><div class="av-txt"><b>Recuérdales a tus clientes</b><span>Les vendiste el vehículo y sus papeles vencen pronto. Un mensaje a tiempo es servicio, y un trámite más para ti.</span></div></div>
+      <div class="av-pap-lista">${cli.map(c=>`<div class="av-pap-fila">
+        <div class="av-pap-veh"><b>${ccEsc(c.vta.comprador)}</b><span>${PAP_DOCS[c.doc]} ${c.vta.tipoVehiculo === 'carro' ? 'del' : 'de la'} ${ccEsc(c.vta.motoNombre||'')}${c.vta.motoPlaca ? ' · ' + ccEsc(String(c.vta.motoPlaca).toUpperCase()) : ''} · <em class="${c.d < 0 ? 'mal' : c.d <= 7 ? 'medio' : ''}">${c.d < 0 ? 'venció el ' + mcFechaCorta(c.fecha) : c.d === 0 ? 'vence hoy' : 'vence el ' + mcFechaCorta(c.fecha)}</em></span></div>
+        <div class="av-pap-btns">${c.avisado ? `<span class="in-ofrecida">${mcIco('check',12)}Avisado ${intHace(c.avisado)}</span>` : c.tel.length >= 7 ? `<a class="ct-btn wa" href="https://wa.me/${c.tel.length === 10 ? '57' + c.tel : c.tel}?text=${encodeURIComponent(papMsgCliente(c))}" target="_blank" rel="noopener" onclick="papAvisar('${c.k}')">${mcIco('chat',14)}Recordarle</a>` : `<button class="ct-btn" onclick="papAvisar('${c.k}')">${mcIco('check',14)}Ya le avisé</button>`}</div>
+      </div>`).join('')}</div></div>` : '';
+  cont.innerHTML = (vis.length ? `<div class="pap-tabla">${vis.map(fila).join('')}</div>`
+    : `<div class="ct-vacio">${mcIco('check',30)}<b>${ver === 'pend' ? 'Todo al día' : 'Nada por aquí'}</b><span>${ver === 'pend' ? 'Ningún papel de tu inventario vence en los próximos 30 días.' : 'No hay papeles en esta vista.'}</span></div>`) + cliHtml;
+}
+// Renovar SOAT o tecnomecánica
+function papRenovar(tipo, id, doc){
+  const v = (tipo === 'carro' ? carros : motos).find(o=>o.id === id); if(!v) return;
+  const f = doc === 'soat' ? v.soat : v.tecno, tiene = doc === 'soat' ? v.soatTiene : v.tecnoTiene;
+  const sug = tiene && f && papDias(f) >= 0 ? papMasAnio(f) : papMasAnio(hoyLocal());   // vencido: el nuevo corre desde hoy
+  ccAbrirModal(`${tiene ? 'Renovar' : 'Registrar'} ${PAP_DOCS[doc]}`, `
+    <div class="cc-pista" style="margin:0 0 12px">${v.placa ? `<span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span> ` : ''}<b>${ccEsc(intNomV(v))}</b>${tiene && f ? ` · vencía el ${mcFechaCorta(f)}` : ''}</div>
+    <div class="form-grid" style="margin-bottom:10px">
+      <div class="form-group"><label class="form-label">Nueva fecha de vencimiento <span>*</span></label><input type="date" id="pp-fecha" value="${sug}"></div>
+      <div class="form-group"><label class="form-label">¿Cuánto pagaste? ($)</label><input type="number" id="pp-valor" min="0" placeholder="Opcional"></div>
+    </div>
+    <div class="cc-pista ok" style="margin:0">Lo que pagues se suma a los gastos ${tipo === 'carro' ? 'del carro' : 'de la moto'}, así tu ganancia queda exacta.</div>
+    <div class="cc-modal-acc"><button class="btn btn-ghost" onclick="ccCerrarModal()">Cancelar</button><button class="btn btn-primary" onclick="papGuardarRenov('${tipo}','${id}','${doc}')">Guardar</button></div>`);
+}
+function papGuardarRenov(tipo, id, doc){
+  const v = (tipo === 'carro' ? carros : motos).find(o=>o.id === id); if(!v) return;
+  const f = document.getElementById('pp-fecha').value, valor = ccNum(document.getElementById('pp-valor').value);
+  if(!f){ toast('Pon la nueva fecha de vencimiento', 'err'); mcMarcarFalta('pp-fecha'); return; }
+  if(doc === 'soat'){ v.soatTiene = true; v.soat = f; } else { v.tecnoTiene = true; v.tecno = f; }
+  if(valor > 0){ v.gastos = v.gastos || []; v.gastos.push({nombre: `${PAP_DOCS[doc]} hasta ${mcFechaCorta(f)}`, monto: valor}); }
+  tipo === 'carro' ? saveCarros() : saveMotos();
+  ccCerrarModal(); papRefrescar();
+  mcNotificar({tipo:'confirmar', titulo:`${PAP_DOCS[doc]} al día`, texto:`${intNomV(v)} · vence el ${mcFechaCorta(f)}${valor > 0 ? ' · ' + fmt(valor) + ' sumado a gastos' : ''}`});
+}
+function papPagarImp(tipo, id, anio){
+  const v = (tipo === 'carro' ? carros : motos).find(o=>o.id === id); if(!v) return;
+  const debe = (String(v.impuesto||'').startsWith('debe:') ? v.impuesto.slice(5).split(',') : (v.impPagados||[]).map(String)).filter(y=>y && y !== String(anio));
+  v.impPagados = debe; v.impuesto = impTextoFromDebidos(debe); v.impuestoPago = debe.length === 0;
+  tipo === 'carro' ? saveCarros() : saveMotos();
+  papRefrescar();
+  mcNotificar({tipo:'confirmar', titulo:`Impuesto ${anio} pagado`, texto: debe.length ? `${intNomV(v)} · todavía debe ${debe.join(', ')}` : `${intNomV(v)} quedó al día`});
+}
+// Aviso en el formulario de venta: papeles vencidos del vehículo elegido
+function papFormVenta(){
+  const box = document.getElementById('vta-pap-aviso'); if(!box) return;
+  const sel = document.getElementById('vta-moto')?.value || '';
+  if(!sel){ box.hidden = true; return; }
+  const [tipo, id] = sel.split(':'), its = papItems().filter(i=>i.v.id === id && i.tipo === tipo && (i.estado === 'vencido' || i.estado === 'semana'));
+  if(!its.length){ box.hidden = true; box.innerHTML = ''; return; }
+  box.hidden = false;
+  box.innerHTML = `${mcIco('documento',15)}<span><b>Ojo con los papeles:</b> ${its.map(i=>`${PAP_DOCS[i.doc]} ${papEstadoTxt(i).txt.toLowerCase()}`).join(' · ')}. Acuérdalo con el comprador antes de entregar.</span>`;
+}
+
+// ── CUMPLEAÑOS Y CARTAS A LOS CLIENTES ───────────────────────────────────────
+// No solo vender: crear relación. El sistema junta a tus clientes (contactos,
+// compradores e interesados), te avisa de sus cumpleaños y de los aniversarios de
+// su compra, y arma una carta con diseño, con el logo de la empresa, para enviarla
+// por WhatsApp o imprimirla.
+const MC_EMPRESA = {nombre:'Compraventa SID', sub:'Soluciones Integrales Doradal', linea:'Compraventa · Asesorías de tránsito', logo:'img/sid-logo.png'};
+const cumClave = (nombre, tel) => { const t = String(tel||'').replace(/\D/g,''); return t.length >= 7 ? 't' + t.slice(-10) : 'n' + mcSinTildes(nombre).replace(/\s+/g,' '); };
+// Todas las personas con las que tienes relación, sin repetir
+function cumPersonas(){
+  const m = new Map();
+  const add = (nombre, tel, nac, extra) => {
+    if(!String(nombre||'').trim()) return;
+    const kt = cumClave('', tel), kn = cumClave(nombre, '');
+    let p = (kt.startsWith('t') && m.get(kt)) || m.get(kn);
+    if(!p){ p = {nombre: String(nombre).trim(), tel: tel || '', nac: '', compras: [], contactoId: '', interesadoId: ''}; }
+    if(!p.tel && tel) p.tel = tel; if(!p.nac && nac) p.nac = nac;
+    Object.assign(p, Object.fromEntries(Object.entries(extra || {}).filter(([k,v])=>v && k !== 'compra')));
+    if(extra && extra.compra) p.compras.push(extra.compra);
+    p.key = cumClave(p.nombre, p.tel);
+    if(kt.startsWith('t')) m.set(kt, p); m.set(kn, p);
+  };
+  contactos.forEach(c=>add(c.nombre, c.tel, c.nac, {contactoId: c.id, tipo: c.tipo}));
+  ventas.forEach(v=>add(v.comprador, v.compradorCel, v.compradorNac, {compra: v}));
+  intLista().forEach(x=>add(x.nombre, x.tel, x.nac, {interesadoId: x.id}));
+  return [...new Set(m.values())];
+}
+function cumProximo(nac){
+  if(!nac) return null;
+  const [, mm, dd] = String(nac).split('-').map(Number); if(!mm || !dd) return null;
+  const hoy = new Date(hoyLocal() + 'T00:00:00'); let d = new Date(hoy.getFullYear(), mm - 1, dd);
+  if(d < hoy) d = new Date(hoy.getFullYear() + 1, mm - 1, dd);
+  return {fecha: hoyLocal(d), dias: Math.round((d - hoy) / 86400000)};
+}
+function cumEnviada(key, tipo, anio){ return (cfgData.cartas || []).find(c=>c.key === key && c.tipo === tipo && String(c.anio) === String(anio)); }
+// Fechas especiales de los próximos días: cumpleaños y aniversarios de compra
+function cumFechas(dias){
+  dias = dias == null ? 30 : dias;
+  const r = [];
+  cumPersonas().forEach(p=>{
+    const c = cumProximo(p.nac);
+    if(c && c.dias <= dias) r.push({p, tipo:'cumple', ...c, anio: c.fecha.slice(0,4), enviada: cumEnviada(p.key, 'cumple', c.fecha.slice(0,4))});
+    p.compras.forEach(v=>{ if(!v.fecha) return; const a = cumProximo(v.fecha); if(!a) return;
+      const anos = Number(a.fecha.slice(0,4)) - Number(v.fecha.slice(0,4)); if(anos < 1 || a.dias > Math.min(dias, 7)) return;
+      r.push({p, tipo:'aniv', venta: v, anos, ...a, anio: a.fecha.slice(0,4) + '-' + v.id, enviada: cumEnviada(p.key, 'aniv', a.fecha.slice(0,4) + '-' + v.id)}); });
+  });
+  return r.sort((a,b)=>a.dias - b.dias);
+}
+function cumCuando(d){ return d === 0 ? 'Hoy' : d === 1 ? 'Mañana' : `En ${d} días`; }
+// Panel en Contactos
+function cumPanel(){
+  const el = document.getElementById('ct-fechas'); if(!el) return;
+  const f = cumFechas(30), sin = cumPersonas().filter(p=>!p.nac && (p.compras.length || p.tipo === 'comprador')).length;
+  el.innerHTML = `<div class="av-tarjeta cum-panel">
+    <div class="av-pap-cab"><i class="av-ico">${mcIco('regalo',20)}</i>
+      <div class="av-txt"><b>Fechas especiales de tus clientes</b><span>${f.length ? `${f.length} en los próximos 30 días · una carta a tiempo vale más que mil publicaciones` : 'No hay cumpleaños en los próximos 30 días'}</span></div>
+      ${sin ? `<button class="av-ir" onclick="cumCompletar()">Faltan ${sin} cumpleaños ${mcIco('flecha',14)}</button>` : ''}</div>
+    ${f.length ? `<div class="av-pap-lista">${f.slice(0,8).map(cumFila).join('')}</div>` : ''}
+  </div>`;
+}
+function cumFila(x){
+  const p = x.p, veh = x.venta ? `${x.venta.motoNombre||''}`.trim() : '';
+  return `<div class="av-pap-fila cum-fila">
+    <div class="cum-dia ${x.dias === 0 ? 'hoy' : ''}"><b>${Number(x.fecha.slice(8,10))}</b><span>${MESES[Number(x.fecha.slice(5,7)) - 1].slice(0,3)}</span></div>
+    <div class="av-pap-veh"><b>${ccEsc(p.nombre)}</b><span>${x.tipo === 'cumple' ? `${mcIco('regalo',12)} Cumpleaños` : `${mcIco('corazon',12)} ${x.anos} año${x.anos !== 1 ? 's' : ''} con su ${ccEsc(veh)}`} · <em class="${x.dias === 0 ? 'mal' : x.dias <= 3 ? 'medio' : ''}">${cumCuando(x.dias)}</em></span></div>
+    <div class="av-pap-btns">${x.enviada ? `<span class="in-ofrecida">${mcIco('check',12)}Carta enviada</span>` : ''}<button class="ct-btn ${x.enviada ? '' : 'cum-btn'}" onclick="cumAbrirCarta('${p.key}','${x.tipo}'${x.venta ? `,'${x.venta.id}'` : ''})">${mcIco('regalo',14)}${x.enviada ? 'Ver carta' : 'Crear carta'}</button></div>
+  </div>`;
+}
+// Completar cumpleaños de los clientes que no lo tienen
+function cumCompletar(){
+  const ps = cumPersonas().filter(p=>!p.nac && (p.compras.length || p.tipo === 'comprador'));
+  ccAbrirModal('Cumpleaños de tus clientes', `
+    <div class="cc-pista" style="margin:0 0 12px">Pon la fecha de los que sepas (el año no importa). Se guarda al elegirla.</div>
+    <div class="cum-comp">${ps.map(p=>`<div class="cum-comp-fila"><div><b>${ccEsc(p.nombre)}</b><small>${p.compras.length ? 'Te compró ' + ccEsc(p.compras.map(v=>v.motoNombre).filter(Boolean).join(', ')) : 'Contacto comprador'}</small></div><input type="date" onchange="cumGuardarNac('${p.key}', this.value, this)"></div>`).join('') || '<div class="in-vacio-c">Todos tienen su cumpleaños.</div>'}</div>
+    <div class="cc-modal-acc"><button class="btn btn-primary" onclick="ccCerrarModal();cumPanel()">Listo</button></div>`);
+}
+function cumGuardarNac(key, nac, el){
+  if(!nac) return;
+  const p = cumPersonas().find(o=>o.key === key); if(!p) return;
+  let c = p.contactoId && contactos.find(o=>o.id === p.contactoId);
+  if(!c){ c = {id: uid(), historial: 0, nombre: p.nombre, cc: (p.compras[0] && p.compras[0].compradorCC) || '', tel: p.tel || '', nota: '', tipo: 'comprador'}; contactos.unshift(c); }
+  c.nac = nac; saveContactos();
+  if(el){ el.closest('.cum-comp-fila').classList.add('ok'); }
+  toast(`Cumpleaños de ${p.nombre} guardado`);
+}
+
+// ── La carta ────────────────────────────────────────────────────────────────
+const CUM_CARTAS = [
+  'Hoy el mundo celebra algo importante: que existes. Gracias por confiar en nosotros y por dejarnos ser parte de tu camino. Que este nuevo año te encuentre con salud, con fe y con la fuerza para ir tras cada sueño. No lo olvides nunca: eres único, y nadie puede hacer lo que solo tú puedes hacer.',
+  'Hoy saludamos este día con amor en el corazón, porque es tu día. Para nosotros no eres un cliente más: eres parte de nuestra historia. Te deseamos un año lleno de buenos caminos, de logros que te llenen de orgullo y de momentos felices con las personas que más quieres.',
+  'Un año más de vida es un regalo que merece celebrarse en grande. Que cada kilómetro de este nuevo año te lleve a lugares mejores, que persistas hasta alcanzar todo lo que te propongas y que nunca te falten motivos para sonreír. Es un honor contarte entre los nuestros.',
+  'Vive este día como si fuera el más especial de todos, porque lo es. Hoy celebramos a una persona valiosa, trabajadora y de buen corazón. Que Dios te bendiga con salud, prosperidad y tranquilidad para ti y para tu familia. Aquí siempre tendrás amigos que te desean lo mejor.',
+  'Hay personas que hacen que nuestro trabajo valga la pena, y tú eres una de ellas. En tu cumpleaños queremos decirte gracias: por tu confianza, por tu palabra y por tu amistad. Que este año multipliques tus bendiciones y que todo lo que emprendas salga adelante.',
+  'Hoy comienza un nuevo capítulo de tu vida. Que lo llenes de metas cumplidas, de viajes, de risas y de paz. Nunca olvides lo valioso que eres para tu familia, para tus amigos y para nosotros. Desde nuestra casa hasta la tuya: que tengas el mejor de los cumpleaños.'
+];
+const CUM_ANIV = [
+  'Hace {anos} te llevaste tu {veh} y nos diste el mejor regalo: tu confianza. Hoy queremos recordarte que seguimos aquí para lo que necesites, desde los papeles y las asesorías de tránsito hasta tu próximo vehículo. Gracias por ser parte de nuestra familia.',
+  'Un día como hoy, hace {anos}, empezó tu camino con tu {veh}. Esperamos que te haya llevado a muchos lugares y a muchos buenos momentos. Gracias por elegirnos; para nosotros cada cliente es un amigo, y tú eres uno muy especial.',
+  '{SeCumplen} desde que tu {veh} salió de nuestras manos a las tuyas. Que sigan muchos kilómetros de bendiciones, de trabajo y de alegrías. Cuenta siempre con nosotros: aquí tienes una casa y unos amigos.'
+];
+const CUM_FRASES = ['Saludaré este día con amor en mi corazón.', 'Persistiré hasta alcanzar el éxito.', 'Soy el milagro más grande del mundo.', 'Viviré este día como si fuera el último.', 'Hoy comenzaré una nueva vida.', 'Multiplicaré mi valor un ciento por ciento.'];
+const CUM_DISENOS = {
+  dorado: {n:'Dorado', bg:['#0b1022','#1c2444'], marco:'#d9b25f', titulo:'#f0cf7d', nombre:'#ffffff', texto:'#d8dbe8', suave:'#9aa3c0', acento:'#f0cf7d'},
+  clasico:{n:'Clásico', bg:['#fbf6ea','#f2e7cf'], marco:'#c8902e', titulo:'#b5761b', nombre:'#3a2a1c', texto:'#4a3a2c', suave:'#8a7660', acento:'#e09412'},
+  sid:    {n:'SID', bg:['#ffcf2e','#f39200'], marco:'#3a2c22', titulo:'#3a2c22', nombre:'#2b2019', texto:'#3a2c22', suave:'#5a4535', acento:'#ffffff'}
+};
+let _cum = null;
+function cumHash(s){ let h = 0; for(const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; }
+function cumAbrirCarta(key, tipo, ventaId){
+  const p = cumPersonas().find(o=>o.key === key); if(!p) return;
+  const venta = ventaId ? ventas.find(v=>v.id === ventaId) : p.compras.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)))[0];
+  const anio = new Date().getFullYear(), h = cumHash(p.key + anio);
+  const anos = venta && venta.fecha ? Math.max(1, anio - Number(venta.fecha.slice(0,4))) : 1;
+  _cum = {p, tipo, venta, anos, diseno: Object.keys(CUM_DISENOS)[h % 3], idx: h % (tipo === 'aniv' ? CUM_ANIV.length : CUM_CARTAS.length), frase: true, fraseIdx: h % CUM_FRASES.length, texto: ''};
+  _cum.texto = cumTextoBase();
+  const nombre1 = String(p.nombre).trim().split(/\s+/)[0];
+  ccAbrirModal(tipo === 'aniv' ? `Carta de aniversario para ${p.nombre}` : `Carta de cumpleaños para ${p.nombre}`, `
+    <div class="cum-editor">
+      <div class="cum-prev"><canvas id="cum-canvas" width="1080" height="1350"></canvas></div>
+      <div class="cum-ctrl">
+        <label class="form-label">Diseño</label>
+        <div class="cum-dis" id="cum-dis">${Object.entries(CUM_DISENOS).map(([k,d])=>`<button type="button" data-d="${k}" class="${_cum.diseno === k ? 'activo' : ''}" onclick="cumDiseno('${k}')"><i style="background:linear-gradient(135deg,${d.bg[0]},${d.bg[1]});border-color:${d.marco}"></i>${d.n}</button>`).join('')}</div>
+        <label class="form-label" style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">La carta <button type="button" class="in-despues" onclick="cumOtra()">Otra carta ↻</button></label>
+        <textarea id="cum-texto" rows="7" oninput="_cum.texto=this.value;cumDibujarPronto()">${ccEsc(_cum.texto)}</textarea>
+        <label class="in-chk"><input type="checkbox" id="cum-frase" checked onchange="_cum.frase=this.checked;cumDibujar()"> Incluir frase de <em>El vendedor más grande del mundo</em></label>
+        <div class="cum-acc">
+          <button class="btn btn-primary" onclick="cumCompartir()">${mcIco('regalo',15)}Enviar tarjeta</button>
+          <button class="btn btn-ghost" onclick="cumPdf()">${mcIco('documento',15)}Carta para imprimir (PDF)</button>
+          ${intTel(p) ? `<a class="btn btn-ghost cum-wa" href="https://wa.me/${intTel(p).length === 10 ? '57' + intTel(p) : intTel(p)}?text=${encodeURIComponent(tipo === 'aniv' ? `¡Hola ${nombre1}! Hoy se cumplen ${anos} año${anos !== 1 ? 's' : ''} desde que te llevaste tu ${venta ? venta.motoNombre : 'vehículo'}. Te preparamos esta carta con mucho cariño. — ${MC_EMPRESA.nombre}` : `¡Feliz cumpleaños, ${nombre1}! Te preparamos esta carta con mucho cariño. Que Dios te bendiga hoy y siempre. — ${MC_EMPRESA.nombre}`)}" target="_blank" rel="noopener">${mcIco('chat',15)}Abrir su chat de WhatsApp</a>` : ''}
+          <button class="btn btn-ghost" onclick="cumMarcar()">${mcIco('check',15)}Marcar como enviada</button>
+        </div>
+        <div class="cc-pista" style="margin-top:8px">En el iPhone, "Enviar tarjeta" abre compartir: elige WhatsApp y su chat. En la Mac se descarga la imagen; luego abre su chat y arrástrala.</div>
+      </div>
+    </div>`);
+  const box = document.getElementById('modal-cc'); if(box) box.classList.add('cum-modal');
+  cumDibujar();
+}
+function cumTextoBase(){
+  const c = _cum, veh = c.venta ? `${c.venta.motoNombre||''}`.trim() : '';
+  if(c.tipo === 'aniv') return CUM_ANIV[c.idx % CUM_ANIV.length].replace('{SeCumplen}', c.anos === 1 ? 'Se cumple un año' : `Se cumplen ${c.anos} años`).replace('{anos}', c.anos === 1 ? 'un año' : c.anos + ' años').replace('{veh}', veh || 'vehículo');
+  return CUM_CARTAS[c.idx % CUM_CARTAS.length] + (veh ? ` Y que tu ${veh} te siga acompañando en cada aventura.` : '');
+}
+function cumOtra(){ _cum.idx++; _cum.fraseIdx++; _cum.texto = cumTextoBase(); const t = document.getElementById('cum-texto'); if(t) t.value = _cum.texto; cumDibujar(); }
+function cumDiseno(k){ _cum.diseno = k; document.querySelectorAll('#cum-dis button').forEach(b=>b.classList.toggle('activo', b.dataset.d === k)); cumDibujar(); }
+let _cumT = null; function cumDibujarPronto(){ clearTimeout(_cumT); _cumT = setTimeout(cumDibujar, 180); }
+let _cumLogo = null;
+function cumLogo(){ if(_cumLogo) return _cumLogo; _cumLogo = new Promise(res=>{ const i = new Image(); i.onload = ()=>res(i); i.onerror = ()=>res(null); i.src = MC_EMPRESA.logo; }); return _cumLogo; }
+function cumLineas(ctx, texto, ancho){
+  const out = [];
+  String(texto).split(/\n+/).forEach(par=>{ let l = ''; par.split(/\s+/).filter(Boolean).forEach(w=>{ const t = l ? l + ' ' + w : w; if(ctx.measureText(t).width > ancho && l){ out.push(l); l = w; } else l = t; }); if(l) out.push(l); });
+  return out;
+}
+async function cumDibujar(){
+  const cv = document.getElementById('cum-canvas'); if(!cv || !_cum) return;
+  try { await Promise.all(['700 64px "Playfair Display"','italic 400 40px "Playfair Display"','400 96px "Great Vibes"','400 34px "Lora"','italic 400 30px "Lora"'].map(f=>document.fonts.load(f))); } catch(e){}
+  const logo = await cumLogo();
+  const c = _cum, d = CUM_DISENOS[c.diseno], x = cv.getContext('2d'), W = 1080, H = 1350;
+  x.clearRect(0, 0, W, H);
+  const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, d.bg[0]); g.addColorStop(1, d.bg[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  // Brillos suaves
+  const rr = (cx, cy, r, col) => { const gg = x.createRadialGradient(cx, cy, 0, cx, cy, r); gg.addColorStop(0, col); gg.addColorStop(1, col.replace(/,[\d.]+\)$/, ',0)')); x.fillStyle = gg; x.fillRect(cx - r, cy - r, r * 2, r * 2); };
+  if(c.diseno === 'dorado'){ rr(900, 120, 420, 'rgba(240,207,125,.16)'); rr(120, 1250, 420, 'rgba(124,92,255,.18)'); }
+  if(c.diseno === 'clasico'){ rr(540, 0, 700, 'rgba(255,255,255,.55)'); }
+  if(c.diseno === 'sid'){ rr(540, 200, 600, 'rgba(255,255,255,.28)');
+    const rnd = cumHash(c.p.key); for(let i = 0; i < 70; i++){ const a = (rnd * (i + 7)) % 1000 / 1000, b = (rnd * (i + 13)) % 997 / 997, px = 40 + a * 1000, py = 40 + b * 1270; if(px > 130 && px < 950 && py > 300 && py < 1300) continue; x.fillStyle = ['rgba(255,255,255,.55)','rgba(58,44,34,.25)','rgba(255,240,170,.7)'][i % 3]; x.beginPath(); x.arc(px, py, 4 + (i % 4) * 2, 0, Math.PI * 2); x.fill(); } }
+  // Marco doble
+  x.strokeStyle = d.marco; x.lineWidth = 3; x.strokeRect(36, 36, W - 72, H - 72); x.globalAlpha = .55; x.lineWidth = 1.5; x.strokeRect(52, 52, W - 104, H - 104); x.globalAlpha = 1;
+  [[36,36],[W-36,36],[36,H-36],[W-36,H-36]].forEach(([px,py])=>{ x.fillStyle = d.marco; x.beginPath(); x.moveTo(px, py - 12); x.lineTo(px + 12, py); x.lineTo(px, py + 12); x.lineTo(px - 12, py); x.closePath(); x.fill(); });
+  // Logo
+  let y = 92;
+  if(logo){ const lh = 200, lw = lh * logo.width / logo.height; if(c.diseno === 'dorado'){ x.save(); x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowBlur = 30; } x.drawImage(logo, (W - lw) / 2, y, lw, lh); if(c.diseno === 'dorado') x.restore(); y += lh + 26; }
+  x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+  // Título
+  x.fillStyle = d.titulo; x.font = '400 104px "Great Vibes", "Snell Roundhand", cursive';
+  x.fillText(c.tipo === 'aniv' ? 'Feliz aniversario' : 'Feliz cumpleaños', W / 2, y + 86); y += 120;
+  // Nombre
+  const nombre = String(c.p.nombre).trim().split(/\s+/).slice(0, 2).join(' ');
+  let fs = 74; x.font = `700 ${fs}px "Playfair Display", Georgia, serif`; while(x.measureText(nombre).width > W - 220 && fs > 44){ fs -= 2; x.font = `700 ${fs}px "Playfair Display", Georgia, serif`; }
+  x.fillStyle = d.nombre; x.fillText(nombre, W / 2, y + fs * .82); y += fs + 30;
+  // Separador
+  x.strokeStyle = d.acento; x.globalAlpha = .8; x.lineWidth = 2; x.beginPath(); x.moveTo(W / 2 - 120, y); x.lineTo(W / 2 - 18, y); x.moveTo(W / 2 + 18, y); x.lineTo(W / 2 + 120, y); x.stroke(); x.globalAlpha = 1;
+  x.fillStyle = d.acento; x.beginPath(); x.moveTo(W / 2, y - 9); x.lineTo(W / 2 + 9, y); x.lineTo(W / 2, y + 9); x.lineTo(W / 2 - 9, y); x.closePath(); x.fill(); y += 48;
+  // Texto de la carta (se ajusta para caber)
+  const pie = 290, frase = c.frase ? CUM_FRASES[c.fraseIdx % CUM_FRASES.length] : '';
+  const alto = H - pie - y - (frase ? 110 : 20);
+  let t = 38, lineas, lh;
+  do { x.font = `400 ${t}px "Lora", Georgia, serif`; lineas = cumLineas(x, c.texto, W - 240); lh = t * 1.5; t -= 1; } while(lineas.length * lh > alto && t > 22);
+  x.fillStyle = d.texto; lineas.forEach((l, i)=>x.fillText(l, W / 2, y + t + i * lh)); y += lineas.length * lh + 18;
+  // Frase de Og Mandino
+  if(frase){ x.font = 'italic 400 31px "Lora", Georgia, serif'; x.fillStyle = d.titulo; x.fillText(`«${frase}»`, W / 2, y + 40); x.font = '600 21px Inter, sans-serif'; x.fillStyle = d.suave; x.fillText('OG MANDINO · EL VENDEDOR MÁS GRANDE DEL MUNDO', W / 2, y + 78); }
+  // Firma
+  const fy = H - pie + 30;
+  x.font = 'italic 400 33px "Lora", Georgia, serif'; x.fillStyle = d.suave; x.fillText('Con aprecio y gratitud,', W / 2, fy + 32);
+  x.font = '700 58px "Playfair Display", Georgia, serif'; x.fillStyle = d.nombre; x.fillText(MC_EMPRESA.nombre, W / 2, fy + 102);
+  x.font = '700 20px Inter, sans-serif'; x.fillStyle = d.suave;
+  x.fillText(MC_EMPRESA.linea.toUpperCase(), W / 2, fy + 142); x.fillText(MC_EMPRESA.sub.toUpperCase(), W / 2, fy + 170);
+}
+function cumBlob(){ return new Promise(res=>document.getElementById('cum-canvas').toBlob(res, 'image/png')); }
+function cumArchivo(){ const n = mcSinTildes(_cum.p.nombre).replace(/[^a-z0-9]+/g,'-'); return `${_cum.tipo === 'aniv' ? 'aniversario' : 'cumpleanos'}-${n}.png`; }
+async function cumCompartir(){
+  await cumDibujar();
+  const blob = await cumBlob(); if(!blob){ toast('No se pudo crear la imagen', 'err'); return; }
+  const file = new File([blob], cumArchivo(), {type:'image/png'});
+  try {
+    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file]}); cumMarcar(true); return; }
+  } catch(e){ if(e && e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = cumArchivo(); document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+  toast('Tarjeta descargada: ahora abre su chat y adjúntala');
+  cumMarcar(true);
+}
+async function cumPdf(){
+  await cumDibujar();
+  try {
+    const {jsPDF} = await ccCargarPdf(), doc = new jsPDF({unit:'mm', format:'a5'});
+    const img = document.getElementById('cum-canvas').toDataURL('image/jpeg', .94), w = 148, h = w * 1350 / 1080, top = (210 - h) / 2;
+    doc.addImage(img, 'JPEG', 0, Math.max(0, top), w, h);
+    doc.save(cumArchivo().replace('.png', '.pdf'));
+    toast('Carta en PDF lista para imprimir');
+  } catch(e){ toast('No se pudo crear el PDF. Revisa tu conexión.', 'err'); }
+}
+function cumAnioClave(tipo, p, venta){
+  const base = tipo === 'aniv' ? (venta && venta.fecha) : p.nac, pr = cumProximo(base);
+  let anio = pr ? Number(pr.fecha.slice(0,4)) : new Date().getFullYear();
+  if(pr && pr.dias > 300) anio -= 1;   // ya pasó hace pocos días: es la de este año
+  return tipo === 'aniv' ? anio + '-' + (venta ? venta.id : '') : String(anio);
+}
+function cumMarcar(silencio){
+  if(!_cum) return;
+  const anio = cumAnioClave(_cum.tipo, _cum.p, _cum.venta);
+  cfgData.cartas = (cfgData.cartas || []).filter(c=>!(c.key === _cum.p.key && c.tipo === _cum.tipo && String(c.anio) === String(anio)));
+  cfgData.cartas.push({key: _cum.p.key, nombre: _cum.p.nombre, tipo: _cum.tipo, anio, fecha: hoyLocal(), diseno: _cum.diseno});
+  saveCfg();
+  if(!silencio) ccCerrarModal();
+  mcNotificar({tipo:'confirmar', titulo:'Carta enviada', texto:`${_cum.p.nombre} · quedó registrada`});
+  cumPanel(); papRefrescar();
+}
+// Lo de papeles y relación que va al Plan de hoy
+function relPlan(){
+  const P = [];
+  cumFechas(3).filter(f=>!f.enviada).forEach(f=>{
+    const veh = f.venta ? (f.venta.motoNombre || '') : '';
+    P.push({k:`cum|${f.p.key}|${f.tipo}|${f.anio}`, area:'rel', prio: f.dias === 0 ? .8 : 3.8, tono:'cum', ico: f.tipo === 'aniv' ? 'corazon' : 'regalo',
+      titulo: f.tipo === 'aniv' ? `${f.dias === 0 ? 'Hoy' : cumCuando(f.dias)} cumple ${f.anos} año${f.anos !== 1 ? 's' : ''} ${ccEsc(f.p.nombre)} con su ${ccEsc(veh)}` : `${f.dias === 0 ? 'Hoy cumple años' : cumCuando(f.dias) + ' cumple años'} ${ccEsc(f.p.nombre)}`,
+      texto: f.dias === 0 ? 'Mándale su carta: es un detalle que no olvida y que te diferencia de cualquier vendedor.' : 'Prepara su carta con tiempo para enviarla ese día.',
+      acc:[{label:'Crear carta', fn:`cumAbrirCarta('${f.p.key}','${f.tipo}'${f.venta ? `,'${f.venta.id}'` : ''})`, cls:'listo'}]});
+  });
+  papItems().filter(i=>i.doc !== 'imp' && (i.estado === 'vencido' || i.estado === 'semana')).forEach(i=>{
+    const e = papEstadoTxt(i);
+    P.push({k:`pap|${i.tipo}|${i.v.id}|${i.doc}|${i.fecha}`, area:'rel', prio: i.d < 0 ? 2.6 : 2.9, tono: i.d < 0 ? 'mal' : 'medio', ico:'documento',
+      titulo:`${PAP_DOCS[i.doc]} ${i.tipo === 'carro' ? 'del' : 'de la'} ${ccEsc(intNomV(i.v))}: ${e.txt.toLowerCase()}`, texto:`${i.v.placa ? 'Placa ' + ccEsc(String(i.v.placa).toUpperCase()) + ' · ' : ''}Vence el ${mcFechaCorta(i.fecha)}. Renuévalo para venderl${i.tipo === 'carro' ? 'o' : 'a'} sin problemas.`,
+      acc:[{label:'Ya lo renové', fn:`papRenovar('${i.tipo}','${i.v.id}','${i.doc}')`, cls:'listo'}]});
+  });
+  papClientes().filter(c=>!c.avisado && c.d <= 7 && c.d >= -7).forEach(c=>{
+    P.push({k:`papc|${c.k}`, area:'rel', prio:4.5, tono:'idea', ico:'corazon',
+      titulo:`Recuérdale a ${ccEsc(c.vta.comprador)} su ${PAP_DOCS[c.doc]}`, texto:`${c.d < 0 ? 'Venció' : 'Vence'} el ${mcFechaCorta(c.fecha)} (${ccEsc(c.vta.motoNombre||'su vehículo')}). Es servicio al cliente y un trámite más para ti.`,
+      acc:[c.tel.length >= 7 ? {wa:`https://wa.me/${c.tel.length === 10 ? '57' + c.tel : c.tel}?text=${encodeURIComponent(papMsgCliente(c))}`, label:'Recordarle', fn:`papAvisar('${c.k}')`, cls:'wa'} : {label:'Ya le avisé', fn:`papAvisar('${c.k}')`, cls:'listo'}]});
+  });
+  return P;
 }
 mcAplicarIconos();
 
@@ -8054,6 +8545,7 @@ function populateVentaSelect(){
 function calcularVenta(){
   sepFormVenta();
   try { intFormVenta(); } catch(e){}
+  try { papFormVenta(); } catch(e){}
   ccResumenForm('vta');
   const sel=document.getElementById('vta-moto').value;
   const precio=parseFloat(document.getElementById('vta-precio').value)||0;
@@ -8155,6 +8647,7 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
     comprador:   document.getElementById('vta-comprador').value.trim(),
     compradorCC: document.getElementById('vta-cc').value.trim(),
     compradorCel:document.getElementById('vta-celular').value.trim(),
+    compradorNac:(document.getElementById('vta-nac')||{}).value||'',
     gastosList:  gastosPrevios,
     vendedorCC:  vehiculo?vehiculo.vendedorCC||'':'',
     vendedorNombre: vehiculo?vehiculo.vendedorNombre||'':'',
@@ -8180,7 +8673,8 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
   const ventaNueva = ventas.find(x=>x.id===idVenta);
   if(pp.retoma) ccCrearVehiculoRetoma(ventaNueva, retomaId);
   saveVentas();
-  ['vta-moto','vta-precio','vta-fecha','vta-comprador','vta-cc','vta-celular']
+  try { const vn = ventas.find(x=>x.id===idVenta); if(vn && vn.compradorNac && vn.comprador){ const ct = contactos.find(c=>mcSinTildes(c.nombre)===mcSinTildes(vn.comprador)); if(ct && !ct.nac){ ct.nac = vn.compradorNac; saveContactos(); } } } catch(e){}
+  ['vta-moto','vta-precio','vta-fecha','vta-comprador','vta-cc','vta-celular','vta-nac']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   elegirFormaPago('vta', '');
   ccLimpiarForm('vta');
@@ -11238,11 +11732,14 @@ function mcMostrarAviso(){
     dato(inventario.length, inventario.length === 1 ? 'vehículo en inventario' : 'vehículos en inventario') +
     (papeles ? dato(papeles, papeles === 1 ? 'papel pendiente' : 'papeles pendientes') : '') +
     (ccTotales().falta > 0 ? dato(fmt(ccTotales().falta), 'te debe ' + FP_FINANCIERA) : '') +
-    (intPendientes().length ? dato(intPendientes().length, intPendientes().length === 1 ? 'cliente por contactar' : 'clientes por contactar') : '');
+    (intPendientes().length ? dato(intPendientes().length, intPendientes().length === 1 ? 'cliente por contactar' : 'clientes por contactar') : '') +
+    (papUrgentes().length ? dato(papUrgentes().length, papUrgentes().length === 1 ? 'papel por renovar' : 'papeles por renovar') : '');
+  const _cumHoy = cumFechas(0).filter(f=>!f.enviada);
   const _intCo = intExactas();
   document.getElementById('mc-aviso-extra').innerHTML = quieto && diasEnInventario(quieto.fechaCompra) >= 30
     ? `${nomVeh(quieto._t,'ico')} <strong>${quieto.nombre}</strong> lleva <strong>${diasEnInventario(quieto.fechaCompra)} días</strong> en el inventario: es el que más capital tiene quieto.`
     : '';
+  if(_cumHoy.length) document.getElementById('mc-aviso-extra').innerHTML = `<strong>Hoy ${_cumHoy[0].tipo === 'aniv' ? 'es el aniversario de compra de' : 'cumple años'} ${ccEsc(_cumHoy[0].p.nombre)}</strong>${_cumHoy.length > 1 ? ` y ${_cumHoy.length - 1} más` : ''}: mándale su carta desde el Plan de hoy.` + (document.getElementById('mc-aviso-extra').innerHTML ? '<br>' + document.getElementById('mc-aviso-extra').innerHTML : '');
   if(_intCo.length) document.getElementById('mc-aviso-extra').innerHTML = `<strong>Posible venta:</strong> ${ccEsc(_intCo[0].x.nombre)} buscaba ${ccEsc(_intCo[0].x.vehTexto)} y en tu inventario está <strong>${ccEsc(intNomV(_intCo[0].v))}</strong>.${_intCo.length > 1 ? ` Y ${_intCo.length - 1} coincidencia${_intCo.length > 2 ? 's' : ''} más en Interesados.` : ''}` + (document.getElementById('mc-aviso-extra').innerHTML ? '<br>' + document.getElementById('mc-aviso-extra').innerHTML : '');
   const el = document.getElementById('mc-aviso');
   el.style.display = 'flex';
@@ -11337,6 +11834,7 @@ function abrirModalContacto(tipo){
   document.getElementById('c-cc').value='';
   document.getElementById('c-tel').value='';
   document.getElementById('c-nota').value='';
+  document.getElementById('c-nac').value='';
   document.getElementById('modal-contacto-title').textContent='Nuevo contacto';
   setTipoContactoModal(tipo||_tabContacto);
   const m=document.getElementById('modal-contacto');
@@ -11358,7 +11856,7 @@ function guardarContacto(){
   if(!nombre){toast('El nombre es obligatorio','err');return;}
   const tipo=document.getElementById('c-tipo-val').value;
   const editId=document.getElementById('c-edit-id').value;
-  const data={nombre,cc:document.getElementById('c-cc').value.trim(),tel:document.getElementById('c-tel').value.trim(),nota:document.getElementById('c-nota').value.trim(),tipo};
+  const data={nombre,cc:document.getElementById('c-cc').value.trim(),tel:document.getElementById('c-tel').value.trim(),nota:document.getElementById('c-nota').value.trim(),nac:document.getElementById('c-nac').value,tipo};
   if(editId){
     const idx=contactos.findIndex(c=>c.id===editId);
     if(idx>-1) contactos[idx]={...contactos[idx],...data};
@@ -11376,6 +11874,7 @@ function editarContacto(id){
   document.getElementById('c-cc').value=c.cc||'';
   document.getElementById('c-tel').value=c.tel||'';
   document.getElementById('c-nota').value=c.nota||'';
+  document.getElementById('c-nac').value=c.nac||'';
   document.getElementById('modal-contacto-title').textContent='Editar contacto';
   setTipoContactoModal(c.tipo||'vendedor');
   const m=document.getElementById('modal-contacto');
@@ -11498,17 +11997,19 @@ function guardarContactoDesdeForm(form){
     cc=document.getElementById('vta-cc').value.trim();
     tel=document.getElementById('vta-celular').value.trim();
     tipo='comprador';
+    var nac=(document.getElementById('vta-nac')||{}).value||'';
   }
   if(!nombre){toast('Escribe el nombre antes de guardar','err');return;}
   const existe=contactos.find(c=>c.nombre.toLowerCase()===nombre.toLowerCase()&&c.tipo===tipo);
   if(existe){
     if(cc&&!existe.cc) existe.cc=cc;
     if(tel&&!existe.tel) existe.tel=tel;
+    if(typeof nac!=='undefined'&&nac&&!existe.nac) existe.nac=nac;
     saveContactos();
     toast('✓ '+nombre+' ya estaba — datos actualizados');
     return;
   }
-  contactos.unshift({id:uid(),nombre,cc,tel,nota:'',tipo,historial:1});
+  contactos.unshift({id:uid(),nombre,cc,tel,nota:'',tipo,historial:1,...(typeof nac!=='undefined'&&nac?{nac}:{})});
   saveContactos();
   toast('✓ '+nombre+' guardado en Contactos');
 }
@@ -11680,6 +12181,7 @@ mcIniciar();
     <div class="form-group"><label class="form-label">Nombre completo *</label><input type="text" id="c-nombre" placeholder="Nombre completo"></div>
     <div class="form-group"><label class="form-label">Cédula</label><input type="text" id="c-cc" placeholder="Número de cédula"></div>
     <div class="form-group"><label class="form-label">Teléfono / WhatsApp</label><input type="text" id="c-tel" placeholder="Ej: 3001234567"></div>
+    <div class="form-group"><label class="form-label">Cumpleaños (opcional)</label><input type="date" id="c-nac"></div>
     <div class="form-group"><label class="form-label">Nota (opcional)</label><input type="text" id="c-nota" placeholder="Ej: proveedor confiable..."></div>
     <div style="display:flex;gap:10px;margin-top:1.25rem">
       <button class="btn btn-primary" onclick="guardarContacto()">✓ Guardar</button>
