@@ -2618,6 +2618,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .cum-fila .av-pap-btns{width:auto}
   html .cum-comp-fila{flex-wrap:wrap}.cum-comp-fila input{width:100%}
 }
+
+.nac-sel{display:grid;grid-template-columns:88px 1fr;gap:8px}
+.nac-sel select{width:100%}
+.cum-comp-fila .nac-sel{width:230px;flex:none}
+@media (max-width:760px){ html .cum-comp-fila .nac-sel{width:100%} }
 </style>
 </head>
 <body>
@@ -3027,7 +3032,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             <div class="form-group"><label class="form-label">CC del comprador</label><input type="text" id="vta-cc" placeholder="Número de cédula"></div>
             <div class="form-group"><label class="form-label">Celular del comprador</label><input type="text" id="vta-celular" placeholder="Ej: 3001234567"></div>
           </div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">Cumpleaños del comprador (opcional)</label><input type="date" id="vta-nac"><div class="form-hint" style="font-size:11.5px;color:var(--text3);margin-top:4px">Para enviarle una carta en su cumpleaños.</div></div>
+          <div class="form-group" style="margin-bottom:12px"><label class="form-label">Cumpleaños del comprador (opcional)</label><div class="nac-sel" id="vta-nac" data-nac></div><div class="form-hint" style="font-size:11.5px;color:var(--text3);margin-top:4px">Para enviarle una carta en su cumpleaños.</div></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button type="button" onclick="abrirBuscarContacto('comprador','venta')" class="btn btn-ghost btn-sm" title="Buscar comprador en contactos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>Buscar comprador</button>
             <button type="button" onclick="guardarContactoDesdeForm('venta')" class="btn btn-ghost btn-sm" title="Guardar comprador en contactos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>Guardar comprador</button>
@@ -5492,6 +5497,7 @@ function ccRefrescar(){
 function ccAbrirModal(titulo, html){
   document.getElementById('cc-modal-titulo').textContent = titulo;
   document.getElementById('cc-modal-cuerpo').innerHTML = html;
+  try { mcNacInit(document.getElementById('cc-modal-cuerpo')); } catch(e){}
   document.getElementById('modal-cc').classList.remove('modal-hidden');
   mcEcoMontos(document.getElementById('cc-modal-cuerpo'));
 }
@@ -6694,7 +6700,7 @@ function renderContactos(){
     return `<div class="ct-card">
       <div class="ct-top">
         <div class="ct-av" style="background:linear-gradient(135deg,hsl(${h},72%,58%),hsl(${(h+50)%360},70%,42%))">${ccEsc(mcIniciales(c.nombre))}</div>
-        <div class="ct-id"><b>${ccEsc(c.nombre)}</b><span>${c.cc ? 'CC ' + ccEsc(c.cc) : 'Sin cédula'}${c.tel ? ' · ' + ccEsc(c.tel) : ''}</span>${c.nac ? `<span class="ct-cum">${mcIco('regalo',11)}Cumple el ${Number(c.nac.slice(8,10))} de ${MESES[Number(c.nac.slice(5,7)) - 1].toLowerCase()}</span>` : ''}</div>
+        <div class="ct-id"><b>${ccEsc(c.nombre)}</b><span>${c.cc ? 'CC ' + ccEsc(c.cc) : 'Sin cédula'}${c.tel ? ' · ' + ccEsc(c.tel) : ''}</span>${mcNacMD(c.nac) ? `<span class="ct-cum">${mcIco('regalo',11)}Cumple el ${mcNacTxt(c.nac)}</span>` : ''}</div>
         <span class="ct-ed"><button class="ct-ic" onclick="editarContacto('${c.id}')" aria-label="Editar ${ccEsc(c.nombre)}">${mcIco('lapiz',15)}</button><button class="ct-ic mt-borrar" onclick="eliminarContacto('${c.id}')" aria-label="Eliminar ${ccEsc(c.nombre)}">${mcIco('papelera',15)}</button></span>
       </div>
       <div class="ct-act ${a.n ? '' : 'nada'}">${mcIco(c.tipo === 'vendedor' ? 'moto' : 'llave', 14)}<span>${act}</span><i class="ct-rol ${c.tipo === 'vendedor' ? 'v' : 'c'}">${c.tipo === 'vendedor' ? 'Me vende' : 'Me compra'}</i></div>
@@ -6873,7 +6879,7 @@ function intAbrir(id, pre){
       <div class="form-group"><label class="form-label">Nombre <span>*</span></label><input type="text" id="in-nombre" list="in-contactos" placeholder="Nombre del cliente" value="${ccEsc(e.nombre||'')}" oninput="intContactoElegido()"></div>
       <div class="form-group"><label class="form-label">Celular</label><input type="text" id="in-tel" placeholder="Ej: 3001234567" inputmode="tel" value="${ccEsc(e.tel||'')}"></div>
     </div>
-    <div class="form-group" style="margin:-4px 0 14px"><label class="form-label">Cumpleaños (opcional)</label><input type="date" id="in-nac" value="${e.nac||''}"></div>
+    <div class="form-group" style="margin:-4px 0 14px"><label class="form-label">Cumpleaños (opcional)</label><div class="nac-sel" id="in-nac" data-nac data-v="${ccEsc(e.nac||'')}"></div></div>
     <datalist id="in-contactos">${compradores.map(c=>`<option value="${ccEsc(c.nombre)}">`).join('')}</datalist>
     <div class="in-paso"><span>2</span>¿Qué vehículo quiere?</div>
     <div class="in-modo" id="in-modo">
@@ -7629,6 +7635,25 @@ function papFormVenta(){
 // compradores e interesados), te avisa de sus cumpleaños y de los aniversarios de
 // su compra, y arma una carta con diseño, con el logo de la empresa, para enviarla
 // por WhatsApp o imprimirla.
+// Cumpleaños: solo día y mes ("MM-DD"). Las fechas viejas con año ("AAAA-MM-DD")
+// siguen sirviendo: el año se ignora y el sistema calcula si ya pasó o viene.
+function mcNacMD(nac){
+  const p = String(nac||'').split('-').map(Number), mm = p.length === 3 ? p[1] : p[0], dd = p.length === 3 ? p[2] : p[1];
+  return mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31 ? [mm, dd] : null;
+}
+function mcNacTxt(nac){ const md = mcNacMD(nac); return md ? `${md[1]} de ${MESES[md[0] - 1].toLowerCase()}` : ''; }
+// Convierte cada <div data-nac> en dos listas (día y mes) con .value = "MM-DD"
+function mcNacInit(raiz){
+  (raiz || document).querySelectorAll('[data-nac]').forEach(el=>{
+    if(el._nac) return; el._nac = true;
+    el.innerHTML = `<select aria-label="Día"><option value="">Día</option>${Array.from({length:31},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('')}</select><select aria-label="Mes"><option value="">Mes</option>${MESES.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('')}</select>`;
+    const [sd, sm] = el.querySelectorAll('select');
+    Object.defineProperty(el, 'value', {configurable:true,
+      get(){ return sd.value && sm.value ? String(sm.value).padStart(2,'0') + '-' + String(sd.value).padStart(2,'0') : ''; },
+      set(v){ const md = mcNacMD(v); sd.value = md ? String(md[1]) : ''; sm.value = md ? String(md[0]) : ''; }});
+    if(el.dataset.v) el.value = el.dataset.v;
+  });
+}
 const MC_EMPRESA = {nombre:'Compraventa SID', sub:'Soluciones Integrales Doradal', linea:'Compraventa · Asesorías de tránsito', logo:'img/sid-logo.png'};
 const cumClave = (nombre, tel) => { const t = String(tel||'').replace(/\D/g,''); return t.length >= 7 ? 't' + t.slice(-10) : 'n' + mcSinTildes(nombre).replace(/\s+/g,' '); };
 // Todas las personas con las que tienes relación, sin repetir
@@ -7652,7 +7677,7 @@ function cumPersonas(){
 }
 function cumProximo(nac){
   if(!nac) return null;
-  const [, mm, dd] = String(nac).split('-').map(Number); if(!mm || !dd) return null;
+  const md = mcNacMD(nac); if(!md) return null; const [mm, dd] = md;
   const hoy = new Date(hoyLocal() + 'T00:00:00'); let d = new Date(hoy.getFullYear(), mm - 1, dd);
   if(d < hoy) d = new Date(hoy.getFullYear() + 1, mm - 1, dd);
   return {fecha: hoyLocal(d), dias: Math.round((d - hoy) / 86400000)};
@@ -7696,7 +7721,7 @@ function cumCompletar(){
   const ps = cumPersonas().filter(p=>!p.nac && (p.compras.length || p.tipo === 'comprador'));
   ccAbrirModal('Cumpleaños de tus clientes', `
     <div class="cc-pista" style="margin:0 0 12px">Pon la fecha de los que sepas (el año no importa). Se guarda al elegirla.</div>
-    <div class="cum-comp">${ps.map(p=>`<div class="cum-comp-fila"><div><b>${ccEsc(p.nombre)}</b><small>${p.compras.length ? 'Te compró ' + ccEsc(p.compras.map(v=>v.motoNombre).filter(Boolean).join(', ')) : 'Contacto comprador'}</small></div><input type="date" onchange="cumGuardarNac('${p.key}', this.value, this)"></div>`).join('') || '<div class="in-vacio-c">Todos tienen su cumpleaños.</div>'}</div>
+    <div class="cum-comp">${ps.map(p=>`<div class="cum-comp-fila"><div><b>${ccEsc(p.nombre)}</b><small>${p.compras.length ? 'Te compró ' + ccEsc(p.compras.map(v=>v.motoNombre).filter(Boolean).join(', ')) : 'Contacto comprador'}</small></div><div class="nac-sel" data-nac onchange="if(this.value) cumGuardarNac('${p.key}', this.value, this)"></div></div>`).join('') || '<div class="in-vacio-c">Todos tienen su cumpleaños.</div>'}</div>
     <div class="cc-modal-acc"><button class="btn btn-primary" onclick="ccCerrarModal();cumPanel()">Listo</button></div>`);
 }
 function cumGuardarNac(key, nac, el){
@@ -7873,6 +7898,7 @@ function relPlan(){
   return P;
 }
 mcAplicarIconos();
+mcNacInit(); document.addEventListener("DOMContentLoaded", ()=>mcNacInit());
 
 // ── PAPELERA ─────────────────────────────────────────────────────────────────
 // Lo eliminado (motos, carros y ventas) se guarda completo en cfgData.papelera,
@@ -12163,7 +12189,7 @@ mcIniciar();
     <div class="form-group"><label class="form-label">Nombre completo *</label><input type="text" id="c-nombre" placeholder="Nombre completo"></div>
     <div class="form-group"><label class="form-label">Cédula</label><input type="text" id="c-cc" placeholder="Número de cédula"></div>
     <div class="form-group"><label class="form-label">Teléfono / WhatsApp</label><input type="text" id="c-tel" placeholder="Ej: 3001234567"></div>
-    <div class="form-group"><label class="form-label">Cumpleaños (opcional)</label><input type="date" id="c-nac"></div>
+    <div class="form-group"><label class="form-label">Cumpleaños (opcional)</label><div class="nac-sel" id="c-nac" data-nac></div></div>
     <div class="form-group"><label class="form-label">Nota (opcional)</label><input type="text" id="c-nota" placeholder="Ej: proveedor confiable..."></div>
     <div style="display:flex;gap:10px;margin-top:1.25rem">
       <button class="btn btn-primary" onclick="guardarContacto()">✓ Guardar</button>
