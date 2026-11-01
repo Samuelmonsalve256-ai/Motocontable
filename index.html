@@ -2685,7 +2685,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 <div class="page" id="page-papeles">
   <div class="page-header">
     <div class="page-title">Papeles de los vehículos</div>
-    <div class="page-sub">SOAT, tecnomecánica e impuesto de tu inventario en orden de urgencia, y los recordatorios para tus clientes</div>
+    <div class="page-sub">SOAT, tecnomecánica e impuesto de tu inventario en orden de urgencia</div>
   </div>
   <div id="pap-resumen" class="ct-resumen pap-resumen"></div>
   <div class="ct-barra"><div class="ct-seg" id="pap-seg" role="tablist" aria-label="Ver"></div></div>
@@ -7560,10 +7560,10 @@ let _papVer = 'pend';
 function renderPapeles(){
   papContador();
   const cont = document.getElementById('pap-lista'); if(!cont) return;
-  const items = papItems(), cli = papClientes();
+  const items = papItems();
   const n = e => items.filter(i=>i.estado === e && !(i.doc === 'imp' && e === 'ok')).length;
   const r = document.getElementById('pap-resumen');
-  if(r) r.innerHTML = `<div class="${n('vencido') ? 'mal' : ''}"><b>${n('vencido')}</b><small>vencidos o debe</small></div><div class="${n('semana') ? 'sem' : ''}"><b>${n('semana')}</b><small>vencen esta semana</small></div><div><b>${n('mes')}</b><small>vencen este mes</small></div><div class="cli"><b>${cli.filter(c=>!c.avisado).length}</b><small>clientes por recordar</small></div>`;
+  if(r) r.innerHTML = `<div class="${n('vencido') ? 'mal' : ''}"><b>${n('vencido')}</b><small>vencidos o debe</small></div><div class="${n('semana') ? 'sem' : ''}"><b>${n('semana')}</b><small>vencen esta semana</small></div><div><b>${n('mes')}</b><small>vencen este mes</small></div><div><b>${n('sin')}</b><small>sin registrar</small></div>`;
   const ver = _papVer, vis = items.filter(i=>ver === 'todos' ? true : ver === 'sin' ? i.estado === 'sin' : ['vencido','semana','mes'].includes(i.estado))
     .sort((a,b)=>PAP_ORDEN[a.estado] - PAP_ORDEN[b.estado] || (a.d ?? 999) - (b.d ?? 999));
   const seg = document.getElementById('pap-seg');
@@ -7578,14 +7578,8 @@ function renderPapeles(){
         ? (i.debe.length ? i.debe.map(y=>`<button class="ct-btn pap-ok" onclick="papPagarImp('${i.tipo}','${v.id}','${y}')">${mcIco('check',13)}Pagué ${y}</button>`).join('') : '')
         : `<button class="ct-btn pap-ok" onclick="papRenovar('${i.tipo}','${v.id}','${i.doc}')">${mcIco('check',13)}${i.estado === 'sin' ? 'Registrar' : 'Ya lo renové'}</button>`}</div>
     </div>`; };
-  const cliHtml = cli.length ? `<div class="av-tarjeta pap-cli">
-      <div class="av-pap-cab"><i class="av-ico">${mcIco('corazon',20)}</i><div class="av-txt"><b>Recuérdales a tus clientes</b><span>Les vendiste el vehículo y sus papeles vencen pronto. Un mensaje a tiempo es servicio, y un trámite más para ti.</span></div></div>
-      <div class="av-pap-lista">${cli.map(c=>`<div class="av-pap-fila">
-        <div class="av-pap-veh"><b>${ccEsc(c.vta.comprador)}</b><span>${PAP_DOCS[c.doc]} ${c.vta.tipoVehiculo === 'carro' ? 'del' : 'de la'} ${ccEsc(c.vta.motoNombre||'')}${c.vta.motoPlaca ? ' · ' + ccEsc(String(c.vta.motoPlaca).toUpperCase()) : ''} · <em class="${c.d < 0 ? 'mal' : c.d <= 7 ? 'medio' : ''}">${c.d < 0 ? 'venció el ' + mcFechaCorta(c.fecha) : c.d === 0 ? 'vence hoy' : 'vence el ' + mcFechaCorta(c.fecha)}</em></span></div>
-        <div class="av-pap-btns">${c.avisado ? `<span class="in-ofrecida">${mcIco('check',12)}Avisado ${intHace(c.avisado)}</span>` : c.tel.length >= 7 ? `<a class="ct-btn wa" href="https://wa.me/${c.tel.length === 10 ? '57' + c.tel : c.tel}?text=${encodeURIComponent(papMsgCliente(c))}" target="_blank" rel="noopener" onclick="papAvisar('${c.k}')">${mcIco('chat',14)}Recordarle</a>` : `<button class="ct-btn" onclick="papAvisar('${c.k}')">${mcIco('check',14)}Ya le avisé</button>`}</div>
-      </div>`).join('')}</div></div>` : '';
   cont.innerHTML = (vis.length ? `<div class="pap-tabla">${vis.map(fila).join('')}</div>`
-    : `<div class="ct-vacio">${mcIco('check',30)}<b>${ver === 'pend' ? 'Todo al día' : 'Nada por aquí'}</b><span>${ver === 'pend' ? 'Ningún papel de tu inventario vence en los próximos 30 días.' : 'No hay papeles en esta vista.'}</span></div>`) + cliHtml;
+    : `<div class="ct-vacio">${mcIco('check',30)}<b>${ver === 'pend' ? 'Todo al día' : 'Nada por aquí'}</b><span>${ver === 'pend' ? 'Ningún papel de tu inventario vence en los próximos 30 días.' : 'No hay papeles en esta vista.'}</span></div>`);
 }
 // Renovar SOAT o tecnomecánica
 function papRenovar(tipo, id, doc){
@@ -7875,17 +7869,6 @@ function relPlan(){
       titulo: f.tipo === 'aniv' ? `${f.dias === 0 ? 'Hoy' : cumCuando(f.dias)} cumple ${f.anos} año${f.anos !== 1 ? 's' : ''} ${ccEsc(f.p.nombre)} con su ${ccEsc(veh)}` : `${f.dias === 0 ? 'Hoy cumple años' : cumCuando(f.dias) + ' cumple años'} ${ccEsc(f.p.nombre)}`,
       texto: f.dias === 0 ? 'Mándale su carta: es un detalle que no olvida y que te diferencia de cualquier vendedor.' : 'Prepara su carta con tiempo para enviarla ese día.',
       acc:[{label:'Crear carta', fn:`cumAbrirCarta('${f.p.key}','${f.tipo}'${f.venta ? `,'${f.venta.id}'` : ''})`, cls:'listo'}]});
-  });
-  papItems().filter(i=>i.doc !== 'imp' && (i.estado === 'vencido' || i.estado === 'semana')).forEach(i=>{
-    const e = papEstadoTxt(i);
-    P.push({k:`pap|${i.tipo}|${i.v.id}|${i.doc}|${i.fecha}`, area:'rel', prio: i.d < 0 ? 2.6 : 2.9, tono: i.d < 0 ? 'mal' : 'medio', ico:'documento',
-      titulo:`${PAP_DOCS[i.doc]} ${i.tipo === 'carro' ? 'del' : 'de la'} ${ccEsc(intNomV(i.v))}: ${e.txt.toLowerCase()}`, texto:`${i.v.placa ? 'Placa ' + ccEsc(String(i.v.placa).toUpperCase()) + ' · ' : ''}Vence el ${mcFechaCorta(i.fecha)}. Renuévalo para venderl${i.tipo === 'carro' ? 'o' : 'a'} sin problemas.`,
-      acc:[{label:'Ya lo renové', fn:`papRenovar('${i.tipo}','${i.v.id}','${i.doc}')`, cls:'listo'}]});
-  });
-  papClientes().filter(c=>!c.avisado && c.d <= 7 && c.d >= -7).forEach(c=>{
-    P.push({k:`papc|${c.k}`, area:'rel', prio:4.5, tono:'idea', ico:'corazon',
-      titulo:`Recuérdale a ${ccEsc(c.vta.comprador)} su ${PAP_DOCS[c.doc]}`, texto:`${c.d < 0 ? 'Venció' : 'Vence'} el ${mcFechaCorta(c.fecha)} (${ccEsc(c.vta.motoNombre||'su vehículo')}). Es servicio al cliente y un trámite más para ti.`,
-      acc:[c.tel.length >= 7 ? {wa:`https://wa.me/${c.tel.length === 10 ? '57' + c.tel : c.tel}?text=${encodeURIComponent(papMsgCliente(c))}`, label:'Recordarle', fn:`papAvisar('${c.k}')`, cls:'wa'} : {label:'Ya le avisé', fn:`papAvisar('${c.k}')`, cls:'listo'}]});
   });
   return P;
 }
@@ -11732,8 +11715,7 @@ function mcMostrarAviso(){
     dato(inventario.length, inventario.length === 1 ? 'vehículo en inventario' : 'vehículos en inventario') +
     (papeles ? dato(papeles, papeles === 1 ? 'papel pendiente' : 'papeles pendientes') : '') +
     (ccTotales().falta > 0 ? dato(fmt(ccTotales().falta), 'te debe ' + FP_FINANCIERA) : '') +
-    (intPendientes().length ? dato(intPendientes().length, intPendientes().length === 1 ? 'cliente por contactar' : 'clientes por contactar') : '') +
-    (papUrgentes().length ? dato(papUrgentes().length, papUrgentes().length === 1 ? 'papel por renovar' : 'papeles por renovar') : '');
+    (intPendientes().length ? dato(intPendientes().length, intPendientes().length === 1 ? 'cliente por contactar' : 'clientes por contactar') : '');
   const _cumHoy = cumFechas(0).filter(f=>!f.enviada);
   const _intCo = intExactas();
   document.getElementById('mc-aviso-extra').innerHTML = quieto && diasEnInventario(quieto.fechaCompra) >= 30
