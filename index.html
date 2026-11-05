@@ -2623,6 +2623,9 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .nac-sel select{width:100%}
 .cum-comp-fila .nac-sel{width:230px;flex:none}
 @media (max-width:760px){ html .cum-comp-fila .nac-sel{width:100%} }
+
+.ct-carta{white-space:nowrap;margin-left:8px;padding:2px 9px;border-radius:999px;border:1px solid rgba(244,114,182,.5);background:linear-gradient(135deg,rgba(244,114,182,.3),rgba(168,85,247,.25));color:#fff;font:700 11px 'Inter',sans-serif;cursor:pointer}
+.ct-carta:hover{background:linear-gradient(135deg,rgba(244,114,182,.5),rgba(168,85,247,.45))}
 </style>
 </head>
 <body>
@@ -6700,7 +6703,7 @@ function renderContactos(){
     return `<div class="ct-card">
       <div class="ct-top">
         <div class="ct-av" style="background:linear-gradient(135deg,hsl(${h},72%,58%),hsl(${(h+50)%360},70%,42%))">${ccEsc(mcIniciales(c.nombre))}</div>
-        <div class="ct-id"><b>${ccEsc(c.nombre)}</b><span>${c.cc ? 'CC ' + ccEsc(c.cc) : 'Sin cédula'}${c.tel ? ' · ' + ccEsc(c.tel) : ''}</span>${mcNacMD(c.nac) ? `<span class="ct-cum">${mcIco('regalo',11)}Cumple el ${mcNacTxt(c.nac)}</span>` : ''}</div>
+        <div class="ct-id"><b>${ccEsc(c.nombre)}</b><span>${c.cc ? 'CC ' + ccEsc(c.cc) : 'Sin cédula'}${c.tel ? ' · ' + ccEsc(c.tel) : ''}</span>${mcNacMD(c.nac) ? `<span class="ct-cum">${mcIco('regalo',11)}Cumple el ${mcNacTxt(c.nac)}<button class="ct-carta" onclick="cumCartaContacto('${c.id}')">Crear carta</button></span>` : ''}</div>
         <span class="ct-ed"><button class="ct-ic" onclick="editarContacto('${c.id}')" aria-label="Editar ${ccEsc(c.nombre)}">${mcIco('lapiz',15)}</button><button class="ct-ic mt-borrar" onclick="eliminarContacto('${c.id}')" aria-label="Eliminar ${ccEsc(c.nombre)}">${mcIco('papelera',15)}</button></span>
       </div>
       <div class="ct-act ${a.n ? '' : 'nada'}">${mcIco(c.tipo === 'vendedor' ? 'moto' : 'llave', 14)}<span>${act}</span><i class="ct-rol ${c.tipo === 'vendedor' ? 'v' : 'c'}">${c.tipo === 'vendedor' ? 'Me vende' : 'Me compra'}</i></div>
@@ -7716,6 +7719,12 @@ function cumFila(x){
     <div class="av-pap-btns">${x.enviada ? `<span class="in-ofrecida">${mcIco('check',12)}Carta enviada</span>` : ''}<button class="ct-btn ${x.enviada ? '' : 'cum-btn'}" onclick="cumAbrirCarta('${p.key}','${x.tipo}'${x.venta ? `,'${x.venta.id}'` : ''})">${mcIco('regalo',14)}${x.enviada ? 'Ver carta' : 'Crear carta'}</button></div>
   </div>`;
 }
+// Carta desde la tarjeta del contacto, en cualquier momento (no solo cerca del cumpleaños)
+function cumCartaContacto(id){
+  const c = contactos.find(o=>o.id === id); if(!c) return;
+  const ps = cumPersonas(), p = ps.find(o=>o.contactoId === id) || ps.find(o=>o.key === cumClave(c.nombre, c.tel));
+  if(p) cumAbrirCarta(p.key, 'cumple');
+}
 // Completar cumpleaños de los clientes que no lo tienen
 function cumCompletar(){
   const ps = cumPersonas().filter(p=>!p.nac && (p.compras.length || p.tipo === 'comprador'));
@@ -7763,7 +7772,7 @@ function cumAbrirCarta(key, tipo, ventaId){
   const anos = venta && venta.fecha ? Math.max(1, anio - Number(venta.fecha.slice(0,4))) : 1;
   _cum = {p, tipo, venta, anos, diseno: Object.keys(CUM_DISENOS)[h % 3], idx: h % (tipo === 'aniv' ? CUM_ANIV.length : CUM_CARTAS.length), frase: true, fraseIdx: h % CUM_FRASES.length, texto: ''};
   _cum.texto = cumTextoBase();
-  const nombre1 = String(p.nombre).trim().split(/\s+/)[0];
+  const nombre1 = (w => w === w.toUpperCase() ? w.charAt(0) + w.slice(1).toLowerCase() : w)(String(p.nombre).trim().split(/\s+/)[0]);
   ccAbrirModal(tipo === 'aniv' ? `Carta de aniversario para ${p.nombre}` : `Carta de cumpleaños para ${p.nombre}`, `
     <div class="cum-editor">
       <div class="cum-prev"><canvas id="cum-canvas" width="1080" height="1350"></canvas></div>
@@ -7812,7 +7821,8 @@ async function cumDibujar(){
   if(c.diseno === 'dorado'){ rr(900, 120, 420, 'rgba(240,207,125,.16)'); rr(120, 1250, 420, 'rgba(124,92,255,.18)'); }
   if(c.diseno === 'clasico'){ rr(540, 0, 700, 'rgba(255,255,255,.55)'); }
   if(c.diseno === 'sid'){ rr(540, 200, 600, 'rgba(255,255,255,.28)');
-    const rnd = cumHash(c.p.key); for(let i = 0; i < 70; i++){ const a = (rnd * (i + 7)) % 1000 / 1000, b = (rnd * (i + 13)) % 997 / 997, px = 40 + a * 1000, py = 40 + b * 1270; if(px > 130 && px < 950 && py > 300 && py < 1300) continue; x.fillStyle = ['rgba(255,255,255,.55)','rgba(58,44,34,.25)','rgba(255,240,170,.7)'][i % 3]; x.beginPath(); x.arc(px, py, 4 + (i % 4) * 2, 0, Math.PI * 2); x.fill(); } }
+    let sem = cumHash(c.p.key) || 1; const azar = () => { sem = (sem * 1664525 + 1013904223) >>> 0; return sem / 4294967296; };
+    for(let i = 0; i < 90; i++){ const a = azar(), b = azar(), px = 40 + a * 1000, py = 40 + b * 1270; if(px > 130 && px < 950 && py > 300 && py < 1300) continue; x.fillStyle = ['rgba(255,255,255,.55)','rgba(58,44,34,.25)','rgba(255,240,170,.7)'][i % 3]; x.beginPath(); x.arc(px, py, 4 + (i % 4) * 2, 0, Math.PI * 2); x.fill(); } }
   // Marco doble
   x.strokeStyle = d.marco; x.lineWidth = 3; x.strokeRect(36, 36, W - 72, H - 72); x.globalAlpha = .55; x.lineWidth = 1.5; x.strokeRect(52, 52, W - 104, H - 104); x.globalAlpha = 1;
   [[36,36],[W-36,36],[36,H-36],[W-36,H-36]].forEach(([px,py])=>{ x.fillStyle = d.marco; x.beginPath(); x.moveTo(px, py - 12); x.lineTo(px + 12, py); x.lineTo(px, py + 12); x.lineTo(px - 12, py); x.closePath(); x.fill(); });
@@ -7824,7 +7834,8 @@ async function cumDibujar(){
   x.fillStyle = d.titulo; x.font = '400 104px "Great Vibes", "Snell Roundhand", cursive';
   x.fillText(c.tipo === 'aniv' ? 'Feliz aniversario' : 'Feliz cumpleaños', W / 2, y + 86); y += 120;
   // Nombre
-  const nombre = String(c.p.nombre).trim().split(/\s+/).slice(0, 2).join(' ');
+  // Nombre bonito: "ANDRES FELIPE" → "Andres Felipe"
+  const nombre = String(c.p.nombre).trim().split(/\s+/).slice(0, 2).map(w=>w === w.toUpperCase() ? w.charAt(0) + w.slice(1).toLowerCase() : w).join(' ');
   let fs = 74; x.font = `700 ${fs}px "Playfair Display", Georgia, serif`; while(x.measureText(nombre).width > W - 220 && fs > 44){ fs -= 2; x.font = `700 ${fs}px "Playfair Display", Georgia, serif`; }
   x.fillStyle = d.nombre; x.fillText(nombre, W / 2, y + fs * .82); y += fs + 30;
   // Separador
