@@ -2677,6 +2677,92 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   .in-tdot{grid-area:d;align-self:start;margin-top:4px}.in-rnom{grid-area:n}.in-rcuando{grid-area:c;justify-self:end}
   .in-rveh{grid-area:v}.in-rpago{grid-area:p;align-self:center}.in-racc{grid-area:a}
 }
+
+/* ── Papeles por vehículo ───────────────────────────────────────────────── */
+.pap-resumen .ok b{color:#2ee6a6}
+.papv-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:12px}
+.papv{--c:#2ee6a6;padding:16px;border-radius:18px;background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-top:3px solid var(--c)}
+.papv.e-mal{--c:#ff6b8d}.papv.e-semana{--c:#f5c451}.papv.e-mes{--c:#7cb6ff}
+.papv-cab{display:flex;align-items:center;gap:12px}
+.papv-foto{width:56px;height:56px;flex:none;border-radius:14px;overflow:hidden;display:grid;place-items:center;color:#7cb6ff;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.papv-foto img{width:100%;height:100%;object-fit:cover}
+.papv-id{flex:1;min-width:0}
+.papv-id b{display:block;font-size:15px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.papv-id>span{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:#8a8aa8;margin-top:4px}
+.papv-id .cc-placa{color:#111}
+.papv-res{flex:none;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent)}
+.papv-docs{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.papv-doc{--d:#7cb6ff;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--d) 7%,rgba(0,0,0,.2));border:1px solid color-mix(in srgb,var(--d) 25%,transparent)}
+.papv-doc.e-mal{--d:#ff6b8d}.papv-doc.e-semana{--d:#f5c451}.papv-doc.e-mes{--d:#7cb6ff}
+.papv-doc>i{width:34px;height:34px;flex:none;border-radius:10px;display:grid;place-items:center;color:var(--d);background:color-mix(in srgb,var(--d) 15%,transparent)}
+.papv-doc>div{flex:1;min-width:0}
+.papv-doc b{display:block;font-size:13.5px;color:#fff}
+.papv-doc span{display:block;font-size:12px;font-weight:600;color:var(--d);margin-top:1px}
+.papv .pap-tip{margin-top:10px;font-size:12px;display:flex;align-items:center;gap:6px;color:#f5c451}
+.papv-bien{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.papv-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:8px;color:#5be3b0;background:rgba(0,214,143,.08);border:0;font-family:'Inter',sans-serif}
+.papv-chip.sin{color:#9a9ab8;background:rgba(255,255,255,.05);cursor:pointer}
+.papv-chip.sin:hover{color:#fff}
+/* ── Cifras de interesados ──────────────────────────────────────────────── */
+.ic{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ic-hero{grid-column:1/-1;display:flex;align-items:center;gap:24px;flex-wrap:wrap;padding:22px;border-radius:20px;background:linear-gradient(135deg,rgba(0,214,143,.1),rgba(124,92,255,.08) 70%),var(--bg2);border:1px solid rgba(0,214,143,.25)}
+.ic-dona{position:relative;width:150px;height:150px;flex:none}
+.ic-dona>div{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ic-dona b{font:700 34px 'Space Grotesk',sans-serif;color:#fff}
+.ic-dona span{font-size:11px;color:#8a8aa8;text-transform:uppercase;letter-spacing:.08em}
+.ic-hero-txt{flex:1;min-width:220px}
+.ic-hero-txt small{font-size:11.5px;font-weight:700;color:#5be3b0;text-transform:uppercase;letter-spacing:.07em}
+.ic-hero-txt b{display:block;font:700 21px 'Space Grotesk',sans-serif;color:#fff;margin:6px 0;line-height:1.3}
+.ic-hero-txt span{font-size:13px;color:#a9a9c2}
+.ic-kpis{display:flex;flex-direction:column;gap:8px;min-width:250px}
+.ic-kpis>div{display:grid;grid-template-columns:36px auto 1fr;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;background:rgba(0,0,0,.2)}
+.ic-kpis i{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--c);background:color-mix(in srgb,var(--c) 15%,transparent)}
+.ic-kpis b{font:700 22px 'Space Grotesk',sans-serif;color:#fff;min-width:28px}
+.ic-kpis span{font-size:12px;color:#a9a9c2}
+.ic-kpis .alerta b{color:#f5c451}
+.ic-card{padding:18px;border-radius:18px;background:var(--bg2);border:1px solid rgba(255,255,255,.07)}
+.ic-card.ancho{grid-column:1/-1}
+.ic-tit{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#e6e6f5;margin-bottom:14px}
+.ic-tit svg{color:var(--accent)}
+.ic-embudo{display:flex;flex-direction:column;gap:10px}
+.ic-etapa{display:grid;grid-template-columns:140px 1fr 40px;align-items:center;gap:12px;font-size:13px;color:#c9c9de}
+.ic-etapa i{height:14px;border-radius:99px;background:rgba(255,255,255,.05);overflow:hidden}
+.ic-etapa u{display:block;height:100%;border-radius:99px}
+.ic-etapa b{font:700 16px 'Space Grotesk',sans-serif;color:#fff;text-align:right}
+.ic-rank{display:grid;grid-template-columns:26px minmax(80px,1fr) 1.2fr 28px;align-items:center;gap:10px;padding:7px 0;font-size:13px}
+.ic-rank b{color:#fff;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ic-rank i{height:8px;border-radius:99px;background:rgba(255,255,255,.05);overflow:hidden}
+.ic-rank u{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-b,#7c5cff))}
+.ic-rank em{font-style:normal;font-weight:700;color:#fff;text-align:right}
+.ic-pos{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11.5px;font-weight:800;color:#9a9ab8;background:rgba(255,255,255,.06)}
+.ic-pos.p0{color:#2b2019;background:linear-gradient(135deg,#ffd76a,#f5a623)}.ic-pos.p1{color:#1d1d26;background:linear-gradient(135deg,#e8e8f0,#a9a9bd)}.ic-pos.p2{color:#2b1a10;background:linear-gradient(135deg,#f0a36b,#b8693a)}
+.ic-mot{padding:7px 0}
+.ic-mot>div{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.ic-mot b{color:#e6e6f5;font-weight:600}.ic-mot em{font-style:normal;font-weight:700;color:#ff8aa5}
+.ic-mot i{display:block;height:8px;border-radius:99px;background:rgba(255,255,255,.05);overflow:hidden}
+.ic-mot u{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#ff6b8d,#ff8c3c)}
+.ic-pista{margin-top:10px;font-size:11.5px;color:#7a7a98}
+.ic-vacio{font-size:12.5px;color:#7a7a98;padding:6px 0}
+.ic-temps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ic-temp{display:flex;align-items:center;gap:14px;padding:12px;border-radius:14px;background:color-mix(in srgb,var(--c) 6%,rgba(0,0,0,.2));border:1px solid color-mix(in srgb,var(--c) 22%,transparent)}
+.ic-temp-dona{position:relative;width:84px;height:84px;flex:none}
+.ic-temp-dona b{position:absolute;inset:0;display:grid;place-items:center;font:700 18px 'Space Grotesk',sans-serif;color:#fff}
+.ic-temp>div:last-child b{display:block;font-size:15px;color:var(--c)}
+.ic-temp>div:last-child span{display:block;font-size:12px;color:#c9c9de;margin-top:3px}
+.ic-temp>div:last-child em{display:block;font-style:normal;font-size:11.5px;color:#8a8aa8;margin-top:3px}
+@media (max-width:1100px){ .papv-lista{grid-template-columns:1fr} .ic-temps{grid-template-columns:1fr} }
+@media (max-width:760px){
+  html .ic{grid-template-columns:1fr}
+  html .ic-hero{flex-direction:column;align-items:stretch;text-align:left;padding:18px}
+  html .ic-dona{align-self:center}
+  html .ic-kpis{min-width:0}
+  html .ic-etapa{grid-template-columns:110px 1fr 30px}
+  html .papv-cab{flex-wrap:wrap}
+  html .papv-res{order:3;margin-left:68px}
+  html .papv-id b{white-space:normal}
+  html .papv-doc{flex-wrap:wrap}
+  html .papv-doc .ct-btn{width:100%;justify-content:center}
+}
 </style>
 </head>
 <body>
@@ -7565,6 +7651,11 @@ function intLineaParecidas(){
   return `<button class="in-parec-linea" onclick="_intParec=!_intParec;renderInteresados()">${mcIco('buscar',14)}<span><b>${p.length} ${p.length === 1 ? 'moto parecida' : 'motos parecidas'}</b> a lo que buscan tus clientes</span><em>${_intParec ? 'Ocultar' : 'Ver'}</em></button>${_intParec ? intPanelParecidas(p) : ''}`;
 }
 
+// Anillo de porcentaje (SVG)
+function intDona(pct, color, tam, gro){
+  const r = (tam - gro) / 2, c = 2 * Math.PI * r, v = Math.max(0, Math.min(100, pct || 0));
+  return `<svg width="${tam}" height="${tam}" viewBox="0 0 ${tam} ${tam}" aria-hidden="true"><circle cx="${tam/2}" cy="${tam/2}" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="${gro}"/>${v > 0 ? `<circle cx="${tam/2}" cy="${tam/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${gro}" stroke-linecap="round" stroke-dasharray="${(c * v / 100).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${tam/2} ${tam/2})"/>` : ''}</svg>`;
+}
 function intCifras(){
   const L = intLista(), vend = L.filter(x=>x.estado === 'vendido'), perd = L.filter(x=>x.estado === 'perdido'), act = L.filter(intActivo);
   const cerr = vend.length + perd.length, tasa = cerr ? Math.round(vend.length / cerr * 100) : null;
@@ -7574,17 +7665,33 @@ function intCifras(){
   const sinFecha = act.filter(x=>!x.seguimiento).length;
   const motivos = {}; perd.forEach(x=>{ const m = x.motivo || 'Sin motivo'; motivos[m] = (motivos[m]||0) + 1; });
   const pedidos = {}; L.forEach(x=>{ const t = ((x.busca && x.busca.ref) || x.buscaba || x.vehTexto || x.vehNombre || '').trim(); if(!t) return; const cl = intPalabras(t).filter(w=>!INT_GENERICAS.has(w) && !INT_COLORES.has(w) && !intEsAnio(w)), fu = cl.filter(w=>!INT_MARCAS.has(w)); const k = (fu.length ? fu : cl).slice(0,3).join(' ').toUpperCase(); if(!k) return; pedidos[k] = (pedidos[k]||0) + 1; });
-  const porTemp = ['caliente','tibio','frio'].map(t=>{ const v = vend.filter(x=>x.temp === t).length, c = v + perd.filter(x=>x.temp === t).length; return {t, act: act.filter(x=>(x.temp||'tibio') === t).length, pct: c ? Math.round(v / c * 100) : null}; });
-  const barras = (obj, color) => { const e = Object.entries(obj).sort((a,b)=>b[1] - a[1]).slice(0,6), max = e.length ? e[0][1] : 1;
-    return e.length ? e.map(([k,n])=>`<div class="in-barra"><span>${ccEsc(k)}</span><i><u style="width:${Math.round(n / max * 100)}%;background:${color}"></u></i><b>${n}</b></div>`).join('') : '<div class="in-vacio-c">Todavía no hay datos</div>'; };
-  return `<div class="in-cifras">
-    <div class="in-cif"><small>Tasa de cierre</small><b>${tasa == null ? '—' : tasa + '%'}</b><span>${vend.length} vendido${vend.length !== 1 ? 's' : ''} de ${cerr} negocio${cerr !== 1 ? 's' : ''} cerrado${cerr !== 1 ? 's' : ''}</span></div>
-    <div class="in-cif"><small>Días para cerrar</small><b>${prom == null ? '—' : prom}</b><span>en promedio, desde que lo anotas hasta que compra</span></div>
-    <div class="in-cif"><small>Seguimientos este mes</small><b>${segMes}</b><span>mensajes y llamadas registrados</span></div>
-    <div class="in-cif${sinFecha ? ' alerta' : ''}"><small>Activos sin fecha</small><b>${sinFecha}</b><span>${sinFecha ? 'ponles fecha para que no se enfríen' : 'todos tienen próximo seguimiento'}</span></div>
-    <div class="in-cif ancho"><small>Lo que más te piden</small>${barras(pedidos, 'linear-gradient(90deg,var(--accent),var(--accent-b,#7c5cff))')}<span class="in-pista">Úsalo para saber qué comprar: es lo que tus clientes están buscando.</span></div>
-    <div class="in-cif ancho"><small>Por qué se pierden los negocios</small>${barras(motivos, 'linear-gradient(90deg,#ff6b8d,#ff8c3c)')}</div>
-    <div class="in-cif ancho"><small>Según qué tan interesados estaban</small>${porTemp.map(p=>`<div class="in-barra"><span><i class="in-pt t-${p.t}"></i>${INT_TEMP[p.t]}</span><i><u style="width:${p.pct || 0}%;background:${p.t === 'caliente' ? '#ff6b4a' : p.t === 'tibio' ? '#f5c451' : '#5eb4ff'}"></u></i><b>${p.pct == null ? '—' : p.pct + '%'}</b></div>`).join('')}<span class="in-pista">Porcentaje que terminó en venta · activos ahora: ${porTemp.map(p=>`${p.act} ${INT_TEMP[p.t].toLowerCase()}${p.act !== 1 ? 's' : ''}`).join(', ')}</span></div>
+  const TCOL = {caliente:'#ff6b4a', tibio:'#f5c451', frio:'#5eb4ff'};
+  const porTemp = ['caliente','tibio','frio'].map(t=>{ const v = vend.filter(x=>x.temp === t).length, c = v + perd.filter(x=>x.temp === t).length; return {t, act: act.filter(x=>(x.temp||'tibio') === t).length, v, c, pct: c ? Math.round(v / c * 100) : null}; });
+  // Embudo: dónde está cada negocio
+  const etapas = [['nuevo','Nuevos', act.filter(x=>(x.estado||'nuevo') === 'nuevo').length, '#7cb6ff'], ['conversacion','En conversación', act.filter(x=>x.estado === 'conversacion').length, '#a78bfa'], ['separo','Separaron', act.filter(x=>x.estado === 'separo').length, '#2dd4bf'], ['vendido','Vendidos', vend.length, '#00d68f']];
+  const maxE = Math.max(1, ...etapas.map(e=>e[2]));
+  const ranking = Object.entries(pedidos).sort((a,b)=>b[1] - a[1]).slice(0,5), maxP = ranking.length ? ranking[0][1] : 1;
+  const motTot = perd.length || 1, motE = Object.entries(motivos).sort((a,b)=>b[1] - a[1]).slice(0,5);
+  const vacio = t => `<div class="ic-vacio">${t}</div>`;
+  return `<div class="ic">
+    <div class="ic-hero">
+      <div class="ic-dona">${intDona(tasa, 'url(#icg)', 150, 14).replace('<svg ', '<svg ').replace('aria-hidden="true">', 'aria-hidden="true"><defs><linearGradient id="icg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2dd4bf"/><stop offset="1" stop-color="#00d68f"/></linearGradient></defs>')}<div><b>${tasa == null ? '—' : tasa + '%'}</b><span>cierre</span></div></div>
+      <div class="ic-hero-txt"><small>Tasa de cierre</small><b>${tasa == null ? 'Todavía sin negocios cerrados' : `De cada 10 negocios que cierras, ${Math.round(tasa / 10)} terminan en venta`}</b><span>${vend.length} vendido${vend.length !== 1 ? 's' : ''} · ${perd.length} perdido${perd.length !== 1 ? 's' : ''}</span></div>
+      <div class="ic-kpis">
+        <div><i style="--c:#7cb6ff">${mcIco('reloj',18)}</i><b>${prom == null ? '—' : prom}</b><span>días para cerrar en promedio</span></div>
+        <div><i style="--c:#2dd4bf">${mcIco('chat',18)}</i><b>${segMes}</b><span>seguimientos este mes</span></div>
+        <div class="${sinFecha ? 'alerta' : ''}"><i style="--c:${sinFecha ? '#f5c451' : '#00d68f'}">${mcIco('calendario',18)}</i><b>${sinFecha}</b><span>${sinFecha ? 'activos sin fecha de seguimiento' : 'todos con fecha de seguimiento'}</span></div>
+      </div>
+    </div>
+    <div class="ic-card ancho"><div class="ic-tit">${mcIco('embudo',16)}Dónde están tus negocios</div>
+      <div class="ic-embudo">${etapas.map(([k,n,c,col])=>`<div class="ic-etapa"><span>${n}</span><i><u style="width:${Math.max(c ? 8 : 0, Math.round(c / maxE * 100))}%;background:${col}"></u></i><b>${c}</b></div>`).join('')}</div></div>
+    <div class="ic-card"><div class="ic-tit">${mcIco('trofeo',16)}Lo que más te piden</div>
+      ${ranking.length ? ranking.map(([k,n],i)=>`<div class="ic-rank"><span class="ic-pos p${i}">${i + 1}</span><b>${ccEsc(k)}</b><i><u style="width:${Math.round(n / maxP * 100)}%"></u></i><em>${n}</em></div>`).join('') : vacio('Cuando anotes lo que buscan tus clientes, aquí verás lo más pedido.')}
+      <div class="ic-pista">Úsalo para saber qué comprar: ya tienes a quién vendérselo.</div></div>
+    <div class="ic-card"><div class="ic-tit">${mcIco('no',16)}Por qué se pierden</div>
+      ${motE.length ? motE.map(([k,n])=>{ const pc = Math.round(n / motTot * 100); return `<div class="ic-mot"><div><b>${ccEsc(k)}</b><em>${pc}%</em></div><i><u style="width:${pc}%"></u></i></div>`; }).join('') : vacio('Todavía no has perdido negocios. ¡Así se hace!')}</div>
+    <div class="ic-card ancho"><div class="ic-tit">${mcIco('fuego',16)}Según qué tan interesados estaban</div>
+      <div class="ic-temps">${porTemp.map(p=>`<div class="ic-temp" style="--c:${TCOL[p.t]}"><div class="ic-temp-dona">${intDona(p.pct, TCOL[p.t], 84, 9)}<b>${p.pct == null ? '—' : p.pct + '%'}</b></div><div><b>${INT_TEMP[p.t]}</b><span>${p.c ? `${p.v} de ${p.c} terminaron en venta` : 'Sin negocios cerrados'}</span><em>${p.act} activo${p.act !== 1 ? 's' : ''} ahora</em></div></div>`).join('')}</div></div>
   </div>`;
 }
 mcAplicarIconos();
@@ -7668,29 +7775,60 @@ function papEstadoTxt(i){
   return {cls:'ok', txt:`Al día · ${Math.round(i.d / 30)} meses`};
 }
 let _papVer = 'pend';
+const papMalo = i => i.doc === 'imp' ? i.debe.length > 0 : ['vencido','semana','mes'].includes(i.estado);
+// Los papeles agrupados por vehículo: una tarjeta por moto o carro
+function papVehiculos(){
+  const m = new Map();
+  papItems().forEach(i=>{ const k = i.tipo + ':' + i.v.id; if(!m.has(k)) m.set(k, {v: i.v, tipo: i.tipo, diasInv: i.diasInv, docs: []}); m.get(k).docs.push(i); });
+  return [...m.values()].map(o=>{
+    const malos = o.docs.filter(papMalo);
+    const peor = malos.some(i=>i.doc === 'imp' || i.d < 0 || i.d === 0) ? 'mal' : malos.some(i=>i.estado === 'semana') ? 'semana' : malos.length ? 'mes' : 'ok';
+    const dmin = Math.min(...malos.map(i=>i.doc === 'imp' ? -999 : i.d));
+    return {...o, malos, peor, dmin};
+  });
+}
+function papContador(){
+  const n = papVehiculos().filter(o=>o.peor === 'mal' || o.peor === 'semana').length;
+  const el = document.getElementById('nav-pap-n'); if(el) el.textContent = n || '';
+  const m = document.getElementById('mc-mas-pap-n'); if(m) m.textContent = n || '';
+}
 function renderPapeles(){
   papContador();
   const cont = document.getElementById('pap-lista'); if(!cont) return;
-  const items = papItems();
-  const n = e => items.filter(i=>i.estado === e && !(i.doc === 'imp' && e === 'ok')).length;
+  const vs = papVehiculos(), c = e => vs.filter(o=>o.peor === e).length;
   const r = document.getElementById('pap-resumen');
-  if(r) r.innerHTML = `<div class="${n('vencido') ? 'mal' : ''}"><b>${n('vencido')}</b><small>vencidos o debe</small></div><div class="${n('semana') ? 'sem' : ''}"><b>${n('semana')}</b><small>vencen esta semana</small></div><div><b>${n('mes')}</b><small>vencen este mes</small></div><div><b>${n('sin')}</b><small>sin registrar</small></div>`;
-  const ver = _papVer, vis = items.filter(i=>ver === 'todos' ? true : ver === 'sin' ? i.estado === 'sin' : ['vencido','semana','mes'].includes(i.estado))
-    .sort((a,b)=>PAP_ORDEN[a.estado] - PAP_ORDEN[b.estado] || (a.d ?? 999) - (b.d ?? 999));
+  if(r) r.innerHTML = `<div class="${c('mal') ? 'mal' : ''}"><b>${c('mal')}</b><small>con papeles vencidos</small></div><div class="${c('semana') ? 'sem' : ''}"><b>${c('semana')}</b><small>vencen esta semana</small></div><div><b>${c('mes')}</b><small>vencen este mes</small></div><div class="ok"><b>${c('ok')}</b><small>con todo al día</small></div>`;
+  const ver = _papVer, orden = {mal:0, semana:1, mes:2, ok:3};
+  const vis = vs.filter(o=>ver === 'todos' || o.malos.length).sort((a,b)=>orden[a.peor] - orden[b.peor] || a.dmin - b.dmin);
   const seg = document.getElementById('pap-seg');
-  if(seg) seg.innerHTML = [['pend','Por renovar', items.filter(i=>['vencido','semana','mes'].includes(i.estado)).length],['sin','Sin registrar', n('sin')],['todos','Todos', items.length]]
-    .map(([k,t,c])=>`<button class="${ver === k ? 'activo' : ''}" onclick="_papVer='${k}';renderPapeles()">${t}<i>${c}</i></button>`).join('');
-  const fila = i => { const e = papEstadoTxt(i), v = i.v, consejo = i.doc === 'soat' && i.diasInv != null && i.diasInv >= 100 && ['vencido','semana','mes'].includes(i.estado) ? `<span class="pap-tip">${mcIco('objetivo',12)}Lleva ${i.diasInv} días: renuévalo, con SOAT al día se vende más fácil</span>` : '';
-    return `<div class="pap-fila e-${e.cls}">
-      <div class="pap-doc"><i>${mcIco(i.doc === 'imp' ? 'recibo' : 'documento',16)}</i><b>${PAP_DOCS[i.doc]}</b></div>
-      <div class="pap-veh"><b>${v.placa ? `<span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span>` : ''}${ccEsc(intNomV(v))}</b><span>${i.fecha ? 'Vence el ' + mcFechaCorta(i.fecha) : i.doc === 'imp' ? 'Impuesto vehicular' : 'Sin fecha registrada'}${i.diasInv != null ? ' · ' + i.diasInv + ' días en inventario' : ''}</span>${consejo}</div>
-      <span class="pap-est ${e.cls}">${e.txt}</span>
-      <div class="pap-acc">${i.doc === 'imp'
-        ? (i.debe.length ? i.debe.map(y=>`<button class="ct-btn pap-ok" onclick="papPagarImp('${i.tipo}','${v.id}','${y}')">${mcIco('check',13)}Pagué ${y}</button>`).join('') : '')
-        : `<button class="ct-btn pap-ok" onclick="papRenovar('${i.tipo}','${v.id}','${i.doc}')">${mcIco('check',13)}${i.estado === 'sin' ? 'Registrar' : 'Ya lo renové'}</button>`}</div>
+  if(seg) seg.innerHTML = [['pend','Por renovar', vs.filter(o=>o.malos.length).length],['todos','Todos los vehículos', vs.length]]
+    .map(([k,t,n])=>`<button class="${ver === k ? 'activo' : ''}" onclick="_papVer='${k}';renderPapeles()">${t}<i>${n}</i></button>`).join('');
+  const doc = (o, i) => { const e = papEstadoTxt(i);
+    return `<div class="papv-doc e-${e.cls}">
+      <i>${mcIco(i.doc === 'imp' ? 'recibo' : 'documento',16)}</i>
+      <div><b>${PAP_DOCS[i.doc]}</b><span>${e.txt}${i.fecha ? ` · ${i.d < 0 ? 'era el' : 'el'} ${mcFechaCorta(i.fecha)}` : ''}</span></div>
+      ${i.doc === 'imp'
+        ? i.debe.map(y=>`<button class="ct-btn pap-ok" onclick="papPagarImp('${o.tipo}','${o.v.id}','${y}')">${mcIco('check',13)}Pagué ${y}</button>`).join('')
+        : `<button class="ct-btn pap-ok" onclick="papRenovar('${o.tipo}','${o.v.id}','${i.doc}')">${mcIco('check',13)}Ya lo renové</button>`}
     </div>`; };
-  cont.innerHTML = (vis.length ? `<div class="pap-tabla">${vis.map(fila).join('')}</div>`
-    : `<div class="ct-vacio">${mcIco('check',30)}<b>${ver === 'pend' ? 'Todo al día' : 'Nada por aquí'}</b><span>${ver === 'pend' ? 'Ningún papel de tu inventario vence en los próximos 30 días.' : 'No hay papeles en esta vista.'}</span></div>`);
+  const chip = i => { const e = papEstadoTxt(i);
+    return i.estado === 'sin' && i.doc !== 'imp'
+      ? `<button class="papv-chip sin" onclick="papRenovar('${i.tipo}','${i.v.id}','${i.doc}')">${PAP_DOCS[i.doc]} · registrar</button>`
+      : `<span class="papv-chip">${mcIco('check',11)}${PAP_DOCS[i.doc]}${i.fecha ? ' hasta ' + mcFechaCorta(i.fecha) : ' al día'}</span>`; };
+  const tarjeta = o => { const v = o.v, bien = o.docs.filter(i=>!papMalo(i)), n = o.malos.length;
+    const tip = o.diasInv != null && o.diasInv >= 100 && o.malos.some(i=>i.doc === 'soat') ? `<div class="pap-tip">${mcIco('objetivo',12)}Lleva ${o.diasInv} días en inventario: con SOAT al día se vende más fácil</div>` : '';
+    return `<div class="papv e-${o.peor}">
+      <div class="papv-cab">
+        <div class="papv-foto">${v.foto ? `<img ${mcFotoAttr(v.foto)} alt="">` : mcIco(o.tipo, 26)}</div>
+        <div class="papv-id"><b>${ccEsc(intNomV(v))}</b><span>${v.placa ? `<span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span>` : 'Sin placa'}${o.diasInv != null ? ` · ${o.diasInv} días en inventario` : ''}</span></div>
+        <span class="papv-res">${n ? `${n} ${n === 1 ? 'papel' : 'papeles'} por resolver` : 'Todo al día'}</span>
+      </div>
+      ${n ? `<div class="papv-docs">${o.malos.map(i=>doc(o, i)).join('')}</div>` : ''}
+      ${tip}
+      ${bien.length ? `<div class="papv-bien">${bien.map(chip).join('')}</div>` : ''}
+    </div>`; };
+  cont.innerHTML = vis.length ? `<div class="papv-lista">${vis.map(tarjeta).join('')}</div>`
+    : `<div class="ct-vacio">${mcIco('check',30)}<b>${ver === 'pend' ? 'Todo al día' : 'No hay vehículos en inventario'}</b><span>${ver === 'pend' ? 'Ningún vehículo tiene papeles vencidos ni por vencer en los próximos 30 días.' : 'Cuando ingreses motos o carros, sus papeles aparecen aquí.'}</span></div>`;
 }
 // Renovar SOAT o tecnomecánica
 function papRenovar(tipo, id, doc){
