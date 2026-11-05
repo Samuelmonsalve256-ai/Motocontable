@@ -2763,6 +2763,69 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .papv-doc{flex-wrap:wrap}
   html .papv-doc .ct-btn{width:100%;justify-content:center}
 }
+
+/* ── Metas: sueños y retos ───────────────────────────────────────────────── */
+.mt-stat b.sue{color:#f5c451}
+.mt-foco.con-img .mt-foco-img{opacity:.6;background:none}
+.mt-foco-img .mt-img,.mt-portada .mt-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mt-portada.con-img{height:170px}
+.mt-portada.con-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 30%,rgba(10,10,18,.85))}
+.mt-portada .mt-chip,.mt-portada .mt-card-anillo{position:relative;z-index:1}
+.mt-card.sueno{border-color:rgba(245,196,81,.3);box-shadow:0 18px 40px -26px rgba(245,196,81,.35)}
+.mt-que{font-size:12.5px;color:#a9a9c2;margin:4px 0 8px}
+.mt-foco .mt-que{font-size:14px;color:#c9c9de;margin:4px 0 6px}
+.mt-conds{display:flex;flex-direction:column;gap:9px;margin:14px 0 12px}
+.mt-conds-tit{font-size:11px;font-weight:700;color:#8a8aa8;text-transform:uppercase;letter-spacing:.07em}
+.mt-cond{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+.mt-cond span{display:flex;align-items:center;gap:7px;font-size:13px;color:#e6e6f5}
+.mt-cond span svg{color:var(--mb)}
+.mt-cond b{font:700 13.5px 'Space Grotesk',sans-serif;color:#fff}
+.mt-cond b em{font-style:normal;color:#8a8aa8;font-weight:500}
+.mt-cond i{grid-column:1/-1;height:7px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+.mt-cond u{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ma),var(--mb))}
+.mt-cond.ok span,.mt-cond.ok span svg{color:#2ee6a6}.mt-cond.ok u{background:#00d68f}
+.mt-tro-img{width:40px;height:40px;border-radius:11px;overflow:hidden;flex:none;position:relative}
+.mm-modo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.mm-modo button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:14px;border-radius:14px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#c9c9de;cursor:pointer;text-align:left;font-family:'Inter',sans-serif}
+.mm-modo button svg{color:#9a9ab8}
+.mm-modo button b{font-size:14px;color:#fff}
+.mm-modo button small{font-size:12px;color:#8a8aa8}
+.mm-modo button.activo{border-color:#f5c451;background:rgba(245,196,81,.1)}
+.mm-modo button.activo svg{color:#f5c451}
+.mm-modo button[data-m="reto"].activo{border-color:rgba(var(--accent-rgb),.7);background:rgba(var(--accent-rgb),.1)}
+.mm-modo button[data-m="reto"].activo svg{color:var(--accent)}
+.mm-foto{display:flex;gap:14px;align-items:center;margin-bottom:14px;padding:12px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06)}
+.mm-foto-prev{position:relative;width:96px;height:96px;flex:none;border-radius:14px;overflow:hidden;display:grid;place-items:center;color:#6f6f8e;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.15)}
+.mm-foto-prev img{width:100%;height:100%;object-fit:cover}
+.mm-cargando{position:absolute;inset:auto 0 0 0;padding:3px;font-size:10.5px;text-align:center;color:#fff;background:rgba(0,0,0,.6)}
+.mm-foto-acc{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.mm-foto-btns{display:flex;gap:6px;flex-wrap:wrap}
+.mm-fila{display:grid;grid-template-columns:1.1fr 1fr;gap:8px;margin-bottom:10px}
+.mm-chips{display:flex;gap:6px;flex-wrap:wrap}
+.mm-chips[hidden]{display:none}
+.mm-chips button{padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#c9c9de;font:600 12.5px 'Inter',sans-serif;cursor:pointer}
+.mm-chips button.activo{color:#fff;border-color:rgba(var(--accent-rgb),.65);background:rgba(var(--accent-rgb),.16)}
+#mm-sec-sueno[hidden],#mm-sec-reto[hidden],#mm-fechas[hidden]{display:none}
+.mm-cond{display:grid;grid-template-columns:auto 1.2fr 1fr auto;gap:8px;align-items:center;margin-bottom:8px}
+.mm-cond:first-child{grid-template-columns:1.2fr 1fr auto}
+.mm-o{font-size:11px;font-weight:800;color:#8a8aa8;text-transform:uppercase}
+.mm-add{margin:2px 0 10px!important}
+.rs-suenos{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:14px}
+.rs-sueno{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 10px;border-radius:16px;border:1px solid color-mix(in srgb,var(--ma) 30%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--ma) 10%,transparent),rgba(255,255,255,.015));cursor:pointer;text-align:left;font-family:'Inter',sans-serif;color:#fff}
+.rs-img{position:relative;width:52px;height:52px;flex:none;border-radius:12px;overflow:hidden;display:grid;place-items:center;color:var(--ma);background:rgba(255,255,255,.05)}
+.rs-txt{flex:1;min-width:0}
+.rs-txt small{display:block;font-size:10.5px;font-weight:700;color:var(--ma);text-transform:uppercase;letter-spacing:.07em}
+.rs-txt b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:2px 0 6px}
+.rs-txt i{display:block;height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.rs-txt u{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ma),var(--mb))}
+.rs-sueno em{font-style:normal;font:700 16px 'Space Grotesk',sans-serif;color:#fff}
+@media (max-width:760px){
+  html .mm-modo{grid-template-columns:1fr 1fr}
+  html .mm-fila{grid-template-columns:1fr}
+  html .mm-cond{grid-template-columns:1fr 1fr auto}
+  html .mm-cond .mm-o{grid-column:1/-1}
+  html .mt-portada.con-img{height:150px}
+}
 </style>
 </head>
 <body>
@@ -2849,6 +2912,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 <div class="page active" id="page-resumen">
   <div class="page-header"><div class="page-title">Resumen general</div><div class="page-sub">Visión consolidada de todas tus motos</div></div>
   <div class="mc-hero" id="mc-hero"></div>
+  <div id="res-suenos"></div>
   <div id="res-interesados"></div>
   <div class="metrics-grid" id="metrics-general"></div>
   <div class="card dp-card">
@@ -6618,26 +6682,105 @@ const MC_META_TIPO = {
   unidades:    {a:'#10b981', b:'#34d399', rgb:'16,185,129', label:'Unidades', ico:'moto'},
   facturacion: {a:'#f59e0b', b:'#fbbf24', rgb:'245,158,11', label:'Facturación', ico:'barras'},
 };
+// ── Metas: sueños (se quedan hasta lograrlos) y retos (con fecha) ───────────
+// Meta sueño: por ejemplo "un mes con $60M de ganancia" para el Cartier. No vence:
+// sigue ahí hasta que lo logres, y opcionalmente dices para qué mes la quieres.
+// Reto: tiene fechas (por ejemplo este mes) y una o varias condiciones; puedes
+// pedir que se cumpla cualquiera o todas: vender 15 vehículos, ganar $30M,
+// vender $250M o una racha de 7 días seguidos vendiendo.
+const MC_COND = {
+  ganancia:    {n:'Ganar', u:'en ganancia', ph:'30000000', dinero:true},
+  unidades:    {n:'Vender', u:'vehículos', ph:'15'},
+  facturacion: {n:'Vender', u:'en vehículos', ph:'250000000', dinero:true},
+  racha:       {n:'Racha de', u:'días seguidos vendiendo', ph:'7'}
+};
+Object.assign(MC_ICONOS, {camara: '<path d="M4 8.5h3l1.6-2.5h6.8L17 8.5h3v10.5H4z"/><circle cx="12" cy="13.5" r="3.4"/>'});
+const MC_META_TIPO_RACHA = {a:'#ef4444', b:'#fb923c', rgb:'239,68,68', label:'Racha', ico:'fuego'};
+const MC_META_SUENO = {a:'#f5c451', b:'#ff9d3c', rgb:'245,196,81', label:'Meta sueño', ico:'trofeo'};
+function mcMetaConds(m){ return Array.isArray(m.conds) && m.conds.length ? m.conds : [{tipo: m.tipo || 'ganancia', objetivo: Number(m.objetivo) || 0}]; }
+function mcValorVentas(tipo, vs){
+  if(tipo === 'unidades') return vs.length;
+  if(tipo === 'facturacion') return vs.reduce((a,v)=>a + ccNum(v.precioVenta), 0);
+  if(tipo === 'racha') return mcRachaMax(vs);
+  return vs.reduce((a,v)=>a + mcGanVenta(v), 0);
+}
+// Mayor número de días seguidos con al menos una venta
+function mcRachaMax(vs){
+  const dias = [...new Set(vs.map(v=>v.fecha).filter(Boolean))].sort();
+  let mejor = 0, act = 0, prev = null;
+  dias.forEach(d=>{ act = prev && Math.round((new Date(d+'T00:00:00') - new Date(prev+'T00:00:00')) / 86400000) === 1 ? act + 1 : 1; mejor = Math.max(mejor, act); prev = d; });
+  return mejor;
+}
+function mcUltimoDiaMes(ym){ const [y, mo] = String(ym).split('-').map(Number); return hoyLocal(new Date(y, mo, 0)); }
+function calcularProgresoMeta(m, sinId){
+  const ahora = new Date(), hoy = hoyLocal();
+  const ini = m.inicio ? new Date(m.inicio+'T00:00:00') : new Date(m.creadaEn || ahora);
+  const conds = mcMetaConds(m);
+  // ── Meta sueño ──
+  if(m.modo === 'sueno'){
+    const c = conds[0], obj = Number(c.objetivo) || 1;
+    // "En un solo mes" cuenta el mes completo en el que la creaste
+    const desde = m.medida === 'mes' ? new Date(ini.getFullYear(), ini.getMonth(), 1) : ini;
+    const vs = ventas.filter(v=>v.id !== sinId && new Date(v.fecha+'T00:00:00') >= desde);
+    let actual, mejor = null, lograda;
+    if(m.medida === 'mes'){
+      const porMes = {}; vs.forEach(v=>{ const k = String(v.fecha).slice(0,7); (porMes[k] = porMes[k] || []).push(v); });
+      const vals = Object.entries(porMes).map(([k, l])=>({mes:k, val: mcValorVentas(c.tipo, l)}));
+      vals.forEach(x=>{ if(!mejor || x.val > mejor.val) mejor = x; });
+      actual = mcValorVentas(c.tipo, porMes[hoy.slice(0,7)] || []);
+      const mesLogro = vals.filter(x=>x.val >= obj).sort((a,b)=>a.mes.localeCompare(b.mes))[0];
+      lograda = !!mesLogro;
+      if(mesLogro) actual = Math.max(actual, mesLogro.val);
+    } else { actual = mcValorVentas(c.tipo, vs); lograda = actual >= obj; }
+    const pct = lograda ? 100 : Math.max(0, Math.min(100, Math.round(actual / obj * 100)));
+    let diasRestantes = null;
+    if(m.medida === 'mes'){ const finMes = new Date(mcUltimoDiaMes(hoy.slice(0,7))+'T00:00:00'); diasRestantes = Math.ceil((finMes - new Date(hoy+'T00:00:00')) / 86400000) + 1; }
+    return {actual, pct, falta: Math.max(0, obj - actual), lograda, diasRestantes, mejor, conds:[{...c, actual, pct}], sueno:true};
+  }
+  // ── Reto o meta con fechas ──
+  const fin = m.fin ? new Date(m.fin+'T00:00:00') : null;
+  const vs = ventas.filter(v=>{ if(v.id === sinId) return false; const d = new Date(v.fecha+'T00:00:00'); return d >= ini && (!fin || d <= fin); });
+  const res = conds.map(c=>{ const obj = Number(c.objetivo) || 1, actual = mcValorVentas(c.tipo, vs); return {...c, actual, pct: Math.max(0, Math.min(100, Math.round(actual / obj * 100))), falta: Math.max(0, obj - actual)}; });
+  const todas = m.combinar === 'todas' && res.length > 1;
+  const clave = res.slice().sort((a,b)=>todas ? a.pct - b.pct : b.pct - a.pct)[0];
+  const lograda = todas ? res.every(r=>r.pct >= 100) : res.some(r=>r.pct >= 100);
+  const diasRestantes = fin ? Math.ceil((fin - ahora) / 86400000) : null;
+  return {actual: clave.actual, pct: lograda ? 100 : clave.pct, falta: clave.falta, lograda, diasRestantes, conds: res, clave};
+}
 function mcMetaInfo(m){
   const p = calcularProgresoMeta(m);
-  let tiempoPct = null;
-  if(m.inicio && m.fin){
-    const ini = new Date(m.inicio+'T00:00:00'), fin = new Date(m.fin+'T00:00:00'), hoy = new Date();
-    const tot = Math.max(1, Math.ceil((fin - ini) / 86400000)), pas = Math.max(0, Math.min(tot, Math.ceil((hoy - ini) / 86400000)));
+  let tiempoPct = null, finRef = m.modo === 'sueno' ? (m.medida === 'mes' ? mcUltimoDiaMes(hoyLocal().slice(0,7)) : (m.para ? mcUltimoDiaMes(m.para) : null)) : m.fin;
+  const iniRef = m.modo === 'sueno' && m.medida === 'mes' ? hoyLocal().slice(0,7) + '-01' : m.inicio;
+  if(iniRef && finRef){
+    const ini = new Date(iniRef+'T00:00:00'), fin = new Date(finRef+'T00:00:00'), hoy = new Date();
+    const tot = Math.max(1, Math.ceil((fin - ini) / 86400000) + 1), pas = Math.max(0, Math.min(tot, Math.ceil((hoy - ini) / 86400000)));
     tiempoPct = Math.round(pas / tot * 100);
   }
-  const estado = p.lograda ? 'lograda' : (p.diasRestantes != null && p.diasRestantes < 0) ? 'vencida'
-    : tiempoPct == null ? (p.pct >= 75 ? 'casi' : 'curso') : p.pct >= tiempoPct + 5 ? 'adelante' : p.pct >= tiempoPct - 10 ? 'ritmo' : 'atras';
+  let estado;
+  if(p.lograda) estado = 'lograda';
+  else if(m.modo === 'sueno') estado = m.para && mcUltimoDiaMes(m.para) < hoyLocal() ? 'pasada' : (p.pct >= 75 ? 'casi' : 'sueno');
+  else if(p.diasRestantes != null && p.diasRestantes < 0) estado = 'vencida';
+  else estado = tiempoPct == null ? (p.pct >= 75 ? 'casi' : 'curso') : p.pct >= tiempoPct + 5 ? 'adelante' : p.pct >= tiempoPct - 10 ? 'ritmo' : 'atras';
   let proy = '';
-  if(!p.lograda && m.inicio && p.actual > 0){
+  const c0 = (p.clave || p.conds[0]);
+  if(!p.lograda && m.modo !== 'sueno' && m.inicio && p.actual > 0 && c0.tipo !== 'racha'){
     const dias = Math.max(1, Math.ceil((new Date() - new Date(m.inicio+'T00:00:00')) / 86400000)), ritmo = p.actual / dias;
     if(ritmo > 0){ const fl = new Date(Date.now() + Math.ceil(p.falta / ritmo) * 86400000); proy = `${fl.getDate()} de ${MESES[fl.getMonth()].toLowerCase()}`; }
   }
-  const porDia = !p.lograda && p.diasRestantes > 0 ? p.falta / p.diasRestantes : null;
-  return {...p, tiempoPct, estado, proy, porDia};
+  const porDia = !p.lograda && p.diasRestantes > 0 && c0.tipo !== 'racha' && (m.modo !== 'sueno' || m.medida === 'mes') ? p.falta / p.diasRestantes : null;
+  return {...p, tiempoPct, estado, proy, porDia, tipoClave: c0.tipo};
 }
-const MC_META_ESTADO = {lograda:['Lograda','ok'], vencida:['Venció el plazo','mal'], adelante:['Vas adelantado','ok'], ritmo:['Vas a buen ritmo','bien'], atras:['Vas atrasado','mal'], casi:['¡Ya casi!','bien'], curso:['En curso','neutro']};
-function mcMetaValor(m, v){ return m.tipo === 'unidades' ? `${Math.round(v)} veh.` : fmt(v); }
+const MC_META_ESTADO = {lograda:['Lograda','ok'], vencida:['Venció el plazo','mal'], adelante:['Vas adelantado','ok'], ritmo:['Vas a buen ritmo','bien'], atras:['Vas atrasado','mal'], casi:['¡Ya casi!','bien'], curso:['En curso','neutro'], sueno:['Hasta lograrlo','bien'], pasada:['Sigue: ya casi es tuyo','neutro']};
+function mcMetaValor(m, v, tipo){ const t = tipo || mcMetaConds(m)[0].tipo; return t === 'unidades' ? `${Math.round(v)} veh.` : t === 'racha' ? `${Math.round(v)} día${Math.round(v) !== 1 ? 's' : ''}` : fmt(v); }
+function mcMetaTema(m){ return m.modo === 'sueno' ? MC_META_SUENO : mcMetaConds(m)[0].tipo === 'racha' ? MC_META_TIPO_RACHA : (MC_META_TIPO[mcMetaConds(m)[0].tipo] || MC_META_TIPO.ganancia); }
+function mcCondTxt(c){ const d = MC_COND[c.tipo] || MC_COND.ganancia; return c.tipo === 'racha' ? `Racha de ${c.objetivo} días seguidos vendiendo` : c.tipo === 'unidades' ? `Vender ${c.objetivo} vehículos` : c.tipo === 'facturacion' ? `Vender ${fmt(c.objetivo)} en vehículos` : `Ganar ${fmt(c.objetivo)}`; }
+// Qué se mide, en una frase
+function mcMetaQue(m){
+  const c = mcMetaConds(m);
+  if(m.modo === 'sueno') return `${mcCondTxt(c[0])}${m.medida === 'mes' ? ' en un solo mes' : ' sumando desde que empezaste'}${m.para ? ` · lo quieres para ${MESES[Number(m.para.slice(5,7)) - 1].toLowerCase()} ${m.para.slice(0,4)}` : ''}`;
+  return c.map(mcCondTxt).join(m.combinar === 'todas' ? ' y ' : ' o ');
+}
+function mcMetaImg(m, cls){ return m.imagen ? `<img class="${cls}" ${mcFotoAttr(m.imagen)} alt="">` : ''; }
 function mcAnillo(id, pct, tam, grosor, t){
   const r = (tam - grosor) / 2, c = 2 * Math.PI * r;
   return `<svg class="mt-anillo" width="${tam}" height="${tam}" viewBox="0 0 ${tam} ${tam}" aria-hidden="true">
@@ -6655,47 +6798,57 @@ function renderMetas(){
   if(!metas.length){
     if(foco) foco.innerHTML = `<div class="mt-vacio">
       <div class="mt-vacio-ico">${mcIco('bandera',34)}</div>
-      <h3>Ponle un destino a tu negocio</h3>
-      <p>Una meta puede ser de ganancia, de vehículos vendidos o de facturación. El sistema la mide sola con cada venta.</p>
+      <h3>¿Qué quieres conseguir?</h3>
+      <p>Ponle foto a lo que sueñas y el sistema mide tu avance con cada venta. Una <b>meta sueño</b> se queda hasta que la logres; un <b>reto</b> tiene fecha.</p>
       <button class="btn btn-primary" onclick="abrirModalMeta()">+ Crear mi primera meta</button></div>`;
     grid.innerHTML = ''; if(res) res.innerHTML = ''; if(tro) tro.innerHTML = ''; return;
   }
-  const info = metas.map(m=>({m, i: mcMetaInfo(m), t: MC_META_TIPO[m.tipo] || MC_META_TIPO.ganancia}));
+  const info = metas.map(m=>({m, i: mcMetaInfo(m), t: mcMetaTema(m)}));
   const activas = info.filter(x=>!x.i.lograda), logradas = info.filter(x=>x.i.lograda);
-  const promPct = Math.round(info.reduce((a,x)=>a + x.i.pct, 0) / info.length);
-  const proxima = activas.filter(x=>x.i.diasRestantes != null && x.i.diasRestantes >= 0).sort((a,b)=>a.i.diasRestantes - b.i.diasRestantes)[0];
+  const suenos = activas.filter(x=>x.m.modo === 'sueno'), retos = activas.filter(x=>x.m.modo !== 'sueno');
+  const promPct = activas.length ? Math.round(activas.reduce((a,x)=>a + x.i.pct, 0) / activas.length) : 100;
+  const proxima = retos.filter(x=>x.i.diasRestantes != null && x.i.diasRestantes >= 0).sort((a,b)=>a.i.diasRestantes - b.i.diasRestantes)[0];
   if(res) res.innerHTML = `
-    <div class="mt-stat"><small>En curso</small><b>${activas.length}</b></div>
+    <div class="mt-stat"><small>Sueños</small><b class="sue">${suenos.length}</b><span>hasta lograrlos</span></div>
+    <div class="mt-stat"><small>Retos en curso</small><b>${retos.length}</b><span>con fecha</span></div>
     <div class="mt-stat"><small>Logradas</small><b class="ok">${logradas.length}</b></div>
-    <div class="mt-stat"><small>Avance promedio</small><b>${promPct}%</b><div class="mt-mini"><i style="width:${promPct}%"></i></div></div>
-    <div class="mt-stat"><small>Próximo cierre</small><b>${proxima ? (proxima.i.diasRestantes === 0 ? 'Hoy' : proxima.i.diasRestantes + ' días') : '—'}</b><span>${proxima ? ccEsc(proxima.m.nombre) : 'Sin fecha límite'}</span></div>`;
-  // Meta en foco: la activa que cierra primero (o la más avanzada)
-  const enFoco = activas.slice().sort((a,b)=>{
-    const da = a.i.diasRestantes != null && a.i.diasRestantes >= 0 ? a.i.diasRestantes : 1e9, db = b.i.diasRestantes != null && b.i.diasRestantes >= 0 ? b.i.diasRestantes : 1e9;
-    return da - db || b.i.pct - a.i.pct; })[0];
+    <div class="mt-stat"><small>Próximo cierre</small><b>${proxima ? (proxima.i.diasRestantes === 0 ? 'Hoy' : proxima.i.diasRestantes + ' días') : '—'}</b><span>${proxima ? ccEsc(proxima.m.nombre) : 'Sin retos con fecha'}</span></div>`;
+  // Meta en foco: la que elegiste, o el reto que cierra primero, o el sueño más avanzado
+  const fijada = activas.find(x=>x.m.foco);
+  const enFoco = fijada || retos.slice().sort((a,b)=>{ const da = a.i.diasRestantes != null && a.i.diasRestantes >= 0 ? a.i.diasRestantes : 1e9, db = b.i.diasRestantes != null && b.i.diasRestantes >= 0 ? b.i.diasRestantes : 1e9; return da - db || b.i.pct - a.i.pct; })[0]
+    || suenos.slice().sort((a,b)=>b.i.pct - a.i.pct)[0];
+  const condsHtml = (m, i) => i.conds.length > 1 || i.conds[0].tipo === 'racha' ? `<div class="mt-conds">${i.conds.length > 1 ? `<div class="mt-conds-tit">${m.combinar === 'todas' ? 'Hay que cumplir todas' : 'Con cumplir una ya ganas'}</div>` : ''}${i.conds.map(c=>`<div class="mt-cond ${c.pct >= 100 ? 'ok' : ''}"><span>${mcIco(c.pct >= 100 ? 'check' : (MC_META_TIPO[c.tipo] || MC_META_TIPO_RACHA).ico, 14)}${mcCondTxt(c)}</span><b>${mcMetaValor(m, c.actual, c.tipo)} <em>/ ${mcMetaValor(m, c.objetivo, c.tipo)}</em></b><i><u style="width:${c.pct}%"></u></i></div>`).join('')}</div>` : '';
   if(foco){
     if(enFoco){
-      const {m, i, t} = enFoco, [eTxt, eCls] = MC_META_ESTADO[i.estado];
+      const {m, i, t} = enFoco, [eTxt, eCls] = MC_META_ESTADO[i.estado], tc = i.tipoClave;
       let lectura = '';
-      if(i.estado === 'adelante' || i.estado === 'ritmo' || i.estado === 'atras') lectura = `Llevas <b>${i.pct}%</b> de la meta con el <b>${i.tiempoPct}%</b> del tiempo.`;
-      else if(i.estado === 'vencida') lectura = `El plazo terminó el ${mcFechaCorta(m.fin)}. Puedes ampliarla en Editar.`;
-      else lectura = `Llevas <b>${i.pct}%</b> de la meta.`;
-      if(i.porDia) lectura += ` Para llegar el ${mcFechaCorta(m.fin)} necesitas <b>${mcMetaValor(m, i.porDia)} por día</b>.`;
-      else if(i.proy) lectura += ` A este ritmo la logras el <b>${i.proy}</b>.`;
-      foco.innerHTML = `<div class="mt-foco" id="meta-card-${m.id}" style="--ma:${t.a};--mb:${t.b};--mrgb:${t.rgb}">
-        ${m.imagen ? `<div class="mt-foco-img" style="background-image:url('${String(m.imagen).replace(/'/g,'%27')}')"></div>` : ''}
-        <div class="mt-foco-anillo">${mcAnillo(m.id, i.pct, 188, 14, t)}<div class="mt-foco-pct"><span id="pct-${m.id}">0%</span><small>${mcMetaValor(m, i.actual)}</small></div></div>
+      if(m.modo === 'sueno'){
+        lectura = m.medida === 'mes' ? `Este mes llevas <b>${mcMetaValor(m, i.actual)}</b> de <b>${mcMetaValor(m, mcMetaConds(m)[0].objetivo)}</b>.` : `Llevas <b>${i.pct}%</b> del camino.`;
+        if(i.mejor && m.medida === 'mes') lectura += ` Tu mejor mes hasta ahora: <b>${mcMetaValor(m, i.mejor.val)}</b> en ${MESES[Number(i.mejor.mes.slice(5,7)) - 1].toLowerCase()}.`;
+        if(i.porDia) lectura += ` Para lograrlo este mes necesitas <b>${mcMetaValor(m, i.porDia)} por día</b>.`;
+        if(i.estado === 'pasada') lectura += ` La fecha que te pusiste ya pasó, pero el sueño sigue aquí hasta que lo logres.`;
+      } else {
+        if(i.estado === 'adelante' || i.estado === 'ritmo' || i.estado === 'atras') lectura = `Llevas <b>${i.pct}%</b> con el <b>${i.tiempoPct}%</b> del tiempo.`;
+        else if(i.estado === 'vencida') lectura = `El plazo terminó el ${mcFechaCorta(m.fin)}. Puedes ampliarlo en Editar.`;
+        else lectura = `Llevas <b>${i.pct}%</b>.`;
+        if(i.porDia) lectura += ` Para llegar el ${mcFechaCorta(m.fin)} necesitas <b>${mcMetaValor(m, i.porDia, tc)} por día</b>${i.conds.length > 1 ? ' en la condición que más llevas' : ''}.`;
+        else if(i.proy) lectura += ` A este ritmo lo logras el <b>${i.proy}</b>.`;
+      }
+      foco.innerHTML = `<div class="mt-foco${m.imagen ? ' con-img' : ''}" id="meta-card-${m.id}" style="--ma:${t.a};--mb:${t.b};--mrgb:${t.rgb}">
+        ${m.imagen ? `<div class="mt-foco-img">${mcMetaImg(m, 'mt-img')}</div>` : ''}
+        <div class="mt-foco-anillo">${mcAnillo(m.id, i.pct, 188, 14, t)}<div class="mt-foco-pct"><span id="pct-${m.id}">0%</span><small>${m.modo === 'sueno' && m.medida === 'mes' ? 'este mes' : i.conds.length > 1 ? (m.combinar === 'todas' ? 'la más atrasada' : 'mejor avance') : mcMetaValor(m, i.actual, tc)}</small></div></div>
         <div class="mt-foco-txt">
-          <div class="mt-foco-k"><span class="mt-chip">${mcIco(t.ico,14)}${t.label}</span><span class="mt-estado ${eCls}">${eTxt}</span><span class="mt-foco-lbl">Meta en foco</span></div>
+          <div class="mt-foco-k"><span class="mt-chip">${mcIco(t.ico,14)}${m.modo === 'sueno' ? 'Meta sueño' : i.conds.length > 1 ? 'Reto' : t.label}</span><span class="mt-estado ${eCls}">${eTxt}</span><span class="mt-foco-lbl">Meta en foco</span></div>
           <h3>${ccEsc(m.nombre)}</h3>
+          <p class="mt-que">${mcMetaQue(m)}</p>
           ${m.desc ? `<p class="mt-desc">${ccEsc(m.desc)}</p>` : ''}
-          <div class="mt-cifras">
-            <div><small>Logrado</small><b>${mcMetaValor(m, i.actual)}</b></div>
-            <div><small>Objetivo</small><b>${mcMetaValor(m, m.objetivo)}</b></div>
-            <div><small>Falta</small><b class="falta">${mcMetaValor(m, i.falta)}</b></div>
-            ${i.diasRestantes != null ? `<div><small>Quedan</small><b>${i.diasRestantes >= 0 ? i.diasRestantes + ' día' + (i.diasRestantes !== 1 ? 's' : '') : 'Vencida'}</b></div>` : ''}
-          </div>
-          ${i.tiempoPct != null ? `<div class="mt-linea"><div class="mt-linea-bar"><i id="bar-${m.id}" style="width:0%"></i><em style="left:${i.tiempoPct}%" title="Hoy"></em></div><div class="mt-linea-lbl"><span>${mcFechaCorta(m.inicio)}</span><span>Hoy · ${i.tiempoPct}% del tiempo</span><span>${mcFechaCorta(m.fin)}</span></div></div>`
+          ${condsHtml(m, i) || `<div class="mt-cifras">
+            <div><small>${m.modo === 'sueno' && m.medida === 'mes' ? 'Este mes' : 'Logrado'}</small><b>${mcMetaValor(m, i.actual, tc)}</b></div>
+            <div><small>Objetivo</small><b>${mcMetaValor(m, mcMetaConds(m)[0].objetivo, tc)}</b></div>
+            <div><small>Falta</small><b class="falta">${mcMetaValor(m, i.falta, tc)}</b></div>
+            ${i.diasRestantes != null ? `<div><small>${m.modo === 'sueno' ? 'Quedan del mes' : 'Quedan'}</small><b>${i.diasRestantes >= 0 ? i.diasRestantes + ' día' + (i.diasRestantes !== 1 ? 's' : '') : 'Vencida'}</b></div>` : ''}
+          </div>`}
+          ${i.tiempoPct != null && m.modo !== 'sueno' ? `<div class="mt-linea"><div class="mt-linea-bar"><i id="bar-${m.id}" style="width:0%"></i><em style="left:${i.tiempoPct}%" title="Hoy"></em></div><div class="mt-linea-lbl"><span>${mcFechaCorta(m.inicio)}</span><span>Hoy · ${i.tiempoPct}% del tiempo</span><span>${mcFechaCorta(m.fin)}</span></div></div>`
             : `<div class="mt-linea"><div class="mt-linea-bar"><i id="bar-${m.id}" style="width:0%"></i></div></div>`}
           <p class="mt-lectura">${lectura}</p>
           <div class="mt-acc"><button class="btn btn-ghost btn-sm" onclick="abrirModalMeta('${m.id}')">${mcIco('lapiz',14)}Editar</button><button class="btn btn-ghost btn-sm mt-borrar" onclick="eliminarMeta('${m.id}')" aria-label="Eliminar meta">${mcIco('papelera',14)}</button></div>
@@ -6703,27 +6856,30 @@ function renderMetas(){
       </div>`;
     } else foco.innerHTML = '';
   }
-  // Las demás activas
-  const resto = activas.filter(x=>x !== enFoco);
-  grid.innerHTML = resto.map(({m, i, t})=>{ const [eTxt, eCls] = MC_META_ESTADO[i.estado];
-    return `<div class="mt-card" id="meta-card-${m.id}" style="--ma:${t.a};--mb:${t.b};--mrgb:${t.rgb}">
-      <div class="mt-portada" ${m.imagen ? `style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(10,10,18,.85)),url('${String(m.imagen).replace(/'/g,'%27')}')"` : ''}>
-        ${m.imagen ? '' : `<span class="mt-marca">${mcIco(t.ico,64)}</span>`}
-        <span class="mt-chip">${mcIco(t.ico,13)}${t.label}</span>
+  // Las demás: primero los sueños, luego los retos
+  const tarjeta = ({m, i, t}) => { const [eTxt, eCls] = MC_META_ESTADO[i.estado], tc = i.tipoClave;
+    return `<div class="mt-card${m.modo === 'sueno' ? ' sueno' : ''}" id="meta-card-${m.id}" style="--ma:${t.a};--mb:${t.b};--mrgb:${t.rgb}">
+      <div class="mt-portada${m.imagen ? ' con-img' : ''}">
+        ${m.imagen ? mcMetaImg(m, 'mt-img') : `<span class="mt-marca">${mcIco(t.ico,64)}</span>`}
+        <span class="mt-chip">${mcIco(t.ico,13)}${m.modo === 'sueno' ? 'Meta sueño' : i.conds.length > 1 ? 'Reto' : t.label}</span>
         <div class="mt-card-anillo">${mcAnillo(m.id, i.pct, 74, 7, t)}<span id="pct-${m.id}">0%</span></div>
       </div>
       <div class="mt-cuerpo">
         <h4>${ccEsc(m.nombre)}</h4>
+        <p class="mt-que">${mcMetaQue(m)}</p>
         <div class="mt-barra"><i id="bar-${m.id}" style="width:0%"></i><u style="left:25%"></u><u style="left:50%"></u><u style="left:75%"></u></div>
-        <div class="mt-fila"><span>${mcMetaValor(m, i.actual)} <em>de ${mcMetaValor(m, m.objetivo)}</em></span><span class="mt-estado ${eCls}">${eTxt}</span></div>
-        <div class="mt-pie"><span>${i.diasRestantes != null && i.diasRestantes >= 0 ? `${mcIco('reloj',13)}${i.diasRestantes} días` : i.proy ? `${mcIco('objetivo',13)}${i.proy}` : `Falta ${mcMetaValor(m, i.falta)}`}</span>
-          <span class="mt-acc"><button class="btn btn-ghost btn-sm btn-icon" onclick="abrirModalMeta('${m.id}')" aria-label="Editar">${mcIco('lapiz',14)}</button><button class="btn btn-ghost btn-sm btn-icon mt-borrar" onclick="eliminarMeta('${m.id}')" aria-label="Eliminar">${mcIco('papelera',14)}</button></span></div>
+        <div class="mt-fila"><span>${mcMetaValor(m, i.actual, tc)} <em>de ${mcMetaValor(m, (i.clave || i.conds[0]).objetivo, tc)}${m.modo === 'sueno' && m.medida === 'mes' ? ' este mes' : ''}</em></span><span class="mt-estado ${eCls}">${eTxt}</span></div>
+        <div class="mt-pie"><span>${m.modo === 'sueno' ? (i.mejor ? `${mcIco('trofeo',13)}Mejor mes ${mcMetaValor(m, i.mejor.val)}` : `${mcIco('objetivo',13)}Hasta lograrlo`) : i.diasRestantes != null && i.diasRestantes >= 0 ? `${mcIco('reloj',13)}${i.diasRestantes} días` : i.proy ? `${mcIco('objetivo',13)}${i.proy}` : `Falta ${mcMetaValor(m, i.falta, tc)}`}</span>
+          <span class="mt-acc"><button class="btn btn-ghost btn-sm btn-icon" onclick="mcFijarFoco('${m.id}')" aria-label="Poner en foco" title="Poner en foco">${mcIco('objetivo',14)}</button><button class="btn btn-ghost btn-sm btn-icon" onclick="abrirModalMeta('${m.id}')" aria-label="Editar">${mcIco('lapiz',14)}</button><button class="btn btn-ghost btn-sm btn-icon mt-borrar" onclick="eliminarMeta('${m.id}')" aria-label="Eliminar">${mcIco('papelera',14)}</button></span></div>
       </div>
-    </div>`; }).join('') + `<button class="mt-nueva" onclick="abrirModalMeta()"><span>+</span>Nueva meta<small>Ganancia, unidades o facturación</small></button>`;
+    </div>`; };
+  const resto = [...suenos, ...retos].filter(x=>x !== enFoco);
+  grid.innerHTML = resto.map(tarjeta).join('') + `<button class="mt-nueva" onclick="abrirModalMeta()"><span>+</span>Nueva meta<small>Un sueño o un reto con fecha</small></button>`;
   // Trofeos
   if(tro) tro.innerHTML = logradas.length ? `<div class="mt-tro-tit">${mcIco('trofeo',16)}Logradas · ${logradas.length}</div><div class="mt-tro-lista">${logradas.map(({m, t})=>`
-    <div class="mt-trofeo" id="meta-card-${m.id}" style="--ma:${t.a};--mb:${t.b}"><span class="mt-tro-ico">${mcIco('check',16)}</span><div><b>${ccEsc(m.nombre)}</b><small>${t.label} · ${mcMetaValor(m, m.objetivo)}</small></div>
+    <div class="mt-trofeo" id="meta-card-${m.id}" style="--ma:${t.a};--mb:${t.b}">${m.imagen ? `<span class="mt-tro-img">${mcMetaImg(m, 'mt-img')}</span>` : `<span class="mt-tro-ico">${mcIco('check',16)}</span>`}<div><b>${ccEsc(m.nombre)}</b><small>${mcMetaQue(m)}</small></div>
       <span class="mt-acc"><button class="btn btn-ghost btn-sm btn-icon" onclick="abrirModalMeta('${m.id}')" aria-label="Editar">${mcIco('lapiz',14)}</button><button class="btn btn-ghost btn-sm btn-icon mt-borrar" onclick="eliminarMeta('${m.id}')" aria-label="Eliminar">${mcIco('papelera',14)}</button></span></div>`).join('')}</div>` : '';
+  try { mcHidratarFotos(); } catch(e){}
   // Animación: anillos, barras y porcentaje (sin animar si el sistema pide menos movimiento)
   const quieto = mcMovReducido();
   requestAnimationFrame(()=>{
@@ -8289,6 +8445,7 @@ function closeModal(){ const mo=document.getElementById('modal-overlay'); mo.cla
 function renderResumen(){
   mcRenderHero();
   try { intAvisoResumen(); } catch(e){}
+  try { mcResumenSuenos(); } catch(e){}
   const ahora    = new Date();
   const mesAct   = ahora.getMonth();
   const anioAct  = ahora.getFullYear();
@@ -10863,11 +11020,11 @@ function mostrarCelebracion(ganancia, nombreVehiculo, fechaVenta, diasParado, ve
   // Meta en foco: cuánto la movió esta venta
   let metaHtml = '';
   try {
-    const activas = metas.map(m=>({m, p: calcularProgresoMeta(m)})).filter(x=>!x.p.lograda || celMetaActual(x.m, venta && venta.id) < x.m.objetivo)
+    const activas = metas.map(m=>({m, p: calcularProgresoMeta(m), a: calcularProgresoMeta(m, venta && venta.id)})).filter(x=>!x.a.lograda)
       .filter(x=>{ const d = new Date(String(fechaVenta)+'T00:00:00'); return (!x.m.inicio || d >= new Date(x.m.inicio+'T00:00:00')) && (!x.m.fin || d <= new Date(x.m.fin+'T00:00:00')); });
-    const foco = activas.sort((a,b)=>(a.m.fin||'9999').localeCompare(b.m.fin||'9999') || b.p.pct - a.p.pct)[0];
+    const foco = activas.find(x=>x.m.foco) || activas.sort((a,b)=>(a.m.fin||'9999').localeCompare(b.m.fin||'9999') || b.p.pct - a.p.pct)[0];
     if(foco){
-      const antes = Math.min(100, Math.max(0, celMetaActual(foco.m, venta && venta.id) / foco.m.objetivo * 100)), ahora = Math.min(100, Math.max(0, foco.p.actual / foco.m.objetivo * 100));
+      const antes = foco.a.pct, ahora = foco.p.pct;
       if(antes < 100 && ahora >= 100) logros.unshift({ico:'trofeo', t:'¡Meta cumplida!', d:ccEsc(foco.m.nombre), oro:true});
       const dif = ahora - antes;
       metaHtml = `<div class="cel-barra"><div class="cel-barra-cab"><span>${mcIco('bandera',14)}Meta: ${ccEsc(foco.m.nombre)}</span><b>${Math.floor(ahora)}%${dif > 0 ? ` <em>+${dif >= 1 ? Math.round(dif) : dif.toFixed(1)}%</em>` : ''}</b></div>
@@ -12282,75 +12439,150 @@ let metas = [];
 try{ metas = JSON.parse(localStorage.getItem(MC_METAS_KEY)||'[]'); }catch(e){ metas=[]; }
 function saveMetas(){ localStorage.setItem(MC_METAS_KEY, JSON.stringify(metas)); mcMarcarCambios('metas'); }
 
-function setTipoMeta(tipo){
-  document.getElementById('m-tipo-val').value = tipo;
-  ['ganancia','unidades','facturacion'].forEach(t=>{
-    const btn = document.getElementById('mtipo-'+t);
-    const activo = t===tipo;
-    btn.style.borderColor  = activo?'var(--accent)':'var(--border2)';
-    btn.style.background   = activo?'rgba(var(--accent-rgb),.12)':'transparent';
-    btn.style.color        = activo?'var(--accent)':'var(--text2)';
-  });
-  const labels = {ganancia:'Objetivo ($ ganancia limpia)',unidades:'Objetivo (número de vehículos)',facturacion:'Objetivo ($ en ventas totales)'};
-  document.getElementById('m-objetivo-label').textContent = labels[tipo];
+// ── Crear / editar meta ─────────────────────────────────────────────────────
+MC_MONTOS.add('mm-obj');
+let _mm = null;
+function mcMesesOpciones(sel){
+  const d = new Date(), r = [];
+  for(let k = 0; k < 24; k++){ const x = new Date(d.getFullYear(), d.getMonth() + k, 1), v = x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2,'0'); r.push(`<option value="${v}"${sel === v ? ' selected' : ''}>${MESES[x.getMonth()]} ${x.getFullYear()}</option>`); }
+  return r.join('');
 }
-
 function abrirModalMeta(id){
-  const hoy = hoyLocal();
-  if(id){
-    const m = metas.find(x=>x.id===id); if(!m) return;
-    document.getElementById('m-edit-id').value  = id;
-    document.getElementById('m-nombre').value   = m.nombre||'';
-    document.getElementById('m-desc').value     = m.desc||'';
-    document.getElementById('m-objetivo').value = m.objetivo||'';
-    document.getElementById('m-inicio').value   = m.inicio||hoy;
-    document.getElementById('m-fin').value      = m.fin||'';
-    document.getElementById('m-imagen').value   = m.imagen||'';
-    document.getElementById('modal-meta-title').textContent = 'Editar meta';
-    setTipoMeta(m.tipo||'ganancia');
-  } else {
-    document.getElementById('m-edit-id').value  = '';
-    document.getElementById('m-nombre').value   = '';
-    document.getElementById('m-desc').value     = '';
-    document.getElementById('m-objetivo').value = '';
-    document.getElementById('m-inicio').value   = hoy;
-    document.getElementById('m-fin').value      = '';
-    document.getElementById('m-imagen').value   = '';
-    document.getElementById('modal-meta-title').textContent = 'Nueva meta';
-    setTipoMeta('ganancia');
-  }
-  const modal = document.getElementById('modal-meta');
-  modal.classList.remove('modal-hidden'); modal.style.display='flex';
+  const m = id ? metas.find(x=>x.id === id) : null; if(id && !m) return;
+  const hoy = hoyLocal(), mesIni = hoy.slice(0,7) + '-01', mesFin = mcUltimoDiaMes(hoy.slice(0,7));
+  const modo = m ? (m.modo === 'sueno' ? 'sueno' : 'reto') : 'sueno';
+  _mm = {modo, imagen: m ? m.imagen || '' : '', conds: m ? mcMetaConds(m).map(c=>({...c})) : [{tipo:'ganancia', objetivo:''}],
+    periodo: m && m.modo !== 'sueno' ? (m.inicio === mesIni && m.fin === mesFin ? 'mes' : 'otro') : 'mes'};
+  const c0 = _mm.conds[0];
+  ccAbrirModal(m ? 'Editar meta' : 'Nueva meta', `
+    <div class="mm-modo" id="mm-modo">
+      <button type="button" data-m="sueno" class="${modo === 'sueno' ? 'activo' : ''}" onclick="mmModo('sueno')">${mcIco('trofeo',20)}<b>Meta sueño</b><small>Se queda hasta que la logres</small></button>
+      <button type="button" data-m="reto" class="${modo === 'reto' ? 'activo' : ''}" onclick="mmModo('reto')">${mcIco('reloj',20)}<b>Reto con fecha</b><small>Tiene un tiempo límite</small></button>
+    </div>
+    <div class="form-group" style="margin-bottom:12px"><label class="form-label">¿Qué quieres conseguir? <span>*</span></label><input type="text" id="mm-nombre" placeholder="Ej: Cartier Santos · Nike Mind 001" value="${ccEsc(m ? m.nombre : '')}"></div>
+    <div class="mm-foto">
+      <div class="mm-foto-prev" id="mm-foto-prev">${_mm.imagen ? `<img ${mcFotoAttr(_mm.imagen)} alt="">` : mcIco('regalo',28)}</div>
+      <div class="mm-foto-acc">
+        <label class="form-label">Foto de lo que quieres</label>
+        <div class="mm-foto-btns"><button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('mm-file').click()">${mcIco('camara',14)}${_mm.imagen ? 'Cambiar foto' : 'Subir foto'}</button>${_mm.imagen ? `<button type="button" class="btn btn-ghost btn-sm" onclick="mmQuitarFoto()">Quitar</button>` : ''}</div>
+        <input type="file" id="mm-file" accept="image/*" hidden onchange="mmSubirFoto(this.files[0])">
+        <input type="text" id="mm-url" placeholder="o pega el enlace de una imagen" value="${_mm.imagen && /^https?:/.test(_mm.imagen) ? ccEsc(_mm.imagen) : ''}" oninput="mmUrl(this.value)">
+      </div>
+    </div>
+    <div id="mm-sec-sueno"${modo === 'sueno' ? '' : ' hidden'}>
+      <label class="form-label">¿Qué tienes que lograr?</label>
+      <div class="mm-fila">
+        <select id="mm-tipo">${['ganancia','facturacion','unidades'].map(t=>`<option value="${t}"${c0.tipo === t ? ' selected' : ''}>${t === 'ganancia' ? 'Ganar ($ de ganancia)' : t === 'facturacion' ? 'Vender ($ en vehículos)' : 'Vender (número de vehículos)'}</option>`).join('')}</select>
+        <input type="number" id="mm-obj" min="0" placeholder="60000000" value="${modo === 'sueno' ? c0.objetivo || '' : ''}">
+      </div>
+      <div class="mm-chips" id="mm-medida">
+        <button type="button" data-v="mes" class="${!m || m.medida !== 'acumulado' ? 'activo' : ''}" onclick="mmChip('mm-medida',this)">En un solo mes</button>
+        <button type="button" data-v="acumulado" class="${m && m.medida === 'acumulado' ? 'activo' : ''}" onclick="mmChip('mm-medida',this)">Sumando desde hoy</button>
+      </div>
+      <div class="form-group" style="margin-top:12px"><label class="form-label">¿Para cuándo lo quieres? (opcional)</label><select id="mm-para"><option value="">Sin fecha: hasta lograrlo</option>${mcMesesOpciones(m && m.para)}</select></div>
+    </div>
+    <div id="mm-sec-reto"${modo === 'reto' ? '' : ' hidden'}>
+      <label class="form-label">¿Cuándo?</label>
+      <div class="mm-chips" id="mm-periodo">
+        <button type="button" data-v="mes" class="${_mm.periodo === 'mes' ? 'activo' : ''}" onclick="mmChip('mm-periodo',this);mmPeriodo()">Este mes (${MESES[new Date().getMonth()].toLowerCase()})</button>
+        <button type="button" data-v="otro" class="${_mm.periodo === 'otro' ? 'activo' : ''}" onclick="mmChip('mm-periodo',this);mmPeriodo()">Otras fechas</button>
+      </div>
+      <div class="form-grid" id="mm-fechas" style="margin-top:10px"${_mm.periodo === 'otro' ? '' : ' hidden'}>
+        <div class="form-group"><label class="form-label">Desde</label><input type="date" id="mm-ini" value="${m && m.inicio || mesIni}"></div>
+        <div class="form-group"><label class="form-label">Hasta</label><input type="date" id="mm-fin" value="${m && m.fin || mesFin}"></div>
+      </div>
+      <label class="form-label" style="margin-top:12px">¿Qué tienes que lograr?</label>
+      <div id="mm-conds"></div>
+      <button type="button" class="in-mas mm-add" onclick="mmAddCond()">+ Agregar otra condición</button>
+      <div class="mm-chips" id="mm-comb" ${(_mm.conds.length > 1) ? '' : 'hidden'}>
+        <button type="button" data-v="cualquiera" class="${!m || m.combinar !== 'todas' ? 'activo' : ''}" onclick="mmChip('mm-comb',this)">Gano con cumplir cualquiera</button>
+        <button type="button" data-v="todas" class="${m && m.combinar === 'todas' ? 'activo' : ''}" onclick="mmChip('mm-comb',this)">Hay que cumplir todas</button>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:12px"><label class="form-label">¿Por qué lo quieres? (opcional)</label><input type="text" id="mm-desc" placeholder="Ej: me lo prometí cuando empecé el negocio" value="${ccEsc(m ? m.desc || '' : '')}"></div>
+    <div class="cc-modal-acc"><button class="btn btn-ghost" onclick="ccCerrarModal()">Cancelar</button><button class="btn btn-primary" onclick="guardarMeta('${m ? m.id : ''}')">${m ? 'Guardar cambios' : 'Crear meta'}</button></div>`);
+  if(modo === 'reto') mmPintarConds(); else _mm.conds = _mm.conds.length ? _mm.conds : [{tipo:'ganancia', objetivo:''}];
+  mcEcoMontos(document.getElementById('cc-modal-cuerpo'));
 }
-
-function cerrarModalMeta(){
-  const modal = document.getElementById('modal-meta');
-  modal.classList.add('modal-hidden'); modal.style.display='none';
+function mmModo(mo){
+  _mm.modo = mo;
+  document.querySelectorAll('#mm-modo button').forEach(b=>b.classList.toggle('activo', b.dataset.m === mo));
+  document.getElementById('mm-sec-sueno').hidden = mo !== 'sueno';
+  document.getElementById('mm-sec-reto').hidden = mo !== 'reto';
+  if(mo === 'reto'){ if(!_mm.conds.length || !_mm.conds[0].objetivo) _mm.conds = [{tipo:'unidades', objetivo:''}]; mmPintarConds(); }
 }
-
-function guardarMeta(){
-  const nombre   = document.getElementById('m-nombre').value.trim();
-  const objetivo = parseFloat(document.getElementById('m-objetivo').value)||0;
-  if(!nombre){ toast('El nombre es obligatorio','err'); return; }
-  if(!objetivo){ toast('Define un objetivo mayor a 0','err'); return; }
-  const tipo   = document.getElementById('m-tipo-val').value;
-  const editId = document.getElementById('m-edit-id').value;
-  const data = {
-    nombre, tipo, objetivo,
-    desc:   document.getElementById('m-desc').value.trim(),
-    inicio: document.getElementById('m-inicio').value,
-    fin:    document.getElementById('m-fin').value,
-    imagen: document.getElementById('m-imagen').value.trim(),
-  };
-  if(editId){
-    const idx=metas.findIndex(m=>m.id===editId);
-    if(idx>-1) metas[idx]={...metas[idx],...data};
-    mcNotificar({tipo:'guardar', titulo:'Meta actualizada', texto:data.nombre||''});
+function mmChip(id, b){ document.querySelectorAll('#' + id + ' button').forEach(o=>o.classList.toggle('activo', o === b)); }
+function mmPeriodo(){ const v = (document.querySelector('#mm-periodo button.activo') || {}).dataset?.v; document.getElementById('mm-fechas').hidden = v !== 'otro'; }
+function mmLeerConds(){ document.querySelectorAll('#mm-conds .mm-cond').forEach((row, k)=>{ if(!_mm.conds[k]) return; _mm.conds[k].tipo = row.querySelector('select').value; _mm.conds[k].objetivo = row.querySelector('input').value; }); }
+function mmPintarConds(){
+  const box = document.getElementById('mm-conds'); if(!box) return;
+  box.innerHTML = _mm.conds.map((c, k)=>`<div class="mm-cond">
+    ${k ? `<span class="mm-o">${(document.querySelector('#mm-comb button.activo') || {}).dataset?.v === 'todas' ? 'y' : 'o'}</span>` : ''}
+    <select onchange="mmLeerConds();mmPintarConds()">${Object.entries(MC_COND).map(([t,d])=>`<option value="${t}"${c.tipo === t ? ' selected' : ''}>${t === 'ganancia' ? 'Ganar ($)' : t === 'facturacion' ? 'Vender ($ en vehículos)' : t === 'unidades' ? 'Vender (vehículos)' : 'Racha (días seguidos vendiendo)'}</option>`).join('')}</select>
+    <input type="number" min="0" id="mm-c${k}" placeholder="${MC_COND[c.tipo].ph}" value="${c.objetivo || ''}" oninput="mmLeerConds()">
+    ${_mm.conds.length > 1 ? `<button type="button" class="ct-ic" onclick="mmLeerConds();_mm.conds.splice(${k},1);mmPintarConds()" aria-label="Quitar">×</button>` : ''}
+  </div>`).join('');
+  const comb = document.getElementById('mm-comb'); if(comb) comb.hidden = _mm.conds.length < 2;
+  box.querySelectorAll('input').forEach((inp, k)=>{ if(_mm.conds[k].tipo === 'ganancia' || _mm.conds[k].tipo === 'facturacion'){ MC_MONTOS.add(inp.id); mcEcoMonto(inp); } });
+}
+function mmAddCond(){ mmLeerConds(); if(_mm.conds.length >= 4){ toast('Máximo 4 condiciones', 'err'); return; } const usadas = _mm.conds.map(c=>c.tipo), sig = ['unidades','ganancia','facturacion','racha'].find(t=>!usadas.includes(t)) || 'ganancia'; _mm.conds.push({tipo: sig, objetivo:''}); mmPintarConds(); }
+function mmUrl(v){ _mm.imagen = v.trim(); const p = document.getElementById('mm-foto-prev'); if(p) p.innerHTML = _mm.imagen ? `<img src="${ccEsc(_mm.imagen)}" alt="">` : mcIco('regalo',28); }
+function mmQuitarFoto(){ _mm.imagen = ''; const p = document.getElementById('mm-foto-prev'); if(p) p.innerHTML = mcIco('regalo',28); const u = document.getElementById('mm-url'); if(u) u.value = ''; }
+async function mmSubirFoto(file){
+  if(!file || !file.type.startsWith('image/')){ toast('Elige una imagen', 'err'); return; }
+  const prev = document.getElementById('mm-foto-prev');
+  try {
+    const url = URL.createObjectURL(file), img = new Image();
+    await new Promise((ok, mal)=>{ img.onload = ok; img.onerror = mal; img.src = url; });
+    if(prev) prev.innerHTML = `<img src="${url}" alt=""><span class="mm-cargando">Guardando…</span>`;
+    const blob = await mcComprimirFoto(img, 1400, .84);
+    let ref = null;
+    try { ref = await mcSubirFotoBlob(blob); } catch(e){ ref = null; }
+    if(!ref){ const small = await mcComprimirFoto(img, 700, .7); ref = await new Promise(ok=>{ const r = new FileReader(); r.onload = ()=>ok(r.result); r.readAsDataURL(small); }); }
+    else _mcFotoLocal[ref] = url;
+    _mm.imagen = ref;
+    const u = document.getElementById('mm-url'); if(u) u.value = '';
+    if(prev){ const c = prev.querySelector('.mm-cargando'); if(c) c.remove(); }
+  } catch(e){ toast('No se pudo cargar la foto', 'err'); if(prev) prev.innerHTML = _mm.imagen ? `<img ${mcFotoAttr(_mm.imagen)} alt="">` : mcIco('regalo',28); }
+}
+function guardarMeta(id){
+  const val = k => (document.getElementById(k)?.value || '').trim();
+  const nombre = val('mm-nombre');
+  if(!nombre){ toast('Escribe qué quieres conseguir', 'err'); mcMarcarFalta('mm-nombre'); return; }
+  const hoy = hoyLocal(), m = id ? metas.find(x=>x.id === id) : null;
+  let data;
+  if(_mm.modo === 'sueno'){
+    const tipo = val('mm-tipo'), objetivo = ccNum(val('mm-obj'));
+    if(!(objetivo > 0)){ toast('Escribe el objetivo', 'err'); mcMarcarFalta('mm-obj'); return; }
+    data = {modo:'sueno', tipo, objetivo, conds:[{tipo, objetivo}], medida: (document.querySelector('#mm-medida button.activo') || {}).dataset?.v || 'mes',
+      para: val('mm-para'), inicio: m && m.modo === 'sueno' && m.inicio ? m.inicio : hoy, fin: '', combinar: ''};
   } else {
-    metas.unshift({id:uid(),...data,creadaEn:new Date().toISOString()});
-    mcNotificar({tipo:'agregar', titulo:'¡Meta creada!', texto:`${data.nombre||''} · a trabajar por ella`});
+    mmLeerConds();
+    const conds = _mm.conds.map(c=>({tipo: c.tipo, objetivo: ccNum(c.objetivo)})).filter(c=>c.objetivo > 0);
+    if(!conds.length){ toast('Escribe al menos una condición con su número', 'err'); mcMarcarFalta('mm-c0'); return; }
+    const per = (document.querySelector('#mm-periodo button.activo') || {}).dataset?.v || 'mes';
+    const inicio = per === 'mes' ? hoy.slice(0,7) + '-01' : val('mm-ini'), fin = per === 'mes' ? mcUltimoDiaMes(hoy.slice(0,7)) : val('mm-fin');
+    if(!inicio || !fin || fin < inicio){ toast('Revisa las fechas del reto', 'err'); return; }
+    data = {modo:'reto', tipo: conds[0].tipo, objetivo: conds[0].objetivo, conds, combinar: (document.querySelector('#mm-comb button.activo') || {}).dataset?.v || 'cualquiera', inicio, fin, medida:'', para:''};
   }
-  saveMetas(); cerrarModalMeta(); renderMetas();
+  Object.assign(data, {nombre, desc: val('mm-desc'), imagen: _mm.imagen || ''});
+  if(m){ Object.assign(m, data); mcNotificar({tipo:'guardar', titulo:'Meta actualizada', texto:nombre}); }
+  else { metas.unshift({id: uid(), ...data, creadaEn: new Date().toISOString()}); mcNotificar({tipo:'agregar', titulo: data.modo === 'sueno' ? '¡Sueño creado!' : '¡Reto creado!', texto:`${nombre} · a trabajar por ello`}); }
+  saveMetas(); ccCerrarModal(); renderMetas();
+}
+function cerrarModalMeta(){ ccCerrarModal(); }
+// Elegir qué meta se ve grande arriba
+function mcFijarFoco(id){ metas.forEach(m=>{ if(m.id === id) m.foco = true; else delete m.foco; }); saveMetas(); renderMetas(); window.scrollTo({top:0, behavior: mcMovReducido() ? 'auto' : 'smooth'}); }
+// En el Resumen: tus sueños siempre a la vista
+function mcResumenSuenos(){
+  const el = document.getElementById('res-suenos'); if(!el) return;
+  const act = metas.map(m=>({m, i: mcMetaInfo(m), t: mcMetaTema(m)})).filter(x=>!x.i.lograda).sort((a,b)=>(b.m.foco ? 1 : 0) - (a.m.foco ? 1 : 0) || (a.m.modo === 'sueno' ? -1 : 1) - (b.m.modo === 'sueno' ? -1 : 1)).slice(0, 3);
+  if(!act.length){ el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="rs-suenos">${act.map(({m, i, t})=>`<button class="rs-sueno" style="--ma:${t.a};--mb:${t.b}" onclick="go('metas')">
+    <span class="rs-img">${m.imagen ? mcMetaImg(m, 'mt-img') : mcIco(t.ico, 22)}</span>
+    <span class="rs-txt"><small>${m.modo === 'sueno' ? 'Tu sueño' : 'Tu reto'}</small><b>${ccEsc(m.nombre)}</b><i><u style="width:${i.pct}%"></u></i></span>
+    <em>${i.pct}%</em></button>`).join('')}</div>`;
+  try { mcHidratarFotos(); } catch(e){}
 }
 
 function eliminarMeta(id){
@@ -12359,44 +12591,6 @@ function eliminarMeta(id){
     metas=metas.filter(x=>x.id!==id);
     saveMetas(); renderMetas(); mcNotificar({tipo:'borrar', titulo:'Meta eliminada', texto:m?.nombre||''});
   });
-}
-
-function calcularProgresoMeta(m){
-  const ahora  = new Date();
-  const inicio = m.inicio ? new Date(m.inicio+'T00:00:00') : new Date(m.creadaEn||ahora);
-  const fin    = m.fin    ? new Date(m.fin+'T00:00:00')    : null;
-
-  // Filtrar ventas en el rango de la meta
-  const ventasRango = ventas.filter(v=>{
-    const d = new Date(v.fecha+'T00:00:00');
-    if(d < inicio) return false;
-    if(fin && d > fin) return false;
-    return true;
-  });
-
-  let actual = 0;
-  if(m.tipo==='ganancia'){
-    actual = ventasRango.reduce((a,v)=>{
-      const ex=(v.gastosList||[]).reduce((b,g)=>b+g.monto,0);
-      return a+(v.precioVenta-v.inversionCompra-(v.gastos||0)-ex);
-    },0);
-  } else if(m.tipo==='unidades'){
-    actual = ventasRango.length;
-  } else if(m.tipo==='facturacion'){
-    actual = ventasRango.reduce((a,v)=>a+(v.precioVenta||0),0);
-  }
-
-  const pct     = Math.min(100, Math.round((actual/m.objetivo)*100));
-  const falta   = Math.max(0, m.objetivo - actual);
-  const lograda = pct >= 100;
-
-  // Días restantes
-  let diasRestantes = null;
-  if(fin){
-    diasRestantes = Math.ceil((fin - ahora) / 86400000);
-  }
-
-  return {actual, pct, falta, lograda, diasRestantes};
 }
 
 function celebrarMeta(metaId){
@@ -12458,74 +12652,6 @@ mcIniciar();
   </div>
 </div>
 
-
-<!-- MODAL NUEVA/EDITAR META -->
-<div id="modal-meta" class="modal-hidden" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:200;padding:1rem">
-  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:1.75rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
-      <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700" id="modal-meta-title">Nueva meta</div>
-      <button class="btn btn-ghost btn-sm" onclick="cerrarModalMeta()">✕</button>
-    </div>
-
-    <!-- Tipo de meta -->
-    <div class="form-group">
-      <label class="form-label">Tipo de meta</label>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-        <button type="button" id="mtipo-ganancia" onclick="setTipoMeta('ganancia')"
-          style="padding:.6rem;border-radius:10px;border:1.5px solid var(--accent);background:rgba(42,127,255,.1);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">
-          Ganancia
-        </button>
-        <button type="button" id="mtipo-unidades" onclick="setTipoMeta('unidades')"
-          style="padding:.6rem;border-radius:10px;border:1.5px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">
-          Unidades
-        </button>
-        <button type="button" id="mtipo-facturacion" onclick="setTipoMeta('facturacion')"
-          style="padding:.6rem;border-radius:10px;border:1.5px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">
-          Facturación
-        </button>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Nombre de la meta <span>*</span></label>
-      <input type="text" id="m-nombre" placeholder="Ej: Cartier Santos Black 2026">
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Descripción (opcional)</label>
-      <input type="text" id="m-desc" placeholder="Ej: Generar $50M en ganancias limpias este mes">
-    </div>
-
-    <div class="form-group">
-      <label class="form-label" id="m-objetivo-label">Objetivo ($ ganancia)</label>
-      <input type="number" id="m-objetivo" placeholder="50000000" min="0">
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="form-group">
-        <label class="form-label">Fecha inicio</label>
-        <input type="date" id="m-inicio">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Fecha límite</label>
-        <input type="date" id="m-fin">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">URL de imagen de la meta</label>
-      <input type="text" id="m-imagen" placeholder="https://... (foto del objeto de tu meta)">
-      <div style="font-size:11px;color:var(--text3);margin-top:4px">Busca en Google la imagen, clic derecho → Copiar dirección de imagen → pégala aquí</div>
-    </div>
-
-    <div style="display:flex;gap:10px;margin-top:1.25rem">
-      <button class="btn btn-primary" onclick="guardarMeta()">✓ Guardar meta</button>
-      <button class="btn btn-ghost" onclick="cerrarModalMeta()">Cancelar</button>
-    </div>
-    <input type="hidden" id="m-edit-id">
-    <input type="hidden" id="m-tipo-val" value="ganancia">
-  </div>
-</div>
 
 </body>
 </html>
