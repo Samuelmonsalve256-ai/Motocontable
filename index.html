@@ -2626,6 +2626,57 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 
 .ct-carta{white-space:nowrap;margin-left:8px;padding:2px 9px;border-radius:999px;border:1px solid rgba(244,114,182,.5);background:linear-gradient(135deg,rgba(244,114,182,.3),rgba(168,85,247,.25));color:#fff;font:700 11px 'Inter',sans-serif;cursor:pointer}
 .ct-carta:hover{background:linear-gradient(135deg,rgba(244,114,182,.5),rgba(168,85,247,.45))}
+
+/* ── Interesados: lista limpia y plan sin estrés ─────────────────────────── */
+.in-tabla{grid-column:1/-1;display:flex;flex-direction:column;gap:6px}
+.in-thead,.in-row{display:grid;grid-template-columns:14px minmax(150px,1.1fr) minmax(170px,1.5fr) 128px 128px 112px;align-items:center;gap:14px}
+.in-thead{padding:0 16px 4px;font-size:11px;font-weight:700;color:#7a7a98;text-transform:uppercase;letter-spacing:.06em}
+.in-row{--t:#f5c451;padding:12px 16px;border-radius:14px;background:var(--bg2);border:1px solid rgba(255,255,255,.07);cursor:pointer;transition:border-color .15s,background .15s,transform .15s}
+.in-row:hover{border-color:rgba(255,255,255,.16);background:color-mix(in srgb,var(--bg2) 92%,#fff)}
+.in-row.t-caliente{--t:#ff6b4a}.in-row.t-frio{--t:#5eb4ff}
+.in-row.urge{border-color:rgba(45,212,191,.35)}
+.in-row.cerrado{opacity:.85}
+.in-tdot{width:12px;height:12px;border-radius:50%;background:var(--t);box-shadow:0 0 0 4px color-mix(in srgb,var(--t) 18%,transparent)}
+.in-rnom{min-width:0}
+.in-rnom b{display:block;font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.in-rnom small{display:block;font-size:12px;color:#8a8aa8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.in-tlab{color:var(--t);font-weight:700}
+.in-rveh{display:flex;align-items:center;gap:9px;min-width:0}
+.in-rveh>svg{flex:none;color:#7cb6ff}
+.in-rveh>span{min-width:0}
+.in-rveh b{display:block;font-size:13px;color:#e6e6f5;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.in-rveh small{display:block;font-size:11.5px;color:#8a8aa8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.in-rpago{justify-self:start;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;color:#c9c9de;background:rgba(255,255,255,.06)}
+.in-rpago.contado{color:#2ee6a6;background:rgba(0,214,143,.12)}
+.in-rpago.credito{color:#c4b5fd;background:rgba(167,139,250,.14)}
+.in-rpago.retoma{color:#f5c451;background:rgba(245,196,81,.12)}
+.in-rpago.sin{color:#6f6f8e;background:transparent;font-weight:600}
+.in-rcuando{justify-self:start;font-size:12.5px;font-weight:700;white-space:nowrap;color:#7cb6ff}
+.in-rcuando.mal{color:#ff8aa5}.in-rcuando.hoy{color:#5eead4}.in-rcuando.sin{color:#6f6f8e;font-weight:600}
+.in-rcuando.vend{color:#2ee6a6}.in-rcuando.perd{color:#ff8aa5}
+.in-racc{justify-self:end}
+.in-racc .ct-btn{min-height:34px;min-width:96px;justify-content:center}
+.in-det .in-card{border:0;padding:0;background:none;box-shadow:none;transform:none}
+.in-det .in-card:hover{transform:none;box-shadow:none}
+.in-avance{display:flex;align-items:center;gap:12px;margin-top:14px}
+.in-avance i{flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+.in-avance u{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#2dd4bf,#00d68f);transition:width .5s}
+.in-avance span{font-size:12.5px;color:#a9a9c2;white-space:nowrap}.in-avance b{color:#fff}
+.in-plan.listo{border-color:rgba(0,214,143,.4);background:linear-gradient(135deg,rgba(0,214,143,.12),rgba(255,255,255,.015) 60%)}
+.in-plan.listo .in-plan-ico{background:linear-gradient(135deg,#00d68f,#0ea372)}
+.in-mas{display:block;margin:12px auto 0;background:none;border:0;color:#9a9ab8;font:600 12.5px 'Inter',sans-serif;cursor:pointer}
+.in-mas:hover{color:#fff}
+.in-paso-plan.extra{opacity:.7}
+.in-ptxt span::first-letter{text-transform:uppercase}
+.in-parec-linea{grid-column:1/-1;display:flex;align-items:center;gap:10px;width:100%;margin-bottom:12px;padding:11px 14px;border-radius:12px;border:1px dashed rgba(245,196,81,.35);background:rgba(245,196,81,.05);color:#d6d6ea;font:500 13px 'Inter',sans-serif;cursor:pointer;text-align:left}
+.in-parec-linea svg{color:#f5c451;flex:none}.in-parec-linea span{flex:1}.in-parec-linea b{color:#f5c451}
+.in-parec-linea em{font-style:normal;font-weight:700;color:#f5c451}
+@media (max-width:1100px){
+  .in-thead{display:none}
+  .in-row{grid-template-columns:12px 1fr auto;grid-template-areas:"d n c" "d v v" "d p a";row-gap:8px}
+  .in-tdot{grid-area:d;align-self:start;margin-top:4px}.in-rnom{grid-area:n}.in-rcuando{grid-area:c;justify-self:end}
+  .in-rveh{grid-area:v}.in-rpago{grid-area:p;align-self:center}.in-racc{grid-area:a}
+}
 </style>
 </head>
 <body>
@@ -6792,14 +6843,14 @@ function renderInteresados(){
   const todos = intLista(), act = todos.filter(intActivo), plan = intPlan(), cerr = todos.filter(x=>!intActivo(x));
   const mes = hoyLocal().slice(0,7), vendMes = cerr.filter(x=>x.estado === 'vendido' && String(x.cerradoEl||'').slice(0,7) === mes).length;
   const r = document.getElementById('in-resumen');
-  if(r) r.innerHTML = `<div><b>${act.length}</b><small>negocios activos</small></div><div class="cal"><b>${act.filter(x=>x.temp === 'caliente').length}</b><small>calientes</small></div><div class="${plan.length ? 'pend' : ''}"><b>${plan.length}</b><small>en tu plan de hoy</small></div><div><b>${vendMes}</b><small>cerrados este mes</small></div>`;
+  if(r) r.innerHTML = `<div><b>${act.length}</b><small>negocios activos</small></div><div class="cal"><b>${act.filter(x=>x.temp === 'caliente').length}</b><small>calientes</small></div><div class="${plan.length ? 'pend' : ''}"><b>${Math.min(INT_MAX_DIA, plan.length)}</b><small>en tu plan de hoy</small></div><div><b>${vendMes}</b><small>cerrados este mes</small></div>`;
   const seg = document.getElementById('in-seg');
-  if(seg) seg.innerHTML = [['plan','Plan de hoy',plan.length],['activos','Activos',act.length],['cerrados','Cerrados',cerr.length],['cifras','Cifras','']]
+  if(seg) seg.innerHTML = [['plan','Plan de hoy',Math.min(INT_MAX_DIA, plan.length)],['activos','Activos',act.length],['cerrados','Cerrados',cerr.length],['cifras','Cifras','']]
     .map(([k,n,c])=>`<button class="${_intVista === k ? 'activo' : ''}" onclick="intVista('${k}')">${n}${c !== '' ? `<i>${c}</i>` : ''}</button>`).join('');
   const bus = document.querySelector('#page-interesados .ct-buscar'); if(bus) bus.hidden = _intVista === 'cifras' || _intVista === 'plan';
   const mt = document.getElementById('in-match'); if(mt) mt.innerHTML = '';
   if(_intVista === 'cifras'){ cont.innerHTML = intCifras(); return; }
-  if(_intVista === 'plan'){ cont.innerHTML = (act.length || plan.length ? intPlanHtml(plan) + intPanelParecidas(intParecidas()) : '<div class="ct-vacio">' + mcIco('embudo',30) + '<b>Sin clientes interesados todavía</b><span>Anota a cada persona que pregunte por un vehículo. El sistema te dice cada día a quién escribirle y te avisa cuando entre lo que buscan.</span><button class="btn btn-primary" style="margin-top:6px" onclick="intAbrir()">+ Nuevo interesado</button></div>'); return; }
+  if(_intVista === 'plan'){ cont.innerHTML = (act.length || plan.length ? intPlanHtml(plan) + intLineaParecidas() : '<div class="ct-vacio">' + mcIco('embudo',30) + '<b>Sin clientes interesados todavía</b><span>Anota a cada persona que pregunte por un vehículo. El sistema te dice cada día a quién escribirle y te avisa cuando entre lo que buscan.</span><button class="btn btn-primary" style="margin-top:6px" onclick="intAbrir()">+ Nuevo interesado</button></div>'); return; }
   const q = mcSinTildes(document.getElementById('in-buscar')?.value || '');
   let lista = _intVista === 'cerrados' ? cerr : act;
   if(q) lista = lista.filter(x=>mcSinTildes(x.nombre).includes(q) || mcSinTildes(intVehNombre(x)).includes(q) || String(x.tel||'').includes(q));
@@ -6816,7 +6867,36 @@ function renderInteresados(){
     cont.innerHTML = `<div class="ct-vacio">${mcIco(vacio[0], 30)}<b>${vacio[1]}</b><span>${vacio[2]}</span>${!q && _intVista === 'activos' ? `<button class="btn btn-primary" style="margin-top:6px" onclick="intAbrir()">+ Nuevo interesado</button>` : ''}</div>`;
     return;
   }
-  cont.innerHTML = lista.map(intTarjeta).join('');
+  cont.innerHTML = `<div class="in-tabla"><div class="in-thead"><span></span><span>Cliente</span><span>Qué quiere</span><span>Pago</span><span>${_intVista === 'cerrados' ? 'Cómo terminó' : 'Cuándo escribirle'}</span><span></span></div>${lista.map(intFila).join('')}</div>`;
+}
+// Lo que quiere el cliente, en corto
+function intQuiere(x){
+  const v = intVeh(x);
+  if(v) return {txt: intNomV(v) + (v.color ? ' ' + v.color : ''), sub: v.placa ? 'En inventario · ' + String(v.placa).toUpperCase() : 'En inventario'};
+  if(x.vehId) return {txt: x.vehNombre || 'Vehículo', sub: x.vendidoAOtro ? 'Se vendió a otro cliente' : 'Ya no está en inventario'};
+  if(x.busca) return {txt: x.busca.ref, sub: `Lo busca · ${x.busca.anio ? 'modelo ' + x.busca.anio : 'sin modelo'}${x.busca.cualquierColor ? ' · cualquier color' : x.busca.color ? ' · ' + x.busca.color.toLowerCase() : ''}`};
+  if(x.vehTexto) return {txt: x.vehTexto, sub: 'Lo busca'};
+  return {txt: 'Todavía no sabe', sub: ''};
+}
+// Una línea por cliente: temperatura, nombre, qué quiere, pago, cuándo escribirle y un solo botón
+function intFila(x){
+  const t = x.temp || 'tibio', s = intSegTxt(x), q = intQuiere(x), tel = intTel(x), cerrado = !intActivo(x);
+  const cuando = cerrado ? {cls: x.estado === 'vendido' ? 'vend' : 'perd', txt: (x.estado === 'vendido' ? 'Vendido' : 'Perdido') + (x.cerradoEl ? ' · ' + mcFechaCorta(x.cerradoEl) : '')} : {cls: s.cls, txt: s.corto};
+  return `<div class="in-row t-${t}${!cerrado && (s.cls === 'mal' || s.cls === 'hoy') ? ' urge' : ''}${cerrado ? ' cerrado' : ''}" onclick="intDetalle('${x.id}')" role="button" tabindex="0">
+    <span class="in-tdot" aria-hidden="true"></span>
+    <div class="in-rnom"><b>${ccEsc(x.nombre)}</b><small><span class="in-tlab">${INT_TEMP[t]}</span>${x.tel ? ' · ' + ccEsc(x.tel) : ''}</small></div>
+    <div class="in-rveh">${mcIco(x.vehTipo === 'carro' ? 'carro' : 'moto', 15)}<span><b>${ccEsc(q.txt)}</b>${q.sub ? `<small>${ccEsc(q.sub)}</small>` : ''}</span></div>
+    <span class="in-rpago ${x.pago || 'sin'}">${x.pago ? INT_PAGO[x.pago] : 'Pago sin definir'}</span>
+    <span class="in-rcuando ${cuando.cls}">${cuando.txt}</span>
+    <div class="in-racc" onclick="event.stopPropagation()">${!cerrado && tel ? `<a class="ct-btn wa" href="${intWaUrl(x)}" target="_blank" rel="noopener" onclick="setTimeout(()=>intSeguimiento('${x.id}'),400)">${mcIco('chat',14)}Escribir</a>` : `<button class="ct-btn" onclick="intDetalle('${x.id}')">Ver</button>`}</div>
+  </div>`;
+}
+// Todo lo del cliente, al tocar su línea
+function intDetalle(id){
+  const x = intLista().find(i=>i.id === id); if(!x) return;
+  const h = (x.historial || []).slice(0, 6);
+  ccAbrirModal('Cliente interesado', `<div class="in-det" data-id="${x.id}">${intTarjeta(x)}
+    <div class="in-hist"><div class="in-hist-tit">Historial</div>${h.map(o=>`<div><b>${mcFechaCorta(o.fecha)}</b><span>${o.nota ? ccEsc(o.nota) : 'Seguimiento'}</span></div>`).join('')}<div><b>${mcFechaCorta(x.creado)}</b><span>Lo anotaste</span></div></div></div>`);
 }
 function intVendidaTxt(x){
   const vta = ventas.find(o=>o.vehiculoId === x.vehId);
@@ -6882,7 +6962,6 @@ function intAbrir(id, pre){
       <div class="form-group"><label class="form-label">Nombre <span>*</span></label><input type="text" id="in-nombre" list="in-contactos" placeholder="Nombre del cliente" value="${ccEsc(e.nombre||'')}" oninput="intContactoElegido()"></div>
       <div class="form-group"><label class="form-label">Celular</label><input type="text" id="in-tel" placeholder="Ej: 3001234567" inputmode="tel" value="${ccEsc(e.tel||'')}"></div>
     </div>
-    <div class="form-group" style="margin:-4px 0 14px"><label class="form-label">Cumpleaños (opcional)</label><div class="nac-sel" id="in-nac" data-nac data-v="${ccEsc(e.nac||'')}"></div></div>
     <datalist id="in-contactos">${compradores.map(c=>`<option value="${ccEsc(c.nombre)}">`).join('')}</datalist>
     <div class="in-paso"><span>2</span>¿Qué vehículo quiere?</div>
     <div class="in-modo" id="in-modo">
@@ -6981,7 +7060,7 @@ function intGuardar(id){
   const data = {nombre, tel: val('tel'), vehTipo: vehId ? vehTipo : (busca ? busca.tipo : ''), vehId: vehId || '',
     vehNombre: veh ? `${veh.nombre||''}${veh.modelo ? ' ' + veh.modelo : ''}`.trim() : (vehId && x ? x.vehNombre : ''),
     busca, vehTexto: busca ? intBuscaTexto(busca) : '', presupuesto: ccNum(val('presu')) || 0, pago: val('pago'), temp,
-    seguimiento: val('fseg'), estado: val('estado') || 'nuevo', nota: val('nota'), nac: val('nac'), actualizado: new Date().toISOString()};
+    seguimiento: val('fseg'), estado: val('estado') || 'nuevo', nota: val('nota'), actualizado: new Date().toISOString()};
   if(x){
     const antes = x.estado;
     if(x.vehId !== data.vehId) delete x.vendidoAOtro;
@@ -7007,6 +7086,9 @@ function intGuardar(id){
 function intRefrescar(){
   _intCoinCache = null;
   intContador();
+  const det = document.querySelector('#cc-modal-cuerpo .in-det'), mo = document.getElementById('modal-cc');
+  if(det && mo && !mo.classList.contains('modal-hidden')) intDetalle(det.dataset.id);
+  intRevisarDia();
   const activa = (document.querySelector('.page.active')||{}).id;
   if(activa === 'page-interesados') renderInteresados();
   if(activa === 'page-resumen') intAvisoResumen();
@@ -7037,7 +7119,7 @@ function intSeguimiento(id){
 }
 function intCuando(b){ document.querySelectorAll('#in-cuando button').forEach(o=>o.classList.toggle('activo', o === b)); const d = document.getElementById('in-sg-fecha'); if(d) d.value = ''; }
 function intGuardarSeguimiento(id){
-  const x = intLista().find(i=>i.id === id); if(!x) return;
+  const x = intLista().find(i=>i.id === id); if(!x) return; intHecho();
   const otra = document.getElementById('in-sg-fecha')?.value || '', b = document.querySelector('#in-cuando button.activo');
   const prox = otra || (b ? b.dataset.f : x.seguimiento || '');
   const nota = (document.getElementById('in-sg-nota')?.value || '').trim();
@@ -7074,7 +7156,7 @@ function intPerdido(id){
 }
 function intCuando2(b){ document.querySelectorAll('#in-motivos button').forEach(o=>o.classList.toggle('activo', o === b)); }
 function intGuardarPerdido(id){
-  const x = intLista().find(i=>i.id === id); if(!x) return;
+  const x = intLista().find(i=>i.id === id); if(!x) return; intHecho();
   const b = document.querySelector('#in-motivos button.activo'), otro = (document.getElementById('in-motivo')?.value || '').trim();
   x.estado = 'perdido'; x.cerradoEl = hoyLocal(); x.motivo = otro || (b ? b.textContent : ''); x.actualizado = new Date().toISOString();
   saveCfg(); ccCerrarModal(); intRefrescar();
@@ -7238,7 +7320,7 @@ function intPanelCoincidencias(lista){
   </div>`;
 }
 function intOfrecer(id, k){
-  const x = intLista().find(i=>i.id === id); if(!x) return;
+  const x = intLista().find(i=>i.id === id); if(!x) return; intHecho();
   const [tipo, vid] = k.split(':'), v = (tipo === 'carro' ? carros : motos).find(o=>o.id === vid);
   x.ofrecidos = [...(x.ofrecidos||[]).filter(o=>o.k !== k), {k, fecha: hoyLocal()}];
   x.historial = [{fecha: hoyLocal(), nota: `Le ofrecí ${v ? intNomV(v) : 'un vehículo'}`}, ...(x.historial||[])].slice(0, 30);
@@ -7250,7 +7332,7 @@ function intOfrecer(id, k){
   setTimeout(()=>{ intRefrescar(); mcNotificar({tipo:'guardar', titulo:'Oferta registrada', texto:`Mañana le preguntas a ${x.nombre} qué le pareció`}); }, 300);
 }
 function intAsignar(id, k){
-  const x = intLista().find(i=>i.id === id); if(!x) return;
+  const x = intLista().find(i=>i.id === id); if(!x) return; intHecho();
   const [tipo, vid] = k.split(':'), v = (tipo === 'carro' ? carros : motos).find(o=>o.id === vid); if(!v) return;
   x.buscaba = x.vehTexto; x.vehTexto = ''; x.vehTipo = tipo; x.vehId = vid; x.vehNombre = intNomV(v);
   if((x.estado||'nuevo') === 'nuevo') x.estado = 'conversacion';
@@ -7260,7 +7342,7 @@ function intAsignar(id, k){
   mcNotificar({tipo:'confirmar', titulo:`${x.nombre} quedó interesado`, texto:`En ${intNomV(v)} · ahora aparece en la ficha del vehículo`});
 }
 function intDescartar(id, k){
-  const x = intLista().find(i=>i.id === id); if(!x) return;
+  const x = intLista().find(i=>i.id === id); if(!x) return; intHecho();
   x.descartes = [...new Set([...(x.descartes||[]), k])];
   _intCoinCache = null; saveCfg(); intRefrescar();
   const quedan = document.querySelectorAll('#cc-modal-cuerpo .in-match-fila').length;
@@ -7354,7 +7436,7 @@ function intTrasVenta(vta){
 }
 // El vehículo se vendió a otro: buscarle uno parecido
 function intSimilar(id){
-  const x = intLista().find(i=>i.id === id); if(!x) return;
+  const x = intLista().find(i=>i.id === id); if(!x) return; intHecho();
   const pz = intParseTexto(x.vehNombre || x.buscaba || '');
   x.busca = {tipo: x.vehTipo || 'moto', ref: pz.ref, anio: pz.anio, color: pz.color, cercano: true, cualquierColor: !pz.color};
   x.vehTexto = intBuscaTexto(x.busca); x.vehId = ''; delete x.vendidoAOtro;
@@ -7443,24 +7525,44 @@ function intPlan(){
     texto:'Sin fecha, el sistema no te puede recordar cuándo escribirles.', acc:[{label:'Ponerle fecha', fn:`intSeguimiento('${sinF[0].id}')`, cls:'listo'}]});
   return P.concat(typeof relPlan === 'function' ? relPlan().filter(it=>pos[it.k] !== hoy) : []).sort((a,b)=>a.prio - b.prio);
 }
-function intPonerTemp(id, t){ const x = intLista().find(i=>i.id === id); if(!x) return; x.temp = t; x.ultimoContacto = x.ultimoContacto || x.creado; saveCfg(); intRefrescar(); mcNotificar({tipo:'guardar', titulo:`${x.nombre} ahora está ${INT_TEMP[t].toLowerCase()}`, texto:'Lo puedes cambiar cuando quieras'}); }
+function intPonerTemp(id, t){ const x = intLista().find(i=>i.id === id); if(!x) return; intHecho(); x.temp = t; x.ultimoContacto = x.ultimoContacto || x.creado; saveCfg(); intRefrescar(); mcNotificar({tipo:'guardar', titulo:`${x.nombre} ahora está ${INT_TEMP[t].toLowerCase()}`, texto:'Lo puedes cambiar cuando quieras'}); }
 function intBuscarEnLista(q){ _intVista = 'activos'; go('interesados'); const b = document.getElementById('in-buscar'); if(b){ b.value = q; renderInteresados(); } }
+// Lo que hiciste hoy desde el plan (para la barra de avance)
+const INT_MAX_DIA = 5;
+function intHechos(){ try { const o = JSON.parse(localStorage.getItem('mc_int_hechos') || '{}'); return o.fecha === hoyLocal() ? o.n || 0 : 0; } catch(e){ return 0; } }
+function intHecho(){ try { localStorage.setItem('mc_int_hechos', JSON.stringify({fecha: hoyLocal(), n: intHechos() + 1})); } catch(e){} }
+// Cuando terminas lo del día: una celebración, una vez por día
+function intRevisarDia(){
+  if(!intHechos() || intPlan().length) return;
+  try { if(localStorage.getItem('mc_int_dia_ok') === hoyLocal()) return; localStorage.setItem('mc_int_dia_ok', hoyLocal()); } catch(e){ return; }
+  setTimeout(()=>{ mcNotificar({tipo:'confirmar', titulo:'¡Plan del día completo!', texto:`Hiciste ${intHechos()} ${intHechos() === 1 ? 'cosa' : 'cosas'} hoy. Así no se te escapa ningún negocio.`, ms:7000}); try { mcSonidoLogro(1); } catch(e){} }, 500);
+}
+let _intPlanMas = false, _intParec = false;
 function intPlanHtml(items, max){
-  const hechos = intLista().reduce((a,x)=>a + (x.historial||[]).filter(h=>h.fecha === hoyLocal()).length, 0);
-  const vis = max ? items.slice(0, max) : items;
+  const hechos = intHechos(), tope = max || INT_MAX_DIA, hoyItems = items.slice(0, INT_MAX_DIA), resto = items.length - hoyItems.length;
+  const vis = max ? hoyItems.slice(0, max) : (_intPlanMas ? items : hoyItems);
+  const meta = hechos + hoyItems.length, pct = meta ? Math.round(hechos / meta * 100) : 0;
   const boton = a => a.wa ? `<a class="ct-btn ${a.cls||'wa'}" href="${a.wa}" target="_blank" rel="noopener" onclick="${a.fn||''}">${mcIco('chat',14)}${a.label}</a>`
     : `<button class="ct-btn in-${a.cls||'b'}" onclick="${a.fn}">${a.cls === 'listo' || a.cls === 'si' ? mcIco('check',14) : ''}${a.label}</button>`;
-  return `<div class="in-plan${max ? ' compacto' : ''}">
-    <div class="in-plan-cab"><i class="in-plan-ico">${mcIco('objetivo',22)}</i>
-      <div><b>${items.length ? `Tu plan de hoy: ${items.length} ${items.length === 1 ? 'cosa' : 'cosas'} para mover tus negocios` : 'Tu plan de hoy está listo'}</b>
-      <span>${items.length ? 'Empieza por arriba: está ordenado por lo que más dinero te puede dejar.' : 'No hay nada urgente. Buen momento para conseguir clientes nuevos.'}${hechos ? ` · Hoy ya hiciste <b>${hechos}</b> seguimiento${hechos !== 1 ? 's' : ''}` : ''}</span></div>
-      ${max ? `<button class="av-ir" onclick="_intVista='plan';go('interesados')">Ver ${items.length > max ? 'todo (' + items.length + ')' : 'Interesados'} ${mcIco('flecha',14)}</button>` : ''}</div>
-    ${vis.length ? `<div class="in-plan-lista">${vis.map((it, i)=>`<div class="in-paso-plan t-${it.tono}">
+  const listo = !items.length;
+  return `<div class="in-plan${max ? ' compacto' : ''}${listo ? ' listo' : ''}">
+    <div class="in-plan-cab"><i class="in-plan-ico">${mcIco(listo ? 'check' : 'objetivo',22)}</i>
+      <div><b>${listo ? (hechos ? '¡Plan del día completo!' : 'Hoy no hay nada pendiente') : `Tu plan de hoy: ${hoyItems.length} ${hoyItems.length === 1 ? 'cosa' : 'cosas'}`}</b>
+      <span>${listo ? (hechos ? `Hiciste ${hechos} ${hechos === 1 ? 'cosa' : 'cosas'} hoy. Buen trabajo: mañana el sistema te arma el siguiente plan.` : 'Buen momento para conseguir clientes nuevos.') : 'Haz estas y listo. Van en orden: la primera es la que más te puede dejar.'}</span></div>
+      ${max ? `<button class="av-ir" onclick="_intVista='plan';go('interesados')">Ver plan ${mcIco('flecha',14)}</button>` : ''}</div>
+    ${meta ? `<div class="in-avance"><i><u style="width:${pct}%"></u></i><span><b>${hechos}</b> de ${meta} listas</span></div>` : ''}
+    ${vis.length ? `<div class="in-plan-lista">${vis.map((it, i)=>`<div class="in-paso-plan t-${it.tono}${i >= INT_MAX_DIA ? ' extra' : ''}">
       <span class="in-num">${i + 1}</span><i class="in-pico">${mcIco(it.ico,16)}</i>
       <div class="in-ptxt"><b>${it.titulo}</b><span>${it.texto}</span></div>
-      <div class="in-pacc">${it.acc.map(boton).join('')}<button class="in-despues" onclick="intPosponer('${it.k.replace(/'/g,'')}')" title="Ocultar hasta mañana">Mañana</button></div>
+      <div class="in-pacc">${it.acc.map(boton).join('')}<button class="in-despues" onclick="intPosponer('${it.k.replace(/'/g,'')}')" title="Pasar para mañana">Mañana</button></div>
     </div>`).join('')}</div>` : ''}
+    ${!max && resto > 0 ? `<button class="in-mas" onclick="_intPlanMas=!_intPlanMas;renderInteresados()">${_intPlanMas ? 'Ver solo las de hoy' : `${resto} más quedan para mañana · ver`}</button>` : ''}
   </div>`;
+}
+// Las parecidas: una línea pequeña que se abre si quieres verlas
+function intLineaParecidas(){
+  const p = intParecidas(); if(!p.length) return '';
+  return `<button class="in-parec-linea" onclick="_intParec=!_intParec;renderInteresados()">${mcIco('buscar',14)}<span><b>${p.length} ${p.length === 1 ? 'moto parecida' : 'motos parecidas'}</b> a lo que buscan tus clientes</span><em>${_intParec ? 'Ocultar' : 'Ver'}</em></button>${_intParec ? intPanelParecidas(p) : ''}`;
 }
 
 function intCifras(){
@@ -7898,14 +8000,8 @@ function cumMarcar(silencio){
 }
 // Lo de papeles y relación que va al Plan de hoy
 function relPlan(){
+  // Los cumpleaños se manejan en Contactos (Fechas especiales); el plan queda solo con los negocios
   const P = [];
-  cumFechas(3).filter(f=>!f.enviada).forEach(f=>{
-    const veh = f.venta ? (f.venta.motoNombre || '') : '';
-    P.push({k:`cum|${f.p.key}|${f.tipo}|${f.anio}`, area:'rel', prio: f.dias === 0 ? .8 : 3.8, tono:'cum', ico: f.tipo === 'aniv' ? 'corazon' : 'regalo',
-      titulo: f.tipo === 'aniv' ? `${f.dias === 0 ? 'Hoy' : cumCuando(f.dias)} cumple ${f.anos} año${f.anos !== 1 ? 's' : ''} ${ccEsc(f.p.nombre)} con su ${ccEsc(veh)}` : `${f.dias === 0 ? 'Hoy cumple años' : cumCuando(f.dias) + ' cumple años'} ${ccEsc(f.p.nombre)}`,
-      texto: f.dias === 0 ? 'Mándale su carta: es un detalle que no olvida y que te diferencia de cualquier vendedor.' : 'Prepara su carta con tiempo para enviarla ese día.',
-      acc:[{label:'Crear carta', fn:`cumAbrirCarta('${f.p.key}','${f.tipo}'${f.venta ? `,'${f.venta.id}'` : ''})`, cls:'listo'}]});
-  });
   return P;
 }
 mcAplicarIconos();
