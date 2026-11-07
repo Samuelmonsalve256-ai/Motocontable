@@ -2828,32 +2828,45 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 }
 
 /* ── Metas en 3D ────────────────────────────────────────────────────────── */
-.m3d{--rx:0deg;--ry:0deg;--lx:50%;--ly:30%;position:relative;width:100%;height:100%;min-height:220px;display:grid;place-items:center;perspective:900px;touch-action:pan-y}
-.m3d-aura{position:absolute;inset:8% 12%;border-radius:50%;background:radial-gradient(circle at var(--lx) var(--ly),color-mix(in srgb,var(--ma,#f5c451) 45%,transparent),transparent 65%);filter:blur(24px);opacity:.8;transition:background-position .2s}
-.m3d-flota{position:relative;width:78%;height:78%;display:grid;place-items:center;animation:m3dFlota 5.5s ease-in-out infinite}
-.m3d-giro{width:100%;height:100%;display:grid;place-items:center;transform-style:preserve-3d;animation:m3dGiro 9s ease-in-out infinite}
-.m3d.activo .m3d-giro{animation-play-state:paused}
-.m3d-obj{position:relative;max-width:100%;max-height:100%;display:grid;place-items:center;transform:rotateX(var(--rx)) rotateY(var(--ry));transition:transform .18s ease-out;transform-style:preserve-3d}
-.m3d-img{display:block;max-width:100%;max-height:260px;object-fit:contain;transform:translateZ(40px)}
-.m3d.recorte .m3d-img{filter:drop-shadow(0 26px 22px rgba(0,0,0,.6)) drop-shadow(0 4px 6px rgba(0,0,0,.35))}
-.m3d.foto .m3d-img{border-radius:18px;box-shadow:0 30px 50px -18px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.12)}
-.m3d-brillo{position:absolute;inset:0;transform:translateZ(41px);pointer-events:none;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.55) 48%,transparent 60%);background-size:250% 100%;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;mix-blend-mode:overlay;animation:m3dBrillo 4.5s ease-in-out infinite;opacity:0}
-.m3d.recorte .m3d-brillo{opacity:1}
-.m3d.foto .m3d-brillo{opacity:.8;border-radius:18px}
-.m3d-sombra{position:absolute;bottom:6%;left:50%;width:48%;height:16px;margin-left:-24%;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.55),transparent 70%);animation:m3dSombra 5.5s ease-in-out infinite}
-@keyframes m3dFlota{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-@keyframes m3dSombra{0%,100%{transform:scaleX(1);opacity:.75}50%{transform:scaleX(.82);opacity:.45}}
-@keyframes m3dGiro{0%,100%{transform:rotateY(-10deg) rotateX(3deg)}50%{transform:rotateY(10deg) rotateX(-2deg)}}
-@keyframes m3dBrillo{0%,55%{background-position:120% 0}85%,100%{background-position:-60% 0}}
-@media (prefers-reduced-motion:reduce){.m3d-flota,.m3d-giro,.m3d-sombra,.m3d-brillo{animation:none}}
-.mt-foco.v3d{grid-template-columns:auto minmax(0,1fr) minmax(240px,34%)}
-.mt-foco-3d{grid-column:3;grid-row:1;align-self:stretch;min-height:300px;--ma:var(--ma)}
+.m3d{--lx:50%;--ly:30%;--giro:0;--m3d-c:var(--ma,#f5c451);position:relative;width:100%;height:100%;min-height:240px;overflow:hidden;border-radius:20px;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;
+  background:radial-gradient(120% 70% at 50% 0%,rgba(255,255,255,.07),transparent 60%),radial-gradient(90% 60% at 50% 105%,color-mix(in srgb,var(--m3d-c) 22%,transparent),transparent 70%)}
+.m3d:active{cursor:grabbing}
+.m3d-foco-luz{position:absolute;left:50%;top:-30%;width:70%;height:120%;margin-left:-35%;background:conic-gradient(from 180deg at 50% 0%,transparent 160deg,rgba(255,255,255,.09) 180deg,transparent 200deg);filter:blur(10px);pointer-events:none}
+.m3d-aura{position:absolute;left:50%;top:50%;width:70%;aspect-ratio:1;transform:translate(-50%,-55%);border-radius:50%;background:radial-gradient(circle at var(--lx) var(--ly),color-mix(in srgb,var(--m3d-c) 55%,transparent),transparent 62%);filter:blur(34px);opacity:.75;pointer-events:none}
+.m3d-escena{position:absolute;inset:0;perspective:1100px;perspective-origin:50% 40%}
+.m3d-flota{position:absolute;left:10%;right:10%;top:9%;bottom:22%;display:flex;align-items:center;justify-content:center;animation:m3dFlota 6s ease-in-out infinite;transform-style:preserve-3d}
+.m3d-obj{position:relative;width:60%;height:60%;flex:none;transform-style:preserve-3d;will-change:transform}
+.m3d-capas{position:absolute;inset:0;transform-style:preserve-3d}
+.m3d-capas img,.m3d-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;backface-visibility:hidden}
+.m3d-img{transform:translateZ(2px);opacity:0;transition:opacity .4s}
+.m3d.listo .m3d-img{opacity:1}
+.m3d.recorte .m3d-img{filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+.m3d.foto .m3d-img,.m3d.foto .m3d-capas img{border-radius:16px}
+.m3d.foto .m3d-img{box-shadow:0 0 0 1px rgba(255,255,255,.14)}
+.m3d-brillo{position:absolute;inset:0;transform:translateZ(3px);pointer-events:none;background:linear-gradient(calc(100deg + var(--giro) * 40deg),transparent 30%,rgba(255,255,255,.5) 46%,rgba(255,255,255,.12) 52%,transparent 64%);background-size:240% 100%;background-position:calc(50% - var(--giro) * 80%) 0;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;mix-blend-mode:soft-light;opacity:0;transition:opacity .4s}
+.m3d.recorte.listo .m3d-brillo{opacity:1}
+.m3d.foto.listo .m3d-brillo{opacity:0}
+.m3d-reflejo{position:absolute;left:50%;top:50%;object-fit:contain;transform:translate(-50%,50%) scaleY(-1);margin-top:16px;opacity:.13;filter:blur(1.5px);pointer-events:none;-webkit-mask:linear-gradient(0deg,#000,transparent 38%);mask:linear-gradient(0deg,#000,transparent 38%)}
+.m3d-reflejo:not([src]){display:none}
+.m3d.foto .m3d-reflejo{border-radius:16px}
+.m3d-sombra{position:absolute;left:50%;bottom:19%;width:46%;height:22px;margin-left:-23%;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.75),rgba(0,0,0,.25) 45%,transparent 72%);filter:blur(3px);animation:m3dSombra 6s ease-in-out infinite;pointer-events:none}
+.m3d-cargando{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:#8a8aa8;pointer-events:none;transition:opacity .3s}
+.m3d-cargando i{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.15);border-top-color:var(--m3d-c);animation:m3dGira .8s linear infinite}
+.m3d.listo .m3d-cargando{opacity:0}
+@keyframes m3dFlota{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes m3dSombra{0%,100%{transform:scaleX(1);opacity:.85}50%{transform:scaleX(.8);opacity:.55}}
+@keyframes m3dGira{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.m3d-flota,.m3d-sombra{animation:none}}
+.mt-foco.v3d{grid-template-columns:auto minmax(0,1fr) minmax(260px,36%)}
+.mt-foco-3d{grid-column:3;grid-row:1;align-self:stretch;min-height:340px}
 .mt-foco.v3d .mt-foco-txt{grid-column:2}
-.mt-portada.v3d{height:220px;padding:12px 14px;overflow:hidden}
+.mt-portada.v3d{height:230px;padding:12px 14px;overflow:hidden}
 .mt-portada.v3d::after{display:none}
-.mt-portada .m3d.mini{position:absolute;inset:0;min-height:0}
-.mt-portada .m3d.mini .m3d-img{max-height:160px}
+.mt-portada .m3d.mini{position:absolute;inset:0;min-height:0;border-radius:0}
 .mt-3dbtn.on{color:#f5c451!important;border-color:rgba(245,196,81,.45)!important;background:rgba(245,196,81,.1)!important}
+.m3d-ajuste{white-space:nowrap;display:inline-flex;align-items:center;gap:8px;font-size:12px;color:#a9a9c2;padding:4px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+.m3d-ajuste input{width:110px;accent-color:#f5c451}
+.m3d-ajuste em{font-style:normal;font-weight:700;color:#fff;min-width:64px}
 /* ── Aviso motivacional ─────────────────────────────────────────────────── */
 .mcm-fondo{position:fixed;inset:0;z-index:960;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(4,4,10,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transition:opacity .3s}
 .mcm-fondo.show{opacity:1}
@@ -2861,10 +2874,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .mcm-fondo.show .mcm{transform:none}
 .mcm-x{position:absolute;top:12px;right:14px;width:32px;height:32px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#9a9ab8;font-size:18px;cursor:pointer}
 .mcm-vis{height:230px;margin:-4px 0 6px;display:grid;place-items:center}
-.mcm-vis .m3d{min-height:230px}
-.mcm-vis .m3d-img{max-height:175px}
-.mcm-vis .m3d-flota{height:100%}
-.mt-foco-3d .m3d-img{max-height:300px}
+.mcm-vis .m3d{min-height:240px;height:240px}
 .mcm-ico{width:96px;height:96px;border-radius:28px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--ma),var(--mb));box-shadow:0 20px 40px -14px var(--ma)}
 .mcm-k{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ma)}
 .mcm h3{font:700 26px 'Space Grotesk',sans-serif;color:#fff;margin:6px 0 8px}
@@ -2882,7 +2892,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 @media (max-width:900px){
   html .mt-foco.v3d{grid-template-columns:1fr}
   html .mt-foco-3d{grid-column:1;grid-row:1;min-height:250px}
-  html .mt-foco-3d .m3d-img{max-height:200px}
+  html .mt-foco-3d{min-height:280px}
   html .mt-foco.v3d .mt-foco-anillo{grid-row:2}
   html .mt-foco.v3d .mt-foco-txt{grid-column:1;grid-row:3}
 }
@@ -6912,7 +6922,7 @@ function renderMetas(){
           ${i.tiempoPct != null && m.modo !== 'sueno' ? `<div class="mt-linea"><div class="mt-linea-bar"><i id="bar-${m.id}" style="width:0%"></i><em style="left:${i.tiempoPct}%" title="Hoy"></em></div><div class="mt-linea-lbl"><span>${mcFechaCorta(m.inicio)}</span><span>Hoy · ${i.tiempoPct}% del tiempo</span><span>${mcFechaCorta(m.fin)}</span></div></div>`
             : `<div class="mt-linea"><div class="mt-linea-bar"><i id="bar-${m.id}" style="width:0%"></i></div></div>`}
           <p class="mt-lectura">${lectura}</p>
-          <div class="mt-acc">${m.imagen ? `<button class="btn btn-ghost btn-sm mt-3dbtn${v3 ? ' on' : ''}" onclick="mcVista3d('${m.id}')">${mcIco('cubo',14)}${v3 ? 'Ver normal' : 'Ver en 3D'}</button>` : ''}<button class="btn btn-ghost btn-sm" onclick="abrirModalMeta('${m.id}')">${mcIco('lapiz',14)}Editar</button><button class="btn btn-ghost btn-sm mt-borrar" onclick="eliminarMeta('${m.id}')" aria-label="Eliminar meta">${mcIco('papelera',14)}</button></div>
+          <div class="mt-acc">${m.imagen ? `<button class="btn btn-ghost btn-sm mt-3dbtn${v3 ? ' on' : ''}" onclick="mcVista3d('${m.id}')">${mcIco('cubo',14)}${v3 ? 'Ver normal' : 'Ver en 3D'}</button>` : ''}${v3 ? `<label class="m3d-ajuste" title="Si el recorte se come parte del objeto, bájalo; si queda fondo, súbelo">Recorte del fondo<input type="range" min="0" max="100" step="5" value="${m.recorte == null ? 50 : m.recorte}" onchange="mcRecorte('${m.id}', this.value)"><em>${(m.recorte == null ? 50 : m.recorte) == 0 ? 'Sin recorte' : (m.recorte == null ? 50 : m.recorte) + ' %'}</em></label>` : ''}<button class="btn btn-ghost btn-sm" onclick="abrirModalMeta('${m.id}')">${mcIco('lapiz',14)}Editar</button><button class="btn btn-ghost btn-sm mt-borrar" onclick="eliminarMeta('${m.id}')" aria-label="Eliminar meta">${mcIco('papelera',14)}</button></div>
         </div>
       </div>`;
     } else foco.innerHTML = '';
@@ -8241,7 +8251,7 @@ function cumAbrirCarta(key, tipo, ventaId){
         <div class="cum-dis" id="cum-dis">${Object.entries(CUM_DISENOS).map(([k,d])=>`<button type="button" data-d="${k}" class="${_cum.diseno === k ? 'activo' : ''}" onclick="cumDiseno('${k}')"><i style="background:linear-gradient(135deg,${d.bg[0]},${d.bg[1]});border-color:${d.marco}"></i>${d.n}</button>`).join('')}</div>
         <label class="form-label" style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">La carta <button type="button" class="in-despues" onclick="cumOtra()">Otra carta ↻</button></label>
         <textarea id="cum-texto" rows="7" oninput="_cum.texto=this.value;cumDibujarPronto()">${ccEsc(_cum.texto)}</textarea>
-        <label class="in-chk"><input type="checkbox" id="cum-frase" checked onchange="_cum.frase=this.checked;cumDibujar()"> Incluir frase de <em>El vendedor más grande del mundo</em></label>
+        <label class="in-chk"><input type="checkbox" id="cum-frase" checked onchange="_cum.frase=this.checked;cumDibujar()"> Incluir frase motivacional</label>
         <div class="cum-acc">
           <button class="btn btn-primary" onclick="cumCompartir()">${mcIco('regalo',15)}Enviar tarjeta</button>
           <button class="btn btn-ghost" onclick="cumPdf()">${mcIco('documento',15)}Carta para imprimir (PDF)</button>
@@ -8307,8 +8317,8 @@ async function cumDibujar(){
   let t = 38, lineas, lh;
   do { x.font = `400 ${t}px "Lora", Georgia, serif`; lineas = cumLineas(x, c.texto, W - 240); lh = t * 1.5; t -= 1; } while(lineas.length * lh > alto && t > 22);
   x.fillStyle = d.texto; lineas.forEach((l, i)=>x.fillText(l, W / 2, y + t + i * lh)); y += lineas.length * lh + 18;
-  // Frase de Og Mandino
-  if(frase){ x.font = 'italic 400 31px "Lora", Georgia, serif'; x.fillStyle = d.titulo; x.fillText(`«${frase}»`, W / 2, y + 40); x.font = '600 21px Inter, sans-serif'; x.fillStyle = d.suave; x.fillText('OG MANDINO · EL VENDEDOR MÁS GRANDE DEL MUNDO', W / 2, y + 78); }
+  // Frase motivacional
+  if(frase){ x.font = 'italic 400 31px "Lora", Georgia, serif'; x.fillStyle = d.titulo; x.fillText(`«${frase}»`, W / 2, y + 52); }
   // Firma
   const fy = H - pie + 30;
   x.font = 'italic 400 33px "Lora", Georgia, serif'; x.fillStyle = d.suave; x.fillText('Con aprecio y gratitud,', W / 2, fy + 32);
@@ -12644,75 +12654,187 @@ function mcFijarFoco(id){ metas.forEach(m=>{ if(m.id === id) m.foco = true; else
 // tiendas), el fondo se quita solo y el objeto queda recortado.
 Object.assign(MC_ICONOS, {cubo: '<path d="M12 3.5l8 4.3v8.4l-8 4.3-8-4.3V7.8z"/><path d="M4 7.8l8 4.3 8-4.3M12 12.1v8.4"/>'});
 const _m3dCache = {};
+const M3D_CAPAS = 8;   // capas que le dan grosor al objeto al girar
 function mc3d(m, cls){
-  return `<div class="m3d ${cls || ''}" onpointermove="m3dMover(event,this)" onpointerleave="m3dSoltar(this)">
+  const sens = m.recorte == null ? 50 : m.recorte;
+  return `<div class="m3d ${cls || ''}" data-sens="${sens}" onpointerdown="m3dAgarrar(event,this)" onpointermove="m3dMover(event,this)" onpointerleave="m3dSoltar(this)" onpointerup="m3dSoltar(this)">
+    <div class="m3d-foco-luz"></div>
     <div class="m3d-aura"></div>
-    <div class="m3d-flota"><div class="m3d-giro"><div class="m3d-obj"><img class="m3d-img" ${mcFotoAttr(m.imagen)} data-m3d="${String(m.imagen).replace(/"/g,'')}" alt=""><i class="m3d-brillo"></i></div></div></div>
-    <div class="m3d-sombra"></div>
+    <div class="m3d-escena">
+      <div class="m3d-flota">
+        <div class="m3d-obj">
+          <div class="m3d-capas"></div>
+          <img class="m3d-img" ${mcFotoAttr(m.imagen)} data-m3d="${String(m.imagen).replace(/"/g,'')}" alt="" draggable="false">
+          <i class="m3d-brillo"></i>
+        </div>
+        <img class="m3d-reflejo" alt="" draggable="false">
+      </div>
+      <div class="m3d-sombra"></div>
+    </div>
+    <div class="m3d-cargando"><i></i>Preparando 3D…</div>
   </div>`;
 }
+// Movimiento: el objeto sigue el mouse (o el dedo, o la inclinación del iPhone)
+// con un resorte suave; si nadie lo toca, se mueve solo despacio.
+const _m3dEst = new WeakMap();
+let _m3dLoop = 0;
+function m3dEstado(el){ let s = _m3dEst.get(el); if(!s){ s = {rx:0, ry:0, tx:0, ty:0, lx:.5, ly:.3, ultimo:0, arrastre:null}; _m3dEst.set(el, s); } return s; }
+function m3dAgarrar(e, el){ const s = m3dEstado(el); s.arrastre = {x:e.clientX, y:e.clientY, ry:s.ty, rx:s.tx}; try { el.setPointerCapture(e.pointerId); } catch(_){} m3dIniciar(); }
 function m3dMover(e, el){
-  const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-  el.classList.add('activo');
-  el.style.setProperty('--ry', (x * 34).toFixed(1) + 'deg'); el.style.setProperty('--rx', (-y * 26).toFixed(1) + 'deg');
-  el.style.setProperty('--lx', ((x + .5) * 100).toFixed(0) + '%'); el.style.setProperty('--ly', ((y + .5) * 100).toFixed(0) + '%');
+  const s = m3dEstado(el), r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+  s.ultimo = performance.now(); s.lx = x + .5; s.ly = y + .5;
+  if(s.arrastre){ s.ty = Math.max(-55, Math.min(55, s.arrastre.ry + (e.clientX - s.arrastre.x) * .45)); s.tx = Math.max(-30, Math.min(30, s.arrastre.rx - (e.clientY - s.arrastre.y) * .3)); }
+  else if(e.pointerType !== 'touch'){ s.ty = x * 38; s.tx = -y * 24; }
+  m3dIniciar();
 }
-function m3dSoltar(el){ el.classList.remove('activo'); el.style.setProperty('--rx','0deg'); el.style.setProperty('--ry','0deg'); }
+function m3dSoltar(el){ const s = m3dEstado(el); s.arrastre = null; s.ultimo = performance.now() - 900; }
+function m3dIniciar(){ if(!_m3dLoop) _m3dLoop = requestAnimationFrame(m3dPaso); }
+function m3dPaso(t){
+  const els = document.querySelectorAll('.m3d'); if(!els.length){ _m3dLoop = 0; return; }
+  const quieto = mcMovReducido();
+  els.forEach(el=>{
+    const s = m3dEstado(el), obj = el.querySelector('.m3d-obj'); if(!obj) return;
+    if(!s.arrastre && t - s.ultimo > 1400 && !_m3dGiroDatos){
+      // Sin tocarlo: gira solo, despacio, como en una vitrina
+      s.ty = quieto ? 0 : Math.sin(t / 2600) * 16; s.tx = quieto ? 0 : Math.sin(t / 3700) * 5;
+      s.lx = .5 + Math.sin(t / 2600) * .25; s.ly = .3;
+    }
+    if(_m3dGiroDatos && !s.arrastre && t - s.ultimo > 1400){ s.ty = _m3dGiroDatos.ry; s.tx = _m3dGiroDatos.rx; s.lx = .5 + _m3dGiroDatos.ry / 80; }
+    s.rx += (s.tx - s.rx) * .085; s.ry += (s.ty - s.ry) * .085;
+    obj.style.transform = `rotateX(${s.rx.toFixed(2)}deg) rotateY(${s.ry.toFixed(2)}deg)`;
+    el.style.setProperty('--lx', (s.lx * 100).toFixed(1) + '%'); el.style.setProperty('--ly', (s.ly * 100).toFixed(1) + '%');
+    el.style.setProperty('--giro', (s.ry / 55).toFixed(3));
+  });
+  _m3dLoop = requestAnimationFrame(m3dPaso);
+}
 // En el iPhone: el objeto se mueve al inclinar el celular
-let _m3dGiro = false, _m3dBase = null;
+let _m3dGiro = false, _m3dBase = null, _m3dGiroDatos = null;
 function m3dActivarGiro(){
   if(_m3dGiro) return;
   const escuchar = () => { _m3dGiro = true; window.addEventListener('deviceorientation', e=>{
     if(e.beta == null) return;
     if(!_m3dBase) _m3dBase = {b: e.beta, g: e.gamma};
-    const rx = Math.max(-22, Math.min(22, (e.beta - _m3dBase.b) * .9)), ry = Math.max(-28, Math.min(28, (e.gamma - _m3dBase.g) * 1.1));
-    document.querySelectorAll('.m3d:not(.activo)').forEach(el=>{ el.style.setProperty('--rx', (-rx).toFixed(1) + 'deg'); el.style.setProperty('--ry', ry.toFixed(1) + 'deg'); });
+    _m3dGiroDatos = {rx: Math.max(-24, Math.min(24, -(e.beta - _m3dBase.b) * .9)), ry: Math.max(-40, Math.min(40, (e.gamma - _m3dBase.g) * 1.4))};
   }); };
   try {
     if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') DeviceOrientationEvent.requestPermission().then(r=>{ if(r === 'granted') escuchar(); }).catch(()=>{});
     else if(window.DeviceOrientationEvent && matchMedia('(pointer:coarse)').matches) escuchar();
   } catch(e){}
 }
-// Quita el fondo blanco (si lo tiene) y recorta el objeto
-function m3dRecortar(src){
-  if(_m3dCache[src] !== undefined) return Promise.resolve(_m3dCache[src]);
+// ── Recorte del fondo ──
+// 1) Toma el color del fondo de los bordes de la foto (blanco, gris o liso).
+// 2) Detecta el contorno del objeto: el recorte avanza desde los bordes por el
+//    fondo y se detiene en el contorno, así no se "come" un objeto blanco.
+// 3) Quita también las sombras suaves del fondo, deja solo el objeto principal,
+//    suaviza el borde y le quita el tinte del fondo para que no quede halo.
+// sens: 0 = no recortar, 100 = recorte fuerte.
+function m3dRecortar(src, sens){
+  const clave = src + '|' + sens;
+  if(_m3dCache[clave] !== undefined) return Promise.resolve(_m3dCache[clave]);
   return new Promise(res=>{
+    const fin = v => { _m3dCache[clave] = v; res(v); };
     const img = new Image(); img.crossOrigin = 'anonymous';
     img.onload = ()=>{ try {
-      const k = Math.min(1, 900 / Math.max(img.width, img.height)), W = Math.round(img.width * k), H = Math.round(img.height * k);
-      const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.drawImage(img, 0, 0, W, H);
-      const d = x.getImageData(0, 0, W, H), a = d.data, claro = i => a[i] > 228 && a[i+1] > 228 && a[i+2] > 228;
-      let bordeClaro = 0, borde = 0;
-      for(let i = 0; i < W; i += 3){ borde += 2; bordeClaro += claro(i*4) + claro(((H-1)*W+i)*4); }
-      for(let j = 0; j < H; j += 3){ borde += 2; bordeClaro += claro(j*W*4) + claro((j*W+W-1)*4); }
-      if(bordeClaro / borde < .8){ _m3dCache[src] = null; res(null); return; }   // no tiene fondo blanco: se deja la foto
-      const vis = new Uint8Array(W*H), q = [];
-      for(let i = 0; i < W; i++) q.push(i, (H-1)*W+i); for(let j = 0; j < H; j++) q.push(j*W, j*W+W-1);
-      while(q.length){ const p = q.pop(); if(vis[p]) continue; vis[p] = 1; if(!claro(p*4)) continue; a[p*4+3] = 0;
-        const px = p % W; if(px > 0) q.push(p-1); if(px < W-1) q.push(p+1); if(p >= W) q.push(p-W); if(p < W*(H-1)) q.push(p+W); }
-      for(let p = 0; p < W*H; p++){ if(!a[p*4+3]) continue; const px = p % W;
-        if((px > 0 && !a[(p-1)*4+3]) || (px < W-1 && !a[(p+1)*4+3]) || (p >= W && !a[(p-W)*4+3]) || (p < W*(H-1) && !a[(p+W)*4+3])){ const l = (a[p*4]+a[p*4+1]+a[p*4+2])/3; if(l > 205) a[p*4+3] = Math.max(0, 255 - (l-205)*5); } }
+      const k = Math.min(1, 1000 / Math.max(img.width, img.height)), W = Math.round(img.width * k), H = Math.round(img.height * k), N = W * H;
+      const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d', {willReadFrequently:true}); x.drawImage(img, 0, 0, W, H);
+      const d = x.getImageData(0, 0, W, H), a = d.data;
+      const bordes = []; for(let i = 0; i < W; i++){ bordes.push(i, (H-1)*W + i); } for(let j = 1; j < H - 1; j++){ bordes.push(j*W, j*W + W - 1); }
+      const med = ch => { const v = bordes.map(p=>a[p*4+ch]).sort((p,q)=>p-q); return v[v.length >> 1]; };
+      const bg = [med(0), med(1), med(2)], bgL = bg[0]*.299 + bg[1]*.587 + bg[2]*.114;
+      const dist = p => { const r = a[p*4]-bg[0], g = a[p*4+1]-bg[1], b = a[p*4+2]-bg[2]; return Math.sqrt(r*r*.3 + g*g*.59 + b*b*.11) * 1.7; };
+      const uniforme = bordes.filter(p=>dist(p) < 40).length / bordes.length;
+      if(sens <= 0 || uniforme < .5){ fin(null); return; }   // el fondo no es liso: se deja la foto completa
+      // Luminancia suavizada y fuerza del contorno (Sobel)
+      const L = new Float32Array(N), S = new Float32Array(N), G = new Float32Array(N);
+      for(let p = 0; p < N; p++){ const r = a[p*4], g = a[p*4+1], b = a[p*4+2]; L[p] = r*.299 + g*.587 + b*.114; S[p] = Math.max(r,g,b) - Math.min(r,g,b); }
+      const Lb = Float32Array.from(L);
+      for(let j = 1; j < H-1; j++) for(let i = 1; i < W-1; i++){ const p = j*W + i; Lb[p] = (L[p]*4 + L[p-1] + L[p+1] + L[p-W] + L[p+W]) / 8; }
+      for(let j = 1; j < H-1; j++) for(let i = 1; i < W-1; i++){ const p = j*W + i;
+        const gx = Lb[p-W+1] + 2*Lb[p+1] + Lb[p+W+1] - Lb[p-W-1] - 2*Lb[p-1] - Lb[p+W-1];
+        const gy = Lb[p+W-1] + 2*Lb[p+W] + Lb[p+W+1] - Lb[p-W-1] - 2*Lb[p-W] - Lb[p-W+1];
+        G[p] = Math.sqrt(gx*gx + gy*gy); }
+      const tol = 12 + sens * .45, gMax = 26 + sens * .5, gSombra = 8 + sens * .14;
+      const sombra = q => S[q] < 14 + sens * .1 && L[q] <= bgL + 8 && L[q] > bgL - (60 + sens) && G[q] < gSombra;
+      const pasa = q => (dist(q) < tol && G[q] < gMax) || sombra(q);
+      const fondo = new Uint8Array(N), pila = [];
+      bordes.forEach(p=>{ if(pasa(p) || dist(p) < tol){ fondo[p] = 1; pila.push(p); } });
+      while(pila.length){
+        const p = pila.pop(), px = p % W;
+        if(px > 0 && !fondo[p-1] && pasa(p-1)){ fondo[p-1] = 1; pila.push(p-1); }
+        if(px < W-1 && !fondo[p+1] && pasa(p+1)){ fondo[p+1] = 1; pila.push(p+1); }
+        if(p >= W && !fondo[p-W] && pasa(p-W)){ fondo[p-W] = 1; pila.push(p-W); }
+        if(p < N-W && !fondo[p+W] && pasa(p+W)){ fondo[p+W] = 1; pila.push(p+W); }
+      }
+      // Solo el objeto principal (y las partes grandes): fuera las manchas sueltas
+      const comp = new Int32Array(N).fill(-1), tam = [];
+      for(let p = 0; p < N; p++){ if(fondo[p] || comp[p] >= 0) continue; const id = tam.length; let n = 0; const st = [p]; comp[p] = id;
+        while(st.length){ const q = st.pop(); n++; const qx = q % W;
+          for(const r of [qx > 0 ? q-1 : -1, qx < W-1 ? q+1 : -1, q >= W ? q-W : -1, q < N-W ? q+W : -1]) if(r >= 0 && !fondo[r] && comp[r] < 0){ comp[r] = id; st.push(r); } }
+        tam.push(n); }
+      if(!tam.length){ fin(null); return; }
+      const mayor = Math.max(...tam);
+      for(let p = 0; p < N; p++) if(!fondo[p] && tam[comp[p]] < mayor * .04) fondo[p] = 1;
+      // Borde suave y sin halo
+      const alfa = new Float32Array(N); for(let p = 0; p < N; p++) alfa[p] = fondo[p] ? 0 : 1;
+      const suave = new Float32Array(alfa);
+      for(let j = 1; j < H-1; j++) for(let i = 1; i < W-1; i++){ const p = j*W + i, s4 = alfa[p-1] + alfa[p+1] + alfa[p-W] + alfa[p+W];
+        if((alfa[p] === 1 && s4 === 4) || (alfa[p] === 0 && s4 === 0)) continue;
+        suave[p] = (alfa[p]*4 + s4 + alfa[p-W-1] + alfa[p-W+1] + alfa[p+W-1] + alfa[p+W+1]) / 12; }
+      for(let p = 0; p < N; p++){ const al = suave[p];
+        if(al <= .02){ a[p*4+3] = 0; continue; }
+        if(al < 1){ for(let ch = 0; ch < 3; ch++) a[p*4+ch] = Math.max(0, Math.min(255, (a[p*4+ch] - (1 - al) * bg[ch]) / al)); }
+        a[p*4+3] = Math.round(al * 255); }
       x.putImageData(d, 0, 0);
-      let x0 = W, y0 = H, x1 = 0, y1 = 0;
-      for(let j = 0; j < H; j++) for(let i = 0; i < W; i++) if(a[(j*W+i)*4+3] > 12){ if(i < x0) x0 = i; if(i > x1) x1 = i; if(j < y0) y0 = j; if(j > y1) y1 = j; }
-      if(x1 <= x0 || y1 <= y0){ _m3dCache[src] = null; res(null); return; }
-      const o = document.createElement('canvas'); o.width = x1 - x0 + 1; o.height = y1 - y0 + 1; o.getContext('2d').drawImage(c, x0, y0, o.width, o.height, 0, 0, o.width, o.height);
-      _m3dCache[src] = o.toDataURL('image/png'); res(_m3dCache[src]);
-    } catch(e){ _m3dCache[src] = null; res(null); } };
-    img.onerror = ()=>{ _m3dCache[src] = null; res(null); };
+      let x0 = W, y0 = H, x1 = 0, y1 = 0, sr = 0, sg = 0, sb = 0, n = 0;
+      for(let j = 0; j < H; j++) for(let i = 0; i < W; i++){ const p = (j*W + i) * 4; if(a[p+3] > 40){ if(i < x0) x0 = i; if(i > x1) x1 = i; if(j < y0) y0 = j; if(j > y1) y1 = j; if((i + j) % 7 === 0){ sr += a[p]; sg += a[p+1]; sb += a[p+2]; n++; } } }
+      if(x1 - x0 < 10 || y1 - y0 < 10){ fin(null); return; }
+      const pad = 4, o = document.createElement('canvas'); o.width = x1 - x0 + 1 + pad*2; o.height = y1 - y0 + 1 + pad*2;
+      o.getContext('2d').drawImage(c, x0, y0, x1 - x0 + 1, y1 - y0 + 1, pad, pad, x1 - x0 + 1, y1 - y0 + 1);
+      fin({url: o.toDataURL('image/png'), w: o.width, h: o.height, color: n ? `rgb(${Math.round(sr/n)},${Math.round(sg/n)},${Math.round(sb/n)})` : ''});
+    } catch(e){ fin(null); } };
+    img.onerror = ()=>fin(null);
     img.src = src;
   });
 }
+// Ajusta el objeto (y su reflejo) al espacio disponible, sin deformarlo
+function m3dEncajar(caja){
+  const fl = caja.querySelector('.m3d-flota'), obj = caja.querySelector('.m3d-obj'), r = Number(caja.dataset.ratio);
+  if(!fl || !obj || !r) return;
+  const W = fl.clientWidth, H = fl.clientHeight; if(!W || !H) return;
+  const w = Math.min(W, H * r), h = w / r;
+  obj.style.width = w + 'px'; obj.style.height = h + 'px';
+  const ref = caja.querySelector('.m3d-reflejo'); if(ref){ ref.style.width = w + 'px'; ref.style.height = h + 'px'; }
+}
+let _m3dResize = null;
+window.addEventListener('resize', ()=>{ clearTimeout(_m3dResize); _m3dResize = setTimeout(()=>document.querySelectorAll('.m3d.listo').forEach(m3dEncajar), 150); });
 async function m3dPreparar(){
   const imgs = [...document.querySelectorAll('.m3d-img:not([data-listo])')]; if(!imgs.length) return;
   try { await mcHidratarFotos(); } catch(e){}
   for(const im of imgs){
     im.dataset.listo = '1';
-    const src = mcFotoSrc(im.dataset.m3d) || im.src; if(!src || src === MC_PIXEL) continue;
-    const cut = await m3dRecortar(src), caja = im.closest('.m3d'); if(!caja) continue;
-    if(cut){ im.src = cut; caja.classList.add('recorte'); const b = caja.querySelector('.m3d-brillo'); if(b){ b.style.webkitMaskImage = `url(${cut})`; b.style.maskImage = `url(${cut})`; } }
-    else caja.classList.add('foto');
+    const caja = im.closest('.m3d'); if(!caja) continue;
+    const src = mcFotoSrc(im.dataset.m3d) || im.src; if(!src || src === MC_PIXEL){ caja.classList.add('listo'); continue; }
+    const cut = await m3dRecortar(src, Number(caja.dataset.sens));
+    const url = cut ? cut.url : src;
+    let ratio = cut ? cut.w / cut.h : 0;
+    if(!ratio){ const t = new Image(); t.src = url; try { await t.decode(); } catch(e){} ratio = t.naturalWidth && t.naturalHeight ? t.naturalWidth / t.naturalHeight : 1; }
+    caja.dataset.ratio = ratio;
+    caja.classList.add(cut ? 'recorte' : 'foto');
+    im.src = url;
+    if(cut && cut.color) caja.style.setProperty('--m3d-c', cut.color);
+    // Grosor: capas detrás del frente, cada vez más oscuras
+    const capas = caja.querySelector('.m3d-capas');
+    if(capas) capas.innerHTML = Array.from({length: M3D_CAPAS}, (_, k)=>`<img src="${url}" alt="" draggable="false" style="transform:translateZ(${(-(k + 1) * 1.3).toFixed(1)}px);filter:brightness(${(.55 - k * .03).toFixed(2)})">`).join('');
+    const ref = caja.querySelector('.m3d-reflejo'); if(ref) ref.src = url;
+    const b = caja.querySelector('.m3d-brillo'); if(b && cut){ b.style.webkitMaskImage = `url(${url})`; b.style.maskImage = `url(${url})`; }
+    m3dEncajar(caja);
+    caja.classList.add('listo');
   }
+  m3dIniciar();
+}
+function mcRecorte(id, v){
+  const m = metas.find(x=>x.id === id); if(!m) return;
+  m.recorte = Number(v); saveMetas(); renderMetas();
 }
 function mcVista3d(id){
   const m = metas.find(x=>x.id === id); if(!m) return;
@@ -12763,7 +12885,7 @@ function mcMotivaMostrar({m, i, tipo}){
     <h3>${ccEsc(m.nombre)}</h3>
     <p>${texto}</p>
     <div class="mcm-barra"><i><u style="width:${i.pct}%"></u></i><b>${i.pct}%</b></div>
-    <div class="mcm-frase">«${MC_MOTIVA_FRASES[h % MC_MOTIVA_FRASES.length]}» <span>Og Mandino</span></div>
+    <div class="mcm-frase">«${MC_MOTIVA_FRASES[h % MC_MOTIVA_FRASES.length]}»</div>
     <div class="mcm-acc"><button class="btn btn-ghost" onclick="mcMotivaCerrar()">${tipo === 'logro' ? 'Cerrar' : '¡Vamos!'}</button><button class="btn btn-primary" onclick="mcMotivaCerrar();go('metas')">Ver mi meta</button></div>
   </div>`;
   el.addEventListener('click', e=>{ if(e.target === el) mcMotivaCerrar(); });
