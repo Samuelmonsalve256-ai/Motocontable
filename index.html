@@ -2896,6 +2896,92 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .mt-foco.v3d .mt-foco-anillo{grid-row:2}
   html .mt-foco.v3d .mt-foco-txt{grid-column:1;grid-row:3}
 }
+
+/* ===== Ventas: tarjeta moderna ===== */
+.vta-item.vt2{margin:12px .85rem;padding:16px;border-radius:18px;border:1px solid rgba(255,255,255,.07);border-style:solid;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent 140px),var(--bg2);box-shadow:0 18px 40px -30px rgba(0,0,0,.9);display:flex;flex-direction:column;gap:12px;transition:border-color .2s,box-shadow .2s}
+.vta-item.vt2:hover{border-color:rgba(255,255,255,.13)}
+.vta-item.vt2.vta-fp-c{box-shadow:inset 3px 0 0 rgba(46,230,166,.75),0 18px 40px -30px rgba(0,0,0,.9)}
+.vta-item.vt2.vta-fp-f{box-shadow:inset 3px 0 0 rgba(167,139,250,.8),0 18px 40px -30px rgba(0,0,0,.9)}
+.vta-item.vt2.vta-fp-nd{box-shadow:inset 3px 0 0 rgba(255,255,255,.18),0 18px 40px -30px rgba(0,0,0,.9)}
+.vta-item.vt2.cc-foco{box-shadow:0 0 0 3px rgba(42,127,255,.55)}
+.vt-top{display:flex;gap:13px;align-items:flex-start}
+.vt-foto{width:64px;height:64px;border-radius:16px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--accent);background:linear-gradient(135deg,rgba(var(--accent-rgb),.18),rgba(var(--accent-rgb),.04));border:1px solid rgba(255,255,255,.08)}
+.vt-foto img{width:100%;height:100%;object-fit:cover;display:block}
+.vt-id{flex:1;min-width:0}
+.vt-nom{font:700 16px 'Space Grotesk',sans-serif;color:#fff;line-height:1.25;overflow:hidden;text-overflow:ellipsis}
+.vt-sub{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:4px;font-size:12px;color:#9a9ab8}
+.vt-fechas{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:11.5px;color:#8a8aa8}
+.vt-fechas span{display:inline-flex;align-items:center;gap:5px}
+.vt-fechas svg{opacity:.75}
+.vt-acc{display:flex;gap:5px;flex-shrink:0}
+.vt-acc .ct-ic{width:34px;height:34px}
+.vt-acc .vt-azul{color:#7cb6ff}.vt-acc .vt-azul:hover{background:rgba(77,159,255,.14);color:#a9cdff}
+.vt-acc .vt-verde{color:#4ade80}.vt-acc .vt-verde:hover{background:rgba(37,211,102,.14);color:#86efac}
+.vt-acc .vt-rojo{color:#ff6b8d}.vt-acc .vt-rojo:hover{background:rgba(255,61,107,.14);color:#ff9bb0}
+.vt-etiq{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.vt-etiq:empty{display:none}
+.vt-etiq .mc-tras,.vt-etiq .cc-tag{margin-top:0;border-radius:999px;font-size:11.5px;padding:4px 11px;display:inline-flex;width:auto}
+.vt2 .vta-cinta.vt-fp{position:static;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:999px;border:1px solid;line-height:1.4;letter-spacing:0}
+.vt2 .vt-fp.c{color:#2ee6a6;background:rgba(0,214,143,.1);border-color:rgba(0,214,143,.3)}
+.vt2 .vt-fp.f{color:#c4b5fd;background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.35)}
+.vt2 .vt-fp.nd{color:#c9c9de;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.18);border-style:dashed;cursor:pointer}
+.vt2 .vt-fp.nd:hover{background:rgba(255,255,255,.08)}
+.vt-sinprecio{cursor:pointer;color:var(--amber);background:rgba(245,166,35,.1);border-color:rgba(245,166,35,.3)}
+.vt-nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.vt-nums .vn{min-width:0;padding:10px 12px;border-radius:14px}
+.vt-nums .vn b{font-size:13.5px}
+.vt-nums .vn.gan b{font-size:15.5px}
+.vt-pers{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vt-per{padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:8px;min-width:0}
+.vt-per-rol{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7a7a98}
+.vt-per-fila{display:flex;align-items:center;gap:10px;min-width:0}
+.vt-per-av{width:36px!important;height:36px!important;border-radius:12px!important;font-size:13px!important}
+.vt-per-id{min-width:0}
+.vt-per-id b{display:block;font-size:13.5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vt-per-id span{display:block;font-size:11.5px;color:#8a8aa8;margin-top:1px}
+.vt-per-wa{align-self:flex-start;min-height:30px;font-size:12px}
+.vt-per-sin{font-size:12px;color:#6b6b88}
+.vt-aviso{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-radius:14px;border:1px solid;font-size:12.5px}
+.vt-aviso > i{flex-shrink:0;width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-style:normal}
+.vt-pap{flex-direction:column;color:#ffb3c2;background:linear-gradient(180deg,rgba(255,61,107,.09),rgba(255,61,107,.03));border-color:rgba(255,61,107,.28)}
+.vt-aviso-cab{display:flex;gap:10px;align-items:center}
+.vt-aviso-cab i{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,61,107,.16);color:#ff6b8d;font-style:normal;flex-shrink:0}
+.vt-aviso-cab b{display:block;color:#fff;font-size:13px}
+.vt-aviso-cab span{display:block;font-size:12px;color:#ffb3c2}
+.vt-pap-btns{display:flex;gap:6px;flex-wrap:wrap}
+.vt-ok{align-items:center;color:#2ee6a6;background:rgba(0,214,143,.07);border-color:rgba(0,214,143,.25)}
+.vt-ok > i{background:rgba(0,214,143,.15)}
+.vt-nota{color:#e8d3a4;background:linear-gradient(180deg,rgba(245,166,35,.1),rgba(245,166,35,.03));border-color:rgba(245,166,35,.3)}
+.vt-nota > i{background:rgba(245,166,35,.16);color:var(--amber)}
+.vt-nota-txt{flex:1;min-width:0}
+.vt-nota-txt small{display:block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);margin-bottom:2px}
+.vt-nota-txt div{font-size:13px;color:#f1f1f8;line-height:1.5;white-space:pre-wrap}
+.vt-nota .ct-ic{width:30px;height:30px;color:#ff6b8d;flex-shrink:0}
+.vt-gastos{padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+.vt-sec{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7a7a98;margin-bottom:6px}
+.vt-g{padding:8px 4px}
+.vt-g .gasto-nombre{display:inline-flex;align-items:center;gap:8px}
+.vt-g-ico{width:24px;height:24px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);color:#9a9ab8;font-style:normal;flex-shrink:0}
+.vt-g.auto .vt-g-ico{color:#7cb6ff;background:rgba(77,159,255,.12)}
+.vt-g .gasto-del{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle}
+.vt-vacio{font-size:12px;color:#6b6b88;padding:2px 0}
+.vt-add{margin-top:8px}
+.vt-add .btn-add-gasto{display:inline-flex;align-items:center;gap:5px}
+.vt-g .gasto-del{width:26px;height:26px;padding:0;border-radius:8px;background:rgba(255,61,107,.1);color:#ff6b8d}
+.vt-g .gasto-del:hover{background:rgba(255,61,107,.2)}
+.vt-add input{min-height:38px;border-radius:10px!important;font-size:13px!important;background:rgba(255,255,255,.03)!important;border:1px solid rgba(255,255,255,.08)!important}
+.vt-add .btn-add-gasto{min-height:38px;border-radius:10px;padding:0 14px;font-size:12.5px}
+@media (max-width:760px){
+  html .vta-item.vt2{margin:10px .5rem;padding:14px 12px;gap:11px}
+  html .vt-top{flex-wrap:wrap}
+  html .vt-foto{width:56px;height:56px;border-radius:14px}
+  html .vt-id{flex:1 1 calc(100% - 70px)}
+  html .vt-acc{width:100%;justify-content:stretch}
+  html .vt-acc .ct-ic{flex:1;height:38px;width:auto}
+  html .vt-nums{grid-template-columns:1fr 1fr}
+  html .vt-pers{grid-template-columns:1fr}
+  html .vt-pap-btns .av-papel{flex:1 1 auto;justify-content:center}
+}
 </style>
 </head>
 <body>
@@ -9169,6 +9255,112 @@ Puedes cancelar y agregarlo en "Editar", o vender ahora y corregirlo después en
   try { intTrasVenta(ventaNueva); } catch(e){}
 }
 
+// Tarjeta de cada venta (solo apariencia: mismos datos, botones y funciones de siempre)
+function vtSinEmoji(h){ return String(h||'').replace(/>(\s*)(?:\p{Extended_Pictographic}|❓|❔)️?\s*/gu, '>$1'); }
+function vtPersona(rol, nombre, cc, tel, vacio){
+  const t = String(tel||'');
+  return `<div class="vt-per">
+    <div class="vt-per-rol">${rol}</div>
+    ${nombre||cc||t ? `<div class="vt-per-fila">
+        <span class="ct-av vt-per-av" style="background:linear-gradient(135deg,hsl(${mcTonoNombre(nombre||cc||t)},62%,52%),hsl(${(mcTonoNombre(nombre||cc||t)+40)%360},58%,38%))">${nombre ? ccEsc(mcIniciales(nombre)) : mcIco('personas',18)}</span>
+        <div class="vt-per-id"><b>${nombre ? ccEsc(nombre) : 'Sin nombre'}</b>${cc ? `<span>CC ${ccEsc(cc)}</span>` : ''}</div>
+      </div>
+      ${t ? `<a class="ct-btn wa vt-per-wa" href="https://wa.me/57${t.replace(/\D/g,'')}" target="_blank">${mcIco('chat',14)}${ccEsc(t)}</a>` : '<div class="vt-per-sin">Sin teléfono</div>'}`
+    : `<div class="vt-per-sin">${vacio}</div>`}
+  </div>`;
+}
+function vtTarjeta(v){
+  const sing = nomVeh(v.tipoVehiculo,'singular');
+  const gList  = v.gastosList||[];
+  const totGV  = gList.reduce((a,g)=>a+g.monto,0) + (v.gastos||0);
+  const ganReal= v.precioVenta - v.inversionCompra - totGV;
+  const gHtml  = gList.length
+    ? gList.map((g,i)=> g.origen==='traspasos'
+      ? `<div class="gasto-item vt-g auto" title="Se actualiza solo con el costo del trámite en Traspasos">
+          <span class="gasto-nombre"><i class="vt-g-ico">${mcIco('documento',13)}</i>${ccEsc(g.nombre)} <small>automático · Traspasos</small></span>
+          <span><span class="gasto-monto">${fmt(g.monto)}</span></span>
+        </div>`
+      : `<div class="gasto-item vt-g">
+          <span class="gasto-nombre"><i class="vt-g-ico">${mcIco('billete',13)}</i>${ccEsc(g.nombre)}</span>
+          <span><span class="gasto-monto">${fmt(g.monto)}</span><button class="gasto-del" onclick="elimGastoVenta('${v.id}',${i})" title="Quitar gasto">${mcIco('papelera',13)}</button></span>
+        </div>`).join('')
+    : `<div class="vt-vacio">Sin gastos adicionales en ${sing}.</div>`;
+
+  const faltantes = (v.papelesFaltantes||[]).filter(p=>!(v.papelesResueltos||[]).includes(p));
+  const alertaHtml = faltantes.length
+    ? `<div class="vt-aviso vt-pap">
+        <div class="vt-aviso-cab"><i>${mcIco('recibo',16)}</i><div><b>Papeles pendientes</b><span>Falta: ${faltantes.map(ccEsc).join(', ')}</span></div></div>
+        <div class="vt-pap-btns">${faltantes.map(p=>`<button class="av-papel" onclick="resolverPapel('${v.id}','${p}')">${mcIco('check',12)}Ya saqué ${ccEsc(p)}</button>`).join('')}</div>
+      </div>`
+    : (v.papelesFaltantes||[]).length
+      ? `<div class="vt-aviso vt-ok"><i>${mcIco('check',15)}</i><span>Todos los papeles pendientes ya fueron tramitados</span></div>`
+      : '';
+
+  const notaHtml = v.notaVehiculo
+    ? `<div class="vt-aviso vt-nota">
+        <i>${mcIco('lapiz',15)}</i>
+        <div class="vt-nota-txt"><small>Nota del vehículo</small><div>${ccEsc(v.notaVehiculo)}</div></div>
+        <button class="ct-ic" onclick="borrarNotaVenta('${v.id}')" title="Borrar nota">${mcIco('papelera',14)}</button>
+      </div>`
+    : '';
+
+  const fpCls = v.formaPago === 'contado' ? 'c' : v.formaPago === 'financiado' ? 'f' : 'nd';
+  const fpTxt = fpCls === 'c' ? `${mcIco('billete',13)}De contado` : fpCls === 'f' ? `${mcIco('tarjeta',13)}Financiado · ${FP_FINANCIERA}` : `${mcIco('ajustes',13)}Sin definir · Toca para marcar`;
+  const dInv = v.fechaCompra ? lgDias(v.fechaCompra, v.fecha) : null;
+  const foto = v.fotoVehiculo;
+  const etiquetas = vtSinEmoji(mcEtiquetaTraspaso(v) + ccEtiquetasVenta(v));
+  return `
+    <div class="vta-item vt2 vta-fp-${fpCls}" id="vta-${v.id}">
+      <div class="vt-top">
+        <div class="vt-foto">${foto ? `<img ${mcFotoAttr(foto)} alt="" loading="lazy">` : mcIco(v.tipoVehiculo === 'carro' ? 'carro' : 'moto', 28)}</div>
+        <div class="vt-id">
+          <div class="vt-nom">${ccEsc(v.motoNombre||'Vehículo')}</div>
+          <div class="vt-sub">${v.motoPlaca ? `<span class="cc-placa">${ccEsc(String(v.motoPlaca).toUpperCase())}</span>` : ''}${v.motoModelo ? `<span>${ccEsc(v.motoModelo)}</span>` : ''}</div>
+          <div class="vt-fechas">
+            <span>${mcIco('calendario',12)}Vendido el ${new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO')}</span>
+            ${v.fechaCompra ? `<span>${mcIco('reloj',12)}Comprado el ${new Date(v.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}${dInv !== null && dInv >= 0 ? ` · ${dInv} día${dInv!==1?'s':''} en inventario` : ''}</span>` : ''}
+          </div>
+        </div>
+        <div class="vta-acc vt-acc">
+          <button class="ct-ic" onclick="abrirEditVenta('${v.id}')" title="Editar">${mcIco('lapiz',15)}</button>
+          <button class="ct-ic vt-azul" onclick="confirmarDevolverInventario('${v.id}')" title="Devolver al inventario">${mcIco('retoma',15)}</button>
+          <button class="ct-ic vt-verde" onclick="exportarATrapasos('${v.id}')" title="Exportar a Traspasos Vehiculares">${mcIco('documento',15)}</button>
+          <button class="ct-ic vt-rojo" onclick="confirmarElimVenta('${v.id}')" title="Eliminar definitivamente">${mcIco('papelera',15)}</button>
+        </div>
+      </div>
+
+      <div class="vt-etiq">
+        <span class="vta-cinta vt-fp ${fpCls}"${fpCls === 'nd' ? ` onclick="abrirEditVenta('${v.id}')" title="Toca para definir si fue de contado o financiada"` : ''}>${fpTxt}</span>
+        ${etiquetas}
+        ${Number(v.inversionCompra) > 0 ? '' : `<div class="cc-tag vt-sinprecio" onclick="abrirEditVenta('${v.id}')" title="Toca para corregir">Sin precio de compra · la ganancia puede estar inflada · Corregir</div>`}
+      </div>
+
+      <div class="vta-nums vt-nums">
+        <div class="vn compra"><small>Compra</small><b>${fmt(v.inversionCompra)}</b></div>
+        <div class="vn gasto"><small>Gastos</small><b>${fmt(totGV)}</b></div>
+        <div class="vn venta"><small>Venta</small><b>${fmt(v.precioVenta)}</b></div>
+        <div class="vn gan ${ganReal>=0?'':'neg'}"><small>Ganancia</small><b>${ganReal>=0?'+':''}${fmt(ganReal)}</b></div>
+      </div>
+
+      <div class="vt-pers">
+        ${vtPersona('Te vendió', v.vendedorNombre, v.vendedorCC, v.vendedorTel, 'Sin datos del vendedor')}
+        ${vtPersona('Te compró', v.comprador, v.compradorCC, v.compradorCel, 'Sin datos del comprador')}
+      </div>
+
+      ${alertaHtml}
+      ${notaHtml}
+
+      <div class="vt-gastos">
+        <div class="vt-sec">${mcIco(v.tipoVehiculo === 'carro' ? 'carro' : 'moto',14)}Gastos en ${sing}</div>
+        ${gHtml}
+        <div class="add-gasto-form vt-add">
+          <input type="text" id="gvn-${v.id}" placeholder="Concepto del gasto en ${sing}">
+          <input type="number" id="gvm-${v.id}" placeholder="$ Valor" min="0">
+          <button class="btn-add-gasto" onclick="agregarGastoVenta('${v.id}')">${mcIco('mas',13)}Agregar</button>
+        </div>
+      </div>
+    </div>`;
+}
 function renderVentas(){
   ccBannerVentas();
   const cont = document.getElementById('tabla-ventas');
@@ -9233,126 +9425,7 @@ function renderVentas(){
     const safeKey = key.replace('-','_');
     const nCont = g.items.filter(v=>v.formaPago==='contado').length, nFin = g.items.filter(v=>v.formaPago==='financiado').length;
 
-    const ventasHtml = g.items.map(v=>{
-      const gList  = v.gastosList||[];
-      const totGV  = gList.reduce((a,g)=>a+g.monto,0) + (v.gastos||0);
-      const ganReal= v.precioVenta - v.inversionCompra - totGV;
-      const gHtml  = gList.length
-        ? gList.map((g,i)=> g.origen==='traspasos'
-          ? `<div class="gasto-item" title="Se actualiza solo con el costo del trámite en Traspasos">
-            <span class="gasto-nombre">🚦 ${g.nombre} <span style="font-size:10px;color:var(--text3)">(automático · Traspasos)</span></span>
-            <span><span class="gasto-monto">${fmt(g.monto)}</span></span>
-          </div>`
-          : `<div class="gasto-item">
-            <span class="gasto-nombre">📌 ${g.nombre}</span>
-            <span><span class="gasto-monto">${fmt(g.monto)}</span><button class="gasto-del" onclick="elimGastoVenta('${v.id}',${i})">✕</button></span>
-          </div>`).join('')
-        : `<div style="font-size:11px;color:var(--text3)">Sin gastos adicionales en ${nomVeh(v.tipoVehiculo,'singular')}.</div>`;
-
-      const faltantes = (v.papelesFaltantes||[]).filter(p=>!(v.papelesResueltos||[]).includes(p));
-      const alertaHtml = faltantes.length
-        ? `<div style="margin-top:.6rem;background:rgba(255,69,96,.1);border:1px solid rgba(255,69,96,.3);border-radius:8px;padding:.6rem .8rem">
-            <div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:.4rem">⚠️ ${nomVeh(v.tipoVehiculo,'ico')} ${v.motoNombre} ${v.motoModelo?'('+v.motoModelo+')':''} — falta: ${faltantes.join(', ')}</div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-              ${faltantes.map(p=>`<button class="btn btn-ghost btn-sm" style="border-color:rgba(255,69,96,.3);color:var(--red)" onclick="resolverPapel('${v.id}','${p}')">✓ Ya saqué ${p}</button>`).join('')}
-            </div>
-          </div>`
-        : (v.papelesFaltantes||[]).length
-          ? `<div style="margin-top:.6rem;background:rgba(34,201,138,.08);border:1px solid rgba(34,201,138,.25);border-radius:8px;padding:.5rem .8rem;font-size:12px;color:var(--green)">✓ Todos los papeles pendientes ya fueron tramitados</div>`
-          : '';
-
-      const notaHtml = v.notaVehiculo
-        ? `<div style="margin-top:.6rem;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.4);box-shadow:inset 3px 0 0 var(--amber);border-radius:8px;padding:.6rem .85rem;display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
-            <div>
-              <div style="font-size:10px;color:var(--amber);font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px">📝 Nota del vehículo</div>
-              <div style="font-size:13px;color:var(--text);font-weight:500;line-height:1.5;white-space:pre-wrap">${v.notaVehiculo}</div>
-            </div>
-            <button onclick="borrarNotaVenta('${v.id}')" style="flex-shrink:0;font-size:11px;color:var(--red);background:rgba(255,69,96,.1);border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit;margin-top:2px">🗑</button>
-          </div>`
-        : '';
-
-      const fpCls = v.formaPago === 'contado' ? 'c' : v.formaPago === 'financiado' ? 'f' : 'nd';
-      const fpCinta = fpCls === 'c' ? '💵 De contado' : fpCls === 'f' ? `🏦 Financiado · ${FP_FINANCIERA}` : '❔ Sin definir · Toca para marcar';
-      return `
-        <div class="vta-item vta-fp-${fpCls}" id="vta-${v.id}">
-          <div class="vta-cinta"${fpCls === 'nd' ? ` onclick="abrirEditVenta('${v.id}')" title="Toca para definir si fue de contado o financiada"` : ''}>${fpCinta}</div>
-
-          <!-- CABECERA: nombre vehículo + números financieros + acciones -->
-          <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:.75rem">
-            <div style="flex:1;min-width:190px">
-              <div style="font-weight:700;font-size:14px;margin-bottom:2px">${nomVeh(v.tipoVehiculo,'ico')} ${v.motoNombre}</div>
-              <div style="font-size:11px;color:var(--text3)">${v.motoModelo||''} ${v.motoPlaca?'· '+v.motoPlaca:''}</div>
-              <div style="margin-top:4px;font-size:11px;color:var(--text2)">📅 Vendido el ${new Date(v.fecha+'T00:00:00').toLocaleDateString('es-CO')}</div>
-              ${mcEtiquetaTraspaso(v)}
-              ${ccEtiquetasVenta(v)}
-              ${Number(v.inversionCompra) > 0 ? '' : `<div onclick="abrirEditVenta('${v.id}')" title="Toca para corregir" style="cursor:pointer;margin-top:4px;display:inline-block;font-size:11px;font-weight:600;color:var(--amber);background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:6px;padding:2px 8px">⚠️ Sin precio de compra · la ganancia puede estar inflada · Corregir</div>`}
-              ${v.fechaCompra?`<div style="font-size:11px;color:var(--text3)">🛒 Comprado el ${new Date(v.fechaCompra+'T00:00:00').toLocaleDateString('es-CO')}</div>`:''}
-            </div>
-            <div class="vta-nums" style="display:flex;gap:8px;flex-wrap:wrap">
-              <div class="vn compra"><small>Compra</small><b>${fmt(v.inversionCompra)}</b></div>
-              <div class="vn gasto"><small>Gastos</small><b>${fmt(totGV)}</b></div>
-              <div class="vn venta"><small>Venta</small><b>${fmt(v.precioVenta)}</b></div>
-              <div class="vn gan ${ganReal>=0?'':'neg'}"><small>Ganancia</small><b>${ganReal>=0?'+':''}${fmt(ganReal)}</b></div>
-            </div>
-            <div class="vta-acc" style="display:flex;gap:5px;flex-shrink:0">
-              <button class="btn btn-ghost btn-sm btn-icon" onclick="abrirEditVenta('${v.id}')" title="Editar">✏️</button>
-              <button class="btn btn-ghost btn-sm btn-icon" onclick="confirmarDevolverInventario('${v.id}')" title="Devolver al inventario" style="color:var(--blue);border-color:rgba(77,159,255,.3)">↩</button>
-              <button class="btn btn-ghost btn-sm btn-icon" onclick="exportarATrapasos('${v.id}')" title="Exportar a Traspasos Vehiculares" style="color:#25D366;border-color:rgba(37,211,102,.3)">📋</button>
-              <button class="btn btn-danger btn-sm btn-icon" onclick="confirmarElimVenta('${v.id}')" title="Eliminar definitivamente">🗑</button>
-            </div>
-          </div>
-
-          <!-- FICHA DE PERSONAS: vendedor → comprador -->
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.6rem">
-
-            <!-- VENDEDOR (quien me vendió) -->
-            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.65rem .85rem">
-              <div style="font-size:9px;color:var(--text3);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem">📥 Me vendió</div>
-              ${v.vendedorNombre||v.vendedorCC||v.vendedorTel ? `
-                ${v.vendedorNombre?`<div style="font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:2px">${v.vendedorNombre}</div>`:''}
-                ${v.vendedorCC?`<div style="font-size:11px;color:var(--text3)">CC: ${v.vendedorCC}</div>`:''}
-                ${v.vendedorTel?`<a href="https://wa.me/57${v.vendedorTel.replace(/\D/g,'')}" target="_blank"
-                  style="display:inline-flex;align-items:center;gap:5px;margin-top:5px;background:rgba(37,211,102,.12);
-                  border:1px solid rgba(37,211,102,.3);border-radius:6px;padding:3px 9px;
-                  font-size:11px;font-weight:600;color:#25D366;text-decoration:none">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
-                  ${v.vendedorTel}
-                </a>`:'<div style="font-size:11px;color:var(--text3);margin-top:4px">Sin teléfono</div>'}
-              ` : `<div style="font-size:11.5px;color:var(--text3)">Sin datos del vendedor</div>`}
-            </div>
-
-            <!-- COMPRADOR (quien me compró) -->
-            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.65rem .85rem">
-              <div style="font-size:9px;color:var(--text3);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem">📤 Me compró</div>
-              ${v.comprador||v.compradorCC||v.compradorCel ? `
-                ${v.comprador?`<div style="font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:2px">${v.comprador}</div>`:''}
-                ${v.compradorCC?`<div style="font-size:11px;color:var(--text3)">CC: ${v.compradorCC}</div>`:''}
-                ${v.compradorCel?`<a href="https://wa.me/57${v.compradorCel.replace(/\D/g,'')}" target="_blank"
-                  style="display:inline-flex;align-items:center;gap:5px;margin-top:5px;background:rgba(37,211,102,.12);
-                  border:1px solid rgba(37,211,102,.3);border-radius:6px;padding:3px 9px;
-                  font-size:11px;font-weight:600;color:#25D366;text-decoration:none">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
-                  ${v.compradorCel}
-                </a>`:'<div style="font-size:11px;color:var(--text3);margin-top:4px">Sin teléfono</div>'}
-              ` : `<div style="font-size:11.5px;color:var(--text3)">Sin datos del comprador</div>`}
-            </div>
-          </div>
-
-          ${alertaHtml}
-          ${notaHtml}
-
-          <!-- GASTOS POST VENTA -->
-          <div style="margin-top:.6rem;border-top:1px solid var(--border);padding-top:.6rem">
-            <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.35rem">${nomVeh(v.tipoVehiculo,'ico')} Gastos en ${nomVeh(v.tipoVehiculo,'singular')}</div>
-            ${gHtml}
-            <div class="add-gasto-form" style="margin-top:.5rem">
-              <input type="text" id="gvn-${v.id}" placeholder="Concepto del gasto en ${nomVeh(v.tipoVehiculo,'singular')}">
-              <input type="number" id="gvm-${v.id}" placeholder="$ Valor" min="0">
-              <button class="btn-add-gasto" onclick="agregarGastoVenta('${v.id}')">+ Agregar</button>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
+    const ventasHtml = g.items.map(v=>vtTarjeta(v)).join('');
 
     // Estado inicial: mes actual abierto, resto según localStorage (cerrado por defecto)
     const ahora = new Date();
@@ -9391,7 +9464,7 @@ function renderVentas(){
 var _vmPendiente = {};
 function vmLlenarMes(key){
   const body = document.getElementById('mes-body-'+key);
-  if(body && _vmPendiente[key] !== undefined){ body.innerHTML = _vmPendiente[key]; delete _vmPendiente[key]; }
+  if(body && _vmPendiente[key] !== undefined){ body.innerHTML = _vmPendiente[key]; delete _vmPendiente[key]; if(typeof mcHidratarFotos === 'function') mcHidratarFotos(); }
   return body;
 }
 function vmAbrirMesDeVenta(v){
