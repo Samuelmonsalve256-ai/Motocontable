@@ -383,8 +383,27 @@ function analizarSimit(cap, revision){
   const res = { texto: t, fecha: cap && cap.f ? new Date(cap.f).toISOString() : new Date().toISOString(), consulta: (cap && cap.q) || '' };
   if (!/simit|comparendo|multa|estado de cuenta/i.test(plano)) { res.estado = 'desconocido'; return res; }
   const limpio = /(no\s+(tiene|posee|presenta|registra|se\s+encontr\w*|existen|hay)\b[^.]{0,80}(comparendos?|multas?|deudas?|pendientes?|resultados?))|paz\s+y\s+salvo/i.test(plano);
-  const montos = [...plano.matchAll(/\$\s?([\d][\d.,]*)/g)].map(m => numPesos(m[1])).filter(n => n > 0);
   const mTotal = plano.match(/total[^$]{0,60}\$\s?([\d][\d.,]*)/i);
+
+  // Recuadro "Resumen" del SIMIT: Comparendos: N · Multas: N · Acuerdos de pago: N · Total: $ X
+  const num = re => { const m = plano.match(re); return m ? +m[1] : null; };
+  const comp = num(/comparendos\s*:\s*(\d+)/i), mult = num(/multas\s*:\s*(\d+)/i), acu = num(/acuerdos\s+de\s+pago\s*:\s*(\d+)/i);
+  if (comp != null || mult != null){
+    res.comparendos = comp || 0;
+    res.multas = mult || 0;
+    res.acuerdos = acu || 0;
+    res.acuerdo = res.acuerdos > 0;
+    res.total = mTotal ? numPesos(mTotal[1]) : 0;
+    res.cantidad = res.comparendos + res.multas;
+    // Estados de cada registro (ej. "Cobro coactivo") y placas que aparecen.
+    res.estadosReg = [...new Set([...plano.matchAll(/\bEstado\s+(?!de\s+cuenta)([A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,30}?)(?=\s+(?:Valor|Saldo|Total|Tipo|Fecha|Notificaci|Placa|Secretar|Infracci|Intereses|Descuento|Pagar|Detalle|$))/g)].map(m => m[1].trim()))];
+    res.placasReg = [...new Set([...plano.matchAll(/\bPlaca\s+([A-Z]{3}\d{2}[A-Z0-9]|[A-Z]{3}\d{3})\b/g)].map(m => m[1]))];
+    res.estado = (res.cantidad > 0 || res.acuerdos > 0 || res.total > 0) ? 'deudas' : 'limpio';
+    return res;
+  }
+
+  // Si el SIMIT cambia su diseño: lectura aproximada.
+  const montos = [...plano.matchAll(/\$\s?([\d][\d.,]*)/g)].map(m => numPesos(m[1])).filter(n => n > 0);
   const total = mTotal ? numPesos(mTotal[1]) : (montos.length ? Math.max(...montos) : 0);
   const ids = new Set([...plano.matchAll(/\b\d{12,25}\b/g)].map(m => m[0]).filter(x => x !== (revision && revision.documento)));
   res.acuerdo = /acuerdo\s+de\s+pago/i.test(plano) && !/sin\s+acuerdo/i.test(plano);
@@ -400,7 +419,15 @@ function itemSimit(modo, s){
   if (!s) return { nivel:'nd', t:titulo, d:`Falta revisar. Toca <b>SIMIT ${modo === 'placa' ? 'por placa' : 'por cédula'}</b> y luego el lector.`, falta: modo === 'cedula' ? 'Revisar el SIMIT por cédula' : null };
   if (s.estado === 'limpio') return { nivel:'ok', t:`Sin comparendos ${quien}`, d:`SIMIT revisado el ${fTxt(new Date(s.fecha))}.` };
   if (s.estado === 'desconocido') return { nivel:'nd', t:titulo, d:'El lector no encontró resultados en la pantalla. Tócalo cuando ya aparezcan los resultados del SIMIT.' };
-  const det = `${s.cantidad ? `<b>${s.cantidad}</b> comparendo(s)/multa(s) · ` : ''}${s.total ? `Total <b>${pesos(s.total)}</b>` : 'Valor no detectado (mira el detalle)'}${s.acuerdo ? ' · tiene acuerdo de pago' : ''}`;
+  const partes = [];
+  if (s.comparendos != null){
+    partes.push(`Comparendos: <b>${s.comparendos}</b>`, `Multas: <b>${s.multas}</b>`);
+    if (s.acuerdos) partes.push(`Acuerdos de pago: <b>${s.acuerdos}</b>`);
+  } else if (s.cantidad) partes.push(`<b>${s.cantidad}</b> comparendo(s)/multa(s)`);
+  else if (s.acuerdo) partes.push('Tiene acuerdo de pago');
+  partes.push(s.total ? `Total <b>${pesos(s.total)}</b>` : 'Valor no detectado (mira el detalle)');
+  if (s.estadosReg && s.estadosReg.length) partes.push(esc(s.estadosReg.join(', ')));
+  const det = partes.join(' · ');
   if (modo === 'placa') return { nivel:'warn', t:'Tiene comparendo a la placa — se puede hacer el trámite', d: det };
   return { nivel:'bad', t:'Tiene comparendo a la cédula — NO se puede hacer el trámite', d: det, bloquea:`El propietario tiene comparendos a la cédula${s.total ? ' por ' + pesos(s.total) : ''}: no se puede tramitar hasta pagarlos` };
 }
