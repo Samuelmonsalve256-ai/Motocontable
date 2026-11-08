@@ -3,243 +3,398 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0b1220">
+<meta name="theme-color" content="#14161b">
 <meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PlacaLimpia">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <title>PlacaLimpia PM</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <style>
+/* ═══ Identidad visual: grafito + dorado Platinium ═══ */
 :root{
-  --bg:#f3f5fb; --card:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --soft:#f1f5f9;
-  --brand:#b8860b; --brand-2:#1e293b; --brand-ink:#7a5a06;
-  --ok:#15803d; --ok-bg:#dcfce7; --warn:#b45309; --warn-bg:#fef3c7; --bad:#b91c1c; --bad-bg:#fee2e2;
-  --info:#1d4ed8; --info-bg:#dbeafe;
-  --shadow:0 1px 2px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
-  --radius:18px;
-  color-scheme: light;
+  --bg:#f4f5f7; --card:#ffffff; --ink:#111318; --ink-2:#2b2f38; --muted:#6b7280; --line:#e7e8ec; --soft:#f2f3f6;
+  --gold:#b8891a; --gold-2:#e2bd55; --gold-bg:#fbf4e1;
+  --ok:#15803d; --ok-bg:#e7f6ec; --warn:#b45309; --warn-bg:#fdf2df; --bad:#c81e1e; --bad-bg:#fdeaea; --nd:#7c8493; --nd-bg:#eef0f3;
+  --hero-1:#14161b; --hero-2:#2a2e37;
+  --shadow:0 1px 2px rgba(17,19,24,.05), 0 10px 30px rgba(17,19,24,.06);
+  --r:20px;
+  color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0b1220; --card:#121a2b; --ink:#e5e9f2; --muted:#94a3b8; --line:#243049; --soft:#1a2438;
-    --brand:#e0b23c; --brand-2:#0b1220; --brand-ink:#f3cf6e;
-    --ok:#4ade80; --ok-bg:#0f2e1c; --warn:#fbbf24; --warn-bg:#33270b; --bad:#f87171; --bad-bg:#3a1414;
-    --info:#93c5fd; --info-bg:#132a4a;
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
-    color-scheme: dark;
+    --bg:#0c0e12; --card:#15181e; --ink:#eef0f4; --ink-2:#cfd4dc; --muted:#98a1b0; --line:#252932; --soft:#1c2028;
+    --gold:#e2bd55; --gold-2:#f0d78a; --gold-bg:#2a2414;
+    --ok:#4ade80; --ok-bg:#12271a; --warn:#fbbf24; --warn-bg:#2c2210; --bad:#f87171; --bad-bg:#2e1515; --nd:#98a1b0; --nd-bg:#1f232b;
+    --hero-1:#101217; --hero-2:#232731;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.3);
+    color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0b1220; --card:#121a2b; --ink:#e5e9f2; --muted:#94a3b8; --line:#243049; --soft:#1a2438;
-  --brand:#e0b23c; --brand-2:#0b1220; --brand-ink:#f3cf6e;
-  --ok:#4ade80; --ok-bg:#0f2e1c; --warn:#fbbf24; --warn-bg:#33270b; --bad:#f87171; --bad-bg:#3a1414;
-  --info:#93c5fd; --info-bg:#132a4a;
-  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
-  color-scheme: dark;
+  --bg:#0c0e12; --card:#15181e; --ink:#eef0f4; --ink-2:#cfd4dc; --muted:#98a1b0; --line:#252932; --soft:#1c2028;
+  --gold:#e2bd55; --gold-2:#f0d78a; --gold-bg:#2a2414;
+  --ok:#4ade80; --ok-bg:#12271a; --warn:#fbbf24; --warn-bg:#2c2210; --bad:#f87171; --bad-bg:#2e1515; --nd:#98a1b0; --nd-bg:#1f232b;
+  --hero-1:#101217; --hero-2:#232731;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.3);
+  color-scheme:dark;
 }
-*{box-sizing:border-box}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
 html,body{margin:0}
-body{background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif; font-size:15px; line-height:1.45;
-  padding-bottom:env(safe-area-inset-bottom)}
+body{background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif; font-size:15px; line-height:1.45; -webkit-font-smoothing:antialiased}
 button,input,select{font:inherit; color:inherit}
-.wrap{max-width:760px; margin:0 auto; padding:0 16px 48px}
-header.top{background:linear-gradient(135deg,#0b1220 0%,#1e293b 100%); color:#fff; padding:calc(18px + env(safe-area-inset-top)) 0 22px}
-header.top .wrap{padding-bottom:0; display:flex; align-items:center; gap:12px}
-.logo{width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#f3cf6e,#b8860b); display:grid; place-items:center; color:#0b1220; font-weight:800; font-size:15px; flex:none}
-.marca h1{margin:0; font-size:21px; letter-spacing:-.02em}
-.marca h1 span{color:#f3cf6e}
-.marca p{margin:2px 0 0; font-size:12.5px; color:#cbd5e1}
-.top .salir{margin-left:auto; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); color:#fff; border-radius:10px; padding:7px 12px; font-size:13px; cursor:pointer}
-.card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; margin-top:16px}
-.card h2{margin:0 0 12px; font-size:16px}
-.card h2 small{font-weight:500; color:var(--muted); font-size:12.5px; margin-left:6px}
-label.campo{display:block; font-size:12.5px; font-weight:600; color:var(--muted); margin:10px 0 5px}
-input.in, select.in{width:100%; padding:12px 13px; border:1.5px solid var(--line); border-radius:12px; background:var(--soft); outline:none; font-size:16px}
-input.in:focus, select.in:focus{border-color:var(--brand)}
-input.placa{text-transform:uppercase; letter-spacing:.12em; font-weight:800; font-size:20px; text-align:center}
-.fila{display:grid; grid-template-columns:1fr 1.4fr; gap:10px}
-.captcha{display:flex; align-items:center; gap:10px; margin-top:6px}
-.captcha .img{flex:1; min-height:64px; background:#fff; border:1.5px solid var(--line); border-radius:12px; display:grid; place-items:center; overflow:hidden}
-.captcha img{width:100%; max-width:300px; display:block}
-.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:12px; padding:13px 16px; font-weight:700; cursor:pointer; font-size:15px; text-decoration:none}
-.btn-primario{background:linear-gradient(135deg,#d4a017,#b8860b); color:#111; width:100%; margin-top:14px; font-size:16px}
-.btn-primario:disabled{opacity:.55; cursor:wait}
+button{cursor:pointer}
+svg{display:block}
+.oculto{display:none !important}
+.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+
+/* ── Barra superior ── */
+.top{position:sticky; top:0; z-index:20; background:linear-gradient(135deg,var(--hero-1),var(--hero-2)); color:#fff;
+  padding:calc(10px + env(safe-area-inset-top)) 16px 12px}
+.top-in{max-width:720px; margin:0 auto; display:flex; align-items:center; gap:12px; min-height:40px}
+.marca{display:flex; align-items:center; gap:10px}
+.logo{width:36px; height:36px; border-radius:11px; background:linear-gradient(135deg,#f3d27a,#b8891a); display:grid; place-items:center; color:#14161b; font-weight:800; font-size:13px; letter-spacing:-.02em; flex:none}
+.marca b{display:block; font-size:17px; letter-spacing:-.02em; line-height:1.1}
+.marca b span{color:#f0cf74}
+.marca small{display:block; font-size:11.5px; color:#a9b0bd; letter-spacing:.02em}
+.btn-volver{display:flex; align-items:center; gap:4px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:#fff; border-radius:12px; padding:7px 12px 7px 8px; font-weight:600; font-size:14px}
+
+/* ── Contenedor y vistas ── */
+main{max-width:720px; margin:0 auto; padding:16px 16px calc(100px + env(safe-area-inset-bottom))}
+.titulo-vista{font-size:26px; font-weight:800; letter-spacing:-.03em; margin:6px 2px 4px}
+.sub-vista{color:var(--muted); margin:0 2px 14px; font-size:14px}
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); padding:18px; margin-top:14px}
+.card-h{display:flex; align-items:center; gap:10px; margin:0 0 6px}
+.card-h .ic{width:34px; height:34px; border-radius:11px; background:var(--gold-bg); color:var(--gold); display:grid; place-items:center; flex:none}
+.card-h h3{margin:0; font-size:16px; letter-spacing:-.01em}
+.card-h .cuenta{margin-left:auto; font-size:12.5px; font-weight:700; color:var(--muted)}
+
+/* ── Formularios ── */
+label.campo{display:block; font-size:12.5px; font-weight:700; color:var(--muted); margin:14px 0 6px; letter-spacing:.01em}
+.in{width:100%; padding:13px 14px; border:1.5px solid var(--line); border-radius:14px; background:var(--soft); outline:none; font-size:16px; transition:border-color .15s, background .15s}
+.in:focus{border-color:var(--gold); background:var(--card)}
+.fila2{display:grid; grid-template-columns:1fr 1.3fr; gap:10px}
+
+/* Placa estilo Colombia */
+.placa-in{display:block; width:100%; max-width:300px; margin:4px auto 0; background:#f6c900; border:3px solid #111; border-radius:12px; padding:8px 10px 4px; text-align:center; box-shadow:inset 0 0 0 2px #f6c900, inset 0 0 0 4px #111}
+.placa-in input{width:100%; border:0; background:transparent; outline:none; text-align:center; text-transform:uppercase; font-family:'JetBrains Mono',ui-monospace,monospace; font-weight:700; font-size:38px; letter-spacing:.14em; color:#111; padding:0}
+.placa-in input::placeholder{color:rgba(17,17,17,.28)}
+.placa-in small{display:block; font-size:10px; font-weight:800; letter-spacing:.3em; color:#111; margin-top:-2px}
+.chip-placa{display:inline-flex; flex-direction:column; align-items:center; background:#f6c900; color:#111; border:2px solid #111; border-radius:8px; padding:3px 10px 1px; font-family:'JetBrains Mono',ui-monospace,monospace; font-weight:700; letter-spacing:.12em; line-height:1.1}
+.chip-placa small{font-family:'Plus Jakarta Sans',sans-serif; font-size:7px; letter-spacing:.25em; font-weight:800}
+.chip-placa.xl{font-size:30px; padding:6px 16px 3px; border-width:3px; border-radius:11px}
+.chip-placa.xl small{font-size:9px}
+
+.captcha{display:flex; align-items:stretch; gap:10px}
+.captcha .img{flex:1; min-height:72px; background:#fff; border:1.5px solid var(--line); border-radius:14px; display:grid; place-items:center; overflow:hidden}
+.captcha img{width:100%; max-width:320px; display:block}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:14px; padding:13px 16px; font-weight:700; font-size:15px; text-decoration:none; transition:transform .08s, opacity .15s}
+.btn:active{transform:scale(.98)}
+.btn-oro{background:linear-gradient(135deg,#e7c25d,#b8891a); color:#14161b; width:100%; margin-top:18px; font-size:16px; padding:15px; box-shadow:0 6px 18px rgba(184,137,26,.28)}
+.btn-oro:disabled{opacity:.6; cursor:wait}
 .btn-sec{background:var(--soft); border:1.5px solid var(--line); color:var(--ink)}
-.btn-icono{width:46px; height:46px; padding:0; flex:none}
-.aviso{margin-top:12px; padding:11px 13px; border-radius:12px; font-size:14px; display:none}
-.aviso.ver{display:block}
-.aviso.err{background:var(--bad-bg); color:var(--bad)}
-.aviso.ok{background:var(--ok-bg); color:var(--ok)}
-.aviso.inf{background:var(--info-bg); color:var(--info)}
+.btn-linea{background:transparent; border:1.5px solid var(--line); color:var(--ink)}
+.btn-ico{width:52px; padding:0; flex:none}
+.btn-peq{padding:9px 12px; font-size:13.5px; border-radius:12px}
 .ayuda{font-size:12.5px; color:var(--muted); margin:8px 0 0}
 
-/* Veredicto */
-.veredicto{border-radius:var(--radius); padding:18px; margin-top:16px; display:flex; gap:14px; align-items:flex-start; border:1.5px solid}
-.veredicto .ico{font-size:34px; line-height:1}
-.veredicto h3{margin:0; font-size:20px; letter-spacing:-.01em}
-.veredicto p{margin:4px 0 0; font-size:14px}
-.veredicto ul{margin:8px 0 0; padding-left:18px; font-size:14px}
-.v-ok{background:var(--ok-bg); border-color:var(--ok); color:var(--ok)}
-.v-warn{background:var(--warn-bg); border-color:var(--warn); color:var(--warn)}
-.v-bad{background:var(--bad-bg); border-color:var(--bad); color:var(--bad)}
-.v-ok h3,.v-warn h3,.v-bad h3{color:inherit}
+/* ── Avisos flotantes ── */
+#toast{position:fixed; left:50%; top:calc(70px + env(safe-area-inset-top)); transform:translateX(-50%) translateY(-12px); width:min(560px, calc(100% - 24px)); z-index:50;
+  padding:13px 40px 13px 15px; border-radius:16px; font-size:14px; font-weight:600; box-shadow:0 12px 32px rgba(0,0,0,.18); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s}
+#toast.ver{opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto}
+#toast.ok{background:var(--ok-bg); color:var(--ok); border:1.5px solid var(--ok)}
+#toast.err{background:var(--bad-bg); color:var(--bad); border:1.5px solid var(--bad)}
+#toast button{position:absolute; right:8px; top:8px; background:none; border:0; color:inherit; font-size:18px; width:28px; height:28px}
+.aviso{margin-top:12px; padding:11px 13px; border-radius:12px; font-size:14px; display:none; background:var(--bad-bg); color:var(--bad)}
+.aviso.ver{display:block}
 
-.vehiculo{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap}
-.chip-placa{background:#facc15; color:#111; border:2px solid #111; border-radius:8px; font-weight:800; letter-spacing:.14em; padding:5px 12px; font-size:18px}
-.vehiculo .desc{font-weight:700}
-.vehiculo .sub{color:var(--muted); font-size:13px}
+/* ── Ficha: encabezado ── */
+.hero{background:linear-gradient(145deg,var(--hero-1),var(--hero-2)); color:#fff; border-radius:24px; padding:20px; box-shadow:var(--shadow); position:relative; overflow:hidden}
+.hero::after{content:''; position:absolute; right:-60px; top:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(226,189,85,.22), transparent 70%)}
+.hero .nombre{font-size:21px; font-weight:800; letter-spacing:-.02em; margin-top:14px}
+.hero .chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+.hero .chips span{background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.12); border-radius:999px; padding:4px 10px; font-size:12.5px; color:#dfe3ea}
+.hero .meta{font-size:12.5px; color:#a9b0bd; margin-top:12px}
+.estado-g{display:flex; gap:12px; align-items:center; margin-top:16px; padding:14px; border-radius:18px; position:relative; z-index:1}
+.estado-g .ico{width:44px; height:44px; border-radius:14px; display:grid; place-items:center; flex:none}
+.estado-g b{display:block; font-size:16px; letter-spacing:-.01em; line-height:1.2}
+.estado-g small{display:block; font-size:12.5px; opacity:.85; margin-top:2px}
+.estado-g.ok{background:rgba(74,222,128,.14); color:#86efac} .estado-g.ok .ico{background:#16a34a; color:#fff}
+.estado-g.warn{background:rgba(251,191,36,.14); color:#fcd34d} .estado-g.warn .ico{background:#d97706; color:#fff}
+.estado-g.bad{background:rgba(248,113,113,.16); color:#fca5a5} .estado-g.bad .ico{background:#dc2626; color:#fff}
+.progreso{margin-top:14px; position:relative; z-index:1}
+.progreso .barra{height:7px; background:rgba(255,255,255,.12); border-radius:99px; overflow:hidden}
+.progreso .barra i{display:block; height:100%; background:linear-gradient(90deg,#e7c25d,#f3d27a); border-radius:99px}
+.progreso small{display:flex; justify-content:space-between; font-size:12px; color:#a9b0bd; margin-top:6px}
 
-.items{display:flex; flex-direction:column; gap:8px; margin-top:4px}
-.item{display:flex; gap:12px; align-items:flex-start; padding:12px; border-radius:14px; background:var(--soft)}
-.item .pt{width:12px; height:12px; border-radius:50%; margin-top:5px; flex:none}
-.pt.ok{background:var(--ok)} .pt.warn{background:var(--warn)} .pt.bad{background:var(--bad)} .pt.nd{background:var(--muted)}
-.item .t{font-weight:700}
-.item .d{font-size:13.5px; color:var(--muted); margin-top:2px}
-.item .d b{color:var(--ink)}
-.item .accion{margin-left:auto; flex:none}
+/* Lista de problemas */
+.lista-alerta{margin-top:14px; border-radius:var(--r); padding:14px 16px; border:1.5px solid}
+.lista-alerta.bad{background:var(--bad-bg); border-color:var(--bad); color:var(--bad)}
+.lista-alerta.warn{background:var(--warn-bg); border-color:var(--warn); color:var(--warn)}
+.lista-alerta b{font-size:14px; display:block; margin-bottom:4px}
+.lista-alerta ul{margin:0; padding-left:18px; font-size:14px} .lista-alerta li{margin:3px 0}
 
-.ver-bloque{padding:12px 0; border-top:1px solid var(--line)}
-.ver-bloque:first-of-type{border-top:0; padding-top:0}
-.ver-bloque > .t{font-weight:800}
-.num{display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-top:10px; padding:10px 12px; background:var(--soft); border-radius:12px}
-.num span{color:var(--muted); font-size:13px; font-weight:600}
-.num b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:16px; letter-spacing:.06em; word-break:break-all; text-align:right}
+/* Filas de la ficha */
+.filas{display:flex; flex-direction:column}
+.fila{display:flex; gap:12px; align-items:flex-start; padding:13px 0; border-top:1px solid var(--line)}
+.fila:first-child{border-top:0; padding-top:8px}
+.fila .est{width:30px; height:30px; border-radius:10px; display:grid; place-items:center; flex:none; margin-top:1px}
+.fila.ok .est{background:var(--ok-bg); color:var(--ok)}
+.fila.warn .est{background:var(--warn-bg); color:var(--warn)}
+.fila.bad .est{background:var(--bad-bg); color:var(--bad)}
+.fila.nd .est{background:var(--nd-bg); color:var(--nd)}
+.fila .cuerpo{flex:1; min-width:0}
+.fila .t{font-weight:700; letter-spacing:-.005em}
+.fila .d{font-size:13.5px; color:var(--muted); margin-top:2px}
+.fila .d b{color:var(--ink-2)}
+.tag{flex:none; font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:4px 8px; border-radius:8px; margin-top:4px}
+.tag.ok{background:var(--ok-bg); color:var(--ok)} .tag.warn{background:var(--warn-bg); color:var(--warn)} .tag.bad{background:var(--bad-bg); color:var(--bad)} .tag.nd{background:var(--nd-bg); color:var(--nd)}
+.extra{margin-top:10px}
+
+.num{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:8px; padding:11px 13px; background:var(--soft); border-radius:12px}
+.num span{color:var(--muted); font-size:12.5px; font-weight:700}
+.num b{font-size:15px; letter-spacing:.05em; word-break:break-all; text-align:right}
 .chk{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px}
-.chk-b{background:var(--card); border:1.5px solid var(--line); color:var(--ink); padding:10px; font-size:14px}
+.chk-b{background:var(--card); border:1.5px solid var(--line); color:var(--ink); padding:10px; font-size:13.5px; border-radius:12px; font-weight:700}
 .chk-b.on-ok{background:var(--ok-bg); border-color:var(--ok); color:var(--ok)}
 .chk-b.on-bad{background:var(--bad-bg); border-color:var(--bad); color:var(--bad)}
-.fila-imp{display:grid; grid-template-columns:1fr auto; gap:8px; margin-top:10px}
-.fila-imp .btn{padding:10px 12px; font-size:14px; white-space:nowrap}
-.simit-btns{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px}
-.simit-btns .btn{width:100%; font-size:14px; padding:12px 10px}
+.fila-imp{display:grid; grid-template-columns:1fr auto; gap:8px}
+.fila-imp .in{padding:10px 12px; font-size:15px}
 
-details.det{border-top:1px solid var(--line); padding:10px 0}
+details.det{border-top:1px solid var(--line); padding:12px 0}
 details.det:first-of-type{border-top:0}
 details.det summary{cursor:pointer; font-weight:700; list-style:none; display:flex; align-items:center; gap:8px}
-.cnt{margin-left:auto; background:var(--soft); color:var(--muted); border-radius:999px; padding:1px 9px; font-size:12px; font-weight:700}
 details.det summary::-webkit-details-marker{display:none}
-details.det summary::after{content:'＋'; color:var(--muted); margin-left:auto}
-details.det summary:has(.cnt)::after{margin-left:0}
-details.det[open] summary::after{content:'－'}
+details.det summary::after{content:''; width:8px; height:8px; border-right:2px solid var(--muted); border-bottom:2px solid var(--muted); transform:rotate(45deg); margin-left:auto; transition:transform .15s}
+details.det[open] summary::after{transform:rotate(225deg)}
+.cnt{margin-left:auto; background:var(--soft); color:var(--muted); border-radius:999px; padding:1px 9px; font-size:12px; font-weight:700}
+details.det summary:has(.cnt)::after{margin-left:8px}
 .tabla{width:100%; overflow-x:auto; margin-top:8px}
-.tabla table{border-collapse:collapse; width:100%; font-size:13px}
+.tabla table{border-collapse:collapse; width:100%; font-size:12.5px}
 .tabla th,.tabla td{text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:top}
-.tabla th{color:var(--muted); font-weight:600; white-space:nowrap}
-.kv{display:grid; grid-template-columns:minmax(120px,40%) 1fr; gap:4px 12px; font-size:13.5px; margin-top:8px}
+.tabla th{color:var(--muted); font-weight:700; white-space:nowrap}
+.kv{display:grid; grid-template-columns:minmax(110px,42%) 1fr; gap:5px 12px; font-size:13px; margin-top:8px}
 .kv dt{color:var(--muted)} .kv dd{margin:0; font-weight:600; word-break:break-word}
-pre.crudo{white-space:pre-wrap; word-break:break-word; font-size:12px; background:var(--soft); padding:10px; border-radius:10px; max-height:320px; overflow:auto}
+pre.crudo{white-space:pre-wrap; word-break:break-word; font-size:12px; background:var(--soft); padding:10px; border-radius:10px; max-height:300px; overflow:auto}
 
-.hist{display:flex; flex-direction:column; gap:8px}
-.hist button.h{display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:var(--soft); border:1px solid var(--line); border-radius:12px; padding:10px 12px; cursor:pointer}
-.hist .h .pt{margin-top:0}
-.hist .h .f{margin-left:auto; color:var(--muted); font-size:12.5px; white-space:nowrap}
-.vacio{color:var(--muted); font-size:14px}
-code.copiable{display:block; background:var(--soft); border:1px dashed var(--line); padding:10px; border-radius:10px; font-size:11.5px; word-break:break-all; max-height:90px; overflow:auto}
-ol.pasos{margin:8px 0 0; padding-left:20px; font-size:14px} ol.pasos li{margin:4px 0}
-.oculto{display:none !important}
+.acciones{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
+
+/* ── Motos (historial) ── */
+.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
+.stat{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:10px 8px; text-align:center; box-shadow:var(--shadow)}
+.stat b{display:block; font-size:22px; letter-spacing:-.02em}
+.stat small{font-size:11.5px; color:var(--muted); font-weight:600}
+.stat.ok b{color:var(--ok)} .stat.warn b{color:var(--warn)} .stat.bad b{color:var(--bad)}
+.buscador{position:relative; margin-top:14px}
+.buscador svg{position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--muted)}
+.buscador .in{padding-left:40px}
+.filtros{display:flex; gap:8px; margin-top:10px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none}
+.filtros::-webkit-scrollbar{display:none}
+.filtros button{flex:none; border:1.5px solid var(--line); background:var(--card); border-radius:999px; padding:7px 13px; font-size:13px; font-weight:700; color:var(--ink-2)}
+.filtros button.on{background:var(--ink); border-color:var(--ink); color:var(--card)}
+.lista-motos{display:flex; flex-direction:column; gap:10px; margin-top:14px}
+.moto{display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:13px; box-shadow:var(--shadow)}
+.moto .info{flex:1; min-width:0}
+.moto .n{font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.moto .s{font-size:12.5px; color:var(--muted); margin-top:1px}
+.pill{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:800; padding:3px 8px; border-radius:999px; margin-top:6px}
+.pill.ok{background:var(--ok-bg); color:var(--ok)} .pill.warn{background:var(--warn-bg); color:var(--warn)} .pill.bad{background:var(--bad-bg); color:var(--bad)}
+.pill i{width:6px; height:6px; border-radius:50%; background:currentColor}
+.moto .flecha{color:var(--muted); flex:none}
+.vacio{text-align:center; color:var(--muted); padding:30px 10px; font-size:14px}
+.vacio b{display:block; color:var(--ink); font-size:16px; margin-bottom:4px}
+
+/* Recientes en Revisar */
+.recientes{display:flex; gap:10px; overflow-x:auto; padding:2px 2px 6px; margin:0 -2px; scrollbar-width:none}
+.recientes::-webkit-scrollbar{display:none}
+.reciente{flex:none; width:150px; text-align:left; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:11px; box-shadow:var(--shadow)}
+.reciente .n{font-size:12.5px; font-weight:700; margin-top:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+/* ── Ajustes ── */
+ol.pasos{margin:8px 0 0; padding-left:20px; font-size:14px} ol.pasos li{margin:5px 0}
+code.copiable{display:block; background:var(--soft); border:1px dashed var(--line); padding:10px; border-radius:10px; font-size:11px; word-break:break-all; max-height:80px; overflow:auto; margin-top:8px}
+
+/* ── Barra inferior ── */
+.nav{position:fixed; left:0; right:0; bottom:0; z-index:30; background:color-mix(in srgb, var(--card) 88%, transparent); backdrop-filter:saturate(1.6) blur(16px); -webkit-backdrop-filter:saturate(1.6) blur(16px);
+  border-top:1px solid var(--line); padding:8px 12px calc(8px + env(safe-area-inset-bottom))}
+.nav-in{max-width:520px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:6px}
+.nav button{background:none; border:0; display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0; color:var(--muted); font-size:11.5px; font-weight:700; border-radius:12px}
+.nav button.on{color:var(--ink)}
+.nav button.on .nv-ic{background:var(--gold-bg); color:var(--gold)}
+.nv-ic{width:44px; height:30px; border-radius:10px; display:grid; place-items:center}
+
+/* ── Login ── */
+.login{max-width:420px; margin:8vh auto 0}
+.login .logo{width:56px; height:56px; border-radius:17px; font-size:20px; margin:0 auto 14px}
+.login h1{text-align:center; margin:0; font-size:26px; letter-spacing:-.03em}
+.login h1 span{color:var(--gold)}
+.login p.s{text-align:center; color:var(--muted); margin:4px 0 0}
+
 .cargando{display:inline-block; width:16px; height:16px; border:2.5px solid currentColor; border-right-color:transparent; border-radius:50%; animation:g .7s linear infinite}
 @keyframes g{to{transform:rotate(360deg)}}
-@media (max-width:420px){ .fila{grid-template-columns:1fr} .simit-btns{grid-template-columns:1fr} }
-@media print{ header.top .salir, #cardConsulta, #cardLector, #cardHistorial, .simit-btns, .accion{display:none !important} body{background:#fff} }
+@media (max-width:400px){ .fila2{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)} .acciones{grid-template-columns:1fr} }
+@media print{ .top, .nav, .acciones, #toast{display:none !important} body{background:#fff} main{padding:0} }
 </style>
 </head>
 <body>
 
 <header class="top">
-  <div class="wrap">
-    <div class="logo">PM</div>
-    <div class="marca">
-      <h1>Placa<span>Limpia</span> PM</h1>
-      <p>Platinium Motors · Revisión de vehículos RUNT + SIMIT</p>
+  <div class="top-in">
+    <button class="btn-volver oculto" id="btnVolver" type="button" aria-label="Volver">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      <span id="txtVolver">Motos</span>
+    </button>
+    <div class="marca" id="marcaTop">
+      <div class="logo">PM</div>
+      <div><b>Placa<span>Limpia</span></b><small>PLATINIUM MOTORS</small></div>
     </div>
-    <button class="salir oculto" id="btnSalir" type="button">Salir</button>
   </div>
 </header>
 
-<main class="wrap">
+<div id="toast" role="status" aria-live="polite"><span id="toastTxt"></span><button type="button" aria-label="Cerrar" id="toastX">×</button></div>
 
-  <!-- Inicio de sesión -->
-  <section class="card oculto" id="cardLogin">
-    <h2>Entrar <small>con tu cuenta de MotoContable</small></h2>
-    <form id="formLogin">
-      <label class="campo" for="lgEmail">Correo</label>
-      <input class="in" id="lgEmail" type="email" autocomplete="username" required>
-      <label class="campo" for="lgPass">Contraseña</label>
-      <input class="in" id="lgPass" type="password" autocomplete="current-password" required>
-      <button class="btn btn-primario" type="submit" id="btnLogin">Entrar</button>
-    </form>
-    <div class="aviso" id="avLogin"></div>
+<main>
+  <!-- ═══ Inicio de sesión ═══ -->
+  <section class="login oculto" id="vLogin">
+    <div class="logo">PM</div>
+    <h1>Placa<span>Limpia</span></h1>
+    <p class="s">Revisión de vehículos · Platinium Motors</p>
+    <div class="card">
+      <form id="formLogin">
+        <label class="campo" for="lgEmail" style="margin-top:0">Correo</label>
+        <input class="in" id="lgEmail" type="email" autocomplete="username" required>
+        <label class="campo" for="lgPass">Contraseña</label>
+        <input class="in" id="lgPass" type="password" autocomplete="current-password" required>
+        <button class="btn btn-oro" type="submit" id="btnLogin">Entrar</button>
+      </form>
+      <p class="ayuda" style="text-align:center">Usa la misma cuenta de MotoContable.</p>
+      <div class="aviso" id="avLogin"></div>
+    </div>
   </section>
 
-  <div id="app" class="oculto">
+  <!-- ═══ Revisar ═══ -->
+  <section class="vista oculto" id="v-revisar">
+    <h1 class="titulo-vista">Revisar una moto</h1>
+    <p class="sub-vista">Datos del propietario tal como salen en la tarjeta de propiedad.</p>
 
-    <!-- Consulta -->
-    <section class="card" id="cardConsulta">
-      <h2>Nueva revisión <small>datos del propietario como salen en la tarjeta de propiedad</small></h2>
-      <form id="formConsulta" autocomplete="off">
-        <label class="campo" for="inPlaca">Placa</label>
-        <input class="in placa" id="inPlaca" maxlength="7" placeholder="ABC12D" required>
-        <div class="fila">
-          <div>
-            <label class="campo" for="inTipo">Tipo de documento</label>
-            <select class="in" id="inTipo">
-              <option value="C">Cédula de ciudadanía</option>
-              <option value="E">Cédula de extranjería</option>
-              <option value="N">NIT</option>
-              <option value="P">Pasaporte</option>
-              <option value="Y">Permiso por Protección Temporal</option>
-              <option value="T">Tarjeta de identidad</option>
-              <option value="U">Registro civil</option>
-              <option value="D">Carnet diplomático</option>
-            </select>
-          </div>
-          <div>
-            <label class="campo" for="inDoc">Número de documento</label>
-            <input class="in" id="inDoc" inputmode="numeric" maxlength="15" required>
-          </div>
+    <form class="card" id="formConsulta" autocomplete="off" style="margin-top:0">
+      <label class="campo" for="inPlaca" style="margin-top:0; text-align:center">PLACA</label>
+      <div class="placa-in">
+        <input id="inPlaca" maxlength="7" placeholder="ABC12D" required aria-label="Placa" inputmode="text" autocapitalize="characters">
+        <small>COLOMBIA</small>
+      </div>
+      <div class="fila2">
+        <div>
+          <label class="campo" for="inTipo">Tipo de documento</label>
+          <select class="in" id="inTipo">
+            <option value="C">Cédula de ciudadanía</option>
+            <option value="E">Cédula de extranjería</option>
+            <option value="N">NIT</option>
+            <option value="P">Pasaporte</option>
+            <option value="Y">Permiso por Protección Temporal</option>
+            <option value="T">Tarjeta de identidad</option>
+            <option value="U">Registro civil</option>
+            <option value="D">Carnet diplomático</option>
+          </select>
         </div>
-        <label class="campo" for="inCaptcha">Captcha del RUNT</label>
-        <div class="captcha">
-          <div class="img" id="capImg"><span class="ayuda">Cargando captcha…</span></div>
-          <button class="btn btn-sec btn-icono" type="button" id="btnCaptcha" title="Otro captcha" aria-label="Otro captcha">↻</button>
+        <div>
+          <label class="campo" for="inDoc">Número de documento</label>
+          <input class="in mono" id="inDoc" inputmode="numeric" maxlength="15" required>
         </div>
-        <input class="in" id="inCaptcha" maxlength="20" placeholder="Escribe las letras y números de la imagen" autocapitalize="off" autocorrect="off" spellcheck="false" style="margin-top:8px" required>
-        <button class="btn btn-primario" type="submit" id="btnConsultar">Revisar vehículo</button>
-      </form>
-      <div class="aviso" id="avConsulta"></div>
-    </section>
+      </div>
+      <label class="campo" for="inCaptcha">Código de seguridad del RUNT</label>
+      <div class="captcha">
+        <div class="img" id="capImg"><span class="ayuda">Cargando…</span></div>
+        <button class="btn btn-sec btn-ico" type="button" id="btnCaptcha" title="Otro código" aria-label="Otro código">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+        </button>
+      </div>
+      <input class="in mono" id="inCaptcha" maxlength="20" placeholder="Escribe las letras de la imagen" autocapitalize="off" autocorrect="off" spellcheck="false" style="margin-top:10px" required>
+      <button class="btn btn-oro" type="submit" id="btnConsultar">Revisar moto</button>
+    </form>
 
-    <!-- Resultado -->
-    <div id="resultado"></div>
+    <div id="recientesBox" class="oculto">
+      <div class="card-h" style="margin:22px 2px 10px"><h3>Últimas revisadas</h3><button class="btn btn-peq btn-linea" type="button" data-ir="motos" style="margin-left:auto">Ver todas</button></div>
+      <div class="recientes" id="recientes"></div>
+    </div>
+  </section>
 
-    <!-- Historial -->
-    <section class="card" id="cardHistorial">
-      <h2>Historial <small>en este dispositivo</small></h2>
-      <div class="hist" id="historial"></div>
-    </section>
+  <!-- ═══ Motos (historial) ═══ -->
+  <section class="vista oculto" id="v-motos">
+    <h1 class="titulo-vista">Mis motos</h1>
+    <p class="sub-vista">Cada moto que revisas queda aquí, con todas sus consultas.</p>
+    <div class="stats" id="stats"></div>
+    <div class="buscador">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input class="in" id="inBuscar" type="search" placeholder="Buscar por placa, cédula o marca">
+    </div>
+    <div class="filtros" id="filtros">
+      <button type="button" data-f="todas" class="on">Todas</button>
+      <button type="button" data-f="ok">✓ Limpias</button>
+      <button type="button" data-f="warn">Con pendientes</button>
+      <button type="button" data-f="bad">No se pueden</button>
+    </div>
+    <div class="lista-motos" id="listaMotos"></div>
+  </section>
 
-    <!-- Instalar lector SIMIT -->
-    <section class="card" id="cardLector">
-      <details class="det" id="detLector">
-        <summary>Instalar el lector del SIMIT (una sola vez)</summary>
-        <p class="ayuda">El lector es un favorito del navegador. Cuando estás en la página del SIMIT con los resultados en pantalla, lo tocas y PlacaLimpia PM recibe lo que salió, tal cual.</p>
-        <p style="margin:12px 0 4px; font-weight:700">En el iPhone (Safari)</p>
+  <!-- ═══ Ficha de una moto ═══ -->
+  <section class="vista oculto" id="v-ficha"></section>
+
+  <!-- ═══ Ajustes ═══ -->
+  <section class="vista oculto" id="v-ajustes">
+    <h1 class="titulo-vista">Ajustes</h1>
+    <p class="sub-vista">Lector del SIMIT, cuenta y ayuda.</p>
+
+    <div class="card" style="margin-top:0">
+      <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div><h3>Lector del SIMIT</h3></div>
+      <p class="ayuda" style="margin-top:4px">Es un favorito del navegador. En la página del SIMIT, con los resultados en pantalla, lo tocas y PlacaLimpia recibe lo que salió. Solo lo guarda si la placa o cédula coincide con la moto que estás revisando.</p>
+      <details class="det" style="margin-top:6px">
+        <summary>Instalar en el iPhone (Safari)</summary>
         <ol class="pasos">
           <li>Toca <b>Copiar código del lector</b> (abajo).</li>
-          <li>En esta página toca <b>Compartir → Agregar marcador</b>. Ponle de nombre <b>Lector PlacaLimpia</b> y guárdalo.</li>
-          <li>Abre los marcadores, toca <b>Editar</b>, entra a <b>Lector PlacaLimpia</b>, borra la dirección y <b>pega</b> el código. Guarda.</li>
+          <li>En esta página toca <b>Compartir → Agregar marcador</b>, nómbralo <b>Lector PlacaLimpia</b> y guárdalo.</li>
+          <li>Abre los marcadores (📖), mantén presionado <b>Lector PlacaLimpia → Editar</b>, borra la dirección, <b>pega</b> el código y guarda.</li>
         </ol>
-        <p style="margin:12px 0 4px; font-weight:700">En el computador</p>
-        <ol class="pasos">
-          <li>Arrastra este botón a la barra de favoritos: <a class="btn btn-sec" id="lnkLector" href="#" style="padding:6px 10px; font-size:13px">Lector PlacaLimpia</a></li>
-        </ol>
-        <button class="btn btn-sec" type="button" id="btnCopiarLector" style="margin-top:12px; width:100%">Copiar código del lector</button>
-        <code class="copiable" id="codLector" style="margin-top:8px"></code>
       </details>
-    </section>
-  </div>
+      <details class="det">
+        <summary>Instalar en el computador (Safari o Chrome)</summary>
+        <ol class="pasos">
+          <li>Muestra la barra de favoritos: <b>Cmd + Shift + B</b>.</li>
+          <li>Arrastra este botón a la barra: <a class="btn btn-sec btn-peq" id="lnkLector" href="#">Lector PlacaLimpia</a></li>
+        </ol>
+      </details>
+      <button class="btn btn-sec" type="button" id="btnCopiarLector" style="width:100%; margin-top:8px">Copiar código del lector</button>
+      <code class="copiable" id="codLector"></code>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div><h3>Cuenta</h3></div>
+      <p class="ayuda" id="txtCuenta" style="margin-top:4px"></p>
+      <button class="btn btn-linea" type="button" id="btnSalir" style="width:100%; margin-top:12px">Cerrar sesión</button>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg></div><h3>Cómo decide el veredicto</h3></div>
+      <ul style="margin:6px 0 0; padding-left:18px; font-size:13.5px; color:var(--muted)">
+        <li><b>No se puede:</b> embargo o limitación, prenda, trámite en curso, comparendo a la cédula, impuesto en mora, motor o chasis que no coinciden.</li>
+        <li><b>Falta algo:</b> SOAT o tecno vencidos, regrabados por verificar, o pasos sin revisar.</li>
+        <li><b>Comparendo a la placa:</b> se puede hacer el trámite.</li>
+        <li>Motos de 125 c.c. o menos no pagan impuesto vehicular.</li>
+      </ul>
+      <p class="ayuda">El historial se guarda en este dispositivo y navegador.</p>
+    </div>
+  </section>
 </main>
+
+<nav class="nav oculto" id="nav">
+  <div class="nav-in">
+    <button type="button" data-ir="revisar"><span class="nv-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>Revisar</button>
+    <button type="button" data-ir="motos"><span class="nv-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="16.5" r="3.5"/><circle cx="18.5" cy="16.5" r="3.5"/><path d="M5.5 16.5L9 9h5l4.5 7.5M14 9l-1-3h3"/></svg></span>Motos</button>
+    <button type="button" data-ir="ajustes"><span class="nv-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>Ajustes</button>
+  </div>
+</nav>
 
 <script>
 'use strict';
@@ -248,9 +403,9 @@ ol.pasos{margin:8px 0 0; padding-left:20px; font-size:14px} ol.pasos li{margin:4
 // RUNT: se consulta desde la función de Supabase "placalimpia-runt" con el captcha
 //       que escribes tú (supabase/functions/placalimpia-runt).
 // SIMIT: lo consultas tú en la página oficial y el "lector" (un favorito) trae lo
-//       que salió en pantalla a esta página.
+//       que salió en pantalla. Solo se guarda si coincide con la moto en revisión.
 // Reglas: comparendo a la PLACA → se puede tramitar; a la CÉDULA → no se puede.
-//         Embargo / limitación o prenda vigente → no se puede.
+//         Embargo / limitación, prenda o trámite en curso → no se puede.
 // ════════════════════════════════════════════════════════════════════════════
 const SUPA_URL = 'https://llyovzgwdqoeunvyczcy.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxseW92emd3ZHFvZXVudnljemN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MzUzNjcsImV4cCI6MjEwNjAxMTM2N30.g1DgUdTGPHDz8HEI1Kgv4SOJ13zyOwOfcAp8Ak2BRGQ';
@@ -268,15 +423,46 @@ try {
 } catch(e){ console.log('Supabase no disponible', e); }
 
 const $ = id => document.getElementById(id);
-let captchaId = null;
-let actual = null;   // revisión que se está viendo
+let captchaId = null, captchaEn = 0;
+let actual = null;          // revisión que se está viendo
+let vista = 'revisar', vistaAntes = 'motos';
+let filtro = 'todas';
+
+// ── Iconos ─────────────────────────────────────────────────────────────────
+const SVG = (d, s = 18, w = 2.4) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const IC = {
+  ok:   SVG('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+  warn: SVG('<path d="M12 8v5M12 16.5h.01"/><path d="M10.3 3.9L2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>', 17, 2.2),
+  bad:  SVG('<path d="M7 7l10 10M17 7L7 17"/>'),
+  nd:   SVG('<circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/>', 17, 2.2),
+  doc:  SVG('<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>', 18, 2.1),
+  ley:  SVG('<path d="M12 3v18M5 21h14M6 7h12M6 7l-3 7a3 3 0 0 0 6 0zM18 7l-3 7a3 3 0 0 0 6 0z"/>', 18, 2),
+  multa:SVG('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>', 18, 2.1),
+  lupa: SVG('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M8.5 11h5M11 8.5v5"/>', 18, 2.1),
+  sede: SVG('<path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/>', 18, 2.1),
+  hist: SVG('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>', 18, 2.1),
+  raw:  SVG('<path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/>', 18, 2.1),
+  flecha: SVG('<path d="M9 6l6 6-6 6"/>', 18, 2.2),
+  ext:  SVG('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>', 15, 2.2),
+};
 
 // ── Utilidades ─────────────────────────────────────────────────────────────
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function leer(k, def){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch(e){ return def; } }
-function guardar(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
-function aviso(id, tipo, texto){ const el = $(id); el.className = 'aviso ver ' + tipo; el.textContent = texto; }
-function quitarAviso(id){ $(id).className = 'aviso'; }
+function guardar(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } }
+let toastT = null;
+function toast(tipo, texto){
+  const el = $('toast');
+  $('toastTxt').textContent = texto;
+  el.className = 'ver ' + tipo;
+  clearTimeout(toastT);
+  toastT = setTimeout(() => { el.className = tipo; }, tipo === 'ok' ? 4500 : 9000);
+}
+function aviso(id, tipo, texto){
+  if (id === 'avLogin'){ const el = $(id); el.className = 'aviso ver'; el.textContent = texto; return; }
+  toast(tipo, texto);
+}
+function quitarAviso(id){ if (id === 'avLogin') $(id).className = 'aviso'; else $('toast').className = ''; }
 function pesos(n){ return '$' + Math.round(n).toLocaleString('es-CO'); }
 function hoy0(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
 
@@ -292,6 +478,16 @@ function fecha(v){
   return isNaN(d) ? null : d;
 }
 function fTxt(d){ return d ? d.toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'}) : '—'; }
+function hTxt(d){ return d ? d.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'}) : ''; }
+function hace(d){
+  if (!d) return '';
+  const min = Math.round((Date.now() - d) / 60000);
+  if (min < 1) return 'ahora';
+  if (min < 60) return `hace ${min} min`;
+  const h = Math.round(min / 60); if (h < 24) return `hace ${h} h`;
+  const dd = Math.round(h / 24); if (dd < 7) return `hace ${dd} día${dd === 1 ? '' : 's'}`;
+  return fTxt(d);
+}
 function dias(d){ return d ? Math.round((d - hoy0()) / 86400000) : null; }
 
 // Primer valor no vacío entre varios nombres posibles de campo.
@@ -318,6 +514,8 @@ function filas(sec){
 }
 function seccionFallo(sec){ return !sec || (sec.ok === false && sec.estado !== 404); }
 function siNo(v){ const s = String(v == null ? '' : v).trim().toUpperCase(); return s === 'SI' || s === 'SÍ' || s === 'S' || s === 'TRUE' || s === '1'; }
+function nombreTipo(t){ return ({C:'C.C.', E:'C.E.', N:'NIT', P:'Pasaporte', Y:'P.P.T.', T:'T.I.', U:'R.C.', D:'C.D.'})[t] || t; }
+function chipPlaca(p, xl){ return `<span class="chip-placa${xl ? ' xl' : ''}">${esc(p)}<small>COLOMBIA</small></span>`; }
 
 // ── Análisis del RUNT ──────────────────────────────────────────────────────
 function analizarRunt(r){
@@ -384,8 +582,9 @@ function analizarRunt(r){
 
   // Estado del registro
   if (estado && estado !== 'ACTIVO') out.items.estado = { nivel:'bad', t:`Estado del vehículo: ${esc(estado)}`, d:'El RUNT no lo muestra como ACTIVO.', bloquea:`El vehículo está ${estado} en el RUNT` };
+  else if (estado) out.items.estado = { nivel:'ok', t:'Vehículo activo', d:'Estado en el RUNT: <b>ACTIVO</b>.' };
 
-  // Regrabados (números de motor, chasis, serie o VIN alterados / regrabados)
+  // Regrabados (números de motor, chasis, serie o VIN regrabados)
   const regra = [['Motor', 'numRegraMotor'], ['Chasis', 'numRegraChasis'], ['Serie', 'numRegraSerie'], ['Vin', 'numRegraVin']]
     .filter(([n]) => siNo(info['esRegrabado' + n]))
     .map(([n, k]) => `<b>${n === 'Vin' ? 'VIN' : n}</b>${info[k] ? ' · número regrabado ' + esc(info[k]) : ''}`);
@@ -406,6 +605,7 @@ function analizarRunt(r){
   if (enCurso.length) out.items.tramite = { nivel:'bad', t:`Tiene ${enCurso.length === 1 ? 'un trámite' : enCurso.length + ' trámites'} en curso`,
     d: enCurso.map(x => `<b>${esc(String(campo(x, 'tramitesRealizados') || 'Trámite').replace(/,\s*$/, ''))}</b> · ${esc(campo(x, 'estado'))}${campo(x, 'fechaSolicitud') ? ' · ' + fTxt(fecha(x.fechaSolicitud)) : ''}${campo(x, 'entidad') ? ' · ' + esc(x.entidad) : ''}`).join('<br>'),
     bloquea:'Tiene un trámite en curso en el RUNT: hay que esperar a que termine antes del traspaso' };
+  else if (!seccionFallo(r.solicitudes)) out.items.tramite = { nivel:'ok', t:'Sin trámites en curso', d:'No hay solicitudes abiertas en el RUNT.' };
 
   // Servicio distinto de particular
   const serv = String(campo(info, 'tipoServicio') || '').trim();
@@ -437,7 +637,6 @@ function analizarSimit(cap, revision){
     res.acuerdo = res.acuerdos > 0;
     res.total = mTotal ? numPesos(mTotal[1]) : 0;
     res.cantidad = res.comparendos + res.multas;
-    // Estados de cada registro (ej. "Cobro coactivo") y placas que aparecen.
     res.estadosReg = [...new Set([...plano.matchAll(/\bEstado\s+(?!de\s+cuenta)([A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,30}?)(?=\s+(?:Valor|Saldo|Total|Tipo|Fecha|Notificaci|Placa|Secretar|Infracci|Intereses|Descuento|Pagar|Detalle|$))/g)].map(m => m[1].trim()))];
     res.placasReg = [...new Set([...plano.matchAll(/\bPlaca\s+([A-Z]{3}\d{2}[A-Z0-9]|[A-Z]{3}\d{3})\b/g)].map(m => m[1]))];
     res.estado = (res.cantidad > 0 || res.acuerdos > 0 || res.total > 0) ? 'deudas' : 'limpio';
@@ -457,13 +656,14 @@ function analizarSimit(cap, revision){
 
 function itemSimit(modo, s){
   const quien = modo === 'placa' ? 'a la placa' : 'a la cédula';
-  const titulo = modo === 'placa' ? 'SIMIT por placa' : 'SIMIT por cédula';
-  if (!s) return { nivel:'nd', t:titulo, d:`Falta revisar. Toca <b>SIMIT ${modo === 'placa' ? 'por placa' : 'por cédula'}</b> y luego el lector.`, falta: modo === 'cedula' ? 'Revisar el SIMIT por cédula' : null };
-  const buscado = s.consulta ? ` · Buscado en el SIMIT: <b>${esc(s.consulta)}</b>` : '';
-  if (s.estado === 'limpio') return { nivel:'ok', t:`Sin comparendos ${quien}`, d:`SIMIT revisado el ${fTxt(new Date(s.fecha))}${s.manual ? ' (confirmado por ti)' : ''}${buscado}.` };
+  const titulo = modo === 'placa' ? 'Comparendos a la placa' : 'Comparendos a la cédula';
+  const boton = `<div class="extra"><button class="btn btn-sec btn-peq" type="button" data-simit="${modo}">${IC.ext} ${s ? 'Volver a consultar' : 'Consultar'} SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'}</button></div>`;
+  if (!s) return { nivel:'nd', t:titulo, d:'Falta revisar en el SIMIT.', extra: boton, falta: modo === 'cedula' ? 'Revisar el SIMIT por cédula' : null };
+  const buscado = s.consulta ? ` · Buscado: <b>${esc(s.consulta)}</b>` : '';
+  if (s.estado === 'limpio') return { nivel:'ok', t:`Sin comparendos ${quien}`, d:`SIMIT revisado ${hace(new Date(s.fecha))}${s.manual ? ' (confirmado por ti)' : ''}${buscado}.`, extra: boton };
   if (s.estado === 'desconocido') return { nivel:'nd', t:titulo,
-    d:`El lector no reconoció lo que salió en el SIMIT. Si viste que <b>no tiene comparendos ni multas</b>, confírmalo aquí:` +
-      `<br><button class="btn btn-sec" type="button" data-limpio="${modo}" style="margin-top:8px; padding:9px 12px; font-size:13.5px">✓ El SIMIT no muestra comparendos ${quien}</button>`,
+    d:`El lector no reconoció lo que salió en el SIMIT. Si viste que <b>no tiene comparendos ni multas</b>, confírmalo:`,
+    extra:`<div class="extra" style="display:flex; gap:8px; flex-wrap:wrap"><button class="btn btn-sec btn-peq" type="button" data-limpio="${modo}">✓ No tiene comparendos ${quien}</button><button class="btn btn-linea btn-peq" type="button" data-simit="${modo}">${IC.ext} Consultar otra vez</button></div>`,
     falta: modo === 'cedula' ? 'Confirmar el SIMIT por cédula' : null };
   const partes = [];
   if (s.comparendos != null){
@@ -474,11 +674,11 @@ function itemSimit(modo, s){
   partes.push(s.total ? `Total <b>${pesos(s.total)}</b>` : 'Valor no detectado (mira el detalle)');
   if (s.estadosReg && s.estadosReg.length) partes.push(esc(s.estadosReg.join(', ')));
   const det = partes.join(' · ') + buscado;
-  if (modo === 'placa') return { nivel:'warn', t:'Tiene comparendo a la placa — se puede hacer el trámite', d: det };
-  return { nivel:'bad', t:'Tiene comparendo a la cédula — NO se puede hacer el trámite', d: det, bloquea:`El propietario tiene comparendos a la cédula${s.total ? ' por ' + pesos(s.total) : ''}: no se puede tramitar hasta pagarlos` };
+  if (modo === 'placa') return { nivel:'warn', t:'Comparendo a la placa · se puede tramitar', d: det, extra: boton };
+  return { nivel:'bad', t:'Comparendo a la cédula · NO se puede tramitar', d: det, extra: boton,
+    bloquea:`El propietario tiene comparendos a la cédula${s.total ? ' por ' + pesos(s.total) : ''}: no se puede tramitar hasta pagarlos` };
 }
 
-// ── Pintar resultado ───────────────────────────────────────────────────────
 // ── Impuesto vehicular ─────────────────────────────────────────────────────
 // Las motos de 125 c.c. o menos no pagan impuesto vehicular (Ley 488 de 1998, art. 141).
 // El impuesto se paga al departamento donde está matriculada.
@@ -520,219 +720,279 @@ function urlImpuesto(depto){
   return 'https://www.google.com/search?q=' + encodeURIComponent('consultar impuesto vehicular ' + (depto && depto !== 'Otro' ? depto : '') + ' por placa');
 }
 function cilindrajeDe(info){ const n = parseInt(String(campo(info, 'cilindraje') || '').replace(/[^\d]/g, ''), 10); return isNaN(n) ? null : n; }
+function deptoDe(rev, info){ return (rev.checks || {}).depto || adivinarDepto(campo(info, 'organismoTransito')) || leer('pl_depto_v1', 'Antioquia'); }
+
+function botonesCheck(k, ch, etSi, etNo){
+  const v = (ch || {})[k];
+  return `<div class="chk">
+    <button type="button" class="chk-b ${v === 'si' || v === 'aldia' ? 'on-ok' : ''}" data-check="${k}" data-val="${k === 'impuesto' ? 'aldia' : 'si'}">✓ ${etSi}</button>
+    <button type="button" class="chk-b ${v === 'no' || v === 'debe' ? 'on-bad' : ''}" data-check="${k}" data-val="${k === 'impuesto' ? 'debe' : 'no'}">✗ ${etNo}</button>
+  </div>`;
+}
 
 function itemImpuesto(rev, info){
   const cc = cilindrajeDe(info);
   const ch = rev.checks || {};
   if (cc != null && cc <= 125) return { nivel:'ok', t:'No paga impuesto vehicular', d:`Tiene ${cc} c.c.: las motos de 125 c.c. o menos no pagan impuesto vehicular.` };
-  const depto = ch.depto || adivinarDepto(campo(info, 'organismoTransito')) || leer('pl_depto_v1', 'Antioquia');
+  const depto = deptoDe(rev, info);
   const quien = depto && depto !== 'Otro' ? ` en ${depto}` : '';
-  if (ch.impuesto === 'aldia') return { nivel:'ok', t:'Impuesto vehicular al día', d:`Revisado por ti${quien}.` };
-  if (ch.impuesto === 'debe') return { nivel:'bad', t:'Debe impuesto vehicular', d:`Marcado por ti${quien}. Hay que pagarlo (paz y salvo) antes del traspaso.`,
+  const extra = `<div class="extra">
+      <div class="fila-imp">
+        <select class="in" id="selDepto" aria-label="Departamento">${Object.keys(DEPTOS).map(d => `<option ${d === depto ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select>
+        <a class="btn btn-sec btn-peq" href="${esc(urlImpuesto(depto))}" target="_blank" rel="noopener">${IC.ext} Consultar</a>
+      </div>
+      ${!DEPTOS[depto] || !DEPTOS[depto].url ? '<p class="ayuda">Para este departamento se abre una búsqueda con la página oficial.</p>' : ''}
+      ${botonesCheck('impuesto', ch, 'Al día', 'Debe impuesto')}
+    </div>`;
+  if (ch.impuesto === 'aldia') return { nivel:'ok', t:'Impuesto vehicular al día', d:`Revisado por ti${quien}.`, extra };
+  if (ch.impuesto === 'debe') return { nivel:'bad', t:'Debe impuesto vehicular', d:`Marcado por ti${quien}. Hay que pagarlo (paz y salvo) antes del traspaso.`, extra,
     bloquea:'Debe impuesto vehicular: hay que pagarlo antes del traspaso' };
-  return { nivel:'nd', t:'Impuesto vehicular: falta revisar', d:`${cc ? cc + ' c.c.: sí paga impuesto' : 'Revisa si paga impuesto'}${quien}. Consúltalo en la sección <b>Verificación de la moto</b>.`, falta:'Revisar el impuesto vehicular' };
+  return { nivel:'nd', t:'Impuesto vehicular', d:`${cc ? `<b>${cc} c.c.</b>: sí paga impuesto` : 'Revisa si paga impuesto'}${quien}. Consulta con la placa <b>${esc(rev.placa)}</b> y marca el resultado.`, extra, falta:'Revisar el impuesto vehicular' };
 }
 
-function itemImprontas(rev){
+function itemImprontas(rev, info){
   const ch = rev.checks || {};
+  const motor = campo(info, 'numMotor'), chasis = campo(info, 'numChasis'), vin = campo(info, 'vin'), serie = campo(info, 'numSerie');
+  const num = (et, val) => val ? `<div class="num"><span>${et}</span><b class="mono">${esc(val)}</b></div>` : '';
+  const extra = `<div class="extra">
+      ${num('MOTOR', motor)}${botonesCheck('motor', ch, 'Motor coincide', 'No coincide')}
+      ${num('CHASIS', chasis)}${botonesCheck('chasis', ch, 'Chasis coincide', 'No coincide')}
+      ${vin && vin !== chasis ? num('VIN', vin) : ''}${serie ? num('SERIE', serie) : ''}
+    </div>`;
   const no = ['motor', 'chasis'].filter(k => ch[k] === 'no');
-  if (no.length) return { nivel:'bad', t:`El número de ${no.join(' y ')} NO coincide con el RUNT`, d:'Marcado por ti al revisar la moto.',
+  if (no.length) return { nivel:'bad', t:`El número de ${no.join(' y ')} NO coincide`, d:'Marcado por ti al revisar la moto.', extra,
     bloquea:`El número de ${no.join(' y ')} de la moto no coincide con el RUNT` };
-  if (ch.motor === 'si' && ch.chasis === 'si') return { nivel:'ok', t:'Motor y chasis coinciden con el RUNT', d:'Verificado por ti en la moto.' };
-  return { nivel:'nd', t:'Motor y chasis: falta verificar', d:'Compara los números de la moto con los del RUNT en <b>Verificación de la moto</b>.', falta:'Verificar en la moto los números de motor y chasis' };
+  if (ch.motor === 'si' && ch.chasis === 'si') return { nivel:'ok', t:'Motor y chasis coinciden', d:'Verificado por ti en la moto.', extra };
+  return { nivel:'nd', t:'Números de motor y chasis', d:'Compara con lo grabado en la moto (improntas) y marca.', extra, falta:'Verificar en la moto los números de motor y chasis' };
 }
 
+// ── Veredicto ──────────────────────────────────────────────────────────────
 function veredicto(rev){
   const a = analizarRunt(rev.runt);
-  const its = [a.items.estado, a.items.seguridad, a.items.tramite, a.items.lim, a.items.prenda, a.items.regrabado, itemImprontas(rev),
-               a.items.soat, a.items.rtm, itemImpuesto(rev, a.info), a.items.servicio,
-               itemSimit('placa', rev.simit && rev.simit.placa), itemSimit('cedula', rev.simit && rev.simit.cedula)].filter(Boolean);
+  const grupos = {
+    legal:   [a.items.estado, a.items.lim, a.items.prenda, a.items.tramite, a.items.seguridad, a.items.regrabado, a.items.servicio].filter(Boolean),
+    papeles: [a.items.soat, a.items.rtm, itemImpuesto(rev, a.info)].filter(Boolean),
+    simit:   [itemSimit('placa', rev.simit && rev.simit.placa), itemSimit('cedula', rev.simit && rev.simit.cedula)],
+    fisica:  [itemImprontas(rev, a.info)],
+  };
+  const its = [...grupos.legal, ...grupos.papeles, ...grupos.simit, ...grupos.fisica];
   const bloqueos = its.filter(i => i.bloquea).map(i => i.bloquea);
   const faltas = its.filter(i => !i.bloquea && i.falta).map(i => i.falta);
   const pend = its.filter(i => i.nivel === 'nd');
+  const hechos = its.filter(i => i.nivel !== 'nd').length;
   let nivel, titulo, sub;
-  if (bloqueos.length){ nivel = 'bad'; titulo = 'NO SE PUEDE HACER EL TRASPASO'; sub = 'Esto lo impide:'; }
-  else if (faltas.length || pend.length){ nivel = 'warn'; titulo = pend.length && !faltas.length ? 'POR AHORA SIN BLOQUEOS' : 'SE PUEDE, PERO FALTA ALGO'; sub = faltas.length ? 'Antes del traspaso:' : 'Falta completar la revisión.'; }
-  else { nivel = 'ok'; titulo = 'PLACA LIMPIA · SE PUEDE HACER EL TRASPASO'; sub = 'Sin embargos ni prendas, sin comparendos a la cédula, papeles e impuesto al día, y motor y chasis verificados.'; }
-  return { a, its, nivel, titulo, sub, lista: bloqueos.length ? bloqueos : faltas };
+  if (bloqueos.length){ nivel = 'bad'; titulo = 'No se puede hacer el traspaso'; sub = `${bloqueos.length} problema${bloqueos.length === 1 ? '' : 's'} lo impide${bloqueos.length === 1 ? '' : 'n'}`; }
+  else if (faltas.length || pend.length){ nivel = 'warn'; titulo = faltas.length ? 'Se puede, pero falta algo' : 'Por ahora sin bloqueos'; sub = faltas.length ? `${faltas.length} cosa${faltas.length === 1 ? '' : 's'} por resolver` : 'Completa la revisión'; }
+  else { nivel = 'ok'; titulo = 'Placa limpia · se puede traspasar'; sub = 'Todo revisado y en orden'; }
+  return { a, grupos, its, nivel, titulo, sub, bloqueos, faltas, hechos, total: its.length };
 }
 
+// ── Pintar la ficha ────────────────────────────────────────────────────────
 function tabla(rows){
-  if (!rows.length) return '<p class="vacio">Sin registros.</p>';
+  if (!rows.length) return '<p class="ayuda">Sin registros.</p>';
   const cols = [...new Set(rows.flatMap(r => Object.keys(r).filter(k => !k.startsWith('_') && (r[k] == null || typeof r[k] !== 'object'))))];
   return `<div class="tabla"><table><thead><tr>${cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${
     rows.map(r => `<tr>${cols.map(c => `<td>${esc(r[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
 function kv(o){
-  if (!o || typeof o !== 'object') return '<p class="vacio">Sin datos.</p>';
+  if (!o || typeof o !== 'object') return '<p class="ayuda">Sin datos.</p>';
   const ks = Object.keys(o).filter(k => o[k] != null && o[k] !== '' && typeof o[k] !== 'object');
-  if (!ks.length) return '<p class="vacio">Sin datos.</p>';
+  if (!ks.length) return '<p class="ayuda">Sin datos.</p>';
   return `<dl class="kv">${ks.map(k => `<dt>${esc(k)}</dt><dd>${esc(o[k])}</dd>`).join('')}</dl>`;
 }
 function bloqueDet(titulo, sec){
   const rows = filas(sec);
-  const cuerpo = seccionFallo(sec) && !rows.length ? `<p class="vacio">El RUNT no respondió esta sección (código ${esc(sec && sec.estado)}).</p>` : tabla(rows);
+  const cuerpo = seccionFallo(sec) && !rows.length ? `<p class="ayuda">El RUNT no respondió esta sección (código ${esc(sec && sec.estado)}).</p>` : tabla(rows);
   return `<details class="det"><summary>${esc(titulo)} <span class="cnt">${rows.length}</span></summary>${cuerpo}</details>`;
 }
-
-function botonesCheck(k, ch, etSi, etNo){
-  const v = (ch || {})[k];
-  return `<div class="chk">
-    <button type="button" class="btn chk-b ${v === 'si' || v === 'aldia' ? 'on-ok' : ''}" data-check="${k}" data-val="${k === 'impuesto' ? 'aldia' : 'si'}">✓ ${etSi}</button>
-    <button type="button" class="btn chk-b ${v === 'no' || v === 'debe' ? 'on-bad' : ''}" data-check="${k}" data-val="${k === 'impuesto' ? 'debe' : 'no'}">✗ ${etNo}</button>
-  </div>`;
+const TAG = { ok:'Bien', warn:'Ojo', bad:'Problema', nd:'Pendiente' };
+function filaHtml(i){
+  const tag = i.bloquea ? 'Bloquea' : TAG[i.nivel];
+  return `<div class="fila ${i.nivel}"><span class="est">${IC[i.nivel]}</span><div class="cuerpo"><div class="t">${esc(i.t)}</div><div class="d">${i.d}</div>${i.extra || ''}</div><span class="tag ${i.nivel}">${tag}</span></div>`;
+}
+function tarjeta(ic, titulo, items, pie){
+  const malos = items.filter(i => i.nivel === 'bad').length, pend = items.filter(i => i.nivel === 'nd').length;
+  const cuenta = malos ? `<span class="cuenta" style="color:var(--bad)">${malos} con problema</span>` : pend ? `<span class="cuenta">${pend} pendiente${pend === 1 ? '' : 's'}</span>` : `<span class="cuenta" style="color:var(--ok)">Todo bien</span>`;
+  return `<section class="card"><div class="card-h"><div class="ic">${ic}</div><h3>${titulo}</h3>${cuenta}</div><div class="filas">${items.map(filaHtml).join('')}</div>${pie || ''}</section>`;
 }
 
-function tarjetaVerificacion(rev, info){
-  const ch = rev.checks || {};
-  const motor = campo(info, 'numMotor'), chasis = campo(info, 'numChasis'), vin = campo(info, 'vin'), serie = campo(info, 'numSerie');
-  const org = campo(info, 'organismoTransito');
-  const cc = cilindrajeDe(info);
-  const pagaImp = !(cc != null && cc <= 125);
-  const deptoAuto = adivinarDepto(org);
-  const depto = ch.depto || deptoAuto || leer('pl_depto_v1', 'Antioquia');
-  const num = (et, val) => val ? `<div class="num"><span>${et}</span><b>${esc(val)}</b></div>` : '';
-  return `
-    <section class="card">
-      <h2>Verificación de la moto <small>lo que revisas tú</small></h2>
-
-      <div class="ver-bloque">
-        <div class="t">1. Números de identificación</div>
-        <p class="ayuda" style="margin-top:2px">Compara con lo que está grabado en la moto (improntas).</p>
-        ${num('Motor', motor)}
-        ${botonesCheck('motor', ch, 'Coincide', 'No coincide')}
-        ${num('Chasis', chasis)}
-        ${botonesCheck('chasis', ch, 'Coincide', 'No coincide')}
-        ${vin && vin !== chasis ? num('VIN', vin) : ''}
-        ${serie ? num('Serie', serie) : ''}
-      </div>
-
-      <div class="ver-bloque">
-        <div class="t">2. Impuesto vehicular</div>
-        ${pagaImp ? `
-          <p class="ayuda" style="margin-top:2px">${cc ? `<b>${cc} c.c.</b>: sí paga impuesto. ` : ''}Se paga al departamento donde está matriculada${org ? ` (<b>${esc(org)}</b>)` : ''}.</p>
-          <div class="fila-imp">
-            <select class="in" id="selDepto" aria-label="Departamento">${Object.keys(DEPTOS).map(d => `<option ${d === depto ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select>
-            <a class="btn btn-sec" href="${esc(urlImpuesto(depto))}" target="_blank" rel="noopener">Consultar impuesto ↗</a>
-          </div>
-          ${!DEPTOS[depto] || !DEPTOS[depto].url ? '<p class="ayuda">Para este departamento se abre una búsqueda en Google con la página oficial.</p>' : ''}
-          <p class="ayuda">Consulta con la placa <b>${esc(rev.placa)}</b> y marca lo que salió:</p>
-          ${botonesCheck('impuesto', ch, 'Al día', 'Debe impuesto')}`
-        : `<p class="ayuda" style="margin-top:2px">${cc} c.c.: <b>no paga impuesto vehicular</b> (125 c.c. o menos).</p>`}
-      </div>
-
-      ${org ? `<div class="ver-bloque"><div class="t">3. Dónde se hace el traspaso</div><p style="margin:4px 0 0; font-weight:600">${esc(org)}</p><p class="ayuda" style="margin-top:2px">Organismo de tránsito donde está matriculada.</p></div>` : ''}
-    </section>`;
-}
-
-function pintar(rev){
+function renderFicha(rev){
   actual = rev;
   guardar(K_ACTUAL, rev.id);
   const v = veredicto(rev);
   const info = v.a.info;
-  const ico = { ok:'✅', warn:'⚠️', bad:'❌' }[v.nivel];
-  const desc = [campo(info, 'marca'), campo(info, 'linea'), campo(info, 'modelo')].filter(Boolean).join(' ');
-  const sub = [campo(info, 'clase'), campo(info, 'color'), campo(info, 'cilindraje') ? info.cilindraje + ' c.c.' : '', campo(info, 'tipoServicio'), campo(info, 'organismoTransito')].filter(Boolean).map(esc).join(' · ');
+  const nombre = [campo(info, 'marca'), campo(info, 'linea')].filter(Boolean).join(' ') || 'Vehículo';
+  const chips = [campo(info, 'modelo') ? 'Modelo ' + info.modelo : '', campo(info, 'cilindraje') ? info.cilindraje + ' c.c.' : '', campo(info, 'color'), campo(info, 'clase'), campo(info, 'tipoServicio')].filter(Boolean);
+  const org = campo(info, 'organismoTransito');
   const s = rev.simit || {};
+  const pct = Math.round(v.hechos / v.total * 100);
+  const otras = historial().filter(x => x.placa === rev.placa && x.id !== rev.id);
+  const icoG = { ok: IC.ok, warn: IC.warn, bad: IC.bad }[v.nivel];
 
-  $('resultado').innerHTML = `
-    <div class="veredicto v-${v.nivel}">
-      <div class="ico">${ico}</div>
-      <div>
-        <h3>${esc(v.titulo)}</h3>
-        <p>${esc(v.sub)}</p>
-        ${v.lista.length ? `<ul>${v.lista.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
-      </div>
+  $('v-ficha').innerHTML = `
+    <div class="hero">
+      ${chipPlaca(rev.placa, true)}
+      <div class="nombre">${esc(nombre)}</div>
+      <div class="chips">${chips.map(c => `<span>${esc(c)}</span>`).join('')}</div>
+      <div class="meta">Propietario ${esc(nombreTipo(rev.tipoDocumento))} <span class="mono">${esc(rev.documento)}</span> · RUNT consultado ${fTxt(new Date(rev.fecha))}, ${hTxt(new Date(rev.fecha))}</div>
+      <div class="estado-g ${v.nivel}"><div class="ico">${icoG}</div><div><b>${esc(v.titulo)}</b><small>${esc(v.sub)}</small></div></div>
+      <div class="progreso"><div class="barra"><i style="width:${pct}%"></i></div><small><span>Revisión ${v.hechos} de ${v.total}</span><span>${pct}%</span></small></div>
     </div>
 
-    <section class="card">
-      <div class="vehiculo">
-        <div>
-          <div class="desc">${esc(desc || 'Vehículo')}</div>
-          <div class="sub">${sub || ''}</div>
-          <div class="sub">Propietario: ${esc(nombreTipo(rev.tipoDocumento))} ${esc(rev.documento)} · Consultado ${fTxt(new Date(rev.fecha))} ${new Date(rev.fecha).toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'})}</div>
-        </div>
-        <div class="chip-placa">${esc(rev.placa)}</div>
-      </div>
-    </section>
+    ${v.bloqueos.length ? `<div class="lista-alerta bad"><b>Esto impide el traspaso</b><ul>${v.bloqueos.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+    ${!v.bloqueos.length && v.faltas.length ? `<div class="lista-alerta warn"><b>Antes del traspaso</b><ul>${v.faltas.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
 
-    <section class="card">
-      <h2>Resumen</h2>
-      <div class="items">
-        ${v.its.map(i => `<div class="item"><span class="pt ${i.nivel}"></span><div><div class="t">${esc(i.t)}</div><div class="d">${i.d}</div></div></div>`).join('')}
-      </div>
-      <div class="simit-btns">
-        <button class="btn btn-sec" type="button" data-simit="placa">${s.placa ? '↻ ' : ''}SIMIT por placa</button>
-        <button class="btn btn-sec" type="button" data-simit="cedula">${s.cedula ? '↻ ' : ''}SIMIT por cédula</button>
-      </div>
-      <p class="ayuda">Se abre el SIMIT con el dato ya copiado. Cuando salgan los resultados, toca tu favorito <b>Lector PlacaLimpia</b> y vuelves aquí con todo junto.</p>
-    </section>
+    ${tarjeta(IC.ley, 'Situación legal', v.grupos.legal)}
+    ${tarjeta(IC.doc, 'Papeles al día', v.grupos.papeles)}
+    ${tarjeta(IC.multa, 'Multas · SIMIT', v.grupos.simit, '<p class="ayuda">Se abre el SIMIT con el dato copiado. Con los resultados en pantalla, toca tu favorito <b>Lector PlacaLimpia</b>.</p>')}
+    ${tarjeta(IC.lupa, 'Verificación en la moto', v.grupos.fisica)}
 
-    ${tarjetaVerificacion(rev, info)}
+    ${org ? `<section class="card"><div class="card-h"><div class="ic">${IC.sede}</div><h3>Dónde se hace el traspaso</h3></div>
+      <p style="margin:6px 0 0; font-weight:700">${esc(org)}</p><p class="ayuda" style="margin-top:2px">Organismo de tránsito donde está matriculada${v.a.info && deptoDe(rev, info) && deptoDe(rev, info) !== 'Otro' ? ` · ${esc(deptoDe(rev, info))}` : ''}.</p></section>` : ''}
 
-    <section class="card">
-      <h2>Detalle completo <small>tal como lo entrega el RUNT</small></h2>
+    ${otras.length ? `<section class="card"><div class="card-h"><div class="ic">${IC.hist}</div><h3>Consultas anteriores de esta moto</h3><span class="cuenta">${otras.length}</span></div>
+      <div class="lista-motos" style="margin-top:8px">${otras.map(o => { const vo = veredicto(o); return `<button class="moto" type="button" data-abrir="${esc(o.id)}" style="box-shadow:none"><div class="info"><div class="n">${fTxt(new Date(o.fecha))} · ${hTxt(new Date(o.fecha))}</div><span class="pill ${vo.nivel}"><i></i>${esc(vo.titulo)}</span></div><span class="flecha">${IC.flecha}</span></button>`; }).join('')}</div></section>` : ''}
+
+    <section class="card"><div class="card-h"><div class="ic">${IC.raw}</div><h3>Detalle completo del RUNT</h3></div>
       <details class="det"><summary>Vehículo</summary>${kv(info)}</details>
       ${bloqueDet('SOAT', rev.runt.soat)}
       ${bloqueDet('Revisión técnico-mecánica', rev.runt.rtm)}
-      ${bloqueDet('Limitaciones a la propiedad (embargos)', rev.runt.limitaciones)}
+      ${bloqueDet('Limitaciones (embargos)', rev.runt.limitaciones)}
       ${bloqueDet('Prendas', rev.runt.prendas)}
       ${bloqueDet('Garantías mobiliarias', rev.runt.garantias)}
       ${bloqueDet('Solicitudes y trámites', rev.runt.solicitudes)}
       <details class="det"><summary>Datos técnicos</summary>${kv(rev.runt.datosTecnicos && rev.runt.datosTecnicos.datos)}</details>
-      ${['placa', 'cedula'].map(m => s[m] ? `<details class="det"><summary>SIMIT por ${m === 'placa' ? 'placa' : 'cédula'} (texto leído)</summary><pre class="crudo">${esc(s[m].texto)}</pre></details>` : '').join('')}
-    </section>`;
+      ${['placa', 'cedula'].map(m => s[m] && s[m].texto ? `<details class="det"><summary>SIMIT por ${m === 'placa' ? 'placa' : 'cédula'} (texto leído)</summary><pre class="crudo">${esc(s[m].texto)}</pre></details>` : '').join('')}
+    </section>
 
-  $('resultado').querySelectorAll('[data-simit]').forEach(b => b.addEventListener('click', () => abrirSimit(b.dataset.simit)));
-  // Verificación de la moto: motor, chasis e impuesto (lo marca la persona).
-  $('resultado').querySelectorAll('[data-check]').forEach(b => b.addEventListener('click', () => {
+    <div class="acciones">
+      <button class="btn btn-sec" type="button" id="btnReconsultar">${IC.hist} Consultar de nuevo</button>
+      <button class="btn btn-linea" type="button" id="btnEliminar" style="color:var(--bad)">Eliminar consulta</button>
+    </div>`;
+
+  const raiz = $('v-ficha');
+  raiz.querySelectorAll('[data-simit]').forEach(b => b.addEventListener('click', () => abrirSimit(b.dataset.simit)));
+  raiz.querySelectorAll('[data-check]').forEach(b => b.addEventListener('click', () => {
     rev.checks = rev.checks || {};
     const k = b.dataset.check, val = b.dataset.val;
     rev.checks[k] = rev.checks[k] === val ? null : val;   // tocar de nuevo lo desmarca
     rev.checks.fecha = new Date().toISOString();
     guardarRev(rev);
-    pintar(rev);
+    renderFicha(rev);
   }));
-  const selDepto = $('resultado').querySelector('#selDepto');
+  const selDepto = raiz.querySelector('#selDepto');
   if (selDepto) selDepto.addEventListener('change', () => {
     rev.checks = rev.checks || {};
     rev.checks.depto = selDepto.value;
     guardar('pl_depto_v1', selDepto.value);
     guardarRev(rev);
-    pintar(rev);
+    renderFicha(rev);
   });
-  // Confirmación manual cuando el lector no reconoce la pantalla del SIMIT.
-  $('resultado').querySelectorAll('[data-limpio]').forEach(b => b.addEventListener('click', () => {
+  raiz.querySelectorAll('[data-limpio]').forEach(b => b.addEventListener('click', () => {
     const modo = b.dataset.limpio;
     const previo = (rev.simit && rev.simit[modo]) || {};
     rev.simit = rev.simit || {};
     rev.simit[modo] = { ...previo, estado:'limpio', manual:true, total:0, cantidad:0, fecha:new Date().toISOString() };
     guardarRev(rev);
-    pintar(rev);
+    renderFicha(rev);
   }));
-  pintarHistorial();
+  raiz.querySelectorAll('[data-abrir]').forEach(b => b.addEventListener('click', () => {
+    const r = historial().find(x => x.id === b.dataset.abrir); if (r) abrirFicha(r);
+  }));
+  $('btnReconsultar').addEventListener('click', () => reconsultar(rev));
+  $('btnEliminar').addEventListener('click', () => {
+    if (!confirm(`¿Eliminar esta consulta de ${rev.placa} del historial?`)) return;
+    guardar(K_HIST, historial().filter(x => x.id !== rev.id));
+    actual = null;
+    toast('ok', `Consulta de ${rev.placa} eliminada.`);
+    ir('motos');
+  });
 }
+function abrirFicha(rev, desde){
+  renderFicha(rev);
+  if (vista !== 'ficha') vistaAntes = desde || (vista === 'revisar' ? 'revisar' : 'motos');
+  ir('ficha');
+}
+// Compatibilidad: otras partes llaman pintar().
+function pintar(rev){ abrirFicha(rev); }
 
-function nombreTipo(t){ return ({C:'C.C.', E:'C.E.', N:'NIT', P:'Pasaporte', Y:'P.P.T.', T:'T.I.', U:'R.C.', D:'C.D.'})[t] || t; }
+function reconsultar(rev){
+  ir('revisar');
+  $('inPlaca').value = rev.placa;
+  $('inTipo').value = rev.tipoDocumento;
+  $('inDoc').value = rev.documento;
+  if (!captchaId || Date.now() - captchaEn > 3 * 60000) nuevoCaptcha();
+  setTimeout(() => $('inCaptcha').focus(), 250);
+}
 
 // ── Historial ──────────────────────────────────────────────────────────────
 function historial(){ return leer(K_HIST, []); }
 function guardarRev(rev){
-  const h = historial().filter(x => x.id !== rev.id);
+  let h = historial().filter(x => x.id !== rev.id);
   h.unshift(rev);
-  guardar(K_HIST, h.slice(0, 40));
+  h = h.slice(0, 150);
+  // Si el almacenamiento se llena, se quitan las consultas más viejas.
+  while (!guardar(K_HIST, h) && h.length > 1) h.pop();
 }
-function pintarHistorial(){
-  const h = historial();
-  if (!h.length){ $('historial').innerHTML = '<p class="vacio">Aún no has revisado vehículos.</p>'; return; }
-  $('historial').innerHTML = h.map(r => {
-    const v = veredicto(r);
-    return `<button class="h" type="button" data-id="${esc(r.id)}"><span class="pt ${v.nivel}"></span><b>${esc(r.placa)}</b><span class="ayuda" style="margin:0">${esc(nombreTipo(r.tipoDocumento))} ${esc(r.documento)}</span><span class="f">${fTxt(new Date(r.fecha))}</span></button>`;
+// Una entrada por moto (la consulta más reciente de cada placa).
+function motosAgrupadas(){
+  const h = historial(), vistas = new Map();
+  for (const r of h){ if (!vistas.has(r.placa)) vistas.set(r.placa, { rev:r, n:0 }); vistas.get(r.placa).n++; }
+  return [...vistas.values()].map(x => ({ ...x, v: veredicto(x.rev) }));
+}
+function pintarMotos(){
+  const todas = motosAgrupadas();
+  const c = { ok:0, warn:0, bad:0 }; todas.forEach(m => c[m.v.nivel]++);
+  $('stats').innerHTML = `
+    <div class="stat"><b>${todas.length}</b><small>Motos</small></div>
+    <div class="stat ok"><b>${c.ok}</b><small>Limpias</small></div>
+    <div class="stat warn"><b>${c.warn}</b><small>Pendientes</small></div>
+    <div class="stat bad"><b>${c.bad}</b><small>No se pueden</small></div>`;
+  const q = sinTildes($('inBuscar').value).replace(/\s+/g, '');
+  const lista = todas.filter(m => (filtro === 'todas' || m.v.nivel === filtro) &&
+    (!q || sinTildes(m.rev.placa + m.rev.documento + (campo(m.v.a.info, 'marca') || '') + (campo(m.v.a.info, 'linea') || '')).replace(/\s+/g, '').includes(q)));
+  if (!todas.length){ $('listaMotos').innerHTML = `<div class="vacio"><b>Aún no has revisado motos</b>Ve a <b>Revisar</b> y consulta la primera.</div>`; return; }
+  if (!lista.length){ $('listaMotos').innerHTML = `<div class="vacio"><b>Sin resultados</b>Prueba con otra búsqueda o filtro.</div>`; return; }
+  $('listaMotos').innerHTML = lista.map(m => {
+    const info = m.v.a.info;
+    const nombre = [campo(info, 'marca'), campo(info, 'linea'), campo(info, 'modelo')].filter(Boolean).join(' ') || 'Vehículo';
+    return `<button class="moto" type="button" data-abrir="${esc(m.rev.id)}">
+      ${chipPlaca(m.rev.placa)}
+      <div class="info"><div class="n">${esc(nombre)}</div>
+        <div class="s">${esc(nombreTipo(m.rev.tipoDocumento))} ${esc(m.rev.documento)} · ${hace(new Date(m.rev.fecha))}${m.n > 1 ? ` · ${m.n} consultas` : ''}</div>
+        <span class="pill ${m.v.nivel}"><i></i>${esc(m.v.titulo)}</span></div>
+      <span class="flecha">${IC.flecha}</span></button>`;
   }).join('');
-  $('historial').querySelectorAll('[data-id]').forEach(b => b.addEventListener('click', () => {
-    const r = historial().find(x => x.id === b.dataset.id);
-    if (r){ pintar(r); $('resultado').scrollIntoView({behavior:'smooth'}); }
+  $('listaMotos').querySelectorAll('[data-abrir]').forEach(b => b.addEventListener('click', () => {
+    const r = historial().find(x => x.id === b.dataset.abrir); if (r) abrirFicha(r, 'motos');
   }));
+}
+function pintarRecientes(){
+  const m = motosAgrupadas().slice(0, 8);
+  $('recientesBox').classList.toggle('oculto', !m.length);
+  $('recientes').innerHTML = m.map(x => {
+    const info = x.v.a.info;
+    return `<button class="reciente" type="button" data-abrir="${esc(x.rev.id)}">${chipPlaca(x.rev.placa)}<div class="n">${esc([campo(info, 'marca'), campo(info, 'linea')].filter(Boolean).join(' ') || 'Vehículo')}</div><span class="pill ${x.v.nivel}"><i></i>${{ ok:'Limpia', warn:'Pendiente', bad:'No se puede' }[x.v.nivel]}</span></button>`;
+  }).join('');
+  $('recientes').querySelectorAll('[data-abrir]').forEach(b => b.addEventListener('click', () => {
+    const r = historial().find(x => x.id === b.dataset.abrir); if (r) abrirFicha(r, 'revisar');
+  }));
+}
+// Compatibilidad con código anterior.
+function pintarHistorial(){ pintarMotos(); pintarRecientes(); }
+
+// ── Navegación ─────────────────────────────────────────────────────────────
+function ir(v){
+  vista = v;
+  document.querySelectorAll('.vista').forEach(x => x.classList.toggle('oculto', x.id !== 'v-' + v));
+  const tab = v === 'ficha' ? vistaAntes : v;
+  document.querySelectorAll('.nav [data-ir]').forEach(b => b.classList.toggle('on', b.dataset.ir === tab));
+  $('btnVolver').classList.toggle('oculto', v !== 'ficha');
+  $('marcaTop').classList.toggle('oculto', v === 'ficha');
+  $('txtVolver').textContent = vistaAntes === 'revisar' ? 'Revisar' : 'Motos';
+  if (v === 'motos') pintarMotos();
+  if (v === 'revisar'){ pintarRecientes(); if (captchaEn && Date.now() - captchaEn > 4 * 60000) nuevoCaptcha(); }
+  window.scrollTo(0, 0);
 }
 
 // ── RUNT ───────────────────────────────────────────────────────────────────
@@ -753,32 +1013,31 @@ async function nuevoCaptcha(){
   $('capImg').innerHTML = '<span class="cargando" style="color:var(--muted)"></span>';
   try {
     const d = await llamar({ accion:'captcha' });
-    if (!d || !d.ok) throw new Error((d && d.mensaje) || 'No llegó el captcha.');
-    captchaId = d.id;
-    $('capImg').innerHTML = `<img alt="Captcha del RUNT" src="${esc(d.imagen)}">`;
+    if (!d || !d.ok) throw new Error((d && d.mensaje) || 'No llegó el código.');
+    captchaId = d.id; captchaEn = Date.now();
+    $('capImg').innerHTML = `<img alt="Código de seguridad del RUNT" src="${esc(d.imagen)}">`;
   } catch(e){
-    $('capImg').innerHTML = `<span class="ayuda" style="padding:8px">${esc(e.message)}</span>`;
+    $('capImg').innerHTML = `<span class="ayuda" style="padding:8px; text-align:center">${esc(e.message)}</span>`;
   }
 }
 
 async function consultar(ev){
   ev.preventDefault();
-  quitarAviso('avConsulta');
   const placa = $('inPlaca').value.toUpperCase().replace(/[^A-Z0-9]/g, '');
   const documento = $('inDoc').value.replace(/[^0-9A-Za-z]/g, '');
   const tipoDocumento = $('inTipo').value;
   const captcha = $('inCaptcha').value.trim();
-  if (!/^[A-Z0-9]{5,7}$/.test(placa)) return aviso('avConsulta', 'err', 'Revisa la placa.');
-  if (!documento) return aviso('avConsulta', 'err', 'Escribe el número de documento del propietario.');
-  if (!captchaId) return aviso('avConsulta', 'err', 'Espera a que cargue el captcha.');
-  if (!captcha) return aviso('avConsulta', 'err', 'Escribe el captcha.');
+  if (!/^[A-Z0-9]{5,7}$/.test(placa)) return toast('err', 'Revisa la placa.');
+  if (!documento) return toast('err', 'Escribe el número de documento del propietario.');
+  if (!captchaId) return toast('err', 'Espera a que cargue el código de seguridad.');
+  if (!captcha) return toast('err', 'Escribe el código de seguridad.');
 
   const btn = $('btnConsultar');
   btn.disabled = true; btn.innerHTML = '<span class="cargando"></span> Consultando el RUNT…';
   try {
     const d = await llamar({ accion:'consultar', placa, documento, tipoDocumento, captcha, idLibreCaptcha: captchaId });
     if (!d || !d.ok){
-      aviso('avConsulta', 'err', (d && d.mensaje) || 'El RUNT no devolvió información.');
+      toast('err', (d && d.mensaje) || 'El RUNT no devolvió información.');
       nuevoCaptcha();
       return;
     }
@@ -792,15 +1051,14 @@ async function consultar(ev){
       rev.checks = { motor:c.motor, chasis:c.chasis, depto:c.depto, impuesto: reciente ? c.impuesto : null, fecha:c.fecha };
     }
     guardarRev(rev);
-    pintar(rev);
-    $('inCaptcha').value = '';
+    $('formConsulta').reset();
     nuevoCaptcha();
-    $('resultado').scrollIntoView({behavior:'smooth'});
+    abrirFicha(rev, 'revisar');
   } catch(e){
-    aviso('avConsulta', 'err', e.message);
+    toast('err', e.message);
     nuevoCaptcha();
   } finally {
-    btn.disabled = false; btn.textContent = 'Revisar vehículo';
+    btn.disabled = false; btn.textContent = 'Revisar moto';
   }
 }
 
@@ -818,16 +1076,15 @@ function recibirSimit(){
   if (!m) return false;
   history.replaceState(null, '', location.pathname + location.search);
   let cap;
-  try { cap = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); } catch(e){ aviso('avConsulta', 'err', 'No se pudo leer lo que trajo el lector.'); return false; }
+  try { cap = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); } catch(e){ toast('err', 'No se pudo leer lo que trajo el lector.'); return false; }
   const pend = leer(K_PEND, null);
   const h = historial();
   const enRevision = (pend && h.find(x => x.id === pend.id)) || (actual && h.find(x => x.id === actual.id)) || null;
   const descRev = r => r ? `${r.placa} / ${nombreTipo(r.tipoDocumento)} ${r.documento}` : '';
   const rechazar = msg => {
-    if (enRevision) pintar(enRevision);
-    aviso('avConsulta', 'err', msg + ' No se guardó nada.');
-    setTimeout(() => $('cardConsulta').scrollIntoView({behavior:'smooth'}), 50);
-    return false;
+    if (enRevision) abrirFicha(enRevision);
+    toast('err', msg + ' No se guardó nada.');
+    return true;
   };
 
   // 1. ¿Qué se buscó en el SIMIT? (el cuadro de búsqueda, o la dirección de la página)
@@ -846,7 +1103,7 @@ function recibirSimit(){
   const modo = q === rev.placa ? 'placa' : 'cedula';
   if (enRevision && rev.id !== enRevision.id){
     return rechazar(`El SIMIT que leíste es de «${q}», pero la moto que estás revisando es ${descRev(enRevision)}. ` +
-      `Abre esa revisión desde el historial si quieres agregarlo allá.`);
+      `Abre esa moto desde "Motos" si quieres agregarlo allá.`);
   }
 
   // 3. Si el SIMIT muestra registros de otra placa al buscar por placa, también se rechaza.
@@ -860,11 +1117,10 @@ function recibirSimit(){
   rev.simit[modo] = s;
   guardarRev(rev);
   try { localStorage.removeItem(K_PEND); } catch(e){}
-  pintar(rev);
-  aviso('avConsulta', s.estado === 'desconocido' ? 'err' : 'ok',
-    s.estado === 'desconocido' ? 'El lector no reconoció la pantalla del SIMIT. Si viste que no hay comparendos, toca el botón de confirmar en el resumen.'
-      : `✓ Coincide: SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'} (${q}) agregado a la revisión de ${rev.placa}.`);
-  setTimeout(() => $('resultado').scrollIntoView({behavior:'smooth'}), 50);
+  abrirFicha(rev);
+  toast(s.estado === 'desconocido' ? 'err' : 'ok',
+    s.estado === 'desconocido' ? 'El lector no reconoció la pantalla del SIMIT. Si viste que no hay comparendos, confírmalo en "Multas · SIMIT".'
+      : `✓ Coincide: SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'} (${q}) agregado a ${rev.placa}.`);
   return true;
 }
 
@@ -880,9 +1136,10 @@ function codigoLector(){
 
 // ── Sesión ─────────────────────────────────────────────────────────────────
 function mostrarApp(sesion){
-  $('cardLogin').classList.toggle('oculto', !!sesion);
-  $('app').classList.toggle('oculto', !sesion);
-  $('btnSalir').classList.toggle('oculto', !sesion);
+  $('vLogin').classList.toggle('oculto', !!sesion);
+  $('nav').classList.toggle('oculto', !sesion);
+  if (!sesion) document.querySelectorAll('.vista').forEach(x => x.classList.add('oculto'));
+  if (sesion && sesion.user) $('txtCuenta').textContent = 'Sesión iniciada como ' + (sesion.user.email || 'usuario') + '.';
 }
 
 async function iniciar(){
@@ -895,10 +1152,19 @@ async function iniciar(){
     catch(e){ $('btnCopiarLector').textContent = 'Selecciona y copia el código de abajo'; }
     setTimeout(() => { $('btnCopiarLector').textContent = 'Copiar código del lector'; }, 2500);
   });
+  $('toastX').addEventListener('click', () => { $('toast').className = ''; });
   $('inPlaca').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
   $('formConsulta').addEventListener('submit', consultar);
   $('btnCaptcha').addEventListener('click', nuevoCaptcha);
-  $('btnSalir').addEventListener('click', async () => { try { await _supa.auth.signOut(); } catch(e){} mostrarApp(null); });
+  $('btnVolver').addEventListener('click', () => ir(vistaAntes));
+  document.querySelectorAll('[data-ir]').forEach(b => b.addEventListener('click', () => ir(b.dataset.ir)));
+  $('inBuscar').addEventListener('input', pintarMotos);
+  $('filtros').querySelectorAll('[data-f]').forEach(b => b.addEventListener('click', () => {
+    filtro = b.dataset.f;
+    $('filtros').querySelectorAll('[data-f]').forEach(x => x.classList.toggle('on', x === b));
+    pintarMotos();
+  }));
+  $('btnSalir').addEventListener('click', async () => { try { await _supa.auth.signOut(); } catch(e){} arrancado = false; mostrarApp(null); });
   $('formLogin').addEventListener('submit', async e => {
     e.preventDefault();
     $('btnLogin').disabled = true;
@@ -918,15 +1184,10 @@ async function iniciar(){
 let arrancado = false;
 function arrancar(sesion){
   mostrarApp(sesion);
-  if (arrancado) return;
+  if (arrancado){ ir(vista === 'ficha' && actual ? 'ficha' : 'revisar'); return; }
   arrancado = true;
-  pintarHistorial();
-  const llegoSimit = recibirSimit();
-  if (!llegoSimit){
-    const id = leer(K_ACTUAL, null);
-    const r = id && historial().find(x => x.id === id);
-    if (r) pintar(r);
-  }
+  ir('revisar');
+  recibirSimit();
   nuevoCaptcha();
   // Si el lector vuelve a esta misma pestaña, la página no se recarga: solo cambia el #.
   window.addEventListener('hashchange', recibirSimit);
