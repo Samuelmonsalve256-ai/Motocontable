@@ -24,6 +24,7 @@ Esta guía te lleva paso a paso para configurar tu proyecto de Supabase.
 | `08_respaldos.sql` | Crea el bucket privado `respaldos` y sus reglas | Respaldo semanal automático de tus datos en la nube, aparte de la sincronización (FASE 10). No toca ninguna tabla ni dato |
 | `09_aprobaciones.sql` | Crea la tabla `mc_aprobaciones` y 4 funciones | Quien paga en la financiera aprueba las cuentas cobradas desde un enlace, con su cédula (FASE 11). No toca ninguna tabla ni dato existente |
 | `10_cotizaciones.sql` | Amplía la lista de colecciones permitidas | Guarda en la nube las Cotizaciones de crédito, el catálogo de motos y los requisitos (FASE 12). No borra datos |
+| `functions/placalimpia-runt/index.ts` | No toca la base de datos | Función que consulta el RUNT para PlacaLimpia PM (FASE 13) |
 
 Ningún archivo borra la tabla `mc_datos` ni tus datos. Los archivos 01 a 05 se pueden volver a ejecutar sin problema: no duplican ni pisan nada.
 
@@ -387,3 +388,47 @@ La página **Cotizaciones** (`cotizaciones.html`) reemplaza el Excel "COTIZACION
 - Valor pagaré = cuota × número de cuotas. Inicial mínima sugerida = total ÷ 3.
 - Una sola tasa para todas las cotizaciones: 2,5 % mensual (se cambia en **Ajustes**).
 
+
+---
+
+## FASE 13: PlacaLimpia PM (revisión de vehículos RUNT + SIMIT)
+
+**PlacaLimpia PM** (`placalimpia.html`) es un sistema aparte de MotoContable, solo para ti. Pones **placa + tipo y número de documento del propietario + el captcha del RUNT**, y te muestra en una sola tarjeta:
+- SOAT y tecnomecánica (vigente / vencido, con fecha).
+- Embargos y limitaciones a la propiedad, prendas y garantías mobiliarias.
+- Comparendos del SIMIT por placa y por cédula.
+- El veredicto: **se puede o no se puede hacer el traspaso**, y por qué.
+
+Debajo queda el **detalle completo** tal como lo entrega el RUNT, y el texto leído del SIMIT. Se entra con el mismo correo y contraseña de MotoContable.
+
+**Reglas que aplica:**
+- Comparendo **a la placa** → *se puede hacer el trámite* (aviso amarillo).
+- Comparendo **a la cédula** → *no se puede hacer el trámite*.
+- Embargo / limitación o prenda vigente → *no se puede*.
+- SOAT o tecnomecánica vencidos → *se puede, pero hay que renovarlos antes*.
+- Moto con menos de 2 años de matriculada y sin tecnomecánica → no la necesita todavía.
+
+### Paso 1: instalar la función del RUNT (una sola vez)
+El RUNT no deja que una página de otro sitio lo consulte desde el navegador, así que la consulta pasa por una función de tu Supabase.
+
+1. En Supabase abre **Edge Functions** (menú izquierdo).
+2. Pulsa **Deploy a new function → Via Editor** (o "Create a new function").
+3. Nombre de la función: **`placalimpia-runt`** (exactamente así).
+4. Borra el código de ejemplo, abre el archivo `supabase/functions/placalimpia-runt/index.ts` de este repositorio, copia **todo** y pégalo.
+5. Pulsa **Deploy**.
+6. Deja activada la opción **Verify JWT** (viene así por defecto). La función además comprueba que tengas sesión iniciada, así que nadie más puede usarla.
+
+Si al abrir PlacaLimpia ves "Falta instalar la función placalimpia-runt", es que falta este paso o el nombre quedó distinto.
+
+### Paso 2: instalar el lector del SIMIT (una sola vez por dispositivo)
+El SIMIT bloquea las consultas que no vienen de un navegador, por eso se consulta desde tu celular y el **lector** (un favorito) trae lo que salió en pantalla. En PlacaLimpia, abajo, abre **Instalar el lector del SIMIT** y sigue los pasos (en el iPhone: copiar el código, crear un marcador y pegar el código como dirección).
+
+### Cómo se usa
+1. Abre `https://samuelmonsalve256-ai.github.io/Motocontable/placalimpia.html` (en el iPhone: Compartir → Agregar a inicio, para tenerla como app).
+2. Escribe placa, tipo y número de documento, el captcha, y toca **Revisar vehículo**.
+3. Toca **SIMIT por placa**: se abre el SIMIT con la placa (y queda copiada por si hay que pegarla). Cuando salgan los resultados, toca el favorito **Lector PlacaLimpia** y vuelves con todo junto.
+4. Haz lo mismo con **SIMIT por cédula**.
+
+**Privacidad:** el historial de revisiones queda solo en ese dispositivo. La función no guarda nada. Consulta datos de personas solo con su autorización (Ley 1581 de 2012, habeas data).
+
+**Si algo deja de funcionar:** el RUNT y el SIMIT pueden cambiar sus páginas sin avisar. Si una sección sale como "no se pudo consultar", o el lector no encuentra resultados, revisa directamente en la página oficial y avisa para ajustar el sistema.

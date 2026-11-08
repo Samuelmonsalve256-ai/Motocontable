@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>PlacaLimpia PM</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<style>
+:root{
+  --bg:#f3f5fb; --card:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --soft:#f1f5f9;
+  --brand:#b8860b; --brand-2:#1e293b; --brand-ink:#7a5a06;
+  --ok:#15803d; --ok-bg:#dcfce7; --warn:#b45309; --warn-bg:#fef3c7; --bad:#b91c1c; --bad-bg:#fee2e2;
+  --info:#1d4ed8; --info-bg:#dbeafe;
+  --shadow:0 1px 2px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
+  --radius:18px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1220; --card:#121a2b; --ink:#e5e9f2; --muted:#94a3b8; --line:#243049; --soft:#1a2438;
+    --brand:#e0b23c; --brand-2:#0b1220; --brand-ink:#f3cf6e;
+    --ok:#4ade80; --ok-bg:#0f2e1c; --warn:#fbbf24; --warn-bg:#33270b; --bad:#f87171; --bad-bg:#3a1414;
+    --info:#93c5fd; --info-bg:#132a4a;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1220; --card:#121a2b; --ink:#e5e9f2; --muted:#94a3b8; --line:#243049; --soft:#1a2438;
+  --brand:#e0b23c; --brand-2:#0b1220; --brand-ink:#f3cf6e;
+  --ok:#4ade80; --ok-bg:#0f2e1c; --warn:#fbbf24; --warn-bg:#33270b; --bad:#f87171; --bad-bg:#3a1414;
+  --info:#93c5fd; --info-bg:#132a4a;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif; font-size:15px; line-height:1.45;
+  padding-bottom:env(safe-area-inset-bottom)}
+button,input,select{font:inherit; color:inherit}
+.wrap{max-width:760px; margin:0 auto; padding:0 16px 48px}
+header.top{background:linear-gradient(135deg,#0b1220 0%,#1e293b 100%); color:#fff; padding:calc(18px + env(safe-area-inset-top)) 0 22px}
+header.top .wrap{padding-bottom:0; display:flex; align-items:center; gap:12px}
+.logo{width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#f3cf6e,#b8860b); display:grid; place-items:center; color:#0b1220; font-weight:800; font-size:15px; flex:none}
+.marca h1{margin:0; font-size:21px; letter-spacing:-.02em}
+.marca h1 span{color:#f3cf6e}
+.marca p{margin:2px 0 0; font-size:12.5px; color:#cbd5e1}
+.top .salir{margin-left:auto; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); color:#fff; border-radius:10px; padding:7px 12px; font-size:13px; cursor:pointer}
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; margin-top:16px}
+.card h2{margin:0 0 12px; font-size:16px}
+.card h2 small{font-weight:500; color:var(--muted); font-size:12.5px; margin-left:6px}
+label.campo{display:block; font-size:12.5px; font-weight:600; color:var(--muted); margin:10px 0 5px}
+input.in, select.in{width:100%; padding:12px 13px; border:1.5px solid var(--line); border-radius:12px; background:var(--soft); outline:none; font-size:16px}
+input.in:focus, select.in:focus{border-color:var(--brand)}
+input.placa{text-transform:uppercase; letter-spacing:.12em; font-weight:800; font-size:20px; text-align:center}
+.fila{display:grid; grid-template-columns:1fr 1.4fr; gap:10px}
+.captcha{display:flex; align-items:center; gap:10px; margin-top:6px}
+.captcha .img{flex:1; min-height:64px; background:#fff; border:1.5px solid var(--line); border-radius:12px; display:grid; place-items:center; overflow:hidden}
+.captcha img{width:100%; max-width:300px; display:block}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:12px; padding:13px 16px; font-weight:700; cursor:pointer; font-size:15px; text-decoration:none}
+.btn-primario{background:linear-gradient(135deg,#d4a017,#b8860b); color:#111; width:100%; margin-top:14px; font-size:16px}
+.btn-primario:disabled{opacity:.55; cursor:wait}
+.btn-sec{background:var(--soft); border:1.5px solid var(--line); color:var(--ink)}
+.btn-icono{width:46px; height:46px; padding:0; flex:none}
+.aviso{margin-top:12px; padding:11px 13px; border-radius:12px; font-size:14px; display:none}
+.aviso.ver{display:block}
+.aviso.err{background:var(--bad-bg); color:var(--bad)}
+.aviso.ok{background:var(--ok-bg); color:var(--ok)}
+.aviso.inf{background:var(--info-bg); color:var(--info)}
+.ayuda{font-size:12.5px; color:var(--muted); margin:8px 0 0}
+
+/* Veredicto */
+.veredicto{border-radius:var(--radius); padding:18px; margin-top:16px; display:flex; gap:14px; align-items:flex-start; border:1.5px solid}
+.veredicto .ico{font-size:34px; line-height:1}
+.veredicto h3{margin:0; font-size:20px; letter-spacing:-.01em}
+.veredicto p{margin:4px 0 0; font-size:14px}
+.veredicto ul{margin:8px 0 0; padding-left:18px; font-size:14px}
+.v-ok{background:var(--ok-bg); border-color:var(--ok); color:var(--ok)}
+.v-warn{background:var(--warn-bg); border-color:var(--warn); color:var(--warn)}
+.v-bad{background:var(--bad-bg); border-color:var(--bad); color:var(--bad)}
+.v-ok h3,.v-warn h3,.v-bad h3{color:inherit}
+
+.vehiculo{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap}
+.chip-placa{background:#facc15; color:#111; border:2px solid #111; border-radius:8px; font-weight:800; letter-spacing:.14em; padding:5px 12px; font-size:18px}
+.vehiculo .desc{font-weight:700}
+.vehiculo .sub{color:var(--muted); font-size:13px}
+
+.items{display:flex; flex-direction:column; gap:8px; margin-top:4px}
+.item{display:flex; gap:12px; align-items:flex-start; padding:12px; border-radius:14px; background:var(--soft)}
+.item .pt{width:12px; height:12px; border-radius:50%; margin-top:5px; flex:none}
+.pt.ok{background:var(--ok)} .pt.warn{background:var(--warn)} .pt.bad{background:var(--bad)} .pt.nd{background:var(--muted)}
+.item .t{font-weight:700}
+.item .d{font-size:13.5px; color:var(--muted); margin-top:2px}
+.item .d b{color:var(--ink)}
+.item .accion{margin-left:auto; flex:none}
+
+.simit-btns{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px}
+.simit-btns .btn{width:100%; font-size:14px; padding:12px 10px}
+
+details.det{border-top:1px solid var(--line); padding:10px 0}
+details.det:first-of-type{border-top:0}
+details.det summary{cursor:pointer; font-weight:700; list-style:none; display:flex; align-items:center; gap:8px}
+.cnt{margin-left:auto; background:var(--soft); color:var(--muted); border-radius:999px; padding:1px 9px; font-size:12px; font-weight:700}
+details.det summary::-webkit-details-marker{display:none}
+details.det summary::after{content:'＋'; color:var(--muted); margin-left:auto}
+details.det summary:has(.cnt)::after{margin-left:0}
+details.det[open] summary::after{content:'－'}
+.tabla{width:100%; overflow-x:auto; margin-top:8px}
+.tabla table{border-collapse:collapse; width:100%; font-size:13px}
+.tabla th,.tabla td{text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:top}
+.tabla th{color:var(--muted); font-weight:600; white-space:nowrap}
+.kv{display:grid; grid-template-columns:minmax(120px,40%) 1fr; gap:4px 12px; font-size:13.5px; margin-top:8px}
+.kv dt{color:var(--muted)} .kv dd{margin:0; font-weight:600; word-break:break-word}
+pre.crudo{white-space:pre-wrap; word-break:break-word; font-size:12px; background:var(--soft); padding:10px; border-radius:10px; max-height:320px; overflow:auto}
+
+.hist{display:flex; flex-direction:column; gap:8px}
+.hist button.h{display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:var(--soft); border:1px solid var(--line); border-radius:12px; padding:10px 12px; cursor:pointer}
+.hist .h .pt{margin-top:0}
+.hist .h .f{margin-left:auto; color:var(--muted); font-size:12.5px; white-space:nowrap}
+.vacio{color:var(--muted); font-size:14px}
+code.copiable{display:block; background:var(--soft); border:1px dashed var(--line); padding:10px; border-radius:10px; font-size:11.5px; word-break:break-all; max-height:90px; overflow:auto}
+ol.pasos{margin:8px 0 0; padding-left:20px; font-size:14px} ol.pasos li{margin:4px 0}
+.oculto{display:none !important}
+.cargando{display:inline-block; width:16px; height:16px; border:2.5px solid currentColor; border-right-color:transparent; border-radius:50%; animation:g .7s linear infinite}
+@keyframes g{to{transform:rotate(360deg)}}
+@media (max-width:420px){ .fila{grid-template-columns:1fr} .simit-btns{grid-template-columns:1fr} }
+@media print{ header.top .salir, #cardConsulta, #cardLector, #cardHistorial, .simit-btns, .accion{display:none !important} body{background:#fff} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="logo">PM</div>
+    <div class="marca">
+      <h1>Placa<span>Limpia</span> PM</h1>
+      <p>Platinium Motors · Revisión de vehículos RUNT + SIMIT</p>
+    </div>
+    <button class="salir oculto" id="btnSalir" type="button">Salir</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- Inicio de sesión -->
+  <section class="card oculto" id="cardLogin">
+    <h2>Entrar <small>con tu cuenta de MotoContable</small></h2>
+    <form id="formLogin">
+      <label class="campo" for="lgEmail">Correo</label>
+      <input class="in" id="lgEmail" type="email" autocomplete="username" required>
+      <label class="campo" for="lgPass">Contraseña</label>
+      <input class="in" id="lgPass" type="password" autocomplete="current-password" required>
+      <button class="btn btn-primario" type="submit" id="btnLogin">Entrar</button>
+    </form>
+    <div class="aviso" id="avLogin"></div>
+  </section>
+
+  <div id="app" class="oculto">
+
+    <!-- Consulta -->
+    <section class="card" id="cardConsulta">
+      <h2>Nueva revisión <small>datos del propietario como salen en la tarjeta de propiedad</small></h2>
+      <form id="formConsulta" autocomplete="off">
+        <label class="campo" for="inPlaca">Placa</label>
+        <input class="in placa" id="inPlaca" maxlength="7" placeholder="ABC12D" required>
+        <div class="fila">
+          <div>
+            <label class="campo" for="inTipo">Tipo de documento</label>
+            <select class="in" id="inTipo">
+              <option value="C">Cédula de ciudadanía</option>
+              <option value="E">Cédula de extranjería</option>
+              <option value="N">NIT</option>
+              <option value="P">Pasaporte</option>
+              <option value="Y">Permiso por Protección Temporal</option>
+              <option value="T">Tarjeta de identidad</option>
+              <option value="U">Registro civil</option>
+              <option value="D">Carnet diplomático</option>
+            </select>
+          </div>
+          <div>
+            <label class="campo" for="inDoc">Número de documento</label>
+            <input class="in" id="inDoc" inputmode="numeric" maxlength="15" required>
+          </div>
+        </div>
+        <label class="campo" for="inCaptcha">Captcha del RUNT</label>
+        <div class="captcha">
+          <div class="img" id="capImg"><span class="ayuda">Cargando captcha…</span></div>
+          <button class="btn btn-sec btn-icono" type="button" id="btnCaptcha" title="Otro captcha" aria-label="Otro captcha">↻</button>
+        </div>
+        <input class="in" id="inCaptcha" maxlength="20" placeholder="Escribe las letras y números de la imagen" autocapitalize="off" autocorrect="off" spellcheck="false" style="margin-top:8px" required>
+        <button class="btn btn-primario" type="submit" id="btnConsultar">Revisar vehículo</button>
+      </form>
+      <div class="aviso" id="avConsulta"></div>
+    </section>
+
+    <!-- Resultado -->
+    <div id="resultado"></div>
+
+    <!-- Historial -->
+    <section class="card" id="cardHistorial">
+      <h2>Historial <small>en este dispositivo</small></h2>
+      <div class="hist" id="historial"></div>
+    </section>
+
+    <!-- Instalar lector SIMIT -->
+    <section class="card" id="cardLector">
+      <details class="det" id="detLector">
+        <summary>Instalar el lector del SIMIT (una sola vez)</summary>
+        <p class="ayuda">El lector es un favorito del navegador. Cuando estás en la página del SIMIT con los resultados en pantalla, lo tocas y PlacaLimpia PM recibe lo que salió, tal cual.</p>
+        <p style="margin:12px 0 4px; font-weight:700">En el iPhone (Safari)</p>
+        <ol class="pasos">
+          <li>Toca <b>Copiar código del lector</b> (abajo).</li>
+          <li>En esta página toca <b>Compartir → Agregar marcador</b>. Ponle de nombre <b>Lector PlacaLimpia</b> y guárdalo.</li>
+          <li>Abre los marcadores, toca <b>Editar</b>, entra a <b>Lector PlacaLimpia</b>, borra la dirección y <b>pega</b> el código. Guarda.</li>
+        </ol>
+        <p style="margin:12px 0 4px; font-weight:700">En el computador</p>
+        <ol class="pasos">
+          <li>Arrastra este botón a la barra de favoritos: <a class="btn btn-sec" id="lnkLector" href="#" style="padding:6px 10px; font-size:13px">Lector PlacaLimpia</a></li>
+        </ol>
+        <button class="btn btn-sec" type="button" id="btnCopiarLector" style="margin-top:12px; width:100%">Copiar código del lector</button>
+        <code class="copiable" id="codLector" style="margin-top:8px"></code>
+      </details>
+    </section>
+  </div>
+</main>
+
+<script>
+'use strict';
+// ════════════════════════════════════════════════════════════════════════════
+// PlacaLimpia PM · Platinium Motors
+// RUNT: se consulta desde la función de Supabase "placalimpia-runt" con el captcha
+//       que escribes tú (supabase/functions/placalimpia-runt).
+// SIMIT: lo consultas tú en la página oficial y el "lector" (un favorito) trae lo
+//       que salió en pantalla a esta página.
+// Reglas: comparendo a la PLACA → se puede tramitar; a la CÉDULA → no se puede.
+//         Embargo / limitación o prenda vigente → no se puede.
+// ════════════════════════════════════════════════════════════════════════════
+const SUPA_URL = 'https://llyovzgwdqoeunvyczcy.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxseW92emd3ZHFvZXVudnljemN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MzUzNjcsImV4cCI6MjEwNjAxMTM2N30.g1DgUdTGPHDz8HEI1Kgv4SOJ13zyOwOfcAp8Ak2BRGQ';
+const FUNCION = 'placalimpia-runt';
+const SIMIT_URL = 'https://www.fcm.org.co/simit/#/estado-cuenta?numDocPlacaProp=';
+const K_HIST = 'pl_historial_v1';
+const K_ACTUAL = 'pl_actual_v1';
+const K_PEND = 'pl_simit_pendiente_v1';
+
+let _supa = null;
+try {
+  _supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
+    auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'implicit', storageKey:'mc-auth' }
+  });
+} catch(e){ console.log('Supabase no disponible', e); }
+
+const $ = id => document.getElementById(id);
+let captchaId = null;
+let actual = null;   // revisión que se está viendo
+
+// ── Utilidades ─────────────────────────────────────────────────────────────
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function leer(k, def){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch(e){ return def; } }
+function guardar(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+function aviso(id, tipo, texto){ const el = $(id); el.className = 'aviso ver ' + tipo; el.textContent = texto; }
+function quitarAviso(id){ $(id).className = 'aviso'; }
+function pesos(n){ return '$' + Math.round(n).toLocaleString('es-CO'); }
+function hoy0(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
+
+function fecha(v){
+  if (v == null || v === '') return null;
+  if (typeof v === 'number') return new Date(v);
+  const s = String(v).trim();
+  let m = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+  if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
+  m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+function fTxt(d){ return d ? d.toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'}) : '—'; }
+function dias(d){ return d ? Math.round((d - hoy0()) / 86400000) : null; }
+
+// Primer valor no vacío entre varios nombres posibles de campo.
+function campo(o, ...nombres){ if (!o) return undefined; for (const n of nombres){ if (o[n] != null && o[n] !== '') return o[n]; } return undefined; }
+// Busca una llave en cualquier nivel del objeto.
+function buscar(o, llave, prof = 0){
+  if (!o || typeof o !== 'object' || prof > 5) return undefined;
+  if (llave in o) return o[llave];
+  for (const k of Object.keys(o)){ const r = buscar(o[k], llave, prof + 1); if (r !== undefined) return r; }
+  return undefined;
+}
+// Convierte la respuesta de una sección del RUNT en una lista de filas.
+function filas(sec){
+  if (!sec) return [];
+  const d = sec.datos !== undefined ? sec.datos : sec;
+  if (Array.isArray(d)) return d;
+  if (d && typeof d === 'object'){
+    for (const k of ['revisiones','data','datos','lista','resultado','registros','polizas','limitaciones','prendas','garantias','solicitudes']){
+      if (Array.isArray(d[k])) return d[k];
+    }
+    for (const k of Object.keys(d)){ if (Array.isArray(d[k])) return d[k]; }
+  }
+  return [];
+}
+function seccionFallo(sec){ return !sec || (sec.ok === false && sec.estado !== 404); }
+function siNo(v){ const s = String(v == null ? '' : v).trim().toUpperCase(); return s === 'SI' || s === 'SÍ' || s === 'S' || s === 'TRUE' || s === '1'; }
+
+// ── Análisis del RUNT ──────────────────────────────────────────────────────
+function analizarRunt(r){
+  const info = buscar(r.vehiculo, 'infoVehiculo') || {};
+  const out = { info, items: {} };
+
+  // Estado del vehículo
+  const estado = String(campo(info, 'estadoAutomotor', 'estadoDelVehiculo', 'estado') || '').toUpperCase();
+  out.estado = estado;
+
+  // SOAT
+  const soats = filas(r.soat).map(s => ({ ...s, _fin: fecha(campo(s, 'fechaFinVigencia', 'fechaVencimSoat', 'fechaVencimiento', 'fechaVigencia')) }))
+    .sort((a, b) => (b._fin || 0) - (a._fin || 0));
+  const soat = soats[0];
+  if (seccionFallo(r.soat) && !soat) out.items.soat = { nivel:'nd', t:'SOAT', d:'No se pudo consultar el SOAT en el RUNT.' };
+  else if (!soat) out.items.soat = { nivel:'bad', t:'SOAT', d:'No aparece ningún SOAT registrado.', falta:'Sacar SOAT' };
+  else {
+    const dd = dias(soat._fin), aseg = campo(soat, 'razonSocialAsegur', 'aseguradora', 'nombreAseguradora') || '';
+    if (dd != null && dd >= 0) out.items.soat = { nivel: dd <= 30 ? 'warn' : 'ok', t:'SOAT vigente',
+      d:`Hasta <b>${fTxt(soat._fin)}</b>${dd <= 30 ? ` (vence en ${dd} día${dd === 1 ? '' : 's'})` : ''}${aseg ? ' · ' + esc(aseg) : ''}` };
+    else out.items.soat = { nivel:'bad', t:'SOAT vencido', d:`Venció el <b>${fTxt(soat._fin)}</b>${aseg ? ' · ' + esc(aseg) : ''}`, falta:'Renovar el SOAT' };
+  }
+
+  // Tecnomecánica
+  const rtms = filas(r.rtm).map(x => ({ ...x, _fin: fecha(campo(x, 'fechaVencimientoRvt', 'fechaVigencia', 'fechaVencimiento')) }))
+    .sort((a, b) => (b._fin || 0) - (a._fin || 0));
+  const rtm = rtms[0];
+  const fReg = fecha(campo(info, 'fechaRegistro', 'fechaMatricula'));
+  const nueva = fReg && (hoy0() - fReg) < 2 * 365.25 * 86400000;
+  if (seccionFallo(r.rtm) && !rtm) out.items.rtm = { nivel:'nd', t:'Tecnomecánica', d:'No se pudo consultar la tecnomecánica en el RUNT.' };
+  else if (!rtm) out.items.rtm = nueva
+    ? { nivel:'ok', t:'Tecnomecánica', d:`Sin revisión registrada. Matriculada el ${fTxt(fReg)}: aún no la necesita (primera revisión a los 2 años).` }
+    : { nivel:'bad', t:'Tecnomecánica', d:'No aparece ninguna revisión técnico-mecánica registrada.', falta:'Hacer la tecnomecánica' };
+  else {
+    const dd = dias(rtm._fin), cda = campo(rtm, 'nombreCda', 'cda') || '';
+    if (dd != null && dd >= 0) out.items.rtm = { nivel: dd <= 30 ? 'warn' : 'ok', t:'Tecnomecánica vigente',
+      d:`Hasta <b>${fTxt(rtm._fin)}</b>${dd <= 30 ? ` (vence en ${dd} día${dd === 1 ? '' : 's'})` : ''}${cda ? ' · ' + esc(cda) : ''}` };
+    else out.items.rtm = { nivel:'bad', t:'Tecnomecánica vencida', d:`Venció el <b>${fTxt(rtm._fin)}</b>${cda ? ' · ' + esc(cda) : ''}`, falta:'Renovar la tecnomecánica' };
+  }
+
+  // Limitaciones a la propiedad (embargos, etc.)
+  const lims = filas(r.limitaciones);
+  if (seccionFallo(r.limitaciones) && !lims.length) out.items.lim = { nivel:'nd', t:'Embargos y limitaciones', d:'No se pudo consultar en el RUNT.' };
+  else if (!lims.length) out.items.lim = { nivel:'ok', t:'Sin embargos ni limitaciones', d:'El RUNT no registra limitaciones a la propiedad.' };
+  else out.items.lim = { nivel:'bad', t:`Tiene ${lims.length} limitación${lims.length === 1 ? '' : 'es'} a la propiedad`,
+    d: lims.map(l => `<b>${esc(campo(l, 'tipoLimitacion', 'tipo') || 'Limitación')}</b>${campo(l, 'entidadJuridica', 'entidad') ? ' · ' + esc(campo(l, 'entidadJuridica', 'entidad')) : ''}${campo(l, 'noDocumento') ? ' · Oficio ' + esc(l.noDocumento) : ''}${campo(l, 'municipio') ? ' · ' + esc(l.municipio) : ''}`).join('<br>'),
+    bloquea:'Tiene embargo o limitación a la propiedad: no se puede traspasar hasta levantarla' };
+
+  // Prendas y garantías mobiliarias
+  const inactiva = x => /cancel|levant|inactiv|termin|extin|liber/i.test(String(campo(x, 'estado', 'estadoPrenda') || ''));
+  const prendas = filas(r.prendas).filter(p => !inactiva(p));
+  const garantias = filas(r.garantias).filter(g => !inactiva(g));
+  const marcaInfo = info.prendas;
+  const pInfo = Array.isArray(marcaInfo) ? marcaInfo.length > 0 : siNo(marcaInfo);
+  const lista = [
+    ...prendas.map(p => `<b>Prenda</b>${campo(p, 'entidad', 'acreedor') ? ' con ' + esc(campo(p, 'entidad', 'acreedor')) : ''}${campo(p, 'fechaRegistro') ? ' · desde ' + esc(fTxt(fecha(p.fechaRegistro))) : ''}${campo(p, 'estado') ? ' · ' + esc(p.estado) : ''}`),
+    ...garantias.map(g => `<b>Garantía mobiliaria</b>${campo(g, 'acreedor', 'entidad') ? ' a favor de ' + esc(campo(g, 'acreedor', 'entidad')) : ''}${campo(g, 'fechaInscripcion') ? ' · inscrita ' + esc(fTxt(fecha(g.fechaInscripcion))) : ''}`),
+  ];
+  if (!lista.length && pInfo) lista.push('El RUNT marca que el vehículo tiene prenda.');
+  if (seccionFallo(r.prendas) && seccionFallo(r.garantias) && !lista.length) out.items.prenda = { nivel:'nd', t:'Prendas', d:'No se pudo consultar en el RUNT.' };
+  else if (!lista.length) out.items.prenda = { nivel:'ok', t:'Sin prendas', d:'No registra prendas ni garantías mobiliarias vigentes.' };
+  else out.items.prenda = { nivel:'bad', t:'Tiene prenda', d: lista.join('<br>'), bloquea:'Tiene prenda: no se puede traspasar hasta que la entidad la levante' };
+
+  // Estado del registro
+  if (estado && estado !== 'ACTIVO') out.items.estado = { nivel:'bad', t:`Estado del vehículo: ${esc(estado)}`, d:'El RUNT no lo muestra como ACTIVO.', bloquea:`El vehículo está ${estado} en el RUNT` };
+
+  return out;
+}
+
+// ── Análisis del SIMIT (texto leído por el lector) ─────────────────────────
+function numPesos(s){ const limpio = s.replace(/[^\d.,]/g, '').replace(/[.,](\d{2})$/, '').replace(/[.,]/g, ''); return +limpio || 0; }
+function analizarSimit(cap, revision){
+  const t = (cap && cap.t) || '';
+  const plano = t.replace(/\s+/g, ' ');
+  const res = { texto: t, fecha: cap && cap.f ? new Date(cap.f).toISOString() : new Date().toISOString(), consulta: (cap && cap.q) || '' };
+  if (!/simit|comparendo|multa|estado de cuenta/i.test(plano)) { res.estado = 'desconocido'; return res; }
+  const limpio = /(no\s+(tiene|posee|presenta|registra|se\s+encontr\w*|existen|hay)\b[^.]{0,80}(comparendos?|multas?|deudas?|pendientes?|resultados?))|paz\s+y\s+salvo/i.test(plano);
+  const montos = [...plano.matchAll(/\$\s?([\d][\d.,]*)/g)].map(m => numPesos(m[1])).filter(n => n > 0);
+  const mTotal = plano.match(/total[^$]{0,60}\$\s?([\d][\d.,]*)/i);
+  const total = mTotal ? numPesos(mTotal[1]) : (montos.length ? Math.max(...montos) : 0);
+  const ids = new Set([...plano.matchAll(/\b\d{12,25}\b/g)].map(m => m[0]).filter(x => x !== (revision && revision.documento)));
+  res.acuerdo = /acuerdo\s+de\s+pago/i.test(plano) && !/sin\s+acuerdo/i.test(plano);
+  res.total = total;
+  res.cantidad = ids.size;
+  res.estado = (limpio && total === 0) ? 'limpio' : (total > 0 || ids.size > 0 ? 'deudas' : (limpio ? 'limpio' : 'desconocido'));
+  return res;
+}
+
+function itemSimit(modo, s){
+  const quien = modo === 'placa' ? 'a la placa' : 'a la cédula';
+  const titulo = modo === 'placa' ? 'SIMIT por placa' : 'SIMIT por cédula';
+  if (!s) return { nivel:'nd', t:titulo, d:`Falta revisar. Toca <b>SIMIT ${modo === 'placa' ? 'por placa' : 'por cédula'}</b> y luego el lector.`, falta: modo === 'cedula' ? 'Revisar el SIMIT por cédula' : null };
+  if (s.estado === 'limpio') return { nivel:'ok', t:`Sin comparendos ${quien}`, d:`SIMIT revisado el ${fTxt(new Date(s.fecha))}.` };
+  if (s.estado === 'desconocido') return { nivel:'nd', t:titulo, d:'El lector no encontró resultados en la pantalla. Tócalo cuando ya aparezcan los resultados del SIMIT.' };
+  const det = `${s.cantidad ? `<b>${s.cantidad}</b> comparendo(s)/multa(s) · ` : ''}${s.total ? `Total <b>${pesos(s.total)}</b>` : 'Valor no detectado (mira el detalle)'}${s.acuerdo ? ' · tiene acuerdo de pago' : ''}`;
+  if (modo === 'placa') return { nivel:'warn', t:'Tiene comparendo a la placa — se puede hacer el trámite', d: det };
+  return { nivel:'bad', t:'Tiene comparendo a la cédula — NO se puede hacer el trámite', d: det, bloquea:`El propietario tiene comparendos a la cédula${s.total ? ' por ' + pesos(s.total) : ''}: no se puede tramitar hasta pagarlos` };
+}
+
+// ── Pintar resultado ───────────────────────────────────────────────────────
+function veredicto(rev){
+  const a = analizarRunt(rev.runt);
+  const its = [a.items.estado, a.items.lim, a.items.prenda, a.items.soat, a.items.rtm,
+               itemSimit('placa', rev.simit && rev.simit.placa), itemSimit('cedula', rev.simit && rev.simit.cedula)].filter(Boolean);
+  const bloqueos = its.filter(i => i.bloquea).map(i => i.bloquea);
+  const faltas = its.filter(i => !i.bloquea && i.falta).map(i => i.falta);
+  const pend = its.filter(i => i.nivel === 'nd');
+  let nivel, titulo, sub;
+  if (bloqueos.length){ nivel = 'bad'; titulo = 'NO SE PUEDE HACER EL TRASPASO'; sub = 'Esto lo impide:'; }
+  else if (faltas.length || pend.length){ nivel = 'warn'; titulo = pend.length && !faltas.length ? 'POR AHORA SIN BLOQUEOS' : 'SE PUEDE, PERO FALTA ALGO'; sub = faltas.length ? 'Antes del traspaso:' : 'Falta completar la revisión.'; }
+  else { nivel = 'ok'; titulo = 'PLACA LIMPIA · SE PUEDE HACER EL TRASPASO'; sub = 'Sin embargos, sin prendas, sin comparendos a la cédula y con papeles al día.'; }
+  return { a, its, nivel, titulo, sub, lista: bloqueos.length ? bloqueos : faltas };
+}
+
+function tabla(rows){
+  if (!rows.length) return '<p class="vacio">Sin registros.</p>';
+  const cols = [...new Set(rows.flatMap(r => Object.keys(r).filter(k => !k.startsWith('_') && (r[k] == null || typeof r[k] !== 'object'))))];
+  return `<div class="tabla"><table><thead><tr>${cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${
+    rows.map(r => `<tr>${cols.map(c => `<td>${esc(r[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function kv(o){
+  if (!o || typeof o !== 'object') return '<p class="vacio">Sin datos.</p>';
+  const ks = Object.keys(o).filter(k => o[k] != null && o[k] !== '' && typeof o[k] !== 'object');
+  if (!ks.length) return '<p class="vacio">Sin datos.</p>';
+  return `<dl class="kv">${ks.map(k => `<dt>${esc(k)}</dt><dd>${esc(o[k])}</dd>`).join('')}</dl>`;
+}
+function bloqueDet(titulo, sec){
+  const rows = filas(sec);
+  const cuerpo = seccionFallo(sec) && !rows.length ? `<p class="vacio">El RUNT no respondió esta sección (código ${esc(sec && sec.estado)}).</p>` : tabla(rows);
+  return `<details class="det"><summary>${esc(titulo)} <span class="cnt">${rows.length}</span></summary>${cuerpo}</details>`;
+}
+
+function pintar(rev){
+  actual = rev;
+  guardar(K_ACTUAL, rev.id);
+  const v = veredicto(rev);
+  const info = v.a.info;
+  const ico = { ok:'✅', warn:'⚠️', bad:'❌' }[v.nivel];
+  const desc = [campo(info, 'marca'), campo(info, 'linea'), campo(info, 'modelo')].filter(Boolean).join(' ');
+  const sub = [campo(info, 'clase'), campo(info, 'color'), campo(info, 'cilindraje') ? info.cilindraje + ' c.c.' : '', campo(info, 'tipoServicio'), campo(info, 'organismoTransito')].filter(Boolean).map(esc).join(' · ');
+  const s = rev.simit || {};
+
+  $('resultado').innerHTML = `
+    <div class="veredicto v-${v.nivel}">
+      <div class="ico">${ico}</div>
+      <div>
+        <h3>${esc(v.titulo)}</h3>
+        <p>${esc(v.sub)}</p>
+        ${v.lista.length ? `<ul>${v.lista.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+      </div>
+    </div>
+
+    <section class="card">
+      <div class="vehiculo">
+        <div>
+          <div class="desc">${esc(desc || 'Vehículo')}</div>
+          <div class="sub">${sub || ''}</div>
+          <div class="sub">Propietario: ${esc(nombreTipo(rev.tipoDocumento))} ${esc(rev.documento)} · Consultado ${fTxt(new Date(rev.fecha))} ${new Date(rev.fecha).toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'})}</div>
+        </div>
+        <div class="chip-placa">${esc(rev.placa)}</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Resumen</h2>
+      <div class="items">
+        ${v.its.map(i => `<div class="item"><span class="pt ${i.nivel}"></span><div><div class="t">${esc(i.t)}</div><div class="d">${i.d}</div></div></div>`).join('')}
+      </div>
+      <div class="simit-btns">
+        <button class="btn btn-sec" type="button" data-simit="placa">${s.placa ? '↻ ' : ''}SIMIT por placa</button>
+        <button class="btn btn-sec" type="button" data-simit="cedula">${s.cedula ? '↻ ' : ''}SIMIT por cédula</button>
+      </div>
+      <p class="ayuda">Se abre el SIMIT con el dato ya copiado. Cuando salgan los resultados, toca tu favorito <b>Lector PlacaLimpia</b> y vuelves aquí con todo junto.</p>
+    </section>
+
+    <section class="card">
+      <h2>Detalle completo <small>tal como lo entrega el RUNT</small></h2>
+      <details class="det"><summary>Vehículo</summary>${kv(info)}</details>
+      ${bloqueDet('SOAT', rev.runt.soat)}
+      ${bloqueDet('Revisión técnico-mecánica', rev.runt.rtm)}
+      ${bloqueDet('Limitaciones a la propiedad (embargos)', rev.runt.limitaciones)}
+      ${bloqueDet('Prendas', rev.runt.prendas)}
+      ${bloqueDet('Garantías mobiliarias', rev.runt.garantias)}
+      ${bloqueDet('Solicitudes y trámites', rev.runt.solicitudes)}
+      <details class="det"><summary>Datos técnicos</summary>${kv(rev.runt.datosTecnicos && rev.runt.datosTecnicos.datos)}</details>
+      ${['placa', 'cedula'].map(m => s[m] ? `<details class="det"><summary>SIMIT por ${m === 'placa' ? 'placa' : 'cédula'} (texto leído)</summary><pre class="crudo">${esc(s[m].texto)}</pre></details>` : '').join('')}
+    </section>`;
+
+  $('resultado').querySelectorAll('[data-simit]').forEach(b => b.addEventListener('click', () => abrirSimit(b.dataset.simit)));
+  pintarHistorial();
+}
+
+function nombreTipo(t){ return ({C:'C.C.', E:'C.E.', N:'NIT', P:'Pasaporte', Y:'P.P.T.', T:'T.I.', U:'R.C.', D:'C.D.'})[t] || t; }
+
+// ── Historial ──────────────────────────────────────────────────────────────
+function historial(){ return leer(K_HIST, []); }
+function guardarRev(rev){
+  const h = historial().filter(x => x.id !== rev.id);
+  h.unshift(rev);
+  guardar(K_HIST, h.slice(0, 40));
+}
+function pintarHistorial(){
+  const h = historial();
+  if (!h.length){ $('historial').innerHTML = '<p class="vacio">Aún no has revisado vehículos.</p>'; return; }
+  $('historial').innerHTML = h.map(r => {
+    const v = veredicto(r);
+    return `<button class="h" type="button" data-id="${esc(r.id)}"><span class="pt ${v.nivel}"></span><b>${esc(r.placa)}</b><span class="ayuda" style="margin:0">${esc(nombreTipo(r.tipoDocumento))} ${esc(r.documento)}</span><span class="f">${fTxt(new Date(r.fecha))}</span></button>`;
+  }).join('');
+  $('historial').querySelectorAll('[data-id]').forEach(b => b.addEventListener('click', () => {
+    const r = historial().find(x => x.id === b.dataset.id);
+    if (r){ pintar(r); $('resultado').scrollIntoView({behavior:'smooth'}); }
+  }));
+}
+
+// ── RUNT ───────────────────────────────────────────────────────────────────
+async function llamar(cuerpo){
+  const { data, error } = await _supa.functions.invoke(FUNCION, { body: cuerpo });
+  if (error){
+    let msg = 'No se pudo conectar con el servidor de PlacaLimpia.';
+    try { const j = await error.context.json(); if (j && j.mensaje) msg = j.mensaje; } catch(e){}
+    if (/not found|404/i.test(String(error.message)) ) msg = 'Falta instalar la función placalimpia-runt en Supabase (supabase/LEEME.md → FASE 13).';
+    throw new Error(msg);
+  }
+  return data;
+}
+
+async function nuevoCaptcha(){
+  captchaId = null;
+  $('inCaptcha').value = '';
+  $('capImg').innerHTML = '<span class="cargando" style="color:var(--muted)"></span>';
+  try {
+    const d = await llamar({ accion:'captcha' });
+    if (!d || !d.ok) throw new Error((d && d.mensaje) || 'No llegó el captcha.');
+    captchaId = d.id;
+    $('capImg').innerHTML = `<img alt="Captcha del RUNT" src="${esc(d.imagen)}">`;
+  } catch(e){
+    $('capImg').innerHTML = `<span class="ayuda" style="padding:8px">${esc(e.message)}</span>`;
+  }
+}
+
+async function consultar(ev){
+  ev.preventDefault();
+  quitarAviso('avConsulta');
+  const placa = $('inPlaca').value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const documento = $('inDoc').value.replace(/[^0-9A-Za-z]/g, '');
+  const tipoDocumento = $('inTipo').value;
+  const captcha = $('inCaptcha').value.trim();
+  if (!/^[A-Z0-9]{5,7}$/.test(placa)) return aviso('avConsulta', 'err', 'Revisa la placa.');
+  if (!documento) return aviso('avConsulta', 'err', 'Escribe el número de documento del propietario.');
+  if (!captchaId) return aviso('avConsulta', 'err', 'Espera a que cargue el captcha.');
+  if (!captcha) return aviso('avConsulta', 'err', 'Escribe el captcha.');
+
+  const btn = $('btnConsultar');
+  btn.disabled = true; btn.innerHTML = '<span class="cargando"></span> Consultando el RUNT…';
+  try {
+    const d = await llamar({ accion:'consultar', placa, documento, tipoDocumento, captcha, idLibreCaptcha: captchaId });
+    if (!d || !d.ok){
+      aviso('avConsulta', 'err', (d && d.mensaje) || 'El RUNT no devolvió información.');
+      nuevoCaptcha();
+      return;
+    }
+    const rev = { id: placa + '-' + Date.now(), placa, tipoDocumento, documento, fecha: d.consultadoEn || new Date().toISOString(), runt: d, simit: {} };
+    // Si ya habías revisado el SIMIT de esta misma placa y cédula hace poco, se conserva.
+    const previa = historial().find(x => x.placa === placa && x.documento === documento);
+    if (previa && previa.simit && (Date.now() - new Date(previa.fecha)) < 3 * 86400000) rev.simit = previa.simit;
+    guardarRev(rev);
+    pintar(rev);
+    $('inCaptcha').value = '';
+    nuevoCaptcha();
+    $('resultado').scrollIntoView({behavior:'smooth'});
+  } catch(e){
+    aviso('avConsulta', 'err', e.message);
+    nuevoCaptcha();
+  } finally {
+    btn.disabled = false; btn.textContent = 'Revisar vehículo';
+  }
+}
+
+// ── SIMIT ──────────────────────────────────────────────────────────────────
+async function abrirSimit(modo){
+  if (!actual) return;
+  const valor = modo === 'placa' ? actual.placa : actual.documento;
+  guardar(K_PEND, { id: actual.id, modo, valor, desde: Date.now() });
+  try { await navigator.clipboard.writeText(valor); } catch(e){}
+  location.href = SIMIT_URL + encodeURIComponent(valor);
+}
+
+function recibirSimit(){
+  const m = location.hash.match(/^#simit=(.+)$/);
+  if (!m) return false;
+  history.replaceState(null, '', location.pathname + location.search);
+  let cap;
+  try { cap = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); } catch(e){ aviso('avConsulta', 'err', 'No se pudo leer lo que trajo el lector.'); return false; }
+  const pend = leer(K_PEND, null);
+  const h = historial();
+  let rev = pend && h.find(x => x.id === pend.id);
+  const q = String(cap.q || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  // Si el texto buscado en el SIMIT coincide con otra revisión, se usa esa.
+  if (q){ const otra = h.find(x => x.placa === q || x.documento === q); if (otra && (!rev || (rev.placa !== q && rev.documento !== q))) rev = otra; }
+  if (!rev){ aviso('avConsulta', 'err', 'Primero haz la revisión del RUNT y desde ahí abre el SIMIT.'); return false; }
+  let modo = pend && pend.id === rev.id ? pend.modo : null;
+  if (q === rev.placa) modo = 'placa'; else if (q && q === rev.documento) modo = 'cedula';
+  if (!modo) modo = 'placa';
+  rev.simit = rev.simit || {};
+  rev.simit[modo] = analizarSimit(cap, rev);
+  guardarRev(rev);
+  try { localStorage.removeItem(K_PEND); } catch(e){}
+  pintar(rev);
+  const s = rev.simit[modo];
+  aviso('avConsulta', s.estado === 'desconocido' ? 'err' : 'ok',
+    s.estado === 'desconocido' ? 'El lector no encontró resultados del SIMIT en esa pantalla. Vuelve a consultar y tócalo cuando ya salgan.' : `SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'} agregado a la revisión de ${rev.placa}.`);
+  setTimeout(() => $('resultado').scrollIntoView({behavior:'smooth'}), 50);
+  return true;
+}
+
+// Código del lector (favorito). Lee el texto de la página del SIMIT y lo trae aquí.
+function codigoLector(){
+  const destino = location.origin + location.pathname;
+  const js = "(function(){try{if(!/fcm\\.org\\.co/.test(location.hostname)){alert('Usa el lector en la página del SIMIT (fcm.org.co).');return;}" +
+    "var t=document.body.innerText||'';var q='';var ins=document.querySelectorAll('input');for(var i=0;i<ins.length;i++){if(ins[i].value){q=ins[i].value;break;}}" +
+    "var d=JSON.stringify({t:t.slice(0,12000),q:q,u:location.href,f:Date.now()});" +
+    "location.href='" + destino + "#simit='+encodeURIComponent(btoa(unescape(encodeURIComponent(d))));}catch(e){alert('Lector PlacaLimpia: '+e);}})();";
+  return 'javascript:' + js;
+}
+
+// ── Sesión ─────────────────────────────────────────────────────────────────
+function mostrarApp(sesion){
+  $('cardLogin').classList.toggle('oculto', !!sesion);
+  $('app').classList.toggle('oculto', !sesion);
+  $('btnSalir').classList.toggle('oculto', !sesion);
+}
+
+async function iniciar(){
+  const cod = codigoLector();
+  $('codLector').textContent = cod;
+  $('lnkLector').setAttribute('href', cod);
+  $('lnkLector').addEventListener('click', e => { e.preventDefault(); alert('Arrastra este botón a la barra de favoritos. Úsalo en la página del SIMIT.'); });
+  $('btnCopiarLector').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(cod); $('btnCopiarLector').textContent = '✓ Código copiado'; }
+    catch(e){ $('btnCopiarLector').textContent = 'Selecciona y copia el código de abajo'; }
+    setTimeout(() => { $('btnCopiarLector').textContent = 'Copiar código del lector'; }, 2500);
+  });
+  $('inPlaca').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
+  $('formConsulta').addEventListener('submit', consultar);
+  $('btnCaptcha').addEventListener('click', nuevoCaptcha);
+  $('btnSalir').addEventListener('click', async () => { try { await _supa.auth.signOut(); } catch(e){} mostrarApp(null); });
+  $('formLogin').addEventListener('submit', async e => {
+    e.preventDefault();
+    $('btnLogin').disabled = true;
+    const { data, error } = await _supa.auth.signInWithPassword({ email: $('lgEmail').value.trim(), password: $('lgPass').value });
+    $('btnLogin').disabled = false;
+    if (error) return aviso('avLogin', 'err', 'Correo o contraseña incorrectos.');
+    quitarAviso('avLogin');
+    arrancar(data.session);
+  });
+
+  if (!_supa){ mostrarApp(null); aviso('avLogin', 'err', 'No se pudo cargar Supabase. Revisa tu conexión.'); return; }
+  let sesion = null;
+  try { sesion = (await _supa.auth.getSession()).data.session; } catch(e){}
+  if (sesion) arrancar(sesion); else mostrarApp(null);
+}
+
+let arrancado = false;
+function arrancar(sesion){
+  mostrarApp(sesion);
+  if (arrancado) return;
+  arrancado = true;
+  pintarHistorial();
+  const llegoSimit = recibirSimit();
+  if (!llegoSimit){
+    const id = leer(K_ACTUAL, null);
+    const r = id && historial().find(x => x.id === id);
+    if (r) pintar(r);
+  }
+  nuevoCaptcha();
+  // Si el lector vuelve a esta misma pestaña, la página no se recarga: solo cambia el #.
+  window.addEventListener('hashchange', recibirSimit);
+}
+
+iniciar();
+</script>
+</body>
+</html>
