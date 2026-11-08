@@ -99,6 +99,18 @@ input.placa{text-transform:uppercase; letter-spacing:.12em; font-weight:800; fon
 .item .d b{color:var(--ink)}
 .item .accion{margin-left:auto; flex:none}
 
+.ver-bloque{padding:12px 0; border-top:1px solid var(--line)}
+.ver-bloque:first-of-type{border-top:0; padding-top:0}
+.ver-bloque > .t{font-weight:800}
+.num{display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-top:10px; padding:10px 12px; background:var(--soft); border-radius:12px}
+.num span{color:var(--muted); font-size:13px; font-weight:600}
+.num b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:16px; letter-spacing:.06em; word-break:break-all; text-align:right}
+.chk{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px}
+.chk-b{background:var(--card); border:1.5px solid var(--line); color:var(--ink); padding:10px; font-size:14px}
+.chk-b.on-ok{background:var(--ok-bg); border-color:var(--ok); color:var(--ok)}
+.chk-b.on-bad{background:var(--bad-bg); border-color:var(--bad); color:var(--bad)}
+.fila-imp{display:grid; grid-template-columns:1fr auto; gap:8px; margin-top:10px}
+.fila-imp .btn{padding:10px 12px; font-size:14px; white-space:nowrap}
 .simit-btns{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px}
 .simit-btns .btn{width:100%; font-size:14px; padding:12px 10px}
 
@@ -373,6 +385,33 @@ function analizarRunt(r){
   // Estado del registro
   if (estado && estado !== 'ACTIVO') out.items.estado = { nivel:'bad', t:`Estado del vehículo: ${esc(estado)}`, d:'El RUNT no lo muestra como ACTIVO.', bloquea:`El vehículo está ${estado} en el RUNT` };
 
+  // Regrabados (números de motor, chasis, serie o VIN alterados / regrabados)
+  const regra = [['Motor', 'numRegraMotor'], ['Chasis', 'numRegraChasis'], ['Serie', 'numRegraSerie'], ['Vin', 'numRegraVin']]
+    .filter(([n]) => siNo(info['esRegrabado' + n]))
+    .map(([n, k]) => `<b>${n === 'Vin' ? 'VIN' : n}</b>${info[k] ? ' · número regrabado ' + esc(info[k]) : ''}`);
+  if (regra.length) out.items.regrabado = { nivel:'bad', t:`Tiene regrabado de ${regra.length === 1 ? 'un número' : regra.length + ' números'}`,
+    d: regra.join('<br>') + '<br>Pide el documento que autoriza la regrabación y compara con la moto.',
+    falta:'Verificar que la regrabación esté autorizada' };
+
+  // Estado de seguridad
+  const seg = String(campo(info, 'seguridadEstado') || '').trim();
+  if (seg && !/^no$/i.test(seg)) out.items.seguridad = { nivel:'bad', t:'Alerta de seguridad en el RUNT',
+    d:`El RUNT marca "estado de seguridad": <b>${esc(seg)}</b>. Verifica en el organismo de tránsito antes de seguir.`, falta:'Aclarar la alerta de seguridad del RUNT' };
+
+  // Trámites en curso (no se puede radicar otro traspaso mientras haya uno abierto)
+  const enCurso = filas(r.solicitudes).filter(x => {
+    const e = String(campo(x, 'estado') || '');
+    return e && !/autoriz|aprob|anulad|rechaz|cancel|finaliz|termin|desist|negad|cerrad/i.test(e);
+  });
+  if (enCurso.length) out.items.tramite = { nivel:'bad', t:`Tiene ${enCurso.length === 1 ? 'un trámite' : enCurso.length + ' trámites'} en curso`,
+    d: enCurso.map(x => `<b>${esc(String(campo(x, 'tramitesRealizados') || 'Trámite').replace(/,\s*$/, ''))}</b> · ${esc(campo(x, 'estado'))}${campo(x, 'fechaSolicitud') ? ' · ' + fTxt(fecha(x.fechaSolicitud)) : ''}${campo(x, 'entidad') ? ' · ' + esc(x.entidad) : ''}`).join('<br>'),
+    bloquea:'Tiene un trámite en curso en el RUNT: hay que esperar a que termine antes del traspaso' };
+
+  // Servicio distinto de particular
+  const serv = String(campo(info, 'tipoServicio') || '').trim();
+  if (serv && !/^particular$/i.test(serv)) out.items.servicio = { nivel:'warn', t:`Servicio: ${esc(serv)}`,
+    d:'No es de servicio particular: el traspaso puede pedir requisitos adicionales.' };
+
   return out;
 }
 
@@ -440,9 +479,73 @@ function itemSimit(modo, s){
 }
 
 // ── Pintar resultado ───────────────────────────────────────────────────────
+// ── Impuesto vehicular ─────────────────────────────────────────────────────
+// Las motos de 125 c.c. o menos no pagan impuesto vehicular (Ley 488 de 1998, art. 141).
+// El impuesto se paga al departamento donde está matriculada.
+const DEPTOS = {
+  'Antioquia': { url:'https://www.vehiculosantioquia.com.co/',
+    claves:['ANTIOQUIA','MEDELLIN','ENVIGADO','ITAGUI','BELLO','SABANETA','LA ESTRELLA','CALDAS','COPACABANA','GIRARDOTA','BARBOSA','RIONEGRO','MARINILLA','LA CEJA','EL CARMEN DE VIBORAL','GUARNE','EL RETIRO','SANTUARIO','SONSON','PUERTO TRIUNFO','PUERTO BERRIO','APARTADO','TURBO','CAUCASIA','ANDES','SANTA FE DE ANTIOQUIA','YARUMAL','SEGOVIA','CAREPA','CHIGORODO','LA UNION','AMAGA','URRAO','DONMATIAS','SANTA ROSA DE OSOS','CIUDAD BOLIVAR','FREDONIA','JERICO','TAMESIS','EL BAGRE','ZARAGOZA','REMEDIOS','NECOCLI','ARBOLETES'] },
+  'Bogotá': { url:'https://www.haciendabogota.gov.co/', claves:['BOGOTA'] },
+  'Cundinamarca': { claves:['CUNDINAMARCA','SOACHA','CHIA','ZIPAQUIRA','FACATATIVA','FUSAGASUGA','GIRARDOT','MOSQUERA','MADRID','FUNZA','CAJICA','COTA','TOCANCIPA','SOPO'] },
+  'Valle del Cauca': { claves:['VALLE','CALI','PALMIRA','TULUA','BUGA','CARTAGO','JAMUNDI','YUMBO','BUENAVENTURA'] },
+  'Atlántico': { claves:['ATLANTICO','BARRANQUILLA','SOLEDAD','MALAMBO','PUERTO COLOMBIA','SABANALARGA'] },
+  'Santander': { claves:['SANTANDER','BUCARAMANGA','FLORIDABLANCA','GIRON','PIEDECUESTA','BARRANCABERMEJA','SAN GIL'] },
+  'Caldas': { claves:['MANIZALES','CHINCHINA','LA DORADA','VILLAMARIA'] },
+  'Risaralda': { claves:['RISARALDA','PEREIRA','DOSQUEBRADAS','SANTA ROSA DE CABAL'] },
+  'Quindío': { claves:['QUINDIO','ARMENIA','CALARCA'] },
+  'Córdoba': { claves:['CORDOBA','MONTERIA','CERETE','LORICA','SAHAGUN'] },
+  'Bolívar': { claves:['BOLIVAR','CARTAGENA','MAGANGUE','TURBACO'] },
+  'Tolima': { claves:['TOLIMA','IBAGUE','ESPINAL','HONDA'] },
+  'Huila': { claves:['HUILA','NEIVA','PITALITO','GARZON'] },
+  'Meta': { claves:['META','VILLAVICENCIO','ACACIAS','GRANADA'] },
+  'Boyacá': { claves:['BOYACA','TUNJA','DUITAMA','SOGAMOSO','CHIQUINQUIRA'] },
+  'Nariño': { claves:['NARINO','PASTO','IPIALES','TUMACO'] },
+  'Cauca': { claves:['POPAYAN','SANTANDER DE QUILICHAO'] },
+  'Norte de Santander': { claves:['NORTE DE SANTANDER','CUCUTA','OCANA','PAMPLONA','VILLA DEL ROSARIO'] },
+  'Cesar': { claves:['CESAR','VALLEDUPAR','AGUACHICA'] },
+  'Magdalena': { claves:['MAGDALENA','SANTA MARTA','CIENAGA'] },
+  'Sucre': { claves:['SUCRE','SINCELEJO','COROZAL'] },
+  'La Guajira': { claves:['GUAJIRA','RIOHACHA','MAICAO'] },
+  'Otro': { claves:[] },
+};
+function sinTildes(s){ return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase(); }
+function adivinarDepto(organismo){
+  const o = ' ' + sinTildes(organismo).replace(/[^A-Z ]/g, ' ').replace(/\s+/g, ' ') + ' ';
+  for (const [d, x] of Object.entries(DEPTOS)) if (x.claves.some(k => o.includes(' ' + k + ' '))) return d;
+  return null;
+}
+function urlImpuesto(depto){
+  const d = DEPTOS[depto];
+  if (d && d.url) return d.url;
+  return 'https://www.google.com/search?q=' + encodeURIComponent('consultar impuesto vehicular ' + (depto && depto !== 'Otro' ? depto : '') + ' por placa');
+}
+function cilindrajeDe(info){ const n = parseInt(String(campo(info, 'cilindraje') || '').replace(/[^\d]/g, ''), 10); return isNaN(n) ? null : n; }
+
+function itemImpuesto(rev, info){
+  const cc = cilindrajeDe(info);
+  const ch = rev.checks || {};
+  if (cc != null && cc <= 125) return { nivel:'ok', t:'No paga impuesto vehicular', d:`Tiene ${cc} c.c.: las motos de 125 c.c. o menos no pagan impuesto vehicular.` };
+  const depto = ch.depto || adivinarDepto(campo(info, 'organismoTransito')) || leer('pl_depto_v1', 'Antioquia');
+  const quien = depto && depto !== 'Otro' ? ` en ${depto}` : '';
+  if (ch.impuesto === 'aldia') return { nivel:'ok', t:'Impuesto vehicular al día', d:`Revisado por ti${quien}.` };
+  if (ch.impuesto === 'debe') return { nivel:'bad', t:'Debe impuesto vehicular', d:`Marcado por ti${quien}. Hay que pagarlo (paz y salvo) antes del traspaso.`,
+    bloquea:'Debe impuesto vehicular: hay que pagarlo antes del traspaso' };
+  return { nivel:'nd', t:'Impuesto vehicular: falta revisar', d:`${cc ? cc + ' c.c.: sí paga impuesto' : 'Revisa si paga impuesto'}${quien}. Consúltalo en la sección <b>Verificación de la moto</b>.`, falta:'Revisar el impuesto vehicular' };
+}
+
+function itemImprontas(rev){
+  const ch = rev.checks || {};
+  const no = ['motor', 'chasis'].filter(k => ch[k] === 'no');
+  if (no.length) return { nivel:'bad', t:`El número de ${no.join(' y ')} NO coincide con el RUNT`, d:'Marcado por ti al revisar la moto.',
+    bloquea:`El número de ${no.join(' y ')} de la moto no coincide con el RUNT` };
+  if (ch.motor === 'si' && ch.chasis === 'si') return { nivel:'ok', t:'Motor y chasis coinciden con el RUNT', d:'Verificado por ti en la moto.' };
+  return { nivel:'nd', t:'Motor y chasis: falta verificar', d:'Compara los números de la moto con los del RUNT en <b>Verificación de la moto</b>.', falta:'Verificar en la moto los números de motor y chasis' };
+}
+
 function veredicto(rev){
   const a = analizarRunt(rev.runt);
-  const its = [a.items.estado, a.items.lim, a.items.prenda, a.items.soat, a.items.rtm,
+  const its = [a.items.estado, a.items.seguridad, a.items.tramite, a.items.lim, a.items.prenda, a.items.regrabado, itemImprontas(rev),
+               a.items.soat, a.items.rtm, itemImpuesto(rev, a.info), a.items.servicio,
                itemSimit('placa', rev.simit && rev.simit.placa), itemSimit('cedula', rev.simit && rev.simit.cedula)].filter(Boolean);
   const bloqueos = its.filter(i => i.bloquea).map(i => i.bloquea);
   const faltas = its.filter(i => !i.bloquea && i.falta).map(i => i.falta);
@@ -450,7 +553,7 @@ function veredicto(rev){
   let nivel, titulo, sub;
   if (bloqueos.length){ nivel = 'bad'; titulo = 'NO SE PUEDE HACER EL TRASPASO'; sub = 'Esto lo impide:'; }
   else if (faltas.length || pend.length){ nivel = 'warn'; titulo = pend.length && !faltas.length ? 'POR AHORA SIN BLOQUEOS' : 'SE PUEDE, PERO FALTA ALGO'; sub = faltas.length ? 'Antes del traspaso:' : 'Falta completar la revisión.'; }
-  else { nivel = 'ok'; titulo = 'PLACA LIMPIA · SE PUEDE HACER EL TRASPASO'; sub = 'Sin embargos, sin prendas, sin comparendos a la cédula y con papeles al día.'; }
+  else { nivel = 'ok'; titulo = 'PLACA LIMPIA · SE PUEDE HACER EL TRASPASO'; sub = 'Sin embargos ni prendas, sin comparendos a la cédula, papeles e impuesto al día, y motor y chasis verificados.'; }
   return { a, its, nivel, titulo, sub, lista: bloqueos.length ? bloqueos : faltas };
 }
 
@@ -470,6 +573,56 @@ function bloqueDet(titulo, sec){
   const rows = filas(sec);
   const cuerpo = seccionFallo(sec) && !rows.length ? `<p class="vacio">El RUNT no respondió esta sección (código ${esc(sec && sec.estado)}).</p>` : tabla(rows);
   return `<details class="det"><summary>${esc(titulo)} <span class="cnt">${rows.length}</span></summary>${cuerpo}</details>`;
+}
+
+function botonesCheck(k, ch, etSi, etNo){
+  const v = (ch || {})[k];
+  return `<div class="chk">
+    <button type="button" class="btn chk-b ${v === 'si' || v === 'aldia' ? 'on-ok' : ''}" data-check="${k}" data-val="${k === 'impuesto' ? 'aldia' : 'si'}">✓ ${etSi}</button>
+    <button type="button" class="btn chk-b ${v === 'no' || v === 'debe' ? 'on-bad' : ''}" data-check="${k}" data-val="${k === 'impuesto' ? 'debe' : 'no'}">✗ ${etNo}</button>
+  </div>`;
+}
+
+function tarjetaVerificacion(rev, info){
+  const ch = rev.checks || {};
+  const motor = campo(info, 'numMotor'), chasis = campo(info, 'numChasis'), vin = campo(info, 'vin'), serie = campo(info, 'numSerie');
+  const org = campo(info, 'organismoTransito');
+  const cc = cilindrajeDe(info);
+  const pagaImp = !(cc != null && cc <= 125);
+  const deptoAuto = adivinarDepto(org);
+  const depto = ch.depto || deptoAuto || leer('pl_depto_v1', 'Antioquia');
+  const num = (et, val) => val ? `<div class="num"><span>${et}</span><b>${esc(val)}</b></div>` : '';
+  return `
+    <section class="card">
+      <h2>Verificación de la moto <small>lo que revisas tú</small></h2>
+
+      <div class="ver-bloque">
+        <div class="t">1. Números de identificación</div>
+        <p class="ayuda" style="margin-top:2px">Compara con lo que está grabado en la moto (improntas).</p>
+        ${num('Motor', motor)}
+        ${botonesCheck('motor', ch, 'Coincide', 'No coincide')}
+        ${num('Chasis', chasis)}
+        ${botonesCheck('chasis', ch, 'Coincide', 'No coincide')}
+        ${vin && vin !== chasis ? num('VIN', vin) : ''}
+        ${serie ? num('Serie', serie) : ''}
+      </div>
+
+      <div class="ver-bloque">
+        <div class="t">2. Impuesto vehicular</div>
+        ${pagaImp ? `
+          <p class="ayuda" style="margin-top:2px">${cc ? `<b>${cc} c.c.</b>: sí paga impuesto. ` : ''}Se paga al departamento donde está matriculada${org ? ` (<b>${esc(org)}</b>)` : ''}.</p>
+          <div class="fila-imp">
+            <select class="in" id="selDepto" aria-label="Departamento">${Object.keys(DEPTOS).map(d => `<option ${d === depto ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select>
+            <a class="btn btn-sec" href="${esc(urlImpuesto(depto))}" target="_blank" rel="noopener">Consultar impuesto ↗</a>
+          </div>
+          ${!DEPTOS[depto] || !DEPTOS[depto].url ? '<p class="ayuda">Para este departamento se abre una búsqueda en Google con la página oficial.</p>' : ''}
+          <p class="ayuda">Consulta con la placa <b>${esc(rev.placa)}</b> y marca lo que salió:</p>
+          ${botonesCheck('impuesto', ch, 'Al día', 'Debe impuesto')}`
+        : `<p class="ayuda" style="margin-top:2px">${cc} c.c.: <b>no paga impuesto vehicular</b> (125 c.c. o menos).</p>`}
+      </div>
+
+      ${org ? `<div class="ver-bloque"><div class="t">3. Dónde se hace el traspaso</div><p style="margin:4px 0 0; font-weight:600">${esc(org)}</p><p class="ayuda" style="margin-top:2px">Organismo de tránsito donde está matriculada.</p></div>` : ''}
+    </section>`;
 }
 
 function pintar(rev){
@@ -515,6 +668,8 @@ function pintar(rev){
       <p class="ayuda">Se abre el SIMIT con el dato ya copiado. Cuando salgan los resultados, toca tu favorito <b>Lector PlacaLimpia</b> y vuelves aquí con todo junto.</p>
     </section>
 
+    ${tarjetaVerificacion(rev, info)}
+
     <section class="card">
       <h2>Detalle completo <small>tal como lo entrega el RUNT</small></h2>
       <details class="det"><summary>Vehículo</summary>${kv(info)}</details>
@@ -529,6 +684,23 @@ function pintar(rev){
     </section>`;
 
   $('resultado').querySelectorAll('[data-simit]').forEach(b => b.addEventListener('click', () => abrirSimit(b.dataset.simit)));
+  // Verificación de la moto: motor, chasis e impuesto (lo marca la persona).
+  $('resultado').querySelectorAll('[data-check]').forEach(b => b.addEventListener('click', () => {
+    rev.checks = rev.checks || {};
+    const k = b.dataset.check, val = b.dataset.val;
+    rev.checks[k] = rev.checks[k] === val ? null : val;   // tocar de nuevo lo desmarca
+    rev.checks.fecha = new Date().toISOString();
+    guardarRev(rev);
+    pintar(rev);
+  }));
+  const selDepto = $('resultado').querySelector('#selDepto');
+  if (selDepto) selDepto.addEventListener('change', () => {
+    rev.checks = rev.checks || {};
+    rev.checks.depto = selDepto.value;
+    guardar('pl_depto_v1', selDepto.value);
+    guardarRev(rev);
+    pintar(rev);
+  });
   // Confirmación manual cuando el lector no reconoce la pantalla del SIMIT.
   $('resultado').querySelectorAll('[data-limpio]').forEach(b => b.addEventListener('click', () => {
     const modo = b.dataset.limpio;
@@ -614,6 +786,11 @@ async function consultar(ev){
     // Si ya habías revisado el SIMIT de esta misma placa y cédula hace poco, se conserva.
     const previa = historial().find(x => x.placa === placa && x.documento === documento);
     if (previa && previa.simit && (Date.now() - new Date(previa.fecha)) < 3 * 86400000) rev.simit = previa.simit;
+    // Lo verificado en la moto (motor, chasis, departamento) se conserva; el impuesto solo si es reciente.
+    if (previa && previa.checks){
+      const c = previa.checks, reciente = (Date.now() - new Date(c.fecha || previa.fecha)) < 3 * 86400000;
+      rev.checks = { motor:c.motor, chasis:c.chasis, depto:c.depto, impuesto: reciente ? c.impuesto : null, fecha:c.fecha };
+    }
     guardarRev(rev);
     pintar(rev);
     $('inCaptcha').value = '';
