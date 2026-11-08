@@ -337,7 +337,7 @@ function analizarRunt(r){
   const nueva = fReg && (hoy0() - fReg) < 2 * 365.25 * 86400000;
   if (seccionFallo(r.rtm) && !rtm) out.items.rtm = { nivel:'nd', t:'Tecnomecánica', d:'No se pudo consultar la tecnomecánica en el RUNT.' };
   else if (!rtm) out.items.rtm = nueva
-    ? { nivel:'ok', t:'Tecnomecánica', d:`Sin revisión registrada. Matriculada el ${fTxt(fReg)}: aún no la necesita (primera revisión a los 2 años).` }
+    ? { nivel:'ok', t:'Tecnomecánica: aún no la necesita', d:`Matriculada el ${fTxt(fReg)}: la primera revisión es a los 2 años${/no\s*aplica/i.test(String(campo(r.rtm && r.rtm.datos, 'descripcionRespuesta') || '')) ? ' (el RUNT dice: NO APLICA)' : ''}.` }
     : { nivel:'bad', t:'Tecnomecánica', d:'No aparece ninguna revisión técnico-mecánica registrada.', falta:'Hacer la tecnomecánica' };
   else {
     const dd = dias(rtm._fin), cda = campo(rtm, 'nombreCda', 'cda') || '';
@@ -365,6 +365,7 @@ function analizarRunt(r){
     ...garantias.map(g => `<b>Garantía mobiliaria</b>${campo(g, 'acreedor', 'entidad') ? ' a favor de ' + esc(campo(g, 'acreedor', 'entidad')) : ''}${campo(g, 'fechaInscripcion') ? ' · inscrita ' + esc(fTxt(fecha(g.fechaInscripcion))) : ''}`),
   ];
   if (!lista.length && pInfo) lista.push('El RUNT marca que el vehículo tiene prenda.');
+  if (siNo(info.gravamenes)) lista.push('El RUNT marca que el vehículo tiene <b>gravámenes</b>.');
   if (seccionFallo(r.prendas) && seccionFallo(r.garantias) && !lista.length) out.items.prenda = { nivel:'nd', t:'Prendas', d:'No se pudo consultar en el RUNT.' };
   else if (!lista.length) out.items.prenda = { nivel:'ok', t:'Sin prendas', d:'No registra prendas ni garantías mobiliarias vigentes.' };
   else out.items.prenda = { nivel:'bad', t:'Tiene prenda', d: lista.join('<br>'), bloquea:'Tiene prenda: no se puede traspasar hasta que la entidad la levante' };
