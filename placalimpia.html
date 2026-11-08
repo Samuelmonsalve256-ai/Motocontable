@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#14161b">
 <meta name="robots" content="noindex, nofollow">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PlacaLimpia">
 <link rel="apple-touch-icon" href="placalimpia-icono.png">
 <link rel="icon" type="image/png" sizes="512x512" href="placalimpia-icono-512.png">
@@ -267,9 +266,9 @@ code.copiable{display:block; background:var(--soft); border:1px dashed var(--lin
     <div class="card">
       <form id="formLogin">
         <label class="campo" for="lgEmail" style="margin-top:0">Correo</label>
-        <input class="in" id="lgEmail" type="email" autocomplete="username" required>
+        <input class="in" id="lgEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
         <label class="campo" for="lgPass">Contraseña</label>
-        <input class="in" id="lgPass" type="password" autocomplete="current-password" required>
+        <input class="in" id="lgPass" type="password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
         <button class="btn btn-oro" type="submit" id="btnLogin">Entrar</button>
       </form>
       <p class="ayuda" style="text-align:center">Usa la misma cuenta de MotoContable.</p>
@@ -1156,6 +1155,11 @@ async function iniciar(){
     setTimeout(() => { $('btnCopiarLector').textContent = 'Copiar código del lector'; }, 2500);
   });
   $('toastX').addEventListener('click', () => { $('toast').className = ''; });
+  // iPhone: al tocar un campo se enfoca dentro del mismo toque, para que siempre abra el teclado.
+  document.addEventListener('touchend', e => {
+    const el = e.target && e.target.closest && e.target.closest('input, select, textarea');
+    if (el && document.activeElement !== el && !el.disabled) el.focus();
+  }, { passive:true });
   $('inPlaca').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
   $('formConsulta').addEventListener('submit', consultar);
   $('btnCaptcha').addEventListener('click', nuevoCaptcha);
