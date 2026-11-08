@@ -36,7 +36,8 @@ function responder(datos: unknown, estado = 200): Response {
 async function usuarioValido(req: Request): Promise<boolean> {
   const auth = req.headers.get("Authorization") || "";
   const url = Deno.env.get("SUPABASE_URL");
-  const anon = Deno.env.get("SUPABASE_ANON_KEY");
+  // Llave pública del proyecto: la del servidor o, si no está, la que manda la página.
+  const anon = Deno.env.get("SUPABASE_ANON_KEY") || req.headers.get("apikey") || "";
   if (!auth.startsWith("Bearer ") || !url || !anon) return false;
   try {
     const r = await fetch(`${url}/auth/v1/user`, { headers: { Authorization: auth, apikey: anon } });
