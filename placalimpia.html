@@ -383,7 +383,9 @@ function analizarSimit(cap, revision){
   const plano = t.replace(/\s+/g, ' ');
   const res = { texto: t, fecha: cap && cap.f ? new Date(cap.f).toISOString() : new Date().toISOString(), consulta: (cap && cap.q) || '' };
   if (!/simit|comparendo|multa|estado de cuenta/i.test(plano)) { res.estado = 'desconocido'; return res; }
-  const limpio = /(no\s+(tiene|posee|presenta|registra|se\s+encontr\w*|existen|hay)\b[^.]{0,80}(comparendos?|multas?|deudas?|pendientes?|resultados?))|paz\s+y\s+salvo/i.test(plano);
+  // Mensajes de "sin deudas": "No tienes comparendos…", "No se encontraron resultados", "Sin multas", "Paz y salvo"…
+  const limpio = /\b(no|sin|ning[uú]n\w*)\b[^.!¡?\n]{0,80}\b(comparendos?|multas?|deudas?|pendientes?|resultados?|registros?|obligaciones?|informaci[oó]n)\b/i.test(plano)
+    || /paz\s+y\s+salvo|al\s+d[ií]a\s+con/i.test(plano);
   const mTotal = plano.match(/total[^$]{0,60}\$\s?([\d][\d.,]*)/i);
 
   // Recuadro "Resumen" del SIMIT: Comparendos: N · Multas: N · Acuerdos de pago: N · Total: $ X
@@ -418,8 +420,11 @@ function itemSimit(modo, s){
   const quien = modo === 'placa' ? 'a la placa' : 'a la cédula';
   const titulo = modo === 'placa' ? 'SIMIT por placa' : 'SIMIT por cédula';
   if (!s) return { nivel:'nd', t:titulo, d:`Falta revisar. Toca <b>SIMIT ${modo === 'placa' ? 'por placa' : 'por cédula'}</b> y luego el lector.`, falta: modo === 'cedula' ? 'Revisar el SIMIT por cédula' : null };
-  if (s.estado === 'limpio') return { nivel:'ok', t:`Sin comparendos ${quien}`, d:`SIMIT revisado el ${fTxt(new Date(s.fecha))}.` };
-  if (s.estado === 'desconocido') return { nivel:'nd', t:titulo, d:'El lector no encontró resultados en la pantalla. Tócalo cuando ya aparezcan los resultados del SIMIT.' };
+  if (s.estado === 'limpio') return { nivel:'ok', t:`Sin comparendos ${quien}`, d:`SIMIT revisado el ${fTxt(new Date(s.fecha))}${s.manual ? ' (confirmado por ti)' : ''}.` };
+  if (s.estado === 'desconocido') return { nivel:'nd', t:titulo,
+    d:`El lector no reconoció lo que salió en el SIMIT. Si viste que <b>no tiene comparendos ni multas</b>, confírmalo aquí:` +
+      `<br><button class="btn btn-sec" type="button" data-limpio="${modo}" style="margin-top:8px; padding:9px 12px; font-size:13.5px">✓ El SIMIT no muestra comparendos ${quien}</button>`,
+    falta: modo === 'cedula' ? 'Confirmar el SIMIT por cédula' : null };
   const partes = [];
   if (s.comparendos != null){
     partes.push(`Comparendos: <b>${s.comparendos}</b>`, `Multas: <b>${s.multas}</b>`);
@@ -523,6 +528,15 @@ function pintar(rev){
     </section>`;
 
   $('resultado').querySelectorAll('[data-simit]').forEach(b => b.addEventListener('click', () => abrirSimit(b.dataset.simit)));
+  // Confirmación manual cuando el lector no reconoce la pantalla del SIMIT.
+  $('resultado').querySelectorAll('[data-limpio]').forEach(b => b.addEventListener('click', () => {
+    const modo = b.dataset.limpio;
+    const previo = (rev.simit && rev.simit[modo]) || {};
+    rev.simit = rev.simit || {};
+    rev.simit[modo] = { ...previo, estado:'limpio', manual:true, total:0, cantidad:0, fecha:new Date().toISOString() };
+    guardarRev(rev);
+    pintar(rev);
+  }));
   pintarHistorial();
 }
 
@@ -644,7 +658,7 @@ function recibirSimit(){
   pintar(rev);
   const s = rev.simit[modo];
   aviso('avConsulta', s.estado === 'desconocido' ? 'err' : 'ok',
-    s.estado === 'desconocido' ? 'El lector no encontró resultados del SIMIT en esa pantalla. Vuelve a consultar y tócalo cuando ya salgan.' : `SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'} agregado a la revisión de ${rev.placa}.`);
+    s.estado === 'desconocido' ? 'El lector no reconoció la pantalla del SIMIT. Si viste que no hay comparendos, toca el botón de confirmar en el resumen.' : `SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'} agregado a la revisión de ${rev.placa}.`);
   setTimeout(() => $('resultado').scrollIntoView({behavior:'smooth'}), 50);
   return true;
 }
