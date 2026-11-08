@@ -420,7 +420,8 @@ function itemSimit(modo, s){
   const quien = modo === 'placa' ? 'a la placa' : 'a la cédula';
   const titulo = modo === 'placa' ? 'SIMIT por placa' : 'SIMIT por cédula';
   if (!s) return { nivel:'nd', t:titulo, d:`Falta revisar. Toca <b>SIMIT ${modo === 'placa' ? 'por placa' : 'por cédula'}</b> y luego el lector.`, falta: modo === 'cedula' ? 'Revisar el SIMIT por cédula' : null };
-  if (s.estado === 'limpio') return { nivel:'ok', t:`Sin comparendos ${quien}`, d:`SIMIT revisado el ${fTxt(new Date(s.fecha))}${s.manual ? ' (confirmado por ti)' : ''}.` };
+  const buscado = s.consulta ? ` · Buscado en el SIMIT: <b>${esc(s.consulta)}</b>` : '';
+  if (s.estado === 'limpio') return { nivel:'ok', t:`Sin comparendos ${quien}`, d:`SIMIT revisado el ${fTxt(new Date(s.fecha))}${s.manual ? ' (confirmado por ti)' : ''}${buscado}.` };
   if (s.estado === 'desconocido') return { nivel:'nd', t:titulo,
     d:`El lector no reconoció lo que salió en el SIMIT. Si viste que <b>no tiene comparendos ni multas</b>, confírmalo aquí:` +
       `<br><button class="btn btn-sec" type="button" data-limpio="${modo}" style="margin-top:8px; padding:9px 12px; font-size:13.5px">✓ El SIMIT no muestra comparendos ${quien}</button>`,
@@ -433,7 +434,7 @@ function itemSimit(modo, s){
   else if (s.acuerdo) partes.push('Tiene acuerdo de pago');
   partes.push(s.total ? `Total <b>${pesos(s.total)}</b>` : 'Valor no detectado (mira el detalle)');
   if (s.estadosReg && s.estadosReg.length) partes.push(esc(s.estadosReg.join(', ')));
-  const det = partes.join(' · ');
+  const det = partes.join(' · ') + buscado;
   if (modo === 'placa') return { nivel:'warn', t:'Tiene comparendo a la placa — se puede hacer el trámite', d: det };
   return { nivel:'bad', t:'Tiene comparendo a la cédula — NO se puede hacer el trámite', d: det, bloquea:`El propietario tiene comparendos a la cédula${s.total ? ' por ' + pesos(s.total) : ''}: no se puede tramitar hasta pagarlos` };
 }
@@ -643,22 +644,49 @@ function recibirSimit(){
   try { cap = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); } catch(e){ aviso('avConsulta', 'err', 'No se pudo leer lo que trajo el lector.'); return false; }
   const pend = leer(K_PEND, null);
   const h = historial();
-  let rev = pend && h.find(x => x.id === pend.id);
-  const q = String(cap.q || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-  // Si el texto buscado en el SIMIT coincide con otra revisión, se usa esa.
-  if (q){ const otra = h.find(x => x.placa === q || x.documento === q); if (otra && (!rev || (rev.placa !== q && rev.documento !== q))) rev = otra; }
-  if (!rev){ aviso('avConsulta', 'err', 'Primero haz la revisión del RUNT y desde ahí abre el SIMIT.'); return false; }
-  let modo = pend && pend.id === rev.id ? pend.modo : null;
-  if (q === rev.placa) modo = 'placa'; else if (q && q === rev.documento) modo = 'cedula';
-  if (!modo) modo = 'placa';
+  const enRevision = (pend && h.find(x => x.id === pend.id)) || (actual && h.find(x => x.id === actual.id)) || null;
+  const descRev = r => r ? `${r.placa} / ${nombreTipo(r.tipoDocumento)} ${r.documento}` : '';
+  const rechazar = msg => {
+    if (enRevision) pintar(enRevision);
+    aviso('avConsulta', 'err', msg + ' No se guardó nada.');
+    setTimeout(() => $('cardConsulta').scrollIntoView({behavior:'smooth'}), 50);
+    return false;
+  };
+
+  // 1. ¿Qué se buscó en el SIMIT? (el cuadro de búsqueda, o la dirección de la página)
+  const limpiar = v => String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  let q = limpiar(cap.q);
+  if (!q && cap.u){ const mu = String(cap.u).match(/numDocPlacaProp=([^&#]+)/i); if (mu) q = limpiar(decodeURIComponent(mu[1])); }
+  if (!q) return rechazar('No se pudo ver qué placa o cédula se buscó en el SIMIT.');
+
+  // 2. Solo se acepta si coincide EXACTO con la placa o la cédula de una revisión.
+  const coinciden = h.filter(x => x.placa === q || x.documento === q);
+  if (!coinciden.length){
+    return rechazar(`El SIMIT que leíste es de «${q}» y no coincide con ninguna moto revisada` +
+      (enRevision ? ` (la que estás revisando es ${descRev(enRevision)})` : '') + '.');
+  }
+  const rev = (enRevision && coinciden.find(x => x.id === enRevision.id)) || coinciden[0];
+  const modo = q === rev.placa ? 'placa' : 'cedula';
+  if (enRevision && rev.id !== enRevision.id){
+    return rechazar(`El SIMIT que leíste es de «${q}», pero la moto que estás revisando es ${descRev(enRevision)}. ` +
+      `Abre esa revisión desde el historial si quieres agregarlo allá.`);
+  }
+
+  // 3. Si el SIMIT muestra registros de otra placa al buscar por placa, también se rechaza.
+  const s = analizarSimit(cap, rev);
+  s.consulta = q;
+  if (modo === 'placa' && s.placasReg && s.placasReg.length && !s.placasReg.includes(rev.placa)){
+    return rechazar(`Los resultados del SIMIT son de la placa ${s.placasReg.join(', ')}, no de ${rev.placa}. Vuelve a buscar y espera a que carguen.`);
+  }
+
   rev.simit = rev.simit || {};
-  rev.simit[modo] = analizarSimit(cap, rev);
+  rev.simit[modo] = s;
   guardarRev(rev);
   try { localStorage.removeItem(K_PEND); } catch(e){}
   pintar(rev);
-  const s = rev.simit[modo];
   aviso('avConsulta', s.estado === 'desconocido' ? 'err' : 'ok',
-    s.estado === 'desconocido' ? 'El lector no reconoció la pantalla del SIMIT. Si viste que no hay comparendos, toca el botón de confirmar en el resumen.' : `SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'} agregado a la revisión de ${rev.placa}.`);
+    s.estado === 'desconocido' ? 'El lector no reconoció la pantalla del SIMIT. Si viste que no hay comparendos, toca el botón de confirmar en el resumen.'
+      : `✓ Coincide: SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'} (${q}) agregado a la revisión de ${rev.placa}.`);
   setTimeout(() => $('resultado').scrollIntoView({behavior:'smooth'}), 50);
   return true;
 }
