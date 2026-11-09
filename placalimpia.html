@@ -251,11 +251,77 @@ code.copiable{display:block; background:var(--soft); border:1px dashed var(--lin
 
 .cargando{display:inline-block; width:16px; height:16px; border:2.5px solid currentColor; border-right-color:transparent; border-radius:50%; animation:g .7s linear infinite}
 @keyframes g{to{transform:rotate(360deg)}}
+/* ── Sensación de app ── */
+@keyframes subir{from{opacity:0; transform:translateY(14px)}to{opacity:1; transform:none}}
+@keyframes aparecer{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{transform:scale(.4); opacity:0}60%{transform:scale(1.12); opacity:1}100%{transform:scale(1)}}
+@keyframes latido{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes girar{to{transform:rotate(360deg)}}
+@keyframes brillo{from{background-position:-200% 0}to{background-position:200% 0}}
+.vista.entrar{animation:subir .32s cubic-bezier(.2,.8,.2,1) both}
+.vista.entrar .card, .vista.entrar .moto, .vista.entrar .stat, .vista.entrar .lista-alerta, .vista.entrar .cambios{animation:subir .4s cubic-bezier(.2,.8,.2,1) both}
+.vista.entrar > *:nth-child(2){animation-delay:.03s} .vista.entrar > *:nth-child(3){animation-delay:.06s} .vista.entrar > *:nth-child(4){animation-delay:.09s}
+.vista.entrar > *:nth-child(5){animation-delay:.12s} .vista.entrar > *:nth-child(6){animation-delay:.15s} .vista.entrar > *:nth-child(n+7){animation-delay:.18s}
+.hero .estado-g .ico{animation:pop .55s .15s cubic-bezier(.2,.8,.2,1.2) both}
+.progreso .barra i{transition:width 1s cubic-bezier(.2,.8,.2,1) .25s}
+.paso{animation:subir .4s both}
+.paso .btn-oro{animation:latido 2.4s 1s ease-in-out 2}
+.moto, .reciente, .chk-b, .stat, .filtros button, .nav button, .btn, .btn-volver{transition:transform .12s ease, background .15s, border-color .15s, color .15s}
+.moto:active, .reciente:active{transform:scale(.975)}
+.chk-b:active, .filtros button:active{transform:scale(.95)}
+.nav button:active .nv-ic{transform:scale(.88)}
+.nv-ic{transition:transform .15s, background .2s}
+.nav button.on .nv-ic{animation:pop .35s both}
+#toast{display:flex; gap:10px; align-items:flex-start}
+#toast .ti{flex:none; width:22px; height:22px; border-radius:7px; display:grid; place-items:center; margin-top:-1px}
+#toast.ok .ti{background:var(--ok); color:#fff} #toast.err .ti{background:var(--bad); color:#fff}
+
+/* Pantalla de carga del RUNT */
+#carga{position:fixed; inset:0; z-index:60; display:grid; place-items:center; background:rgba(12,14,18,.55); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); opacity:0; pointer-events:none; transition:opacity .25s}
+#carga.ver{opacity:1; pointer-events:auto}
+.carga-in{width:min(320px, calc(100% - 48px)); background:var(--card); border-radius:26px; padding:26px 22px 20px; box-shadow:0 30px 80px rgba(0,0,0,.35); text-align:center; transform:scale(.94); transition:transform .3s cubic-bezier(.2,.8,.2,1.2)}
+#carga.ver .carga-in{transform:none}
+.anillo{width:64px; height:64px; margin:0 auto 14px; border-radius:50%; background:conic-gradient(from 0deg, transparent 0 25%, var(--gold) 70%, #f3d27a); -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); mask:radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); animation:girar .9s linear infinite}
+.carga-in b{display:block; font-size:17px; letter-spacing:-.01em}
+.carga-in .placa-c{margin:10px auto 14px}
+.pasos-c{list-style:none; margin:0; padding:0; text-align:left}
+.pasos-c li{display:flex; gap:10px; align-items:center; font-size:13.5px; color:var(--muted); padding:5px 2px; transition:color .2s}
+.pasos-c li i{width:18px; height:18px; border-radius:50%; border:2px solid var(--line); flex:none; display:grid; place-items:center; transition:all .2s}
+.pasos-c li.act{color:var(--ink); font-weight:700} .pasos-c li.act i{border-color:var(--gold); border-right-color:transparent; animation:girar .8s linear infinite}
+.pasos-c li.ok{color:var(--ink)} .pasos-c li.ok i{background:var(--ok); border-color:var(--ok); color:#fff}
+
+/* Bienvenida */
+#splash{position:fixed; inset:0; z-index:80; display:grid; place-items:center; background:linear-gradient(145deg,#14161b,#2a2e37); transition:opacity .45s ease, visibility .45s}
+#splash.fuera{opacity:0; visibility:hidden}
+#splash .logo{width:84px; height:84px; border-radius:24px; font-size:28px; margin:0 auto; animation:pop .6s cubic-bezier(.2,.8,.2,1.2) both; box-shadow:0 16px 40px rgba(184,137,26,.35)}
+#splash b{display:block; color:#fff; font-size:24px; letter-spacing:-.02em; text-align:center; margin-top:16px; animation:aparecer .5s .2s both}
+#splash b span{color:#f0cf74}
+#splash small{display:block; color:#8f97a5; letter-spacing:.24em; font-size:10.5px; font-weight:700; text-align:center; margin-top:4px; animation:aparecer .5s .3s both}
+
+/* Interruptores */
+.ajuste{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-top:1px solid var(--line)}
+.ajuste:first-of-type{border-top:0}
+.ajuste b{display:block; font-size:14.5px} .ajuste small{color:var(--muted); font-size:12.5px}
+.sw{position:relative; width:50px; height:30px; flex:none}
+.sw input{position:absolute; opacity:0; inset:0; margin:0; cursor:pointer; z-index:1}
+.sw span{position:absolute; inset:0; border-radius:99px; background:var(--line); transition:background .2s}
+.sw span::after{content:''; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.2); transition:transform .22s cubic-bezier(.2,.8,.2,1.2)}
+.sw input:checked + span{background:var(--ok)}
+.sw input:checked + span::after{transform:translateX(20px)}
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} }
+
 @media (max-width:400px){ .fila2{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)} .acciones{grid-template-columns:1fr} }
 @media print{ .top, .nav, .acciones, #toast{display:none !important} body{background:#fff} main{padding:0} }
 </style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div><div class="logo">PM</div><b>Placa<span>Limpia</span></b><small>PLATINIUM MOTORS</small></div></div>
+<div id="carga" role="status" aria-live="polite"><div class="carga-in">
+  <div class="anillo"></div><b>Consultando el RUNT</b>
+  <div class="placa-c" id="cargaPlaca"></div>
+  <ul class="pasos-c" id="cargaPasos"></ul>
+</div></div>
+<label id="haptico" aria-hidden="true" style="position:fixed; left:-100px; top:0; width:1px; height:1px; overflow:hidden"><input type="checkbox" switch tabindex="-1"></label>
 
 <header class="top">
   <div class="top-in">
@@ -270,7 +336,7 @@ code.copiable{display:block; background:var(--soft); border:1px dashed var(--lin
   </div>
 </header>
 
-<div id="toast" role="status" aria-live="polite"><span id="toastTxt"></span><button type="button" aria-label="Cerrar" id="toastX">×</button></div>
+<div id="toast" role="status" aria-live="polite"><span class="ti" id="toastIc"></span><span id="toastTxt"></span><button type="button" aria-label="Cerrar" id="toastX">×</button></div>
 
 <main>
   <!-- ═══ Inicio de sesión ═══ -->
@@ -389,6 +455,12 @@ code.copiable{display:block; background:var(--soft); border:1px dashed var(--lin
     </div>
 
     <div class="card">
+      <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg></div><h3>Sonido y vibración</h3></div>
+      <div class="ajuste"><div><b>Sonidos</b><small>Respetan el modo silencio del iPhone.</small></div><label class="sw"><input type="checkbox" id="optSonido"><span></span></label></div>
+      <div class="ajuste"><div><b>Vibración</b><small>En iPhone con iOS 18 o más nuevo.</small></div><label class="sw"><input type="checkbox" id="optVibrar"><span></span></label></div>
+    </div>
+
+    <div class="card">
       <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></div><h3>Apariencia</h3></div>
       <div class="filtros" id="selTema" style="margin-top:10px">
         <button type="button" data-tema="auto">Automático</button>
@@ -481,8 +553,55 @@ const IC = {
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function leer(k, def){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch(e){ return def; } }
 function guardar(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } }
+// ── Sonidos (generados en el momento) y vibración ──────────────────────────
+const PREF = { sonido: leer('pl_sonido', true), vibrar: leer('pl_vibrar', true) };
+let _ctx = null;
+function audio(){
+  if (!_ctx){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try { if (navigator.audioSession) navigator.audioSession.type = 'ambient'; } catch(e){}   // respeta el modo silencio
+    _ctx = new AC();
+  }
+  if (_ctx.state === 'suspended') _ctx.resume();
+  return _ctx;
+}
+function nota(f, ini, dur, tipo = 'sine', vol = .1, fFin){
+  const c = audio(); if (!c) return;
+  const t0 = c.currentTime + ini, o = c.createOscillator(), g = c.createGain();
+  o.type = tipo; o.frequency.setValueAtTime(f, t0);
+  if (fFin) o.frequency.exponentialRampToValueAtTime(fFin, t0 + dur);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + .012);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0 + dur + .03);
+}
+const SONIDOS = {
+  tap:    () => nota(1900, 0, .035, 'triangle', .035),
+  marcar: () => { nota(1320, 0, .07, 'sine', .07); nota(1760, .05, .09, 'sine', .05); },
+  ok:     () => { nota(880, 0, .16, 'sine', .09); nota(1318.5, .1, .26, 'sine', .08); },
+  limpio: () => [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => nota(f, i * .085, .38 - i * .03, 'sine', .085)),
+  error:  () => { nota(392, 0, .16, 'triangle', .1); nota(261.6, .14, .3, 'triangle', .1); },
+  alerta: () => { nota(1046.5, 0, .11, 'square', .035); nota(1046.5, .17, .11, 'square', .035); nota(1396.9, .34, .2, 'sine', .06); },
+  enviar: () => nota(420, 0, .28, 'sine', .07, 1500),
+  inicio: () => { nota(659.25, 0, .3, 'sine', .05); nota(987.77, .12, .45, 'sine', .045); },
+};
+function vibrar(tipo){
+  if (!PREF.vibrar) return;
+  if (navigator.vibrate){ navigator.vibrate({ error:[35, 50, 35], exito:[15, 40, 20], alerta:[20, 40, 20, 40, 20] }[tipo] || 10); return; }
+  const l = $('haptico'); if (!l) return;          // iPhone (iOS 18+): el interruptor nativo da un toque háptico
+  try { l.click(); if (tipo && tipo !== 'leve') setTimeout(() => l.click(), 110); } catch(e){}
+}
+// Una sola función para sonar y vibrar según lo que pasó.
+function sentir(que){
+  if (PREF.sonido){ try { (SONIDOS[que] || SONIDOS.tap)(); } catch(e){} }
+  vibrar({ tap:'leve', marcar:'leve', ok:'exito', limpio:'exito', error:'error', alerta:'alerta', enviar:'leve' }[que] || 'leve');
+}
+
 let toastT = null;
 function toast(tipo, texto){
+  $('toastIc').innerHTML = tipo === 'ok' ? IC.ok.replace('width="18" height="18"', 'width="14" height="14"') : IC.bad.replace('width="18" height="18"', 'width="14" height="14"');
+  if (tipo === 'err') sentir('error');
   const el = $('toast');
   $('toastTxt').textContent = texto;
   el.className = 'ver ' + tipo;
@@ -959,7 +1078,7 @@ function renderFicha(rev){
       <div class="chips">${chips.map(c => `<span>${esc(c)}</span>`).join('')}</div>
       <div class="meta">Propietario ${esc(nombreTipo(rev.tipoDocumento))} <span class="mono">${esc(rev.documento)}</span> · RUNT consultado ${fTxt(new Date(rev.fecha))}, ${hTxt(new Date(rev.fecha))}</div>
       <div class="estado-g ${v.nivel}"><div class="ico">${icoG}</div><div><b>${esc(v.titulo)}</b><small>${esc(v.sub)}</small></div></div>
-      <div class="progreso"><div class="barra"><i style="width:${pct}%"></i></div><small><span>Revisión ${v.hechos} de ${v.total}</span><span>${pct}%</span></small></div>
+      <div class="progreso"><div class="barra"><i style="width:0" data-w="${pct}"></i></div><small><span>Revisión ${v.hechos} de ${v.total}</span><span>${pct}%</span></small></div>
     </div>
 
     ${cambiosHtml(cambiosDesde(rev))}
@@ -998,6 +1117,7 @@ function renderFicha(rev){
     </div>`;
 
   const raiz = $('v-ficha');
+  requestAnimationFrame(() => requestAnimationFrame(() => raiz.querySelectorAll('[data-w]').forEach(i => { i.style.width = i.dataset.w + '%'; })));
   raiz.querySelectorAll('[data-simit]').forEach(b => b.addEventListener('click', () => abrirSimit(b.dataset.simit)));
   raiz.querySelectorAll('[data-pegar]').forEach(b => b.addEventListener('click', pegarLector));
   raiz.querySelectorAll('[data-irsec]').forEach(b => b.addEventListener('click', () => {
@@ -1009,6 +1129,8 @@ function renderFicha(rev){
     rev.checks[k] = rev.checks[k] === val ? null : val;   // tocar de nuevo lo desmarca
     rev.checks.fecha = new Date().toISOString();
     guardarRev(rev);
+    if (rev.checks[k] === 'no' || rev.checks[k] === 'debe') sentir('error');
+    else if (rev.checks[k]) sentir(veredicto(rev).nivel === 'ok' ? 'limpio' : 'marcar');
     renderFicha(rev);
   }));
   const selDepto = raiz.querySelector('#selDepto');
@@ -1025,6 +1147,7 @@ function renderFicha(rev){
     rev.simit = rev.simit || {};
     rev.simit[modo] = { ...previo, estado:'limpio', manual:true, total:0, cantidad:0, fecha:new Date().toISOString() };
     guardarRev(rev);
+    sentir(veredicto(rev).nivel === 'ok' ? 'limpio' : 'ok');
     renderFicha(rev);
   }));
   raiz.querySelectorAll('[data-abrir]').forEach(b => b.addEventListener('click', () => {
@@ -1290,6 +1413,7 @@ async function compartirFicha(rev){
     const pdf = crearPDF(rev);
     const nombreArchivo = `PlacaLimpia_${rev.placa}_${fNum(new Date()).replace(/\//g, '-')}.pdf`;
     const archivo = new File([pdf.output('blob')], nombreArchivo, { type:'application/pdf' });
+    sentir('enviar');
     const texto = resumenTexto(rev);
     if (navigator.canShare && navigator.canShare({ files:[archivo] })) await navigator.share({ files:[archivo], title:`Informe ${rev.placa}`, text: texto });
     else if (navigator.share) await navigator.share({ title:`Informe ${rev.placa}`, text: texto });
@@ -1386,6 +1510,8 @@ function ir(v){
   if (v === 'motos') pintarMotos();
   if (v === 'revisar'){ pintarRecientes(); if (captchaEn && Date.now() - captchaEn > 4 * 60000) nuevoCaptcha(); }
   window.scrollTo(0, 0);
+  const el = $('v-' + v);
+  if (el){ el.classList.remove('entrar'); void el.offsetWidth; el.classList.add('entrar'); }
 }
 
 // ── RUNT ───────────────────────────────────────────────────────────────────
@@ -1414,6 +1540,46 @@ async function nuevoCaptcha(){
   }
 }
 
+// Pantalla de carga con los pasos que va revisando.
+const PASOS_CARGA = ['Conectando con el RUNT', 'Datos del vehículo', 'SOAT y tecnomecánica', 'Embargos y prendas', 'Trámites y solicitudes'];
+let _cargaT = null, _cargaI = 0;
+function mostrarCarga(placa){
+  $('cargaPlaca').innerHTML = chipPlaca(placa, true);
+  $('cargaPasos').innerHTML = PASOS_CARGA.map(p => `<li><i></i>${p}</li>`).join('');
+  _cargaI = 0;
+  const marcar = () => $('cargaPasos').querySelectorAll('li').forEach((li, k) => {
+    li.className = k < _cargaI ? 'ok' : k === _cargaI ? 'act' : '';
+    li.querySelector('i').innerHTML = k < _cargaI ? IC.ok.replace('width="18" height="18"', 'width="11" height="11"') : '';
+  });
+  marcar();
+  $('carga').classList.add('ver');
+  clearInterval(_cargaT);
+  _cargaT = setInterval(() => { if (_cargaI < PASOS_CARGA.length - 1){ _cargaI++; marcar(); } }, 650);
+  mostrarCarga.marcar = marcar;
+}
+function terminarCarga(){
+  return new Promise(ok => {
+    clearInterval(_cargaT);
+    const avanzar = () => {
+      if (_cargaI < PASOS_CARGA.length){ _cargaI++; mostrarCarga.marcar && mostrarCarga.marcar(); setTimeout(avanzar, 120); }
+      else setTimeout(() => { ocultarCarga(); ok(); }, 220);
+    };
+    avanzar();
+  });
+}
+function ocultarCarga(){ clearInterval(_cargaT); $('carga').classList.remove('ver'); }
+
+// Sonido según el resultado: limpia, con pendientes, bloqueada o con cambios.
+function sonarResultado(rev){
+  const v = veredicto(rev), c = cambiosDesde(rev);
+  setTimeout(() => {
+    if (c && c.items.some(i => i.nivel === 'bad')) sentir('alerta');
+    else if (v.nivel === 'ok') sentir('limpio');
+    else if (v.nivel === 'bad') sentir('error');
+    else sentir('ok');
+  }, 380);
+}
+
 async function consultar(ev){
   ev.preventDefault();
   const placa = $('inPlaca').value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -1427,13 +1593,17 @@ async function consultar(ev){
 
   const btn = $('btnConsultar');
   btn.disabled = true; btn.innerHTML = '<span class="cargando"></span> Consultando el RUNT…';
+  mostrarCarga(placa);
   try {
     const d = await llamar({ accion:'consultar', placa, documento, tipoDocumento, captcha, idLibreCaptcha: captchaId });
     if (!d || !d.ok){
+      ocultarCarga();
       toast('err', (d && d.mensaje) || 'El RUNT no devolvió información.');
       nuevoCaptcha();
+      setTimeout(() => $('inCaptcha').focus(), 300);
       return;
     }
+    await terminarCarga();
     const rev = { id: placa + '-' + Date.now(), placa, tipoDocumento, documento, fecha: d.consultadoEn || new Date().toISOString(), runt: d, simit: {} };
     // Si ya habías revisado el SIMIT de esta misma placa y cédula hace poco, se conserva.
     const previa = historial().find(x => x.placa === placa && x.documento === documento);
@@ -1447,7 +1617,9 @@ async function consultar(ev){
     $('formConsulta').reset();
     nuevoCaptcha();
     abrirFicha(rev, 'revisar');
+    sonarResultado(rev);
   } catch(e){
+    ocultarCarga();
     toast('err', e.message);
     nuevoCaptcha();
   } finally {
@@ -1528,6 +1700,7 @@ function procesarCaptura(b64){
   guardarRev(rev);
   try { localStorage.removeItem(K_PEND); } catch(e){}
   abrirFicha(rev);
+  if (s.estado !== 'desconocido') setTimeout(() => sentir(veredicto(rev).nivel === 'ok' ? 'limpio' : s.estado === 'deudas' ? 'alerta' : 'ok'), 250);
   toast(s.estado === 'desconocido' ? 'err' : 'ok',
     s.estado === 'desconocido' ? 'El lector no reconoció la pantalla del SIMIT. Si viste que no hay comparendos, confírmalo en "Multas · SIMIT".'
       : `✓ Coincide: SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'} (${q}) agregado a ${rev.placa}.${modo === 'placa' && !(rev.simit || {}).cedula ? ' Sigue con el SIMIT por cédula (botón arriba).' : ''}`);
@@ -1581,7 +1754,20 @@ async function iniciar(){
     const el = e.target && e.target.closest && e.target.closest('input, select, textarea');
     if (el && document.activeElement !== el && !el.disabled) el.focus();
   }, { passive:true });
-  $('inPlaca').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
+  $('inPlaca').addEventListener('input', e => {
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    // Placa completa (moto ABC12D o carro ABC123): pasa sola a la cédula.
+    if (e.inputType && e.inputType.startsWith('insert') && /^[A-Z]{3}\d{2}[A-Z]$|^[A-Z]{3}\d{3}$/.test(e.target.value)){ sentir('tap'); $('inDoc').focus(); }
+  });
+  $('inDoc').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); $('inCaptcha').focus(); } });
+  // Toque sutil en botones y tarjetas
+  document.addEventListener('click', e => {
+    if (e.target.closest && e.target.closest('.nav button, .btn-volver, .moto, .reciente, .filtros button, #btnCaptcha, [data-irsec]')) sentir('tap');
+  });
+  // Sonido y vibración (Ajustes)
+  $('optSonido').checked = !!PREF.sonido; $('optVibrar').checked = !!PREF.vibrar;
+  $('optSonido').addEventListener('change', e => { PREF.sonido = e.target.checked; guardar('pl_sonido', PREF.sonido); if (PREF.sonido) sentir('ok'); });
+  $('optVibrar').addEventListener('change', e => { PREF.vibrar = e.target.checked; guardar('pl_vibrar', PREF.vibrar); if (PREF.vibrar) vibrar('exito'); });
   $('formConsulta').addEventListener('submit', consultar);
   $('btnCaptcha').addEventListener('click', nuevoCaptcha);
   $('btnVolver').addEventListener('click', () => ir(vistaAntes));
@@ -1631,6 +1817,10 @@ function arrancar(sesion){
 }
 
 iniciar();
+// Bienvenida breve
+setTimeout(() => { const s = $('splash'); if (s) s.classList.add('fuera'); }, location.hash.startsWith('#simit=') ? 250 : 900);
+// El primer toque habilita el sonido (requisito del iPhone)
+document.addEventListener('touchstart', () => { if (PREF.sonido) audio(); }, { once:true, passive:true });
 </script>
 </body>
 </html>
