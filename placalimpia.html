@@ -431,8 +431,8 @@ code.copiable{display:block; background:var(--soft); border:1px dashed var(--lin
     <p class="sub-vista">Lector del SIMIT, cuenta y ayuda.</p>
 
     <div class="card" style="margin-top:0">
-      <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div><h3>Lector del SIMIT</h3></div>
-      <p class="ayuda" style="margin-top:4px">Es un favorito del navegador. En la página del SIMIT, con los resultados en pantalla, lo tocas y PlacaLimpia recibe lo que salió. Solo lo guarda si la placa o cédula coincide con la moto que estás revisando.</p>
+      <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div><h3>Lector (SIMIT e impuesto)</h3></div>
+      <p class="ayuda" style="margin-top:4px">Es un favorito del navegador. Funciona en el <b>SIMIT</b> y en el <b>impuesto de Antioquia</b>: con los resultados en pantalla lo tocas y PlacaLimpia recibe lo que salió. Solo lo guarda si la placa o cédula coincide con la moto que estás revisando.</p>
       <details class="det" style="margin-top:6px">
         <summary>Instalar en el iPhone (Safari)</summary>
         <ol class="pasos">
@@ -914,15 +914,19 @@ function itemImpuesto(rev, info){
   const extra = `<div class="extra">
       <div class="fila-imp">
         <select class="in" id="selDepto" aria-label="Departamento">${Object.keys(DEPTOS).map(d => `<option ${d === depto ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select>
-        <a class="btn btn-sec btn-peq" href="${esc(urlImpuesto(depto))}" target="_blank" rel="noopener">${IC.ext} Consultar</a>
+        <button class="btn btn-sec btn-peq" type="button" data-impuesto>${IC.ext} Consultar</button>
       </div>
-      ${!DEPTOS[depto] || !DEPTOS[depto].url ? '<p class="ayuda">Para este departamento se abre una búsqueda con la página oficial.</p>' : ''}
+      ${depto === 'Antioquia' ? `<p class="ayuda">Se lee solo con el <b>Lector PlacaLimpia</b>.${ES_APP ? ' Luego toca <b>Pegar resultado del lector</b>.' : ''} Si prefieres, márcalo a mano:</p>` : !DEPTOS[depto] || !DEPTOS[depto].url ? '<p class="ayuda">Para este departamento se abre una búsqueda con la página oficial.</p>' : ''}
+      ${ES_APP && depto === 'Antioquia' ? `<button class="btn btn-linea btn-peq" type="button" data-pegar style="margin-top:8px">${IC.raw} Pegar resultado del lector</button>` : ''}
       ${botonesCheck('impuesto', ch, 'Al día', 'Debe impuesto')}
     </div>`;
-  if (ch.impuesto === 'aldia') return { nivel:'ok', t:'Impuesto vehicular al día', d:`Revisado por ti${quien}.`, extra };
-  if (ch.impuesto === 'debe') return { nivel:'bad', t:'Debe impuesto vehicular', d:`Marcado por ti${quien}. Hay que pagarlo (paz y salvo) antes del traspaso.`, extra,
-    bloquea:'Debe impuesto vehicular: hay que pagarlo antes del traspaso' };
-  return { nivel:'nd', t:'Impuesto vehicular', d:`${cc ? `<b>${cc} c.c.</b>: sí paga impuesto` : 'Revisa si paga impuesto'}${quien}. Consulta con la placa <b>${esc(rev.placa)}</b> y marca el resultado.`, extra, falta:'Revisar el impuesto vehicular' };
+  const imp = rev.impuesto && rev.checks && rev.impuesto.estado === ch.impuesto ? rev.impuesto : null;
+  const leido = imp ? ` Leído de la ${esc(imp.fuente)} ${hace(new Date(imp.fecha))}.` : ` Marcado por ti${quien}.`;
+  const ultimo = imp && imp.ultVigencia ? `Último pago: vigencia <b>${esc(imp.ultVigencia)}</b>${imp.ultFecha ? ` · pagado el <b>${esc(imp.ultFecha)}</b>` : ''}${imp.ultValor ? ` · ${pesos(imp.ultValor)}` : ''}.` : '';
+  if (ch.impuesto === 'aldia') return { nivel:'ok', t:'Impuesto vehicular al día', d:`${imp ? 'No tiene pagos pendientes. ' : ''}${ultimo}${leido}`, extra };
+  if (ch.impuesto === 'debe') return { nivel:'bad', t:'Debe impuesto vehicular', d:`${imp && imp.total ? `Debe <b>${pesos(imp.total)}</b>. ` : ''}${imp && imp.vigencias && imp.vigencias.length ? `Vigencias: ${esc(imp.vigencias.join(', '))}. ` : ''}${ultimo} Hay que pagarlo (paz y salvo) antes del traspaso.${leido}`, extra,
+    bloquea:`Debe impuesto vehicular${imp && imp.total ? ' (' + pesos(imp.total) + ')' : ''}: hay que pagarlo antes del traspaso` };
+  return { nivel:'nd', t:'Impuesto vehicular', d:`${cc ? `<b>${cc} c.c.</b>: sí paga impuesto` : 'Revisa si paga impuesto'}${quien}. Consulta con la cédula y la placa <b>${esc(rev.placa)}</b>.`, extra, falta:'Revisar el impuesto vehicular' };
 }
 
 function itemImprontas(rev, info){
@@ -1002,8 +1006,8 @@ function siguientePaso(rev){
   if (!ch.motor || !ch.chasis) return { t:'Verificar motor y chasis', d:'Compara los números del RUNT con los grabados en la moto.',
     btn:`<button class="btn btn-oro btn-peq" type="button" data-irsec="secFisica" style="margin:0; width:auto">Ir a verificar</button>` };
   const imp = itemImpuesto(rev, analizarRunt(rev.runt).info);
-  if (imp.nivel === 'nd') return { t:'Revisar el impuesto vehicular', d:'Consulta con la placa y marca si está al día o debe.',
-    btn:`<button class="btn btn-oro btn-peq" type="button" data-irsec="secPapeles" style="margin:0; width:auto">Ir al impuesto</button>` };
+  if (imp.nivel === 'nd') return { t:'Revisar el impuesto vehicular', d:`Consulta con la cédula ${esc(rev.documento)} y la placa ${esc(rev.placa)}; el lector lo trae solo.`,
+    btn:`<button class="btn btn-oro btn-peq" type="button" data-impuesto style="margin:0; width:auto">${IC.ext} Consultar impuesto</button>${pegar}` };
   return null;
 }
 function pasoHtml(p){
@@ -1120,6 +1124,7 @@ function renderFicha(rev){
   requestAnimationFrame(() => requestAnimationFrame(() => raiz.querySelectorAll('[data-w]').forEach(i => { i.style.width = i.dataset.w + '%'; })));
   raiz.querySelectorAll('[data-simit]').forEach(b => b.addEventListener('click', () => abrirSimit(b.dataset.simit)));
   raiz.querySelectorAll('[data-pegar]').forEach(b => b.addEventListener('click', pegarLector));
+  raiz.querySelectorAll('[data-impuesto]').forEach(b => b.addEventListener('click', abrirImpuesto));
   raiz.querySelectorAll('[data-irsec]').forEach(b => b.addEventListener('click', () => {
     const el = $(b.dataset.irsec); if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
   }));
@@ -1127,6 +1132,7 @@ function renderFicha(rev){
     rev.checks = rev.checks || {};
     const k = b.dataset.check, val = b.dataset.val;
     rev.checks[k] = rev.checks[k] === val ? null : val;   // tocar de nuevo lo desmarca
+    if (k === 'impuesto') rev.impuesto = null;            // marcado a mano: ya no es lo leído
     rev.checks.fecha = new Date().toISOString();
     guardarRev(rev);
     if (rev.checks[k] === 'no' || rev.checks[k] === 'debe') sentir('error');
@@ -1612,6 +1618,7 @@ async function consultar(ev){
     if (previa && previa.checks){
       const c = previa.checks, reciente = (Date.now() - new Date(c.fecha || previa.fecha)) < 3 * 86400000;
       rev.checks = { motor:c.motor, chasis:c.chasis, depto:c.depto, impuesto: reciente ? c.impuesto : null, fecha:c.fecha };
+      if (reciente && previa.impuesto) rev.impuesto = previa.impuesto;
     }
     guardarRev(rev);
     $('formConsulta').reset();
@@ -1668,6 +1675,7 @@ function procesarCaptura(b64){
     toast('err', msg + ' No se guardó nada.');
     return true;
   };
+  if (/vehiculosantioquia\.com\.co/i.test(String(cap.u || ''))) return procesarImpuesto(cap, enRevision, rechazar);
 
   // 1. ¿Qué se buscó en el SIMIT? (el cuadro de búsqueda, o la dirección de la página)
   const limpiar = v => String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -1707,11 +1715,61 @@ function procesarCaptura(b64){
   return true;
 }
 
+// ── Impuesto de Antioquia (leído con el lector) ────────────────────────────
+function analizarImpuestoAnt(cap){
+  const t = String((cap && cap.t) || ''), plano = t.replace(/\s+/g, ' ');
+  const r = { fuente:'Gobernación de Antioquia', texto: t.slice(0, 6000), fecha: new Date(cap && cap.f || Date.now()).toISOString() };
+  const mp = plano.match(/\bPlaca\s*:?\s*([A-Z]{3}\s?\d{2}[A-Z0-9]|[A-Z]{3}\s?\d{3})\b/i);
+  r.placa = mp ? mp[1].toUpperCase().replace(/\s/g, '') : '';
+  const ult = plano.match(/ltimo\s+pago\s+realizado\s*Vigencia\s*:?\s*(\d{4})\s*Fecha de pago\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{4})\s*Valor pagado\s*:?\s*\$\s?([\d.,]+)/i);
+  if (ult){ r.ultVigencia = ult[1]; r.ultFecha = ult[2]; r.ultValor = numPesos(ult[3]); }
+  if (/no\s+tiene[s]?\s+(pagos|deudas|saldos?|obligaciones)\s+pendientes|paz\s+y\s+salvo|se\s+encuentra\s+al\s+d[ií]a/i.test(plano)) r.estado = 'aldia';
+  else if (/(tiene[s]?|presenta|registra)\s+(pagos|deudas|saldos?|vigencias|obligaciones)\s+pendientes|en\s+mora|total\s+a\s+pagar|valor\s+a\s+pagar|saldo\s+pendiente|pendiente[s]?\s+de\s+pago/i.test(plano)){
+    r.estado = 'debe';
+    // El total a pagar (nunca el "valor pagado" del último pago).
+    const m = plano.match(/(total\s+a\s+pagar|valor\s+a\s+pagar|saldo\s+(?:pendiente|a\s+pagar)|total\s+adeudado|total\s+deuda|total)\s*:?[^$]{0,40}?\$\s?([\d.,]+)/i);
+    if (m) r.total = numPesos(m[2]);
+    r.vigencias = [...new Set([...plano.matchAll(/\b(20\d{2})\b/g)].map(x => x[1]))].filter(a => a !== r.ultVigencia).slice(0, 8);
+  } else r.estado = 'desconocido';
+  return r;
+}
+function procesarImpuesto(cap, enRevision, rechazar){
+  const r = analizarImpuestoAnt(cap);
+  if (!enRevision) return rechazar('Abre primero la ficha de la moto y desde ahí consulta el impuesto.');
+  if (!r.placa) return rechazar('No se vio la placa en el resultado del impuesto. Toca el lector cuando aparezca "Información del vehículo".');
+  if (r.placa !== enRevision.placa) return rechazar(`El impuesto que leíste es de la placa «${r.placa}», pero la moto que estás revisando es ${enRevision.placa}.`);
+  if (r.estado === 'desconocido') return rechazar('El lector no reconoció si la moto debe o está al día. Revísalo en la página y márcalo a mano.');
+  const rev = enRevision;
+  rev.impuesto = r;
+  rev.checks = rev.checks || {};
+  rev.checks.impuesto = r.estado;
+  rev.checks.depto = 'Antioquia';
+  rev.checks.fecha = new Date().toISOString();
+  guardarRev(rev);
+  try { localStorage.removeItem(K_PEND); } catch(e){}
+  abrirFicha(rev);
+  setTimeout(() => sentir(r.estado === 'debe' ? 'alerta' : veredicto(rev).nivel === 'ok' ? 'limpio' : 'ok'), 250);
+  toast(r.estado === 'debe' ? 'err' : 'ok', r.estado === 'debe'
+    ? `${rev.placa} debe impuesto vehicular${r.total ? ': ' + pesos(r.total) : ''}.`
+    : `✓ Coincide: impuesto de ${rev.placa} al día${r.ultVigencia ? ` (último pago vigencia ${r.ultVigencia})` : ''}.`);
+  return true;
+}
+async function abrirImpuesto(){
+  if (!actual) return;
+  const depto = deptoDe(actual, analizarRunt(actual.runt).info);
+  const url = urlImpuesto(depto);
+  guardar(K_PEND, { id: actual.id, modo:'impuesto', desde: Date.now() });
+  try { await navigator.clipboard.writeText(actual.documento); } catch(e){}
+  const aviso = `Cédula ${actual.documento} copiada · placa ${actual.placa}. Con el resultado en pantalla toca el Lector PlacaLimpia.`;
+  if (ES_APP || depto !== 'Antioquia'){ window.open(url, '_blank'); toast('ok', aviso + (ES_APP ? ' Luego vuelve y toca "Pegar resultado".' : '')); }
+  else { location.href = url; }
+}
+
 // Código del lector (favorito). Lee el texto de la página del SIMIT y lo trae aquí.
 function codigoLector(){
   const destino = location.origin + location.pathname;
-  const js = "(function(){try{if(!/fcm\\.org\\.co/.test(location.hostname)){alert('Usa el lector en la página del SIMIT (fcm.org.co).');return;}" +
-    "var t=document.body.innerText||'';var q='';var ins=document.querySelectorAll('input');for(var i=0;i<ins.length;i++){if(ins[i].value){q=ins[i].value;break;}}" +
+  const js = "(function(){try{if(!/fcm\\.org\\.co|vehiculosantioquia\\.com\\.co/.test(location.hostname)){alert('Usa el lector en la página del SIMIT o del impuesto de Antioquia.');return;}" +
+    "var t=document.body.innerText||'';var q='';var ins=document.querySelectorAll('input');for(var i=0;i<ins.length;i++){var ty=(ins[i].type||'').toLowerCase();if(ins[i].value&&!/checkbox|radio|hidden|submit|button/.test(ty)){q=ins[i].value;break;}}" +
     "var d=JSON.stringify({t:t.slice(0,12000),q:q,u:location.href,f:Date.now()});var s=btoa(unescape(encodeURIComponent(d)));var c='PLACALIMPIA:'+s;" +
     "var ok=false;try{var a=document.createElement('textarea');a.value=c;a.setAttribute('readonly','');a.style.position='fixed';a.style.top='0';a.style.opacity='0';document.body.appendChild(a);a.focus();a.select();a.setSelectionRange(0,c.length);ok=document.execCommand('copy');document.body.removeChild(a);}catch(e){}" +
     "try{if(navigator.clipboard){navigator.clipboard.writeText(c);ok=true;}}catch(e){}" +
