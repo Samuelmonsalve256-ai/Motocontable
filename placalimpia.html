@@ -6,6 +6,9 @@
 <meta name="theme-color" content="#14161b">
 <meta name="robots" content="noindex, nofollow">
 <meta name="apple-mobile-web-app-title" content="PlacaLimpia">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" sizes="180x180" href="placalimpia-icono-v2.png?v=2">
 <link rel="icon" type="image/png" sizes="512x512" href="placalimpia-icono-v2-512.png?v=2">
 <link rel="icon" type="image/png" sizes="180x180" href="placalimpia-icono-v2.png?v=2">
@@ -357,9 +360,11 @@ code.copiable{display:block; background:var(--soft); border:1px dashed var(--lin
         <summary>Instalar en el iPhone (Safari)</summary>
         <ol class="pasos">
           <li>Toca <b>Copiar código del lector</b> (abajo).</li>
-          <li>En esta página toca <b>Compartir → Agregar marcador</b>, nómbralo <b>Lector PlacaLimpia</b> y guárdalo.</li>
+          <li>Abre <b>Safari</b>, entra a cualquier página y toca <b>Compartir → Agregar marcador</b>, nómbralo <b>Lector PlacaLimpia</b> y guárdalo.</li>
           <li>Abre los marcadores (📖), mantén presionado <b>Lector PlacaLimpia → Editar</b>, borra la dirección, <b>pega</b> el código y guarda.</li>
+          <li>Si ya lo tenías, solo cambia la dirección por el código nuevo.</li>
         </ol>
+        <p class="ayuda"><b>Usándolo desde la app:</b> en la ficha toca <b>Consultar SIMIT</b> (se abre aparte), toca el Lector con los resultados en pantalla, elige <b>Aceptar</b>, vuelve a la app y toca <b>Pegar resultado del lector</b>.</p>
       </details>
       <details class="det">
         <summary>Instalar en el computador (Safari o Chrome)</summary>
@@ -430,6 +435,7 @@ let captchaId = null, captchaEn = 0;
 let actual = null;          // revisión que se está viendo
 let vista = 'revisar', vistaAntes = 'motos';
 let filtro = 'todas';
+const ES_APP = !!(window.navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
 
 // ── Iconos ─────────────────────────────────────────────────────────────────
 const SVG = (d, s = 18, w = 2.4) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
@@ -847,7 +853,7 @@ function renderFicha(rev){
 
     ${tarjeta(IC.ley, 'Situación legal', v.grupos.legal)}
     ${tarjeta(IC.doc, 'Papeles al día', v.grupos.papeles)}
-    ${tarjeta(IC.multa, 'Multas · SIMIT', v.grupos.simit, '<p class="ayuda">Se abre el SIMIT con el dato copiado. Con los resultados en pantalla, toca tu favorito <b>Lector PlacaLimpia</b>.</p>')}
+    ${tarjeta(IC.multa, 'Multas · SIMIT', v.grupos.simit, `<button class="btn btn-oro" type="button" data-pegar style="margin-top:12px; font-size:15px; padding:12px">${IC.raw} Pegar resultado del lector</button><p class="ayuda">Abre el SIMIT con el botón de arriba, toca tu favorito <b>Lector PlacaLimpia</b> con los resultados en pantalla y vuelve aquí a pegar.</p>`)}
     ${tarjeta(IC.lupa, 'Verificación en la moto', v.grupos.fisica)}
 
     ${org ? `<section class="card"><div class="card-h"><div class="ic">${IC.sede}</div><h3>Dónde se hace el traspaso</h3></div>
@@ -875,6 +881,7 @@ function renderFicha(rev){
 
   const raiz = $('v-ficha');
   raiz.querySelectorAll('[data-simit]').forEach(b => b.addEventListener('click', () => abrirSimit(b.dataset.simit)));
+  raiz.querySelectorAll('[data-pegar]').forEach(b => b.addEventListener('click', pegarLector));
   raiz.querySelectorAll('[data-check]').forEach(b => b.addEventListener('click', () => {
     rev.checks = rev.checks || {};
     const k = b.dataset.check, val = b.dataset.val;
@@ -1071,15 +1078,32 @@ async function abrirSimit(modo){
   const valor = modo === 'placa' ? actual.placa : actual.documento;
   guardar(K_PEND, { id: actual.id, modo, valor, desde: Date.now() });
   try { await navigator.clipboard.writeText(valor); } catch(e){}
-  location.href = SIMIT_URL + encodeURIComponent(valor);
+  if (ES_APP){
+    window.open(SIMIT_URL + encodeURIComponent(valor), '_blank');
+    toast('ok', `Se abrió el SIMIT (${valor} copiado). Con los resultados en pantalla toca el Lector, vuelve aquí y toca "Pegar resultado del lector".`);
+  } else location.href = SIMIT_URL + encodeURIComponent(valor);
 }
 
 function recibirSimit(){
   const m = location.hash.match(/^#simit=(.+)$/);
   if (!m) return false;
   history.replaceState(null, '', location.pathname + location.search);
+  return procesarCaptura(decodeURIComponent(m[1]));
+}
+
+// En la app: el lector copia el resultado y aquí se pega.
+async function pegarLector(){
+  let txt = '';
+  try { txt = await navigator.clipboard.readText(); } catch(e){}
+  if (!/PLACALIMPIA:/.test(txt || '')) txt = prompt('Pega aquí lo que copió el Lector PlacaLimpia (mantén presionado → Pegar):') || '';
+  const m = String(txt).match(/PLACALIMPIA:([A-Za-z0-9+\/=%]+)/);
+  if (!m) return toast('err', 'No encontré un resultado del lector. En el SIMIT toca el Lector PlacaLimpia y vuelve a intentar.');
+  procesarCaptura(decodeURIComponent(m[1]));
+}
+
+function procesarCaptura(b64){
   let cap;
-  try { cap = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); } catch(e){ toast('err', 'No se pudo leer lo que trajo el lector.'); return false; }
+  try { cap = JSON.parse(decodeURIComponent(escape(atob(b64)))); } catch(e){ toast('err', 'No se pudo leer lo que trajo el lector.'); return false; }
   const pend = leer(K_PEND, null);
   const h = historial();
   const enRevision = (pend && h.find(x => x.id === pend.id)) || (actual && h.find(x => x.id === actual.id)) || null;
@@ -1132,8 +1156,11 @@ function codigoLector(){
   const destino = location.origin + location.pathname;
   const js = "(function(){try{if(!/fcm\\.org\\.co/.test(location.hostname)){alert('Usa el lector en la página del SIMIT (fcm.org.co).');return;}" +
     "var t=document.body.innerText||'';var q='';var ins=document.querySelectorAll('input');for(var i=0;i<ins.length;i++){if(ins[i].value){q=ins[i].value;break;}}" +
-    "var d=JSON.stringify({t:t.slice(0,12000),q:q,u:location.href,f:Date.now()});" +
-    "location.href='" + destino + "#simit='+encodeURIComponent(btoa(unescape(encodeURIComponent(d))));}catch(e){alert('Lector PlacaLimpia: '+e);}})();";
+    "var d=JSON.stringify({t:t.slice(0,12000),q:q,u:location.href,f:Date.now()});var s=btoa(unescape(encodeURIComponent(d)));var c='PLACALIMPIA:'+s;" +
+    "var ok=false;try{var a=document.createElement('textarea');a.value=c;a.setAttribute('readonly','');a.style.position='fixed';a.style.top='0';a.style.opacity='0';document.body.appendChild(a);a.focus();a.select();a.setSelectionRange(0,c.length);ok=document.execCommand('copy');document.body.removeChild(a);}catch(e){}" +
+    "try{if(navigator.clipboard){navigator.clipboard.writeText(c);ok=true;}}catch(e){}" +
+    "if(confirm((ok?'✓ Resultado copiado.\\n\\n':'')+'¿Usas PlacaLimpia como APP?\\n\\nAceptar = vuelve a la app y toca «Pegar resultado del lector».\\nCancelar = abrir PlacaLimpia aquí en Safari.')){return;}" +
+    "location.href='" + destino + "#simit='+encodeURIComponent(s);}catch(e){alert('Lector PlacaLimpia: '+e);}})();";
   return 'javascript:' + js;
 }
 
