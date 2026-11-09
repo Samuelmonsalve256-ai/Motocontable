@@ -441,7 +441,7 @@ code.copiable{display:block; background:var(--soft); border:1px dashed var(--lin
           <li>Abre los marcadores (📖), mantén presionado <b>Lector PlacaLimpia → Editar</b>, borra la dirección, <b>pega</b> el código y guarda.</li>
           <li>Si ya lo tenías, solo cambia la dirección por el código nuevo.</li>
         </ol>
-        <p class="ayuda"><b>Usándolo desde la app:</b> en la ficha toca <b>Consultar SIMIT</b> (se abre aparte), toca el Lector con los resultados en pantalla, elige <b>Aceptar</b>, vuelve a la app y toca <b>Pegar resultado del lector</b>.</p>
+        <p class="ayuda"><b>Usándolo desde la app:</b> en la ficha toca <b>Consultar SIMIT</b> (se abre aparte), toca el Lector con los resultados en pantalla, vuelve a la app y toca <b>Pegar resultado del lector</b> (el resultado queda copiado).</p>
       </details>
       <details class="det">
         <summary>Instalar en el computador (Safari o Chrome)</summary>
@@ -1668,7 +1668,8 @@ function procesarCaptura(b64){
   try { cap = JSON.parse(decodeURIComponent(escape(atob(b64)))); } catch(e){ toast('err', 'No se pudo leer lo que trajo el lector.'); return false; }
   const pend = leer(K_PEND, null);
   const h = historial();
-  const enRevision = (pend && h.find(x => x.id === pend.id)) || (actual && h.find(x => x.id === actual.id)) || null;
+  const idVista = actual ? actual.id : leer(K_ACTUAL, null);   // la moto que estabas viendo
+  const enRevision = (pend && h.find(x => x.id === pend.id)) || (idVista && h.find(x => x.id === idVista)) || null;
   const descRev = r => r ? `${r.placa} / ${nombreTipo(r.tipoDocumento)} ${r.documento}` : '';
   const rechazar = msg => {
     if (enRevision) abrirFicha(enRevision);
@@ -1735,7 +1736,8 @@ function analizarImpuestoAnt(cap){
 }
 function procesarImpuesto(cap, enRevision, rechazar){
   const r = analizarImpuestoAnt(cap);
-  if (!enRevision) return rechazar('Abre primero la ficha de la moto y desde ahí consulta el impuesto.');
+  if (!enRevision && r.placa) enRevision = historial().find(x => x.placa === r.placa) || null;   // la más reciente con esa placa
+  if (!enRevision) return rechazar('Esa placa no está en tus motos revisadas. Consulta primero el RUNT y luego el impuesto.');
   if (!r.placa) return rechazar('No se vio la placa en el resultado del impuesto. Toca el lector cuando aparezca "Información del vehículo".');
   if (r.placa !== enRevision.placa) return rechazar(`El impuesto que leíste es de la placa «${r.placa}», pero la moto que estás revisando es ${enRevision.placa}.`);
   if (r.estado === 'desconocido') return rechazar('El lector no reconoció si la moto debe o está al día. Revísalo en la página y márcalo a mano.');
@@ -1773,7 +1775,6 @@ function codigoLector(){
     "var d=JSON.stringify({t:t.slice(0,12000),q:q,u:location.href,f:Date.now()});var s=btoa(unescape(encodeURIComponent(d)));var c='PLACALIMPIA:'+s;" +
     "var ok=false;try{var a=document.createElement('textarea');a.value=c;a.setAttribute('readonly','');a.style.position='fixed';a.style.top='0';a.style.opacity='0';document.body.appendChild(a);a.focus();a.select();a.setSelectionRange(0,c.length);ok=document.execCommand('copy');document.body.removeChild(a);}catch(e){}" +
     "try{if(navigator.clipboard){navigator.clipboard.writeText(c);ok=true;}}catch(e){}" +
-    "if(confirm((ok?'✓ Resultado copiado.\\n\\n':'')+'¿Usas PlacaLimpia como APP?\\n\\nAceptar = vuelve a la app y toca «Pegar resultado del lector».\\nCancelar = abrir PlacaLimpia aquí en Safari.')){return;}" +
     "location.href='" + destino + "#simit='+encodeURIComponent(s);}catch(e){alert('Lector PlacaLimpia: '+e);}})();";
   return 'javascript:' + js;
 }
