@@ -186,6 +186,16 @@ details.det summary:has(.cnt)::after{margin-left:8px}
 .kv dt{color:var(--muted)} .kv dd{margin:0; font-weight:600; word-break:break-word}
 pre.crudo{white-space:pre-wrap; word-break:break-word; font-size:12px; background:var(--soft); padding:10px; border-radius:10px; max-height:300px; overflow:auto}
 
+.paso{border:1.5px solid var(--gold); background:linear-gradient(180deg, var(--gold-bg), var(--card))}
+.paso-et{font-size:11px; font-weight:800; letter-spacing:.12em; color:var(--gold)}
+.paso .t{font-size:17px; font-weight:800; letter-spacing:-.01em; margin-top:4px}
+.paso .d{font-size:13.5px; color:var(--muted); margin-top:2px}
+.paso-btns{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+.cambios{display:flex; gap:10px; align-items:center; margin-top:14px; padding:12px 14px; border-radius:16px; font-size:14px}
+.cambios.ok{background:var(--ok-bg); color:var(--ok)}
+.cambios .est{width:28px; height:28px; border-radius:9px; background:var(--card); display:grid; place-items:center; flex:none}
+.cambios-card.bad{border:1.5px solid var(--bad)} .cambios-card.warn{border:1.5px solid var(--warn)} .cambios-card.ok{border:1.5px solid var(--ok)}
+.pill.cambio{background:var(--bad); color:#fff; margin-left:4px}
 .acciones{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
 
 /* ── Motos (historial) ── */
@@ -331,7 +341,7 @@ code.copiable{display:block; background:var(--soft); border:1px dashed var(--lin
   <!-- ═══ Motos (historial) ═══ -->
   <section class="vista oculto" id="v-motos">
     <h1 class="titulo-vista">Mis motos</h1>
-    <p class="sub-vista">Cada moto que revisas queda aquí, con todas sus consultas.</p>
+    <p class="sub-vista">Cada moto que revisas queda aquí 30 días, con todas sus consultas.</p>
     <div class="stats" id="stats"></div>
     <div class="buscador">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
@@ -402,7 +412,7 @@ code.copiable{display:block; background:var(--soft); border:1px dashed var(--lin
         <li><b>Comparendo a la placa:</b> se puede hacer el trámite.</li>
         <li>Motos de 125 c.c. o menos no pagan impuesto vehicular.</li>
       </ul>
-      <p class="ayuda">El historial se guarda en este dispositivo y navegador.</p>
+      <p class="ayuda">El historial se guarda en este dispositivo y las consultas de más de <b>30 días</b> se borran solas.</p>
     </div>
   </section>
 </main>
@@ -647,6 +657,17 @@ function analizarRunt(r){
   if (serv && !/^particular$/i.test(serv)) out.items.servicio = { nivel:'warn', t:`Servicio: ${esc(serv)}`,
     d:'No es de servicio particular: el traspaso puede pedir requisitos adicionales.' };
 
+  const txt = (...v) => v.filter(Boolean).map(x => String(x).trim()).join(' · ');
+  out.datos = {
+    estado,
+    lims: lims.map(l => txt(campo(l, 'tipoLimitacion', 'tipo') || 'Limitación', campo(l, 'entidadJuridica', 'entidad'))),
+    prendas: [...prendas.map(x => txt('Prenda', campo(x, 'entidad', 'acreedor'))), ...garantias.map(g => txt('Garantía mobiliaria', campo(g, 'acreedor', 'entidad'))),
+              ...(siNo(info.gravamenes) ? ['Gravámenes'] : []), ...(!prendas.length && !garantias.length && pInfo ? ['Prenda'] : [])],
+    tramites: enCurso.map(x => txt(String(campo(x, 'tramitesRealizados') || 'Trámite').replace(/,\s*$/, ''), campo(x, 'estado'))),
+    soatFin: soat ? soat._fin : null,
+    rtmFin: rtm ? rtm._fin : null,
+    primeraRtm: primera, rtmNueva: !!nueva,
+  };
   return out;
 }
 
@@ -845,10 +866,77 @@ function filaHtml(i){
   const tag = i.bloquea ? 'Bloquea' : TAG[i.nivel];
   return `<div class="fila ${i.nivel}"><span class="est">${IC[i.nivel]}</span><div class="cuerpo"><div class="t">${esc(i.t)}</div><div class="d">${i.d}</div>${i.extra || ''}</div><span class="tag ${i.nivel}">${tag}</span></div>`;
 }
-function tarjeta(ic, titulo, items, pie){
+function tarjeta(ic, titulo, items, pie, id){
   const malos = items.filter(i => i.nivel === 'bad').length, pend = items.filter(i => i.nivel === 'nd').length;
   const cuenta = malos ? `<span class="cuenta" style="color:var(--bad)">${malos} con problema</span>` : pend ? `<span class="cuenta">${pend} pendiente${pend === 1 ? '' : 's'}</span>` : `<span class="cuenta" style="color:var(--ok)">Todo bien</span>`;
-  return `<section class="card"><div class="card-h"><div class="ic">${ic}</div><h3>${titulo}</h3>${cuenta}</div><div class="filas">${items.map(filaHtml).join('')}</div>${pie || ''}</section>`;
+  return `<section class="card"${id ? ` id="${id}"` : ''}><div class="card-h"><div class="ic">${ic}</div><h3>${titulo}</h3>${cuenta}</div><div class="filas">${items.map(filaHtml).join('')}</div>${pie || ''}</section>`;
+}
+
+// ── Siguiente paso: lo que falta, con un solo botón ────────────────────────
+function siguientePaso(rev){
+  const s = rev.simit || {}, ch = rev.checks || {};
+  const pegar = ES_APP ? `<button class="btn btn-linea btn-peq" type="button" data-pegar>${IC.raw} Pegar resultado</button>` : '';
+  if (!s.placa) return { t:'Consultar el SIMIT por placa', d:`Busca comparendos a la placa ${esc(rev.placa)}.`,
+    btn:`<button class="btn btn-oro btn-peq" type="button" data-simit="placa" style="margin:0; width:auto">${IC.ext} SIMIT por placa</button>${pegar}` };
+  if (!s.cedula) return { t:'Consultar el SIMIT por cédula', d:`Busca comparendos del propietario (${esc(nombreTipo(rev.tipoDocumento))} ${esc(rev.documento)}).`,
+    btn:`<button class="btn btn-oro btn-peq" type="button" data-simit="cedula" style="margin:0; width:auto">${IC.ext} SIMIT por cédula</button>${pegar}` };
+  if (!ch.motor || !ch.chasis) return { t:'Verificar motor y chasis', d:'Compara los números del RUNT con los grabados en la moto.',
+    btn:`<button class="btn btn-oro btn-peq" type="button" data-irsec="secFisica" style="margin:0; width:auto">Ir a verificar</button>` };
+  const imp = itemImpuesto(rev, analizarRunt(rev.runt).info);
+  if (imp.nivel === 'nd') return { t:'Revisar el impuesto vehicular', d:'Consulta con la placa y marca si está al día o debe.',
+    btn:`<button class="btn btn-oro btn-peq" type="button" data-irsec="secPapeles" style="margin:0; width:auto">Ir al impuesto</button>` };
+  return null;
+}
+function pasoHtml(p){
+  if (!p) return '';
+  return `<section class="card paso"><div class="paso-et">SIGUIENTE PASO</div><div class="t">${p.t}</div><div class="d">${p.d}</div><div class="paso-btns">${p.btn}</div></section>`;
+}
+
+// ── ¿Qué cambió desde la consulta anterior de la misma moto? ───────────────
+function consultaAnterior(rev){
+  return historial().filter(x => x.placa === rev.placa && x.id !== rev.id && new Date(x.fecha) < new Date(rev.fecha))
+    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))[0] || null;
+}
+function cambiosDesde(rev){
+  const ant = consultaAnterior(rev);
+  if (!ant) return null;
+  const A = analizarRunt(ant.runt).datos || {}, B = analizarRunt(rev.runt).datos || {};
+  const fa = new Date(ant.fecha), fb = new Date(rev.fecha), out = [];
+  const dif = (a = [], b = []) => ({ nuevos: b.filter(x => !a.includes(x)), quitados: a.filter(x => !b.includes(x)) });
+  let d = dif(A.lims, B.lims);
+  d.nuevos.forEach(x => out.push({ nivel:'bad', t:`Apareció un embargo o limitación: ${x}` }));
+  d.quitados.forEach(x => out.push({ nivel:'ok', t:`Se levantó: ${x}` }));
+  d = dif(A.prendas, B.prendas);
+  d.nuevos.forEach(x => out.push({ nivel:'bad', t:`Le montaron: ${x}` }));
+  d.quitados.forEach(x => out.push({ nivel:'ok', t:`Se levantó: ${x}` }));
+  d = dif(A.tramites, B.tramites);
+  d.nuevos.forEach(x => out.push({ nivel:'bad', t:`Nuevo trámite en curso: ${x}` }));
+  d.quitados.forEach(x => out.push({ nivel:'ok', t:`Ya no está en curso: ${x}` }));
+  if (A.estado && B.estado && A.estado !== B.estado) out.push({ nivel: B.estado === 'ACTIVO' ? 'ok' : 'bad', t:`El estado cambió de ${A.estado} a ${B.estado}` });
+  const vence = (nombre, fA, fB) => {
+    const a = fecha(fA), b = fecha(fB);
+    if (a && b && b > a) out.push({ nivel:'ok', t:`Renovaron ${nombre}: ahora vence el ${fNum(b)}` });
+    else if (a && a >= fa && a < fb) out.push({ nivel:'warn', t:`${nombre[0].toUpperCase() + nombre.slice(1)} se venció desde la consulta anterior (${fNum(a)})` });
+  };
+  vence('el SOAT', A.soatFin, B.soatFin);
+  vence('la tecnomecánica', A.rtmFin, B.rtmFin);
+  for (const m of ['placa', 'cedula']){
+    const a = (ant.simit || {})[m], b = (rev.simit || {})[m];
+    if (!a || !b || a === b || a.estado === 'desconocido' || b.estado === 'desconocido') continue;
+    const quien = m === 'placa' ? 'a la placa' : 'a la cédula';
+    if (a.estado === 'limpio' && b.estado === 'deudas') out.push({ nivel: m === 'cedula' ? 'bad' : 'warn', t:`Aparecieron comparendos ${quien}${b.total ? ': ' + pesos(b.total) : ''}` });
+    else if (a.estado === 'deudas' && b.estado === 'limpio') out.push({ nivel:'ok', t:`Ya no tiene comparendos ${quien}` });
+    else if (a.estado === 'deudas' && b.estado === 'deudas' && (b.total || 0) !== (a.total || 0)) out.push({ nivel: b.total > a.total ? 'warn' : 'ok', t:`Comparendos ${quien}: de ${pesos(a.total || 0)} a ${pesos(b.total || 0)}` });
+  }
+  return { ant, items: out };
+}
+function cambiosHtml(c){
+  if (!c) return '';
+  const cuando = `${fNum(new Date(c.ant.fecha))}`;
+  if (!c.items.length) return `<div class="cambios ok"><span class="est">${IC.ok}</span><div><b>Sin cambios</b> desde la consulta del ${cuando}.</div></div>`;
+  const peor = c.items.some(i => i.nivel === 'bad') ? 'bad' : c.items.some(i => i.nivel === 'warn') ? 'warn' : 'ok';
+  return `<section class="card cambios-card ${peor}"><div class="card-h"><div class="ic">${IC.hist}</div><h3>Cambios desde el ${cuando}</h3></div>
+    <div class="filas">${c.items.map(i => `<div class="fila ${i.nivel}"><span class="est">${IC[i.nivel]}</span><div class="cuerpo"><div class="t">${esc(i.t)}</div></div></div>`).join('')}</div></section>`;
 }
 
 function renderFicha(rev){
@@ -874,13 +962,16 @@ function renderFicha(rev){
       <div class="progreso"><div class="barra"><i style="width:${pct}%"></i></div><small><span>Revisión ${v.hechos} de ${v.total}</span><span>${pct}%</span></small></div>
     </div>
 
+    ${cambiosHtml(cambiosDesde(rev))}
+    ${pasoHtml(siguientePaso(rev))}
+
     ${v.bloqueos.length ? `<div class="lista-alerta bad"><b>Esto impide el traspaso</b><ul>${v.bloqueos.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
     ${!v.bloqueos.length && v.faltas.length ? `<div class="lista-alerta warn"><b>Antes del traspaso</b><ul>${v.faltas.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
 
     ${tarjeta(IC.ley, 'Situación legal', v.grupos.legal)}
-    ${tarjeta(IC.doc, 'Papeles al día', v.grupos.papeles)}
+    ${tarjeta(IC.doc, 'Papeles al día', v.grupos.papeles, '', 'secPapeles')}
     ${tarjeta(IC.multa, 'Multas · SIMIT', v.grupos.simit, `<button class="btn btn-oro" type="button" data-pegar style="margin-top:12px; font-size:15px; padding:12px">${IC.raw} Pegar resultado del lector</button><p class="ayuda">Abre el SIMIT con el botón de arriba, toca tu favorito <b>Lector PlacaLimpia</b> con los resultados en pantalla y vuelve aquí a pegar.</p>`)}
-    ${tarjeta(IC.lupa, 'Verificación en la moto', v.grupos.fisica)}
+    ${tarjeta(IC.lupa, 'Verificación en la moto', v.grupos.fisica, '', 'secFisica')}
 
     ${org ? `<section class="card"><div class="card-h"><div class="ic">${IC.sede}</div><h3>Dónde se hace el traspaso</h3></div>
       <p style="margin:6px 0 0; font-weight:700">${esc(org)}</p><p class="ayuda" style="margin-top:2px">Organismo de tránsito donde está matriculada${v.a.info && deptoDe(rev, info) && deptoDe(rev, info) !== 'Otro' ? ` · ${esc(deptoDe(rev, info))}` : ''}.</p></section>` : ''}
@@ -909,6 +1000,9 @@ function renderFicha(rev){
   const raiz = $('v-ficha');
   raiz.querySelectorAll('[data-simit]').forEach(b => b.addEventListener('click', () => abrirSimit(b.dataset.simit)));
   raiz.querySelectorAll('[data-pegar]').forEach(b => b.addEventListener('click', pegarLector));
+  raiz.querySelectorAll('[data-irsec]').forEach(b => b.addEventListener('click', () => {
+    const el = $(b.dataset.irsec); if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+  }));
   raiz.querySelectorAll('[data-check]').forEach(b => b.addEventListener('click', () => {
     rev.checks = rev.checks || {};
     const k = b.dataset.check, val = b.dataset.val;
@@ -970,95 +1064,209 @@ function docOculto(doc){ const s = String(doc || ''); return s.length > 4 ? '*'.
 function crearPDF(rev){
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF({ unit:'mm', format:'a4' });
-  const v = veredicto(rev), info = v.a.info;
-  const W = 210, M = 16, AN = W - 2 * M;
-  const COL = { ok:[21,128,61], warn:[180,83,9], bad:[200,30,30], nd:[110,116,128] };
-  const ETQ = { ok:'BIEN', warn:'OJO', bad:'PROBLEMA', nd:'PENDIENTE' };
+  const v = veredicto(rev), info = v.a.info, dat = v.a.datos || {};
+  const W = 210, H = 297, M = 14, AN = W - 2 * M;
+  const C = {
+    tinta:[17,19,24], gris:[96,103,116], grisC:[150,156,168], linea:[226,229,234], suave:[246,247,249],
+    oro:[201,154,42], oroC:[240,215,140], grafito:[20,22,27], grafito2:[38,42,51], placa:[246,201,0],
+    ok:[22,128,61], warn:[194,110,10], bad:[205,32,32], nd:[120,127,140],
+    okB:[232,246,237], warnB:[253,243,224], badB:[253,235,235], ndB:[240,242,245],
+  };
+  const ETQ = { ok:'BIEN', warn:'ATENCIÓN', bad:'PROBLEMA', nd:'PENDIENTE' };
+  const f = (c) => pdf.setFillColor(c[0], c[1], c[2]);
+  const d = (c) => pdf.setDrawColor(c[0], c[1], c[2]);
+  const t = (c) => pdf.setTextColor(c[0], c[1], c[2]);
+  const fuente = (estilo, tam) => { pdf.setFont('helvetica', estilo); pdf.setFontSize(tam); };
+  const hoy = new Date();
+  const codigo = `PL-${rev.placa}-${fNum(new Date(rev.fecha)).replace(/\//g, '')}`;
   let y = 0;
-  const nuevaPag = () => { pdf.addPage(); y = 18; };
-  const espacio = n => { if (y + n > 280) nuevaPag(); };
 
-  // Encabezado
-  pdf.setFillColor(20, 22, 27); pdf.rect(0, 0, W, 30, 'F');
-  pdf.setTextColor(255, 255, 255); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(19); pdf.text('PlacaLimpia', M, 15);
-  pdf.setTextColor(226, 189, 85); pdf.setFontSize(9); pdf.text('PLATINIUM MOTORS  ·  INFORME DEL VEHÍCULO', M, 22);
-  pdf.setTextColor(200, 205, 214); pdf.setFont('helvetica', 'normal');
-  pdf.text('Generado el ' + fNum(new Date()) + ' ' + hTxt(new Date()), W - M, 22, { align:'right' });
+  // Iconos dibujados (check, alerta, x, reloj)
+  const icono = (nivel, cx, cy, r) => {
+    f(C[nivel]); pdf.circle(cx, cy, r, 'F');
+    d([255,255,255]); pdf.setLineWidth(r * 0.22); pdf.setLineCap('round'); pdf.setLineJoin('round');
+    if (nivel === 'ok') pdf.lines([[r * 0.38, r * 0.38], [r * 0.7, -r * 0.8]], cx - r * 0.5, cy + 0.02, [1, 1], 'S', false);
+    else if (nivel === 'bad'){ pdf.line(cx - r * .42, cy - r * .42, cx + r * .42, cy + r * .42); pdf.line(cx + r * .42, cy - r * .42, cx - r * .42, cy + r * .42); }
+    else if (nivel === 'warn'){ pdf.line(cx, cy - r * .5, cx, cy + r * .12); f([255,255,255]); pdf.circle(cx, cy + r * .45, r * .1, 'F'); }
+    else { pdf.setLineWidth(r * .16); pdf.circle(cx, cy, r * .55, 'S'); pdf.line(cx, cy, cx, cy - r * .35); pdf.line(cx, cy, cx + r * .28, cy); }
+  };
 
-  // Placa
-  y = 40;
-  pdf.setFillColor(246, 201, 0); pdf.setDrawColor(17, 17, 17); pdf.setLineWidth(1.2);
-  pdf.roundedRect(M, y, 58, 22, 3, 3, 'FD');
-  pdf.setTextColor(17, 17, 17); pdf.setFont('courier', 'bold'); pdf.setFontSize(24); pdf.text(rev.placa, M + 29, y + 13, { align:'center' });
-  pdf.setFont('helvetica', 'bold'); pdf.setFontSize(6); pdf.text('C O L O M B I A', M + 29, y + 19, { align:'center' });
+  const encabezadoPagina = (primera) => {
+    f(C.grafito); pdf.rect(0, 0, W, primera ? 36 : 16, 'F');
+    f(C.oro); pdf.rect(0, primera ? 36 : 16, W, 1.1, 'F');
+    if (primera){
+      f(C.oro); pdf.roundedRect(M, 10, 15, 15, 3.5, 3.5, 'F');
+      t(C.grafito); fuente('bold', 10); pdf.text('PM', M + 7.5, 19.3, { align:'center' });
+      t([255,255,255]); fuente('bold', 18); pdf.text('Placa', M + 20, 18); const wp = pdf.getTextWidth('Placa');
+      t(C.oroC); pdf.text('Limpia', M + 20 + wp, 18);
+      t(C.oroC); fuente('bold', 7.5); pdf.text('INFORME DE REVISIÓN VEHICULAR', M + 20, 24.5);
+      t([255,255,255]); fuente('bold', 9.5); pdf.text('PLATINIUM MOTORS', W - M, 15, { align:'right' });
+      t([180,186,198]); fuente('normal', 8); pdf.text('Informe N.° ' + codigo, W - M, 21, { align:'right' });
+      pdf.text('Emitido el ' + fNum(hoy) + ' · ' + hTxt(hoy), W - M, 26, { align:'right' });
+      y = 46;
+    } else {
+      t([255,255,255]); fuente('bold', 10); pdf.text('PlacaLimpia · ' + rev.placa, M, 10.5);
+      t([180,186,198]); fuente('normal', 8); pdf.text('Informe N.° ' + codigo, W - M, 10.5, { align:'right' });
+      y = 26;
+    }
+  };
+  const nuevaPag = () => { pdf.addPage(); encabezadoPagina(false); };
+  const espacio = n => { if (y + n > H - 20) nuevaPag(); };
+  const tituloSeccion = (txt) => {
+    espacio(14);
+    f(C.oro); pdf.rect(M, y - 3.6, 1.4, 5, 'F');
+    t(C.tinta); fuente('bold', 11.5); pdf.text(txt.toUpperCase(), M + 4, y); y += 6;
+  };
 
-  // Vehículo
-  const nombre = plano([campo(info, 'marca'), campo(info, 'linea')].filter(Boolean).join(' ') || 'Vehículo');
-  const datos = plano([campo(info, 'modelo') ? 'Modelo ' + info.modelo : '', campo(info, 'cilindraje') ? info.cilindraje + ' c.c.' : '', campo(info, 'color'), campo(info, 'tipoServicio')].filter(Boolean).join('  ·  '));
-  pdf.setTextColor(17, 19, 24); pdf.setFontSize(15); pdf.text(nombre, M + 66, y + 8);
-  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9.5); pdf.setTextColor(90, 96, 108);
-  pdf.text(pdf.splitTextToSize(datos, AN - 66), M + 66, y + 14);
-  pdf.text(plano(`Propietario ${nombreTipo(rev.tipoDocumento)} ${docOculto(rev.documento)}  ·  RUNT consultado ${fNum(new Date(rev.fecha))}`), M + 66, y + 20);
+  encabezadoPagina(true);
+
+  // ── Vehículo
+  f(C.tinta); pdf.roundedRect(M, y, 62, 25, 3.5, 3.5, 'F');
+  f(C.placa); pdf.roundedRect(M + 1.4, y + 1.4, 59.2, 22.2, 2.6, 2.6, 'F');
+  d(C.tinta); pdf.setLineWidth(.5); pdf.roundedRect(M + 3, y + 3, 56, 19, 1.8, 1.8, 'S');
+  t(C.tinta); pdf.setFont('courier', 'bold'); pdf.setFontSize(27); pdf.text(rev.placa, M + 31, y + 14.6, { align:'center' });
+  fuente('bold', 5.5); pdf.text('C  O  L  O  M  B  I  A', M + 31, y + 20, { align:'center' });
+
+  const x0 = M + 68, colW = (AN - 68) / 3;
+  t(C.tinta); fuente('bold', 15); pdf.text(plano([campo(info, 'marca'), campo(info, 'linea')].filter(Boolean).join(' ') || 'Vehículo'), x0, y + 5);
+  const spec = [['MODELO', campo(info, 'modelo')], ['CILINDRAJE', campo(info, 'cilindraje') ? info.cilindraje + ' c.c.' : ''], ['COLOR', campo(info, 'color')],
+                ['SERVICIO', campo(info, 'tipoServicio')], ['CLASE', campo(info, 'clase')], ['ESTADO RUNT', campo(info, 'estadoAutomotor')]];
+  spec.forEach(([et, val], k) => {
+    const cx = x0 + (k % 3) * colW, cy = y + 11 + Math.floor(k / 3) * 9;
+    t(C.grisC); fuente('bold', 6.3); pdf.text(et, cx, cy);
+    t(C.tinta); fuente('bold', 8.6); pdf.text(pdf.splitTextToSize(plano(val || '—'), colW - 2)[0], cx, cy + 3.8);
+  });
+  y += 30;
+  t(C.gris); fuente('normal', 8.3);
+  pdf.text(plano(`Propietario: ${nombreTipo(rev.tipoDocumento)} ${docOculto(rev.documento)}   ·   Consulta RUNT: ${fNum(new Date(rev.fecha))} ${hTxt(new Date(rev.fecha))}`), M, y);
+  y += 6;
+
+  // ── Veredicto
+  const cv = C[v.nivel], cb = C[v.nivel + 'B'];
+  f(cb); pdf.roundedRect(M, y, AN, 24, 4, 4, 'F');
+  f(cv); pdf.roundedRect(M, y, 3, 24, 1.5, 1.5, 'F');
+  icono(v.nivel, M + 13, y + 12, 6.2);
+  t(cv); fuente('bold', 15); pdf.text(plano(v.titulo).toUpperCase(), M + 23, y + 10.5);
+  t(C.gris); fuente('normal', 9.5); pdf.text(plano(v.sub), M + 23, y + 16.5);
+  const bx = W - M - 52, pct = v.hechos / v.total;
+  t(C.gris); fuente('bold', 7); pdf.text('AVANCE DE LA REVISIÓN', bx, y + 9);
+  f([255,255,255]); pdf.roundedRect(bx, y + 11.5, 46, 3.2, 1.6, 1.6, 'F');
+  f(cv); pdf.roundedRect(bx, y + 11.5, Math.max(3.2, 46 * pct), 3.2, 1.6, 1.6, 'F');
+  t(C.tinta); fuente('bold', 8.5); pdf.text(`${v.hechos} de ${v.total} puntos`, bx, y + 19.5);
   y += 30;
 
-  // Veredicto
-  const c = COL[v.nivel];
-  pdf.setFillColor(c[0], c[1], c[2]); pdf.roundedRect(M, y, AN, 16, 3, 3, 'F');
-  pdf.setTextColor(255, 255, 255); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(13); pdf.text(plano(v.titulo).toUpperCase(), M + 5, y + 7);
-  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9.5); pdf.text(plano(`${v.sub}  ·  Revisión ${v.hechos} de ${v.total}`), M + 5, y + 12.5);
-  y += 22;
+  // ── Problemas o pendientes
   const lista = v.bloqueos.length ? v.bloqueos : v.faltas;
   if (lista.length){
-    pdf.setTextColor(c[0], c[1], c[2]); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(10);
-    pdf.text(v.bloqueos.length ? 'Esto impide el traspaso:' : 'Antes del traspaso:', M, y); y += 5;
-    pdf.setFont('helvetica', 'normal'); pdf.setTextColor(40, 44, 52);
-    lista.forEach(x => { const l = pdf.splitTextToSize('-  ' + plano(x), AN); espacio(l.length * 4.6); pdf.text(l, M + 2, y); y += l.length * 4.6; });
+    const col = v.bloqueos.length ? C.bad : C.warn;
+    const lineas = lista.map(x => pdf.splitTextToSize(plano(x), AN - 14));
+    const alto = 9 + lineas.reduce((s, l) => s + l.length * 4.3 + 1, 0);
+    espacio(alto);
+    d(col); pdf.setLineWidth(.4); f([255,255,255]); pdf.roundedRect(M, y, AN, alto, 3, 3, 'FD');
+    t(col); fuente('bold', 9); pdf.text(v.bloqueos.length ? 'ESTO IMPIDE EL TRASPASO' : 'ANTES DEL TRASPASO', M + 5, y + 6);
+    let yy = y + 11.5; fuente('normal', 9); t(C.tinta);
+    lineas.forEach(l => { f(col); pdf.circle(M + 6, yy - 1.2, .9, 'F'); t(C.tinta); pdf.text(l, M + 9.5, yy); yy += l.length * 4.3 + 1; });
+    y += alto + 6;
+  }
+
+  // ── Cambios desde la consulta anterior
+  const cam = cambiosDesde(rev);
+  if (cam){
+    tituloSeccion(`Cambios desde el ${fNum(new Date(cam.ant.fecha))}`);
+    if (!cam.items.length){ t(C.ok); fuente('bold', 9.5); pdf.text('Sin cambios desde la consulta anterior.', M + 4, y); y += 7; }
+    cam.items.forEach(c => { espacio(7); icono(c.nivel, M + 6, y - 1.3, 2.3); t(C.tinta); fuente('normal', 9.3);
+      const l = pdf.splitTextToSize(plano(c.t), AN - 14); pdf.text(l, M + 11, y); y += l.length * 4.4 + 2; });
     y += 3;
   }
 
-  // Secciones
+  // ── Resumen en casillas
+  tituloSeccion('Resumen');
+  const s = rev.simit || {}, ch = rev.checks || {};
+  const simitCasilla = (m) => { const x = s[m]; if (!x || x.estado === 'desconocido') return ['nd', 'Por revisar'];
+    if (x.estado === 'limpio') return ['ok', 'Sin comparendos']; return [m === 'cedula' ? 'bad' : 'warn', x.total ? pesos(x.total) : 'Con comparendos']; };
+  const vig = (fin) => fin && fecha(fin) >= hoy0();
+  const imp = itemImpuesto(rev, info);
+  const casillas = [
+    ['EMBARGOS', ...(dat.lims && dat.lims.length ? ['bad', dat.lims.length + ' registrado' + (dat.lims.length > 1 ? 's' : '')] : ['ok', 'Ninguno'])],
+    ['PRENDAS', ...(dat.prendas && dat.prendas.length ? ['bad', 'Tiene prenda'] : ['ok', 'Ninguna'])],
+    ['TRÁMITES EN CURSO', ...(dat.tramites && dat.tramites.length ? ['bad', 'Sí, ' + dat.tramites.length] : ['ok', 'Ninguno'])],
+    ['SOAT', ...(dat.soatFin ? (vig(dat.soatFin) ? [dias(fecha(dat.soatFin)) <= 30 ? 'warn' : 'ok', 'Vence ' + fNum(fecha(dat.soatFin))] : ['bad', 'Venció ' + fNum(fecha(dat.soatFin))]) : ['bad', 'Sin SOAT'])],
+    ['TECNOMECÁNICA', ...(dat.rtmFin ? (vig(dat.rtmFin) ? ['ok', 'Vence ' + fNum(fecha(dat.rtmFin))] : ['bad', 'Venció ' + fNum(fecha(dat.rtmFin))])
+                         : dat.rtmNueva ? ['ok', '1.ª vence ' + fNum(fecha(dat.primeraRtm))] : ['bad', 'Sin revisión'])],
+    ['IMPUESTO', imp.nivel, imp.nivel === 'ok' ? (/No paga/.test(imp.t) ? 'No paga' : 'Al día') : imp.nivel === 'bad' ? 'Debe' : 'Por revisar'],
+    ['COMPARENDOS PLACA', ...simitCasilla('placa')],
+    ['COMPARENDOS CÉDULA', ...simitCasilla('cedula')],
+    ['MOTOR Y CHASIS', ...(ch.motor === 'no' || ch.chasis === 'no' ? ['bad', 'No coinciden'] : ch.motor === 'si' && ch.chasis === 'si' ? ['ok', 'Verificados'] : ['nd', 'Por verificar'])],
+  ];
+  const cw = (AN - 8) / 3, chh = 17;
+  espacio(3 * (chh + 4));
+  casillas.forEach(([et, niv, val], k) => {
+    const cx = M + (k % 3) * (cw + 4), cy = y + Math.floor(k / 3) * (chh + 4);
+    f(C[niv + 'B']); pdf.roundedRect(cx, cy, cw, chh, 3, 3, 'F');
+    icono(niv, cx + 6.5, cy + chh / 2, 3.2);
+    t(C.gris); fuente('bold', 6.5); pdf.text(et, cx + 12, cy + 6.6);
+    t(C[niv]); fuente('bold', 10); pdf.text(pdf.splitTextToSize(plano(val), cw - 14)[0], cx + 12, cy + 12.4);
+  });
+  y += 3 * (chh + 4) + 4;
+
+  // ── Detalle por secciones
   const seccion = (titulo, items) => {
-    espacio(16);
-    pdf.setDrawColor(226, 189, 85); pdf.setLineWidth(.6); pdf.line(M, y, M + AN, y); y += 6;
-    pdf.setTextColor(17, 19, 24); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(12); pdf.text(titulo, M, y); y += 6;
-    items.forEach(i => {
-      const d = pdf.splitTextToSize(plano(i.d), AN - 30);
-      espacio(6 + d.length * 4.4);
-      const k = COL[i.nivel];
-      pdf.setFillColor(k[0], k[1], k[2]); pdf.roundedRect(M, y - 3.6, 24, 5.4, 1.4, 1.4, 'F');
-      pdf.setTextColor(255, 255, 255); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(7.2);
-      pdf.text(i.bloquea ? 'BLOQUEA' : ETQ[i.nivel], M + 12, y, { align:'center' });
-      pdf.setTextColor(17, 19, 24); pdf.setFontSize(10.5); pdf.text(plano(i.t), M + 28, y);
-      pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9.2); pdf.setTextColor(90, 96, 108);
-      pdf.text(d, M + 28, y + 4.6);
-      y += 6 + d.length * 4.4 + 2;
+    tituloSeccion(titulo);
+    items.forEach((it, k) => {
+      const det = pdf.splitTextToSize(plano(it.d), AN - 48);
+      const alto = 8 + det.length * 4.1;
+      espacio(alto + 1);
+      if (k % 2 === 0){ f(C.suave); pdf.roundedRect(M, y - 4.5, AN, alto, 2, 2, 'F'); }
+      f(C[it.nivel + 'B']); pdf.roundedRect(M + 3, y - 2.6, 24, 5.4, 2.7, 2.7, 'F');
+      t(C[it.nivel]); fuente('bold', 6.6); pdf.text(it.bloquea ? 'BLOQUEA' : ETQ[it.nivel], M + 15, y + 1.1, { align:'center' });
+      t(C.tinta); fuente('bold', 9.8); pdf.text(plano(it.t), M + 31, y + 1);
+      t(C.gris); fuente('normal', 8.6); pdf.text(det, M + 31, y + 5.4);
+      y += alto + 1;
     });
-    y += 2;
+    y += 4;
   };
   seccion('Situación legal', v.grupos.legal);
-  seccion('Papeles al día', v.grupos.papeles);
-  seccion('Multas - SIMIT', v.grupos.simit);
-  seccion('Verificación en la moto', v.grupos.fisica.map(i => ({ ...i, d: i.d + ` · Motor ${campo(info, 'numMotor') || '-'} · Chasis ${campo(info, 'numChasis') || '-'}` })));
+  seccion('Papeles', v.grupos.papeles);
+  seccion('Multas · SIMIT', v.grupos.simit);
 
+  // ── Identificación
+  tituloSeccion('Identificación del vehículo');
+  const nums = [['MOTOR', campo(info, 'numMotor'), ch.motor], ['CHASIS', campo(info, 'numChasis'), ch.chasis], ['VIN', campo(info, 'vin'), null]].filter(n => n[1]);
+  const nw = (AN - 4 * (nums.length - 1)) / nums.length;
+  espacio(22);
+  nums.forEach(([et, val, chk], k) => {
+    const cx = M + k * (nw + 4);
+    d(C.linea); pdf.setLineWidth(.4); f([255,255,255]); pdf.roundedRect(cx, y - 3, nw, 17, 3, 3, 'FD');
+    t(C.grisC); fuente('bold', 6.5); pdf.text(et, cx + 4, y + 2);
+    t(C.tinta); pdf.setFont('courier', 'bold'); pdf.setFontSize(10); pdf.text(pdf.splitTextToSize(String(val), nw - 8)[0], cx + 4, y + 7.6);
+    const est = chk === 'si' ? ['ok', 'Verificado en la moto'] : chk === 'no' ? ['bad', 'No coincide'] : chk === undefined || chk === null ? (et === 'VIN' ? null : ['nd', 'Sin verificar']) : null;
+    if (est){ t(C[est[0]]); fuente('bold', 7); pdf.text(est[1], cx + 4, y + 11.8); }
+  });
+  y += 24;
+
+  // ── Tránsito e historial
   const org = campo(info, 'organismoTransito');
-  if (org){ espacio(14); pdf.setTextColor(17, 19, 24); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(11); pdf.text('Dónde se hace el traspaso', M, y); y += 5;
-    pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9.5); pdf.setTextColor(60, 64, 72); pdf.text(plano(org), M, y); y += 8; }
+  if (org){ tituloSeccion('Dónde se hace el traspaso'); t(C.tinta); fuente('bold', 9.5); pdf.text(plano(org), M + 4, y); y += 4.5;
+    const dep = deptoDe(rev, info); if (dep && dep !== 'Otro'){ t(C.gris); fuente('normal', 8.5); pdf.text('Departamento: ' + plano(dep), M + 4, y); y += 4.5; } y += 4; }
 
-  // Historial de consultas de esta moto
-  const todas = historial().filter(x => x.placa === rev.placa);
-  if (todas.length){
-    espacio(14); pdf.setTextColor(17, 19, 24); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(11); pdf.text('Historial de consultas de esta moto', M, y); y += 5;
-    pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9.5);
-    todas.forEach(x => { espacio(5); const vx = veredicto(x); const k = COL[vx.nivel]; pdf.setTextColor(k[0], k[1], k[2]);
-      pdf.text(plano(`${fNum(new Date(x.fecha))} ${hTxt(new Date(x.fecha))}  ·  ${vx.titulo}`), M, y); y += 5; });
+  const todas = historial().filter(x => x.placa === rev.placa).sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+  if (todas.length > 1){
+    tituloSeccion('Consultas de esta moto');
+    todas.forEach(x => { espacio(6); const vx = veredicto(x); icono(vx.nivel, M + 6, y - 1.2, 2);
+      t(C.tinta); fuente('bold', 8.8); pdf.text(`${fNum(new Date(x.fecha))}  ${hTxt(new Date(x.fecha))}`, M + 11, y);
+      t(C[vx.nivel]); fuente('normal', 8.8); pdf.text(plano(vx.titulo), M + 50, y); y += 5.5; });
   }
 
-  // Pie
+  // ── Pie en todas las páginas
   const n = pdf.getNumberOfPages();
   for (let i = 1; i <= n; i++){
-    pdf.setPage(i); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7.5); pdf.setTextColor(140, 146, 158);
-    pdf.text('Informe generado con PlacaLimpia PM a partir de la información del RUNT y del SIMIT a la fecha de consulta. Verifique antes de cualquier trámite.', M, 290);
-    pdf.text(`${i}/${n}`, W - M, 290, { align:'right' });
+    pdf.setPage(i);
+    f(C.oro); pdf.rect(M, H - 15, AN, .5, 'F');
+    t(C.tinta); fuente('bold', 7.5); pdf.text('PlacaLimpia · Platinium Motors', M, H - 10);
+    t(C.grisC); fuente('normal', 6.8);
+    pdf.text('Información tomada del RUNT y del SIMIT en la fecha de consulta; los datos marcados por el revisor se indican como tales.', M, H - 6.5);
+    pdf.text('Verifique antes de cualquier trámite. La cédula del propietario se muestra parcialmente por protección de datos.', M, H - 3.5);
+    t(C.gris); fuente('bold', 7.5); pdf.text(`Página ${i} de ${n}`, W - M, H - 10, { align:'right' });
   }
   return pdf;
 }
@@ -1145,7 +1353,7 @@ function pintarMotos(){
       ${chipPlaca(m.rev.placa)}
       <div class="info"><div class="n">${esc(nombre)}</div>
         <div class="s">${esc(nombreTipo(m.rev.tipoDocumento))} ${esc(m.rev.documento)} · ${hace(new Date(m.rev.fecha))}${m.n > 1 ? ` · ${m.n} consultas` : ''}</div>
-        <span class="pill ${m.v.nivel}"><i></i>${esc(m.v.titulo)}</span></div>
+        <span class="pill ${m.v.nivel}"><i></i>${esc(m.v.titulo)}</span>${(() => { const c = cambiosDesde(m.rev); return c && c.items.some(i => i.nivel !== 'ok') ? '<span class="pill cambio">⚠ Cambió</span>' : ''; })()}</div>
       <span class="flecha">${IC.flecha}</span></button>`;
   }).join('');
   $('listaMotos').querySelectorAll('[data-abrir]').forEach(b => b.addEventListener('click', () => {
@@ -1322,7 +1530,7 @@ function procesarCaptura(b64){
   abrirFicha(rev);
   toast(s.estado === 'desconocido' ? 'err' : 'ok',
     s.estado === 'desconocido' ? 'El lector no reconoció la pantalla del SIMIT. Si viste que no hay comparendos, confírmalo en "Multas · SIMIT".'
-      : `✓ Coincide: SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'} (${q}) agregado a ${rev.placa}.`);
+      : `✓ Coincide: SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'} (${q}) agregado a ${rev.placa}.${modo === 'placa' && !(rev.simit || {}).cedula ? ' Sigue con el SIMIT por cédula (botón arriba).' : ''}`);
   return true;
 }
 
@@ -1402,10 +1610,19 @@ async function iniciar(){
 }
 
 let arrancado = false;
+// Las consultas de más de 30 días se borran solas (no se guardan datos que ya no se necesitan).
+const DIAS_HISTORIAL = 30;
+function limpiarViejas(){
+  const limite = Date.now() - DIAS_HISTORIAL * 86400000;
+  const h = historial(), quedan = h.filter(x => new Date(x.fecha).getTime() >= limite);
+  if (quedan.length !== h.length) guardar(K_HIST, quedan);
+}
+
 function arrancar(sesion){
   mostrarApp(sesion);
   if (arrancado){ ir(vista === 'ficha' && actual ? 'ficha' : 'revisar'); return; }
   arrancado = true;
+  limpiarViejas();
   ir('revisar');
   recibirSimit();
   nuevoCaptcha();
