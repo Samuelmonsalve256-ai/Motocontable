@@ -5364,6 +5364,7 @@ function ccCrearVehiculoRetoma(v, id){
     gastos:[], retoma: {ventaId: v.id, vendido: ccNombreVendido(v), fecha: v.fecha, valor: r.valor}};
   if(r.tipo === 'carro'){ veh.km = ''; veh.cilindraje = ''; carros.unshift(veh); saveCarros(); }
   else { motos.unshift(veh); saveMotos(); }
+  try { intRevisarVeh(r.tipo === 'carro' ? 'carro' : 'moto', id, 'te entró en retoma'); } catch(e){}
 }
 function ccAvisarVentaNueva(v){
   if(!v) return;
@@ -7665,10 +7666,11 @@ function intColores(t){ const s = new Set(); intPalabras(t).forEach(w=>{ const c
 //  parecida → misma referencia pero otro color, otro año cercano o datos sin registrar
 function intEvaluar(x, tipo, v){
   const b = x.busca;
-  if(!b) return intCoincide(x.vehTexto, v) ? {nivel:'exacta', notas:[]} : null;
+  if(!b){ const r0 = intCoincideNivel(x.vehTexto, v); return r0 ? {nivel: r0.nivel, notas: r0.notas} : null; }
   if(b.tipo && b.tipo !== tipo) return null;
-  if(!intCoincide(b.ref, {nombre: v.nombre, modelo: v.modelo || '', cilindraje: v.cilindraje || ''})) return null;
-  const notas = []; let exacta = true;
+  const r = intCoincideNivel(b.ref, {nombre: v.nombre, modelo: v.modelo || '', cilindraje: v.cilindraje || ''});
+  if(!r) return null;
+  const notas = [...r.notas]; let exacta = r.nivel === 'exacta';
   const va = intPalabras(`${v.nombre||''} ${v.modelo||''}`).filter(intEsAnio).map(Number);
   if(b.anio){
     const A = Number(b.anio);
@@ -7676,8 +7678,8 @@ function intEvaluar(x, tipo, v){
     else {
       const y = va.reduce((m, y)=>Math.abs(y - A) < Math.abs(m - A) ? y : m, va[0]), dif = Math.abs(y - A);
       if(dif === 1 && b.cercano) notas.push(`modelo ${y}`);
-      else if(dif > 0 && dif <= 2){ exacta = false; notas.push(`es modelo ${y}, buscaba ${A}`); }
-      else if(dif > 2) return null;
+      else if(dif > 0 && dif <= 8){ exacta = false; notas.push(`es modelo ${y}, buscaba ${A}`); }
+      else if(dif > 8) return null;
     }
   }
   if(b.color && !b.cualquierColor){
@@ -7696,22 +7698,54 @@ const INT_COLORES = new Set('negra negro blanca blanco roja rojo azul gris plate
 const INT_MARCAS = new Set('yamaha honda suzuki bajaj kawasaki ktm akt hero tvs royal enfield auteco victory kymco bmw ducati harley benelli cfmoto vespa piaggio sym kia mazda chevrolet renault toyota nissan ford hyundai volkswagen mitsubishi mercedes audi peugeot jeep subaru'.split(' '));
 const intEsAnio = w => /^(19|20)\d\d$/.test(w);
 function intPalabras(t){ return mcSinTildes(t).split(/[^a-z0-9]+/).filter(Boolean); }
-function intCoincide(busca, veh){
-  const q = intPalabras(busca); if(!q.length || !veh) return false;
+// ¿Dos palabras son casi iguales? (una letra de más, de menos, cambiada o dos letras al revés: "cfr" = "crf")
+function intCasiIgual(a, b){
+  if(a === b) return true;
+  if(a.length === b.length){
+    const d = [...a].map((c, i)=>c !== b[i] ? i : -1).filter(i=>i >= 0);
+    if(d.length === 1) return true;
+    return d.length === 2 && d[1] === d[0] + 1 && a[d[0]] === b[d[1]] && a[d[1]] === b[d[0]];
+  }
+  if(Math.abs(a.length - b.length) !== 1) return false;
+  const [c, l] = a.length < b.length ? [a, b] : [b, a];
+  for(let i = 0; i < l.length; i++) if(l.slice(0, i) + l.slice(i + 1) === c) return true;
+  return false;
+}
+// Compara la referencia que busca el cliente con un vehículo.
+//  exacta   → están todas las palabras ("CRF 300" con "Honda CRF 300L")
+//  parecida → está la línea y el número, pero sobra/falta una palabra ("CRF 300 Rally")
+//             o el nombre está escrito casi igual ("CFR 300")
+//  null     → es otra referencia (otra línea, otro cilindraje u otra marca)
+function intCoincideNivel(busca, veh){
+  const q = intPalabras(busca); if(!q.length || !veh) return null;
   const vt = intPalabras([veh.nombre, veh.modelo, veh.color, veh.cilindraje].filter(Boolean).join(' ')), junto = vt.filter(w=>!intEsAnio(w)).join('');
   const claves = q.filter(w=>!INT_GENERICAS.has(w) && !INT_COLORES.has(w) && !intEsAnio(w));
   const fuertes = claves.filter(w=>!INT_MARCAS.has(w)), usar = fuertes.length ? fuertes : claves;
-  if(!usar.length) return false;
+  if(!usar.length) return null;
   const esta = w => vt.includes(w) || junto.includes(w) || (w.length >= 3 && vt.some(p=>p.length >= 3 && !intEsAnio(p) && (p.startsWith(w) || w.startsWith(p))));
-  if(!usar.every(esta)) return false;
+  const casi = w => w.length >= 3 && !/\d/.test(w) && vt.some(p=>p.length >= 3 && !intEsAnio(p) && intCasiIgual(w, p.replace(/\d+$/, '') || p));
+  const faltan = usar.filter(w=>!esta(w));
+  // El número (cilindraje / versión) tiene que estar: una CRF 250 no es una CRF 300.
+  // Si la ficha no tiene ningún número (ej. solo "Honda CRF"), queda como parecida para revisar.
+  const numsV = vt.filter(w=>/\d/.test(w) && !intEsAnio(w));
+  if(faltan.some(w=>/\d/.test(w)) && numsV.length) return null;
+  const aprox = faltan.filter(casi), noEsta = faltan.filter(w=>!casi(w));
+  // La línea (primera palabra sin números: CRF, NMAX, Pulsar...) tiene que estar, aunque sea casi igual
+  const linea = usar.find(w=>!/\d/.test(w));
+  if(linea && noEsta.includes(linea)) return null;
+  if(!linea && noEsta.length) return null;
   // Si dijo la marca y el vehículo es de otra marca, no es lo que busca
   const marcasQ = claves.filter(w=>INT_MARCAS.has(w)), marcasV = vt.filter(w=>INT_MARCAS.has(w));
-  if(marcasQ.length && marcasV.length && !marcasQ.some(m=>marcasV.includes(m))) return false;
-  // Año: sirve del mismo año o uno menos en adelante
+  if(marcasQ.length && marcasV.length && !marcasQ.some(m=>marcasV.includes(m))) return null;
+  // Año escrito dentro de la referencia: sirve del mismo año o uno menos en adelante
   const anios = q.filter(intEsAnio).map(Number), va = vt.filter(intEsAnio).map(Number);
-  if(anios.length && va.length && Math.max(...va) < Math.min(...anios) - 1) return false;
-  return true;
+  if(anios.length && va.length && Math.max(...va) < Math.min(...anios) - 1) return null;
+  const notas = [];
+  if(aprox.length) notas.push('el nombre está escrito parecido, revísalo');
+  if(noEsta.length) notas.push(`no dice ${noEsta.map(w=>w.toUpperCase()).join(' ')}`);
+  return {nivel: faltan.length ? 'parecida' : 'exacta', notas};
 }
+function intCoincide(busca, veh){ return !!intCoincideNivel(busca, veh); }
 const intBusca = x => intActivo(x) && !x.vehId && x.vehTexto ? x.vehTexto : '';
 const intNomV = v => `${v.nombre || ''}${v.modelo ? ' ' + v.modelo : ''}`.trim();
 let _intCoinCache = null;
@@ -7798,11 +7832,31 @@ function intDescartar(id, k){
   const quedan = document.querySelectorAll('#cc-modal-cuerpo .in-match-fila').length;
   if(quedan) intAlIngresar(...k.split(':'), true);
 }
+// Cuando un vehículo entra o cambia por otro camino (retoma, devuelto de una venta,
+// ficha corregida): avisa solo de los clientes que todavía no te había mostrado.
+function intRevisarVeh(tipo, id, como){
+  _intCoinCache = null;
+  let vistas = []; try { vistas = JSON.parse(localStorage.getItem('mc_int_vistas') || '[]'); } catch(e){}
+  const todas = intCoincidencias().filter(m=>m.tipo === tipo && m.v.id === id);
+  // Una parecida que después se vuelve igual (ficha corregida) se avisa otra vez
+  const clave = m => m.x.id + '|' + m.k + (m.nivel === 'exacta' ? '' : '|p');
+  const nuevas = todas.filter(m=>!vistas.includes(clave(m)) && !vistas.includes(m.x.id + '|' + m.k));
+  if(!nuevas.length) return;
+  try { localStorage.setItem('mc_int_vistas', JSON.stringify([...new Set([...vistas, ...nuevas.map(clave)])])); } catch(e){}
+  const ex = nuevas.filter(m=>m.nivel === 'exacta'), m = (ex.length ? ex : nuevas)[0];
+  setTimeout(()=>{
+    mcNotificar({tipo:'confirmar', titulo: ex.length ? 'Posible venta' : 'Parecida a lo que buscan',
+      texto: `${m.x.nombre}${nuevas.length > 1 ? ` y ${nuevas.length - 1} más` : ''} buscaba${nuevas.length > 1 ? 'n' : ''} ${m.x.busca ? m.x.busca.ref : m.x.vehTexto} y ${como || 'tienes'} ${intNomV(m.v)}`,
+      acciones: [{label:'Ver clientes', fn:()=>intAlIngresar(tipo, id, true)}], ms: 10000});
+    try { mcSonidoBrillo(); } catch(e){}
+  }, 900);
+}
 // Al guardar un vehículo nuevo: ¿alguien lo estaba buscando?
 function intAlIngresar(tipo, id, reabrir){
   _intCoinCache = null;
   const todas = intCoincidencias().filter(m=>m.tipo === tipo && m.v.id === id), lista = todas.filter(m=>m.nivel === 'exacta'), parec = todas.filter(m=>m.nivel === 'parecida');
   if(!lista.length && !parec.length){ if(reabrir) ccCerrarModal(); return; }
+  if(!lista.length && reabrir && parec.length){ ccAbrirModal('Parecida a lo que buscan', `<div class="av-pap-lista">${parec.map(intFilaCoincidencia).join('')}</div><div class="cc-modal-acc"><button class="btn btn-ghost" onclick="ccCerrarModal()">Cerrar</button></div>`); return; }
   if(!lista.length){ if(!reabrir) setTimeout(()=>mcNotificar({tipo:'guardar', titulo:'Parecida a lo que buscan', texto:`${parec.length === 1 ? parec[0].x.nombre + ' busca' : parec.length + ' clientes buscan'} algo parecido. Revísalo en Interesados.`, acciones:[{label:'Ver', fn:()=>{ _intVista = 'plan'; go('interesados'); }}], ms:9000}), 900); else ccCerrarModal(); return; }
   try { const vistas = JSON.parse(localStorage.getItem('mc_int_vistas') || '[]'); localStorage.setItem('mc_int_vistas', JSON.stringify([...new Set([...vistas, ...lista.map(m=>m.x.id + '|' + m.k)])])); } catch(e){}
   const v = lista[0].v;
@@ -9101,6 +9155,7 @@ async function guardarMoto(){
   }
   saveMotos(); go('motos');
   if(nuevaId) intAlIngresar('moto', nuevaId);
+  else if(editId) intRevisarVeh('moto', editId, 'en tu inventario está');
 }
 
 function editarMoto(id){
@@ -9633,6 +9688,7 @@ async function devolverAlInventario(id){
     veh.id = (v.vehiculoId && !lista.some(x=>x.id===v.vehiculoId)) ? v.vehiculoId : uid();
     if(esCarro){ carros.unshift(veh); saveCarros(); }
     else { motos.unshift(veh); saveMotos(); }
+    try { intRevisarVeh(esCarro ? 'carro' : 'moto', veh.id, 'volvió a tu inventario'); } catch(e){}
     ventas = ventas.filter(x=>x.id!==id);
     saveVentas();
     renderVentas();
@@ -12121,6 +12177,7 @@ async function guardarCarro(){
   }
   saveCarros(); go('carros');
   if(nuevaId) intAlIngresar('carro', nuevaId);
+  else if(editId) intRevisarVeh('carro', editId, 'en tu inventario está');
 }
 
 function editarCarro(id){
