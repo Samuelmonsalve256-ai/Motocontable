@@ -3032,6 +3032,85 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   html .fp2-det{font-size:12px}
   html .fp2 .fp-grafica{height:230px}
 }
+
+/* ===== Interesados: negocios perdidos en gris ===== */
+.in-row.cerrado.perdido,.in-card.cerrado.perdido{--t:#5b5b74;filter:grayscale(1);opacity:.62}
+.in-row.cerrado.perdido:hover{opacity:.85}
+.in-row.cerrado.perdido .in-tdot{box-shadow:none;background:transparent;border:2px solid #5b5b74}
+.in-row.cerrado.perdido .in-rnom b{color:#a3a3b8;text-decoration:line-through;text-decoration-color:rgba(255,255,255,.25)}
+.in-row.cerrado.perdido .in-tlab{color:#8a8aa0}
+.in-row.cerrado.vendido,.in-card.cerrado.vendido{--t:#2ee6a6}
+
+/* ===== Radar de interesados ===== */
+#mc-radar{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:20px}
+#mc-radar .rd-fondo{position:absolute;inset:0;background:radial-gradient(900px 600px at 50% 20%,rgba(0,214,143,.18),transparent 60%),rgba(6,6,14,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transition:opacity .3s}
+#mc-radar.show .rd-fondo{opacity:1}
+.rd-caja{position:relative;width:min(640px,100%);max-height:calc(100vh - 40px);display:flex;flex-direction:column;border-radius:26px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(0,214,143,.12),transparent 260px),var(--bg2);border:1px solid rgba(0,214,143,.35);
+  box-shadow:0 0 0 1px rgba(255,255,255,.04),0 40px 120px -30px rgba(0,214,143,.45),0 30px 80px -20px rgba(0,0,0,.9);
+  transform:translateY(24px) scale(.96);opacity:0;transition:transform .45s cubic-bezier(.2,1.2,.3,1),opacity .3s}
+#mc-radar.show .rd-caja{transform:none;opacity:1}
+.rd-x{position:absolute;top:14px;right:14px;z-index:3;width:42px;height:42px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,transform .15s}
+.rd-x:hover{background:rgba(255,255,255,.14);transform:rotate(90deg)}
+.rd-cab{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 24px 16px;flex-shrink:0}
+.rd-radar{position:relative;width:150px;height:150px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.rd-radar span{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(0,214,143,.55);animation:rdOnda 2.4s ease-out infinite;opacity:0}
+.rd-radar span:nth-child(2){animation-delay:.8s}.rd-radar span:nth-child(3){animation-delay:1.6s}
+@keyframes rdOnda{0%{transform:scale(.55);opacity:.9}100%{transform:scale(1.25);opacity:0}}
+.rd-barrido{position:absolute;inset:-6px;border-radius:50%;background:conic-gradient(from 0deg,rgba(0,214,143,.45),transparent 70deg,transparent);animation:rdGira 2.6s linear infinite;-webkit-mask:radial-gradient(circle,transparent 58%,#000 59%);mask:radial-gradient(circle,transparent 58%,#000 59%)}
+@keyframes rdGira{to{transform:rotate(360deg)}}
+.rd-foto{position:relative;width:104px;height:104px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#2ee6a6;
+  background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.18),rgba(0,214,143,.12) 60%),var(--bg3);border:3px solid rgba(0,214,143,.7);box-shadow:0 0 40px rgba(0,214,143,.45);animation:rdLate 1.6s ease-in-out infinite}
+.rd-foto img{width:100%;height:100%;object-fit:cover}
+@keyframes rdLate{50%{transform:scale(1.05);box-shadow:0 0 60px rgba(0,214,143,.65)}}
+.rd-eti{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#2ee6a6;background:rgba(0,214,143,.12);border:1px solid rgba(0,214,143,.35);padding:4px 12px;border-radius:999px}
+.rd-cab h2{margin:10px 0 6px;font:700 25px/1.2 'Space Grotesk',sans-serif;color:#fff;letter-spacing:-.01em}
+.rd-veh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;font-size:14px;color:#c9c9de}
+.rd-veh b{font-size:16px;color:#fff}
+.rd-cab p{margin:8px 0 0;font-size:13px;color:#9a9ab8}
+.rd-lista{overflow-y:auto;padding:4px 18px 14px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+.rd-cli{--t:#f5c451;padding:14px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);box-shadow:inset 3px 0 0 var(--t);animation:rdEntra .5s both}
+.rd-cli:nth-child(2){animation-delay:.08s}.rd-cli:nth-child(3){animation-delay:.16s}
+@keyframes rdEntra{from{opacity:0;transform:translateY(10px)}}
+.rd-cli.t-caliente{--t:#ff6b4a}.rd-cli.t-frio{--t:#5eb4ff}
+.rd-cli-top{display:flex;align-items:center;gap:10px}
+.rd-av{width:42px!important;height:42px!important;border-radius:14px!important;font-size:15px!important}
+.rd-cli-id{flex:1;min-width:0}
+.rd-cli-id b{display:block;font-size:15px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rd-cli-id span{display:block;font-size:12px;color:#8a8aa8}
+.rd-temp{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;color:var(--t);background:color-mix(in srgb,var(--t) 14%,transparent)}
+.rd-cli-busca{margin-top:10px;font-size:13px;color:#a9a9c4}
+.rd-cli-busca b{color:#fff}
+.rd-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.rd-nivel{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px}
+.rd-nivel.exacta{color:#2ee6a6;background:rgba(0,214,143,.12)}
+.rd-nivel.parecida{color:#f5c451;background:rgba(245,196,81,.12)}
+.rd-presu{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;color:#e6e6f5;background:rgba(255,255,255,.06)}
+.rd-nota{margin-top:8px;font-size:12.5px;color:#c9b27a;padding-left:10px;border-left:2px solid rgba(245,181,71,.5)}
+.rd-acc{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.rd-acc .ct-btn{min-height:38px;cursor:pointer;font-family:inherit}
+.rd-wa{flex:1 1 220px;justify-content:center;font-size:13.5px!important}
+.rd-hechos{display:flex;flex-direction:column;gap:6px;padding:4px 2px}
+.rd-hechos div{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#9a9ab8}
+.rd-hechos svg{color:#2ee6a6;flex-shrink:0}
+.rd-pie{display:flex;gap:8px;justify-content:flex-end;padding:14px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.15);flex-shrink:0}
+.rd-pie .btn{min-height:44px}
+@media (max-width:760px){
+  html #mc-radar{padding:0;align-items:flex-end}
+  html .rd-caja{width:100%;max-height:94vh;border-radius:26px 26px 0 0}
+  html .rd-cab{padding:18px 18px 10px}
+  html .rd-radar{width:96px;height:96px;margin-bottom:8px}
+  html .rd-foto{width:70px;height:70px}
+  html .rd-foto svg{width:38px;height:38px}
+  html .rd-cab h2{font-size:20px;margin-top:8px}
+  html .rd-cab p{font-size:12.5px}
+  html .rd-lista{padding:4px 12px 12px}
+  html .rd-pie{padding-left:12px;padding-right:12px}
+  html .rd-pie .btn{flex:1;justify-content:center}
+  html .rd-wa{flex:1 1 100%}
+  html .rd-acc .in-si,html .rd-acc .in-no{flex:1 1 0;justify-content:center;white-space:nowrap}
+}
+@media (prefers-reduced-motion:reduce){.rd-radar span,.rd-barrido,.rd-foto{animation:none}}
 </style>
 </head>
 <body>
@@ -7333,9 +7412,10 @@ function intQuiere(x){
 function intFila(x){
   const t = x.temp || 'tibio', s = intSegTxt(x), q = intQuiere(x), tel = intTel(x), cerrado = !intActivo(x);
   const cuando = cerrado ? {cls: x.estado === 'vendido' ? 'vend' : 'perd', txt: (x.estado === 'vendido' ? 'Vendido' : 'Perdido') + (x.cerradoEl ? ' · ' + mcFechaCorta(x.cerradoEl) : '')} : {cls: s.cls, txt: s.corto};
-  return `<div class="in-row t-${t}${!cerrado && (s.cls === 'mal' || s.cls === 'hoy') ? ' urge' : ''}${cerrado ? ' cerrado' : ''}" onclick="intDetalle('${x.id}')" role="button" tabindex="0">
+  const tLab = x.estado === 'perdido' ? 'Negocio perdido' : x.estado === 'vendido' ? 'Vendido' : INT_TEMP[t];
+  return `<div class="in-row t-${t}${!cerrado && (s.cls === 'mal' || s.cls === 'hoy') ? ' urge' : ''}${cerrado ? ' cerrado ' + (x.estado === 'vendido' ? 'vendido' : 'perdido') : ''}" onclick="intDetalle('${x.id}')" role="button" tabindex="0">
     <span class="in-tdot" aria-hidden="true"></span>
-    <div class="in-rnom"><b>${ccEsc(x.nombre)}</b><small><span class="in-tlab">${INT_TEMP[t]}</span>${x.tel ? ' · ' + ccEsc(x.tel) : ''}</small></div>
+    <div class="in-rnom"><b>${ccEsc(x.nombre)}</b><small><span class="in-tlab">${tLab}</span>${x.tel ? ' · ' + ccEsc(x.tel) : ''}</small></div>
     <div class="in-rveh">${mcIco(x.vehTipo === 'carro' ? 'carro' : 'moto', 15)}<span><b>${ccEsc(q.txt)}</b>${q.sub ? `<small>${ccEsc(q.sub)}</small>` : ''}</span></div>
     <span class="in-rpago ${x.pago || 'sin'}">${x.pago ? INT_PAGO[x.pago] : 'Pago sin definir'}</span>
     <span class="in-rcuando ${cuando.cls}">${cuando.txt}</span>
@@ -7361,7 +7441,7 @@ function intTarjeta(x){
     : `<div class="in-veh nada">${mcIco('moto', 15)}<span><b>Sin vehículo definido</b><small>Edita para anotar qué busca</small></span></div>`;
   const datos = [x.presupuesto ? `<span>${mcIco('billete',13)}${fmt(x.presupuesto)}</span>` : '', x.pago ? `<span>${INT_PAGO[x.pago] || ''}</span>` : '', `<span class="est e-${x.estado||'nuevo'}">${INT_ESTADOS[x.estado||'nuevo']}</span>`].filter(Boolean).join('');
   const ult = x.ultimoContacto ? `Último contacto ${intHace(x.ultimoContacto)}` : `Anotado ${intHace(x.creado)}`;
-  return `<div class="in-card t-${x.temp||'tibio'}${s && (s.cls === 'mal' || s.cls === 'hoy') ? ' urge' : ''}${cerrado ? ' cerrado' : ''}">
+  return `<div class="in-card t-${x.temp||'tibio'}${s && (s.cls === 'mal' || s.cls === 'hoy') ? ' urge' : ''}${cerrado ? ' cerrado ' + (x.estado === 'vendido' ? 'vendido' : 'perdido') : ''}">
     <div class="ct-top">
       <div class="ct-av" style="background:linear-gradient(135deg,hsl(${h},72%,58%),hsl(${(h+50)%360},70%,42%))">${ccEsc(mcIniciales(x.nombre))}</div>
       <div class="ct-id"><b>${ccEsc(x.nombre)}</b><span>${x.tel ? ccEsc(x.tel) : 'Sin teléfono'}</span></div>
@@ -7649,12 +7729,13 @@ function intAvisarNuevas(co){
   if(!nuevas.length || !localStorage.getItem('mc_int_vistas_ok')){ try { localStorage.setItem('mc_int_vistas_ok','1'); } catch(e){} return; }
   const m = nuevas[0];
   if(!m) return;
-  mcNotificar({tipo:'confirmar', titulo:'Posible venta', texto:`${m.x.nombre} buscaba ${m.x.vehTexto} y te entró ${intNomV(m.v)}`, ms:9000});
+  setTimeout(()=>radarMostrar(m.tipo, m.v.id, 'sync'), 1200);
 }
 function intAvisoResumen(){
   intContador();
   const el = document.getElementById('res-interesados'); if(!el) return;
   intAvisarNuevas(intExactas());
+  setTimeout(radarRevisarPendientes, 1500);
   const plan = intPlan();
   el.innerHTML = plan.length ? intPlanHtml(plan, 3) : '';
 }
@@ -7832,6 +7913,124 @@ function intDescartar(id, k){
   const quedan = document.querySelectorAll('#cc-modal-cuerpo .in-match-fila').length;
   if(quedan) intAlIngresar(...k.split(':'), true);
 }
+// ── RADAR DE INTERESADOS ─────────────────────────────────────────────────────
+// Pantalla grande, con sonido, cuando entra (o se corrige) un vehículo que un
+// cliente estaba buscando. No se quita sola: solo con la X o "Listo". Si cierras
+// la app sin verla, vuelve a salir al abrirla.
+Object.assign(MC_ICONOS, {cerrar: '<path d="M6 6l12 12M18 6L6 18"/>'});
+const RADAR_KEY = 'mc_radar_pend';
+let _radar = null;
+function radarPend(){ try { return JSON.parse(localStorage.getItem(RADAR_KEY) || '[]'); } catch(e){ return []; } }
+function radarGuardarPend(l){ try { localStorage.setItem(RADAR_KEY, JSON.stringify(l)); } catch(e){} }
+function radarDatos(tipo, id){
+  _intCoinCache = null;
+  const v = (tipo === 'carro' ? carros : motos).find(o=>o.id === id);
+  const co = v ? intCoincidencias().filter(m=>m.tipo === tipo && m.v.id === id) : [];
+  const ord = {caliente:0, tibio:1, frio:2};
+  co.sort((a,b)=>(a.nivel === 'exacta' ? 0 : 1) - (b.nivel === 'exacta' ? 0 : 1) || (ord[a.x.temp||'tibio'] - ord[b.x.temp||'tibio']));
+  return {v, co};
+}
+function mcSonidoRadar(){
+  mcAudioTocar((ac, t0)=>{
+    // dos "ping" de radar y un acorde que sube
+    [0, .42].forEach(d=>{ mcNota(ac, 1760, t0 + d, .55, 'sine', .16); mcNota(ac, 880, t0 + d, .5, 'sine', .06); });
+    [[659.3,.9],[784,.98],[1046.5,1.06],[1318.5,1.14]].forEach(([f,t])=>mcNota(ac, f, t0 + t, .9, 'triangle', .09));
+    [2093, 2637].forEach((f,i)=>mcNota(ac, f, t0 + 1.25 + i*.06, .7, 'sine', .04));
+  }, 2.4);
+}
+function radarMostrar(tipo, id, origen){
+  const {v, co} = radarDatos(tipo, id);
+  if(!v || !co.length) return false;
+  // guardar como pendiente hasta que lo cierres
+  const pend = radarPend().filter(o=>!(o.tipo === tipo && o.id === id)); pend.unshift({tipo, id, origen: origen || ''}); radarGuardarPend(pend.slice(0, 10));
+  _radar = {tipo, id, origen: origen || '', hechos: (_radar && _radar.tipo === tipo && _radar.id === id) ? _radar.hechos : {}};
+  try { localStorage.setItem('mc_int_vistas', JSON.stringify([...new Set([...(JSON.parse(localStorage.getItem('mc_int_vistas') || '[]')), ...co.map(m=>m.x.id + '|' + m.k + (m.nivel === 'exacta' ? '' : '|p'))])])); } catch(e){}
+  let el = document.getElementById('mc-radar');
+  if(!el){ el = document.createElement('div'); el.id = 'mc-radar'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); document.body.appendChild(el); }
+  radarPintar();
+  el.classList.remove('show'); el.style.display = 'flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  try { mcSonidoRadar(); } catch(e){}
+  try { if(navigator.vibrate) navigator.vibrate([120, 80, 120]); } catch(e){}
+  return true;
+}
+function radarPintar(){
+  const el = document.getElementById('mc-radar'); if(!el || !_radar) return;
+  const {tipo, id, origen} = _radar, {v, co} = radarDatos(tipo, id);
+  if(!v){ radarCerrar(); return; }
+  const ex = co.filter(m=>m.nivel === 'exacta'), hechos = Object.values(_radar.hechos);
+  const nCli = new Set(co.map(m=>m.x.id)).size;
+  const titulo = ex.length ? (nCli === 1 ? 'Entró lo que tu cliente buscaba' : `Entró lo que buscaban ${nCli} clientes`) : co.length ? 'Entró algo parecido a lo que buscan' : 'Todos atendidos';
+  const foto = v.foto ? `<img ${mcFotoAttr(v.foto)} alt="">` : mcIco(tipo === 'carro' ? 'carro' : 'moto', 54);
+  const fila = m => { const x = m.x, tel = intTel(x), t = x.temp || 'tibio', h = mcTonoNombre(x.nombre), k = m.k;
+    return `<div class="rd-cli t-${t}">
+      <div class="rd-cli-top">
+        <span class="ct-av rd-av" style="background:linear-gradient(135deg,hsl(${h},72%,58%),hsl(${(h+50)%360},70%,42%))">${ccEsc(mcIniciales(x.nombre))}</span>
+        <div class="rd-cli-id"><b>${ccEsc(x.nombre)}</b><span>${tel ? ccEsc(x.tel) : 'Sin teléfono'}</span></div>
+        <span class="rd-temp">${mcIco('fuego',12)}${INT_TEMP[t]}</span>
+      </div>
+      <div class="rd-cli-busca">Buscaba <b>${ccEsc(x.busca ? x.busca.ref : x.vehTexto)}</b>${x.busca && x.busca.anio ? ` · modelo ${ccEsc(x.busca.anio)}` : ''}${x.busca ? (x.busca.cualquierColor ? ' · cualquier color' : x.busca.color ? ' · ' + ccEsc(x.busca.color.toLowerCase()) : '') : ''}</div>
+      <div class="rd-chips">
+        <span class="rd-nivel ${m.nivel}">${mcIco(m.nivel === 'exacta' ? 'check' : 'buscar',12)}${m.nivel === 'exacta' ? 'Igual a lo que pidió' : 'Parecida: ' + ccEsc(m.notas.join(' · '))}</span>
+        ${x.pago ? `<span class="in-rpago ${x.pago}">${INT_PAGO[x.pago]}</span>` : ''}
+        ${x.presupuesto ? `<span class="rd-presu">${mcIco('billete',12)}${fmt(x.presupuesto)}</span>` : ''}
+      </div>
+      ${x.nota ? `<div class="rd-nota">"${ccEsc(x.nota)}"</div>` : ''}
+      <div class="rd-acc">
+        ${m.ofrecida ? `<span class="in-ofrecida">${mcIco('check',12)}Ofrecida ${intHace(m.ofrecida.fecha)}</span>`
+          : tel ? `<a class="ct-btn wa rd-wa" href="${intWaOferta(x, tipo, v)}" target="_blank" rel="noopener" onclick="radarAccion('ofrecer','${x.id}','${k}')">${mcIco('chat',15)}Ofrecérsela por WhatsApp</a>`
+          : `<button class="ct-btn rd-wa" onclick="radarAccion('ofrecer','${x.id}','${k}')">${mcIco('check',15)}Ya se la ofrecí</button>`}
+        <button class="ct-btn in-si" onclick="radarAccion('asignar','${x.id}','${k}')">${mcIco('check',14)}Le interesa</button>
+        <button class="ct-btn in-no" onclick="radarAccion('descartar','${x.id}','${k}')">No le sirve</button>
+      </div>
+    </div>`; };
+  const sub = origen === 'retoma' ? 'Te entró en retoma' : origen === 'devuelta' ? 'Volvió a tu inventario' : origen === 'editada' ? 'Corregiste su ficha y ahora coincide' : origen === 'sync' ? 'Entró desde otro dispositivo' : 'Acaba de entrar a tu inventario';
+  el.innerHTML = `<div class="rd-fondo"></div>
+    <div class="rd-caja">
+      <button class="rd-x" onclick="radarCerrar()" aria-label="Cerrar">${mcIco('cerrar',20)}</button>
+      <div class="rd-cab">
+        <div class="rd-radar" aria-hidden="true"><span></span><span></span><span></span><i class="rd-barrido"></i><div class="rd-foto">${foto}</div></div>
+        <div class="rd-eti">${mcIco('rayo',13)}Posible venta</div>
+        <h2>${titulo}</h2>
+        <div class="rd-veh"><b>${ccEsc(intNomV(v))}</b>${v.color ? `<span>${ccEsc(v.color)}</span>` : ''}${v.placa ? `<span class="cc-placa">${ccEsc(String(v.placa).toUpperCase())}</span>` : ''}</div>
+        <p>${sub}. ${co.length ? `Escríbele${nCli === 1 ? '' : 's'} antes de que se la vendas a otro.` : 'Ya atendiste a todos los interesados.'}</p>
+      </div>
+      <div class="rd-lista">${co.map(fila).join('')}
+        ${hechos.length ? `<div class="rd-hechos">${hechos.map(h=>`<div>${mcIco(h.ok ? 'check' : 'no',13)}<span>${ccEsc(h.txt)}</span></div>`).join('')}</div>` : ''}
+      </div>
+      <div class="rd-pie">
+        <button class="btn btn-ghost" onclick="radarCerrar();invVer('${tipo}','${id}')">Ver ${tipo === 'carro' ? 'el carro' : 'la moto'}</button>
+        <button class="btn btn-primary" onclick="radarCerrar()">${co.length ? 'Listo, ya los vi' : 'Cerrar'}</button>
+      </div>
+    </div>`;
+}
+function radarAccion(acc, xid, k){
+  if(!_radar) return;
+  const x = intLista().find(i=>i.id === xid);
+  if(acc === 'ofrecer') intOfrecer(xid, k);
+  else if(acc === 'asignar'){ intAsignar(xid, k); if(x) _radar.hechos[xid] = {ok:true, txt:`${x.nombre} quedó interesado: ya aparece en la ficha`}; }
+  else if(acc === 'descartar'){ intDescartar(xid, k); if(x) _radar.hechos[xid] = {ok:false, txt:`A ${x.nombre} no le sirve`}; }
+  setTimeout(radarPintar, acc === 'ofrecer' ? 450 : 60);
+}
+function radarCerrar(){
+  const el = document.getElementById('mc-radar');
+  if(_radar) radarGuardarPend(radarPend().filter(o=>!(o.tipo === _radar.tipo && o.id === _radar.id)));
+  _radar = null;
+  if(el){ el.classList.remove('show'); setTimeout(()=>{ if(!_radar) el.style.display = 'none'; }, 260); }
+  // si quedó otro vehículo pendiente, lo muestra
+  setTimeout(radarRevisarPendientes, 400);
+}
+// Al abrir la app: los que no alcanzaste a ver vuelven a salir
+function radarRevisarPendientes(){
+  if(_radar) return;
+  const pend = radarPend();
+  for(const o of pend){
+    const {v, co} = radarDatos(o.tipo, o.id);
+    if(v && co.length){ radarMostrar(o.tipo, o.id, o.origen); return; }
+  }
+  if(pend.length) radarGuardarPend([]);
+}
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && _radar) radarCerrar(); });
 // Cuando un vehículo entra o cambia por otro camino (retoma, devuelto de una venta,
 // ficha corregida): avisa solo de los clientes que todavía no te había mostrado.
 function intRevisarVeh(tipo, id, como){
@@ -7843,19 +8042,15 @@ function intRevisarVeh(tipo, id, como){
   const nuevas = todas.filter(m=>!vistas.includes(clave(m)) && !vistas.includes(m.x.id + '|' + m.k));
   if(!nuevas.length) return;
   try { localStorage.setItem('mc_int_vistas', JSON.stringify([...new Set([...vistas, ...nuevas.map(clave)])])); } catch(e){}
-  const ex = nuevas.filter(m=>m.nivel === 'exacta'), m = (ex.length ? ex : nuevas)[0];
-  setTimeout(()=>{
-    mcNotificar({tipo:'confirmar', titulo: ex.length ? 'Posible venta' : 'Parecida a lo que buscan',
-      texto: `${m.x.nombre}${nuevas.length > 1 ? ` y ${nuevas.length - 1} más` : ''} buscaba${nuevas.length > 1 ? 'n' : ''} ${m.x.busca ? m.x.busca.ref : m.x.vehTexto} y ${como || 'tienes'} ${intNomV(m.v)}`,
-      acciones: [{label:'Ver clientes', fn:()=>intAlIngresar(tipo, id, true)}], ms: 10000});
-    try { mcSonidoBrillo(); } catch(e){}
-  }, 900);
+  const origen = /retoma/.test(como || '') ? 'retoma' : /volvi/.test(como || '') ? 'devuelta' : 'editada';
+  setTimeout(()=>radarMostrar(tipo, id, origen), 900);
 }
 // Al guardar un vehículo nuevo: ¿alguien lo estaba buscando?
 function intAlIngresar(tipo, id, reabrir){
   _intCoinCache = null;
   const todas = intCoincidencias().filter(m=>m.tipo === tipo && m.v.id === id), lista = todas.filter(m=>m.nivel === 'exacta'), parec = todas.filter(m=>m.nivel === 'parecida');
   if(!lista.length && !parec.length){ if(reabrir) ccCerrarModal(); return; }
+  if(!reabrir){ setTimeout(()=>radarMostrar(tipo, id, 'nueva'), 700); return; }
   if(!lista.length && reabrir && parec.length){ ccAbrirModal('Parecida a lo que buscan', `<div class="av-pap-lista">${parec.map(intFilaCoincidencia).join('')}</div><div class="cc-modal-acc"><button class="btn btn-ghost" onclick="ccCerrarModal()">Cerrar</button></div>`); return; }
   if(!lista.length){ if(!reabrir) setTimeout(()=>mcNotificar({tipo:'guardar', titulo:'Parecida a lo que buscan', texto:`${parec.length === 1 ? parec[0].x.nombre + ' busca' : parec.length + ' clientes buscan'} algo parecido. Revísalo en Interesados.`, acciones:[{label:'Ver', fn:()=>{ _intVista = 'plan'; go('interesados'); }}], ms:9000}), 900); else ccCerrarModal(); return; }
   try { const vistas = JSON.parse(localStorage.getItem('mc_int_vistas') || '[]'); localStorage.setItem('mc_int_vistas', JSON.stringify([...new Set([...vistas, ...lista.map(m=>m.x.id + '|' + m.k)])])); } catch(e){}
