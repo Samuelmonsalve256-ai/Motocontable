@@ -1,0 +1,23 @@
+{
+  "name": "PlacaLimpia PM",
+  "short_name": "PlacaLimpia",
+  "description": "Revisión de vehículos RUNT + SIMIT · Platinium Motors",
+  "start_url": "placalimpia.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#14161b",
+  "theme_color": "#14161b",
+  "icons": [
+    {
+      "src": "placalimpia-icono-v2.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "placalimpia-icono-v2-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

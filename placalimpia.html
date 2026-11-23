@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#14161b">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-title" content="PlacaLimpia">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" sizes="180x180" href="placalimpia-icono-v2.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="placalimpia-icono-v2-512.png?v=2">
+<link rel="icon" type="image/png" sizes="180x180" href="placalimpia-icono-v2.png?v=2">
+<link rel="manifest" href="placalimpia.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<title>PlacaLimpia PM</title>
+<script>(function(){try{var t=localStorage.getItem('pl_tema');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<style>
+/* ═══ Identidad visual: grafito + dorado Platinium ═══ */
+:root{
+  --bg:#f4f5f7; --card:#ffffff; --ink:#111318; --ink-2:#2b2f38; --muted:#6b7280; --line:#e7e8ec; --soft:#f2f3f6;
+  --gold:#b8891a; --gold-2:#e2bd55; --gold-bg:#fbf4e1;
+  --ok:#15803d; --ok-bg:#e7f6ec; --warn:#b45309; --warn-bg:#fdf2df; --bad:#c81e1e; --bad-bg:#fdeaea; --nd:#7c8493; --nd-bg:#eef0f3;
+  --hero-1:#14161b; --hero-2:#2a2e37;
+  --shadow:0 1px 2px rgba(17,19,24,.05), 0 10px 30px rgba(17,19,24,.06);
+  --r:20px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c0e12; --card:#15181e; --ink:#eef0f4; --ink-2:#cfd4dc; --muted:#98a1b0; --line:#252932; --soft:#1c2028;
+    --gold:#e2bd55; --gold-2:#f0d78a; --gold-bg:#2a2414;
+    --ok:#4ade80; --ok-bg:#12271a; --warn:#fbbf24; --warn-bg:#2c2210; --bad:#f87171; --bad-bg:#2e1515; --nd:#98a1b0; --nd-bg:#1f232b;
+    --hero-1:#101217; --hero-2:#232731;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.3);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c0e12; --card:#15181e; --ink:#eef0f4; --ink-2:#cfd4dc; --muted:#98a1b0; --line:#252932; --soft:#1c2028;
+  --gold:#e2bd55; --gold-2:#f0d78a; --gold-bg:#2a2414;
+  --ok:#4ade80; --ok-bg:#12271a; --warn:#fbbf24; --warn-bg:#2c2210; --bad:#f87171; --bad-bg:#2e1515; --nd:#98a1b0; --nd-bg:#1f232b;
+  --hero-1:#101217; --hero-2:#232731;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.3);
+  color-scheme:dark;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif; font-size:15px; line-height:1.45; -webkit-font-smoothing:antialiased}
+button,input,select{font:inherit; color:inherit}
+button{cursor:pointer}
+svg{display:block}
+.oculto{display:none !important}
+.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+
+/* ── Barra superior ── */
+.top{position:sticky; top:0; z-index:20; background:linear-gradient(135deg,var(--hero-1),var(--hero-2)); color:#fff;
+  padding:calc(10px + env(safe-area-inset-top)) 16px 12px}
+.top-in{max-width:720px; margin:0 auto; display:flex; align-items:center; gap:12px; min-height:40px}
+.marca{display:flex; align-items:center; gap:10px}
+.logo{width:36px; height:36px; border-radius:11px; background:linear-gradient(135deg,#f3d27a,#b8891a); display:grid; place-items:center; color:#14161b; font-weight:800; font-size:13px; letter-spacing:-.02em; flex:none}
+.marca b{display:block; font-size:17px; letter-spacing:-.02em; line-height:1.1}
+.marca b span{color:#f0cf74}
+.marca small{display:block; font-size:11.5px; color:#a9b0bd; letter-spacing:.02em}
+.btn-volver{display:flex; align-items:center; gap:4px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:#fff; border-radius:12px; padding:7px 12px 7px 8px; font-weight:600; font-size:14px}
+
+/* ── Contenedor y vistas ── */
+main{max-width:720px; margin:0 auto; padding:16px 16px calc(100px + env(safe-area-inset-bottom))}
+.titulo-vista{font-size:26px; font-weight:800; letter-spacing:-.03em; margin:6px 2px 4px}
+.sub-vista{color:var(--muted); margin:0 2px 14px; font-size:14px}
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); padding:18px; margin-top:14px}
+.card-h{display:flex; align-items:center; gap:10px; margin:0 0 6px}
+.card-h .ic{width:34px; height:34px; border-radius:11px; background:var(--gold-bg); color:var(--gold); display:grid; place-items:center; flex:none}
+.card-h h3{margin:0; font-size:16px; letter-spacing:-.01em}
+.card-h .cuenta{margin-left:auto; font-size:12.5px; font-weight:700; color:var(--muted)}
+
+/* ── Formularios ── */
+label.campo{display:block; font-size:12.5px; font-weight:700; color:var(--muted); margin:14px 0 6px; letter-spacing:.01em}
+.in{width:100%; padding:13px 14px; border:1.5px solid var(--line); border-radius:14px; background:var(--soft); outline:none; font-size:16px; transition:border-color .15s, background .15s}
+.in:focus{border-color:var(--gold); background:var(--card)}
+.fila2{display:grid; grid-template-columns:1fr 1.3fr; gap:10px}
+
+/* Placa estilo Colombia */
+.placa-in{display:block; width:100%; max-width:300px; margin:4px auto 0; background:#f6c900; border:3px solid #111; border-radius:12px; padding:8px 10px 4px; text-align:center; box-shadow:inset 0 0 0 2px #f6c900, inset 0 0 0 4px #111}
+.placa-in input{width:100%; border:0; background:transparent; outline:none; text-align:center; text-transform:uppercase; font-family:'JetBrains Mono',ui-monospace,monospace; font-weight:700; font-size:38px; letter-spacing:.14em; color:#111; padding:0}
+.placa-in input::placeholder{color:rgba(17,17,17,.28)}
+.placa-in small{display:block; font-size:10px; font-weight:800; letter-spacing:.3em; color:#111; margin-top:-2px}
+.chip-placa{display:inline-flex; flex-direction:column; align-items:center; background:#f6c900; color:#111; border:2px solid #111; border-radius:8px; padding:3px 10px 1px; font-family:'JetBrains Mono',ui-monospace,monospace; font-weight:700; letter-spacing:.12em; line-height:1.1}
+.chip-placa small{font-family:'Plus Jakarta Sans',sans-serif; font-size:7px; letter-spacing:.25em; font-weight:800}
+.chip-placa.xl{font-size:30px; padding:6px 16px 3px; border-width:3px; border-radius:11px}
+.chip-placa.xl small{font-size:9px}
+
+.captcha{display:flex; align-items:stretch; gap:10px}
+.captcha .img{flex:1; min-height:72px; background:#fff; border:1.5px solid var(--line); border-radius:14px; display:grid; place-items:center; overflow:hidden}
+.captcha img{width:100%; max-width:320px; display:block}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:14px; padding:13px 16px; font-weight:700; font-size:15px; text-decoration:none; transition:transform .08s, opacity .15s}
+.btn:active{transform:scale(.98)}
+.btn-oro{background:linear-gradient(135deg,#e7c25d,#b8891a); color:#14161b; width:100%; margin-top:18px; font-size:16px; padding:15px; box-shadow:0 6px 18px rgba(184,137,26,.28)}
+.btn-oro:disabled{opacity:.6; cursor:wait}
+.btn-sec{background:var(--soft); border:1.5px solid var(--line); color:var(--ink)}
+.btn-linea{background:transparent; border:1.5px solid var(--line); color:var(--ink)}
+.btn-ico{width:52px; padding:0; flex:none}
+.btn-peq{padding:9px 12px; font-size:13.5px; border-radius:12px}
+.ayuda{font-size:12.5px; color:var(--muted); margin:8px 0 0}
+
+/* ── Avisos flotantes ── */
+#toast{position:fixed; left:50%; top:calc(70px + env(safe-area-inset-top)); transform:translateX(-50%) translateY(-12px); width:min(560px, calc(100% - 24px)); z-index:50;
+  padding:13px 40px 13px 15px; border-radius:16px; font-size:14px; font-weight:600; box-shadow:0 12px 32px rgba(0,0,0,.18); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s}
+#toast.ver{opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto}
+#toast.ok{background:var(--ok-bg); color:var(--ok); border:1.5px solid var(--ok)}
+#toast.err{background:var(--bad-bg); color:var(--bad); border:1.5px solid var(--bad)}
+#toast button{position:absolute; right:8px; top:8px; background:none; border:0; color:inherit; font-size:18px; width:28px; height:28px}
+.aviso{margin-top:12px; padding:11px 13px; border-radius:12px; font-size:14px; display:none; background:var(--bad-bg); color:var(--bad)}
+.aviso.ver{display:block}
+
+/* ── Ficha: encabezado ── */
+.hero{background:linear-gradient(145deg,var(--hero-1),var(--hero-2)); color:#fff; border-radius:24px; padding:20px; box-shadow:var(--shadow); position:relative; overflow:hidden}
+.hero::after{content:''; position:absolute; right:-60px; top:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(226,189,85,.22), transparent 70%)}
+.hero .nombre{font-size:21px; font-weight:800; letter-spacing:-.02em; margin-top:14px}
+.hero .chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+.hero .chips span{background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.12); border-radius:999px; padding:4px 10px; font-size:12.5px; color:#dfe3ea}
+.hero .meta{font-size:12.5px; color:#a9b0bd; margin-top:12px}
+.estado-g{display:flex; gap:12px; align-items:center; margin-top:16px; padding:14px; border-radius:18px; position:relative; z-index:1}
+.estado-g .ico{width:44px; height:44px; border-radius:14px; display:grid; place-items:center; flex:none}
+.estado-g b{display:block; font-size:16px; letter-spacing:-.01em; line-height:1.2}
+.estado-g small{display:block; font-size:12.5px; opacity:.85; margin-top:2px}
+.estado-g.ok{background:rgba(74,222,128,.14); color:#86efac} .estado-g.ok .ico{background:#16a34a; color:#fff}
+.estado-g.warn{background:rgba(251,191,36,.14); color:#fcd34d} .estado-g.warn .ico{background:#d97706; color:#fff}
+.estado-g.bad{background:rgba(248,113,113,.16); color:#fca5a5} .estado-g.bad .ico{background:#dc2626; color:#fff}
+.progreso{margin-top:14px; position:relative; z-index:1}
+.progreso .barra{height:7px; background:rgba(255,255,255,.12); border-radius:99px; overflow:hidden}
+.progreso .barra i{display:block; height:100%; background:linear-gradient(90deg,#e7c25d,#f3d27a); border-radius:99px}
+.progreso small{display:flex; justify-content:space-between; font-size:12px; color:#a9b0bd; margin-top:6px}
+
+/* Lista de problemas */
+.lista-alerta{margin-top:14px; border-radius:var(--r); padding:14px 16px; border:1.5px solid}
+.lista-alerta.bad{background:var(--bad-bg); border-color:var(--bad); color:var(--bad)}
+.lista-alerta.warn{background:var(--warn-bg); border-color:var(--warn); color:var(--warn)}
+.lista-alerta b{font-size:14px; display:block; margin-bottom:4px}
+.lista-alerta ul{margin:0; padding-left:18px; font-size:14px} .lista-alerta li{margin:3px 0}
+
+/* Filas de la ficha */
+.filas{display:flex; flex-direction:column}
+.fila{display:flex; gap:12px; align-items:flex-start; padding:13px 0; border-top:1px solid var(--line)}
+.fila:first-child{border-top:0; padding-top:8px}
+.fila .est{width:30px; height:30px; border-radius:10px; display:grid; place-items:center; flex:none; margin-top:1px}
+.fila.ok .est{background:var(--ok-bg); color:var(--ok)}
+.fila.warn .est{background:var(--warn-bg); color:var(--warn)}
+.fila.bad .est{background:var(--bad-bg); color:var(--bad)}
+.fila.nd .est{background:var(--nd-bg); color:var(--nd)}
+.fila .cuerpo{flex:1; min-width:0}
+.fila .t{font-weight:700; letter-spacing:-.005em}
+.fila .d{font-size:13.5px; color:var(--muted); margin-top:2px}
+.fila .d b{color:var(--ink-2)}
+.tag{flex:none; font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:4px 8px; border-radius:8px; margin-top:4px}
+.tag.ok{background:var(--ok-bg); color:var(--ok)} .tag.warn{background:var(--warn-bg); color:var(--warn)} .tag.bad{background:var(--bad-bg); color:var(--bad)} .tag.nd{background:var(--nd-bg); color:var(--nd)}
+.extra{margin-top:10px}
+
+.num{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:8px; padding:11px 13px; background:var(--soft); border-radius:12px}
+.num span{color:var(--muted); font-size:12.5px; font-weight:700}
+.num b{font-size:15px; letter-spacing:.05em; word-break:break-all; text-align:right}
+.chk{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px}
+.chk-b{background:var(--card); border:1.5px solid var(--line); color:var(--ink); padding:10px; font-size:13.5px; border-radius:12px; font-weight:700}
+.chk-b.on-ok{background:var(--ok-bg); border-color:var(--ok); color:var(--ok)}
+.chk-b.on-bad{background:var(--bad-bg); border-color:var(--bad); color:var(--bad)}
+.fila-imp{display:grid; grid-template-columns:1fr auto; gap:8px}
+.fila-imp .in{padding:10px 12px; font-size:15px}
+
+details.det{border-top:1px solid var(--line); padding:12px 0}
+details.det:first-of-type{border-top:0}
+details.det summary{cursor:pointer; font-weight:700; list-style:none; display:flex; align-items:center; gap:8px}
+details.det summary::-webkit-details-marker{display:none}
+details.det summary::after{content:''; width:8px; height:8px; border-right:2px solid var(--muted); border-bottom:2px solid var(--muted); transform:rotate(45deg); margin-left:auto; transition:transform .15s}
+details.det[open] summary::after{transform:rotate(225deg)}
+.cnt{margin-left:auto; background:var(--soft); color:var(--muted); border-radius:999px; padding:1px 9px; font-size:12px; font-weight:700}
+details.det summary:has(.cnt)::after{margin-left:8px}
+.tabla{width:100%; overflow-x:auto; margin-top:8px}
+.tabla table{border-collapse:collapse; width:100%; font-size:12.5px}
+.tabla th,.tabla td{text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:top}
+.tabla th{color:var(--muted); font-weight:700; white-space:nowrap}
+.kv{display:grid; grid-template-columns:minmax(110px,42%) 1fr; gap:5px 12px; font-size:13px; margin-top:8px}
+.kv dt{color:var(--muted)} .kv dd{margin:0; font-weight:600; word-break:break-word}
+pre.crudo{white-space:pre-wrap; word-break:break-word; font-size:12px; background:var(--soft); padding:10px; border-radius:10px; max-height:300px; overflow:auto}
+
+.paso{border:1.5px solid var(--gold); background:linear-gradient(180deg, var(--gold-bg), var(--card))}
+.paso-et{font-size:11px; font-weight:800; letter-spacing:.12em; color:var(--gold)}
+.paso .t{font-size:17px; font-weight:800; letter-spacing:-.01em; margin-top:4px}
+.paso .d{font-size:13.5px; color:var(--muted); margin-top:2px}
+.paso-btns{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+.cambios{display:flex; gap:10px; align-items:center; margin-top:14px; padding:12px 14px; border-radius:16px; font-size:14px}
+.cambios.ok{background:var(--ok-bg); color:var(--ok)}
+.cambios .est{width:28px; height:28px; border-radius:9px; background:var(--card); display:grid; place-items:center; flex:none}
+.cambios-card.bad{border:1.5px solid var(--bad)} .cambios-card.warn{border:1.5px solid var(--warn)} .cambios-card.ok{border:1.5px solid var(--ok)}
+.pill.cambio{background:var(--bad); color:#fff; margin-left:4px}
+.acciones{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
+
+/* ── Motos (historial) ── */
+.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
+.stat{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:10px 8px; text-align:center; box-shadow:var(--shadow)}
+.stat b{display:block; font-size:22px; letter-spacing:-.02em}
+.stat small{font-size:11.5px; color:var(--muted); font-weight:600}
+.stat.ok b{color:var(--ok)} .stat.warn b{color:var(--warn)} .stat.bad b{color:var(--bad)}
+.buscador{position:relative; margin-top:14px}
+.buscador svg{position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--muted)}
+.buscador .in{padding-left:40px}
+.filtros{display:flex; gap:8px; margin-top:10px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none}
+.filtros::-webkit-scrollbar{display:none}
+.filtros button{flex:none; border:1.5px solid var(--line); background:var(--card); border-radius:999px; padding:7px 13px; font-size:13px; font-weight:700; color:var(--ink-2)}
+.filtros button.on{background:var(--ink); border-color:var(--ink); color:var(--card)}
+.lista-motos{display:flex; flex-direction:column; gap:10px; margin-top:14px}
+.moto{display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:13px; box-shadow:var(--shadow)}
+.moto .info{flex:1; min-width:0}
+.moto .n{font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.moto .s{font-size:12.5px; color:var(--muted); margin-top:1px}
+.pill{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:800; padding:3px 8px; border-radius:999px; margin-top:6px}
+.pill.ok{background:var(--ok-bg); color:var(--ok)} .pill.warn{background:var(--warn-bg); color:var(--warn)} .pill.bad{background:var(--bad-bg); color:var(--bad)}
+.pill i{width:6px; height:6px; border-radius:50%; background:currentColor}
+.moto .flecha{color:var(--muted); flex:none}
+.vacio{text-align:center; color:var(--muted); padding:30px 10px; font-size:14px}
+.vacio b{display:block; color:var(--ink); font-size:16px; margin-bottom:4px}
+
+/* Recientes en Revisar */
+.recientes{display:flex; gap:10px; overflow-x:auto; padding:2px 2px 6px; margin:0 -2px; scrollbar-width:none}
+.recientes::-webkit-scrollbar{display:none}
+.reciente{flex:none; width:150px; text-align:left; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:11px; box-shadow:var(--shadow)}
+.reciente .n{font-size:12.5px; font-weight:700; margin-top:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+/* ── Ajustes ── */
+ol.pasos{margin:8px 0 0; padding-left:20px; font-size:14px} ol.pasos li{margin:5px 0}
+code.copiable{display:block; background:var(--soft); border:1px dashed var(--line); padding:10px; border-radius:10px; font-size:11px; word-break:break-all; max-height:80px; overflow:auto; margin-top:8px}
+
+/* ── Barra inferior ── */
+.nav{position:fixed; left:0; right:0; bottom:0; z-index:30; background:color-mix(in srgb, var(--card) 88%, transparent); backdrop-filter:saturate(1.6) blur(16px); -webkit-backdrop-filter:saturate(1.6) blur(16px);
+  border-top:1px solid var(--line); padding:8px 12px calc(8px + env(safe-area-inset-bottom))}
+.nav-in{max-width:520px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:6px}
+.nav button{background:none; border:0; display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0; color:var(--muted); font-size:11.5px; font-weight:700; border-radius:12px}
+.nav button.on{color:var(--ink)}
+.nav button.on .nv-ic{background:var(--gold-bg); color:var(--gold)}
+.nv-ic{width:44px; height:30px; border-radius:10px; display:grid; place-items:center}
+
+/* ── Login ── */
+.login{max-width:420px; margin:8vh auto 0}
+.login .logo{width:56px; height:56px; border-radius:17px; font-size:20px; margin:0 auto 14px}
+.login h1{text-align:center; margin:0; font-size:26px; letter-spacing:-.03em}
+.login h1 span{color:var(--gold)}
+.login p.s{text-align:center; color:var(--muted); margin:4px 0 0}
+
+.cargando{display:inline-block; width:16px; height:16px; border:2.5px solid currentColor; border-right-color:transparent; border-radius:50%; animation:g .7s linear infinite}
+@keyframes g{to{transform:rotate(360deg)}}
+/* ── Sensación de app ── */
+@keyframes subir{from{opacity:0; transform:translateY(14px)}to{opacity:1; transform:none}}
+@keyframes aparecer{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{transform:scale(.4); opacity:0}60%{transform:scale(1.12); opacity:1}100%{transform:scale(1)}}
+@keyframes latido{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes girar{to{transform:rotate(360deg)}}
+@keyframes brillo{from{background-position:-200% 0}to{background-position:200% 0}}
+.vista.entrar{animation:subir .32s cubic-bezier(.2,.8,.2,1) both}
+.vista.entrar .card, .vista.entrar .moto, .vista.entrar .stat, .vista.entrar .lista-alerta, .vista.entrar .cambios{animation:subir .4s cubic-bezier(.2,.8,.2,1) both}
+.vista.entrar > *:nth-child(2){animation-delay:.03s} .vista.entrar > *:nth-child(3){animation-delay:.06s} .vista.entrar > *:nth-child(4){animation-delay:.09s}
+.vista.entrar > *:nth-child(5){animation-delay:.12s} .vista.entrar > *:nth-child(6){animation-delay:.15s} .vista.entrar > *:nth-child(n+7){animation-delay:.18s}
+.hero .estado-g .ico{animation:pop .55s .15s cubic-bezier(.2,.8,.2,1.2) both}
+.progreso .barra i{transition:width 1s cubic-bezier(.2,.8,.2,1) .25s}
+.paso{animation:subir .4s both}
+.paso .btn-oro{animation:latido 2.4s 1s ease-in-out 2}
+.moto, .reciente, .chk-b, .stat, .filtros button, .nav button, .btn, .btn-volver{transition:transform .12s ease, background .15s, border-color .15s, color .15s}
+.moto:active, .reciente:active{transform:scale(.975)}
+.chk-b:active, .filtros button:active{transform:scale(.95)}
+.nav button:active .nv-ic{transform:scale(.88)}
+.nv-ic{transition:transform .15s, background .2s}
+.nav button.on .nv-ic{animation:pop .35s both}
+#toast{display:flex; gap:10px; align-items:flex-start}
+#toast .ti{flex:none; width:22px; height:22px; border-radius:7px; display:grid; place-items:center; margin-top:-1px}
+#toast.ok .ti{background:var(--ok); color:#fff} #toast.err .ti{background:var(--bad); color:#fff}
+
+/* Pantalla de carga del RUNT */
+#carga{position:fixed; inset:0; z-index:60; display:grid; place-items:center; background:rgba(12,14,18,.55); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); opacity:0; pointer-events:none; transition:opacity .25s}
+#carga.ver{opacity:1; pointer-events:auto}
+.carga-in{width:min(320px, calc(100% - 48px)); background:var(--card); border-radius:26px; padding:26px 22px 20px; box-shadow:0 30px 80px rgba(0,0,0,.35); text-align:center; transform:scale(.94); transition:transform .3s cubic-bezier(.2,.8,.2,1.2)}
+#carga.ver .carga-in{transform:none}
+.anillo{width:64px; height:64px; margin:0 auto 14px; border-radius:50%; background:conic-gradient(from 0deg, transparent 0 25%, var(--gold) 70%, #f3d27a); -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); mask:radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); animation:girar .9s linear infinite}
+.carga-in b{display:block; font-size:17px; letter-spacing:-.01em}
+.carga-in .placa-c{margin:10px auto 14px}
+.pasos-c{list-style:none; margin:0; padding:0; text-align:left}
+.pasos-c li{display:flex; gap:10px; align-items:center; font-size:13.5px; color:var(--muted); padding:5px 2px; transition:color .2s}
+.pasos-c li i{width:18px; height:18px; border-radius:50%; border:2px solid var(--line); flex:none; display:grid; place-items:center; transition:all .2s}
+.pasos-c li.act{color:var(--ink); font-weight:700} .pasos-c li.act i{border-color:var(--gold); border-right-color:transparent; animation:girar .8s linear infinite}
+.pasos-c li.ok{color:var(--ink)} .pasos-c li.ok i{background:var(--ok); border-color:var(--ok); color:#fff}
+
+/* Bienvenida */
+#splash{position:fixed; inset:0; z-index:80; display:grid; place-items:center; background:linear-gradient(145deg,#14161b,#2a2e37); transition:opacity .45s ease, visibility .45s}
+#splash.fuera{opacity:0; visibility:hidden}
+#splash .logo{width:84px; height:84px; border-radius:24px; font-size:28px; margin:0 auto; animation:pop .6s cubic-bezier(.2,.8,.2,1.2) both; box-shadow:0 16px 40px rgba(184,137,26,.35)}
+#splash b{display:block; color:#fff; font-size:24px; letter-spacing:-.02em; text-align:center; margin-top:16px; animation:aparecer .5s .2s both}
+#splash b span{color:#f0cf74}
+#splash small{display:block; color:#8f97a5; letter-spacing:.24em; font-size:10.5px; font-weight:700; text-align:center; margin-top:4px; animation:aparecer .5s .3s both}
+
+/* Interruptores */
+.ajuste{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-top:1px solid var(--line)}
+.ajuste:first-of-type{border-top:0}
+.ajuste b{display:block; font-size:14.5px} .ajuste small{color:var(--muted); font-size:12.5px}
+.sw{position:relative; width:50px; height:30px; flex:none}
+.sw input{position:absolute; opacity:0; inset:0; margin:0; cursor:pointer; z-index:1}
+.sw span{position:absolute; inset:0; border-radius:99px; background:var(--line); transition:background .2s}
+.sw span::after{content:''; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.2); transition:transform .22s cubic-bezier(.2,.8,.2,1.2)}
+.sw input:checked + span{background:var(--ok)}
+.sw input:checked + span::after{transform:translateX(20px)}
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} }
+
+@media (max-width:400px){ .fila2{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)} .acciones{grid-template-columns:1fr} }
+@media print{ .top, .nav, .acciones, #toast{display:none !important} body{background:#fff} main{padding:0} }
+</style>
+</head>
+<body>
+<div id="splash" aria-hidden="true"><div><div class="logo">PM</div><b>Placa<span>Limpia</span></b><small>PLATINIUM MOTORS</small></div></div>
+<div id="carga" role="status" aria-live="polite"><div class="carga-in">
+  <div class="anillo"></div><b>Consultando el RUNT</b>
+  <div class="placa-c" id="cargaPlaca"></div>
+  <ul class="pasos-c" id="cargaPasos"></ul>
+</div></div>
+<label id="haptico" aria-hidden="true" style="position:fixed; left:-100px; top:0; width:1px; height:1px; overflow:hidden"><input type="checkbox" switch tabindex="-1"></label>
+
+<header class="top">
+  <div class="top-in">
+    <button class="btn-volver oculto" id="btnVolver" type="button" aria-label="Volver">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      <span id="txtVolver">Motos</span>
+    </button>
+    <div class="marca" id="marcaTop">
+      <div class="logo">PM</div>
+      <div><b>Placa<span>Limpia</span></b><small>PLATINIUM MOTORS</small></div>
+    </div>
+  </div>
+</header>
+
+<div id="toast" role="status" aria-live="polite"><span class="ti" id="toastIc"></span><span id="toastTxt"></span><button type="button" aria-label="Cerrar" id="toastX">×</button></div>
+
+<main>
+  <!-- ═══ Inicio de sesión ═══ -->
+  <section class="login oculto" id="vLogin">
+    <div class="logo">PM</div>
+    <h1>Placa<span>Limpia</span></h1>
+    <p class="s">Revisión de vehículos · Platinium Motors</p>
+    <div class="card">
+      <form id="formLogin">
+        <label class="campo" for="lgEmail" style="margin-top:0">Correo</label>
+        <input class="in" id="lgEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+        <label class="campo" for="lgPass">Contraseña</label>
+        <input class="in" id="lgPass" type="password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+        <button class="btn btn-oro" type="submit" id="btnLogin">Entrar</button>
+      </form>
+      <p class="ayuda" style="text-align:center">Usa la misma cuenta de MotoContable.</p>
+      <div class="aviso" id="avLogin"></div>
+    </div>
+  </section>
+
+  <!-- ═══ Revisar ═══ -->
+  <section class="vista oculto" id="v-revisar">
+    <h1 class="titulo-vista">Revisar una moto</h1>
+    <p class="sub-vista">Datos del propietario tal como salen en la tarjeta de propiedad.</p>
+
+    <form class="card" id="formConsulta" autocomplete="off" style="margin-top:0">
+      <label class="campo" for="inPlaca" style="margin-top:0; text-align:center">PLACA</label>
+      <div class="placa-in">
+        <input id="inPlaca" maxlength="7" placeholder="ABC12D" required aria-label="Placa" inputmode="text" autocapitalize="characters">
+        <small>COLOMBIA</small>
+      </div>
+      <div class="fila2">
+        <div>
+          <label class="campo" for="inTipo">Tipo de documento</label>
+          <select class="in" id="inTipo">
+            <option value="C">Cédula de ciudadanía</option>
+            <option value="E">Cédula de extranjería</option>
+            <option value="N">NIT</option>
+            <option value="P">Pasaporte</option>
+            <option value="Y">Permiso por Protección Temporal</option>
+            <option value="T">Tarjeta de identidad</option>
+            <option value="U">Registro civil</option>
+            <option value="D">Carnet diplomático</option>
+          </select>
+        </div>
+        <div>
+          <label class="campo" for="inDoc">Número de documento</label>
+          <input class="in mono" id="inDoc" inputmode="numeric" maxlength="15" required>
+        </div>
+      </div>
+      <label class="campo" for="inCaptcha">Código de seguridad del RUNT</label>
+      <div class="captcha">
+        <div class="img" id="capImg"><span class="ayuda">Cargando…</span></div>
+        <button class="btn btn-sec btn-ico" type="button" id="btnCaptcha" title="Otro código" aria-label="Otro código">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+        </button>
+      </div>
+      <input class="in mono" id="inCaptcha" maxlength="20" placeholder="Escribe las letras de la imagen" autocapitalize="off" autocorrect="off" spellcheck="false" style="margin-top:10px" required>
+      <button class="btn btn-oro" type="submit" id="btnConsultar">Revisar moto</button>
+    </form>
+
+    <div id="recientesBox" class="oculto">
+      <div class="card-h" style="margin:22px 2px 10px"><h3>Últimas revisadas</h3><button class="btn btn-peq btn-linea" type="button" data-ir="motos" style="margin-left:auto">Ver todas</button></div>
+      <div class="recientes" id="recientes"></div>
+    </div>
+  </section>
+
+  <!-- ═══ Motos (historial) ═══ -->
+  <section class="vista oculto" id="v-motos">
+    <h1 class="titulo-vista">Mis motos</h1>
+    <p class="sub-vista">Cada moto que revisas queda aquí 30 días, con todas sus consultas.</p>
+    <div class="stats" id="stats"></div>
+    <div class="buscador">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input class="in" id="inBuscar" type="search" placeholder="Buscar por placa, cédula o marca">
+    </div>
+    <div class="filtros" id="filtros">
+      <button type="button" data-f="todas" class="on">Todas</button>
+      <button type="button" data-f="ok">✓ Limpias</button>
+      <button type="button" data-f="warn">Con pendientes</button>
+      <button type="button" data-f="bad">No se pueden</button>
+    </div>
+    <div class="lista-motos" id="listaMotos"></div>
+  </section>
+
+  <!-- ═══ Ficha de una moto ═══ -->
+  <section class="vista oculto" id="v-ficha"></section>
+
+  <!-- ═══ Ajustes ═══ -->
+  <section class="vista oculto" id="v-ajustes">
+    <h1 class="titulo-vista">Ajustes</h1>
+    <p class="sub-vista">Lector del SIMIT, cuenta y ayuda.</p>
+
+    <div class="card" style="margin-top:0">
+      <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div><h3>Lector (SIMIT e impuesto)</h3></div>
+      <p class="ayuda" style="margin-top:4px">Es un favorito del navegador. Funciona en el <b>SIMIT</b> y en el <b>impuesto de Antioquia</b>: con los resultados en pantalla lo tocas y PlacaLimpia recibe lo que salió. Solo lo guarda si la placa o cédula coincide con la moto que estás revisando.</p>
+      <details class="det" style="margin-top:6px">
+        <summary>Instalar en el iPhone (Safari)</summary>
+        <ol class="pasos">
+          <li>Toca <b>Copiar código del lector</b> (abajo).</li>
+          <li>Abre <b>Safari</b>, entra a cualquier página y toca <b>Compartir → Agregar marcador</b>, nómbralo <b>Lector PlacaLimpia</b> y guárdalo.</li>
+          <li>Abre los marcadores (📖), mantén presionado <b>Lector PlacaLimpia → Editar</b>, borra la dirección, <b>pega</b> el código y guarda.</li>
+          <li>Si ya lo tenías, solo cambia la dirección por el código nuevo.</li>
+        </ol>
+        <p class="ayuda"><b>Usándolo desde la app:</b> en la ficha toca <b>Consultar SIMIT</b> (se abre aparte), toca el Lector con los resultados en pantalla, vuelve a la app y toca <b>Pegar resultado del lector</b> (el resultado queda copiado).</p>
+      </details>
+      <details class="det">
+        <summary>Instalar en el computador (Safari o Chrome)</summary>
+        <ol class="pasos">
+          <li>Muestra la barra de favoritos: <b>Cmd + Shift + B</b>.</li>
+          <li>Arrastra este botón a la barra: <a class="btn btn-sec btn-peq" id="lnkLector" href="#">Lector PlacaLimpia</a></li>
+        </ol>
+      </details>
+      <button class="btn btn-sec" type="button" id="btnCopiarLector" style="width:100%; margin-top:8px">Copiar código del lector</button>
+      <code class="copiable" id="codLector"></code>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg></div><h3>Sonido y vibración</h3></div>
+      <div class="ajuste"><div><b>Sonidos</b><small>Respetan el modo silencio del iPhone.</small></div><label class="sw"><input type="checkbox" id="optSonido"><span></span></label></div>
+      <div class="ajuste"><div><b>Vibración</b><small>En iPhone con iOS 18 o más nuevo.</small></div><label class="sw"><input type="checkbox" id="optVibrar"><span></span></label></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></div><h3>Apariencia</h3></div>
+      <div class="filtros" id="selTema" style="margin-top:10px">
+        <button type="button" data-tema="auto">Automático</button>
+        <button type="button" data-tema="light">☀︎ Claro</button>
+        <button type="button" data-tema="dark">☾ Oscuro</button>
+      </div>
+      <p class="ayuda">Automático sigue el modo claro u oscuro del iPhone.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div><h3>Cuenta</h3></div>
+      <p class="ayuda" id="txtCuenta" style="margin-top:4px"></p>
+      <button class="btn btn-linea" type="button" id="btnSalir" style="width:100%; margin-top:12px">Cerrar sesión</button>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg></div><h3>Cómo decide el veredicto</h3></div>
+      <ul style="margin:6px 0 0; padding-left:18px; font-size:13.5px; color:var(--muted)">
+        <li><b>No se puede:</b> embargo o limitación, prenda, trámite en curso, comparendo a la cédula, impuesto en mora, motor o chasis que no coinciden.</li>
+        <li><b>Falta algo:</b> SOAT o tecno vencidos, regrabados por verificar, o pasos sin revisar.</li>
+        <li><b>Comparendo a la placa:</b> se puede hacer el trámite.</li>
+        <li>Motos de 125 c.c. o menos no pagan impuesto vehicular.</li>
+      </ul>
+      <p class="ayuda">El historial se guarda en este dispositivo y las consultas de más de <b>30 días</b> se borran solas.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="nav oculto" id="nav">
+  <div class="nav-in">
+    <button type="button" data-ir="revisar"><span class="nv-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>Revisar</button>
+    <button type="button" data-ir="motos"><span class="nv-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="16.5" r="3.5"/><circle cx="18.5" cy="16.5" r="3.5"/><path d="M5.5 16.5L9 9h5l4.5 7.5M14 9l-1-3h3"/></svg></span>Motos</button>
+    <button type="button" data-ir="ajustes"><span class="nv-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>Ajustes</button>
+  </div>
+</nav>
+
+<script>
+'use strict';
+// ════════════════════════════════════════════════════════════════════════════
+// PlacaLimpia PM · Platinium Motors
+// RUNT: se consulta desde la función de Supabase "placalimpia-runt" con el captcha
+//       que escribes tú (supabase/functions/placalimpia-runt).
+// SIMIT: lo consultas tú en la página oficial y el "lector" (un favorito) trae lo
+//       que salió en pantalla. Solo se guarda si coincide con la moto en revisión.
+// Reglas: comparendo a la PLACA → se puede tramitar; a la CÉDULA → no se puede.
+//         Embargo / limitación, prenda o trámite en curso → no se puede.
+// ════════════════════════════════════════════════════════════════════════════
+const SUPA_URL = 'https://llyovzgwdqoeunvyczcy.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxseW92emd3ZHFvZXVudnljemN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MzUzNjcsImV4cCI6MjEwNjAxMTM2N30.g1DgUdTGPHDz8HEI1Kgv4SOJ13zyOwOfcAp8Ak2BRGQ';
+const FUNCION = 'placalimpia-runt';
+const SIMIT_URL = 'https://www.fcm.org.co/simit/#/estado-cuenta?numDocPlacaProp=';
+const K_HIST = 'pl_historial_v1';
+const K_ACTUAL = 'pl_actual_v1';
+const K_PEND = 'pl_simit_pendiente_v1';
+
+let _supa = null;
+try {
+  _supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
+    auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'implicit', storageKey:'mc-auth' }
+  });
+} catch(e){ console.log('Supabase no disponible', e); }
+
+const $ = id => document.getElementById(id);
+let captchaId = null, captchaEn = 0;
+let actual = null;          // revisión que se está viendo
+let vista = 'revisar', vistaAntes = 'motos';
+let filtro = 'todas';
+const ES_APP = !!(window.navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
+
+// ── Iconos ─────────────────────────────────────────────────────────────────
+const SVG = (d, s = 18, w = 2.4) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const IC = {
+  ok:   SVG('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+  warn: SVG('<path d="M12 8v5M12 16.5h.01"/><path d="M10.3 3.9L2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>', 17, 2.2),
+  bad:  SVG('<path d="M7 7l10 10M17 7L7 17"/>'),
+  nd:   SVG('<circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/>', 17, 2.2),
+  doc:  SVG('<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>', 18, 2.1),
+  ley:  SVG('<path d="M12 3v18M5 21h14M6 7h12M6 7l-3 7a3 3 0 0 0 6 0zM18 7l-3 7a3 3 0 0 0 6 0z"/>', 18, 2),
+  multa:SVG('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>', 18, 2.1),
+  lupa: SVG('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M8.5 11h5M11 8.5v5"/>', 18, 2.1),
+  sede: SVG('<path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/>', 18, 2.1),
+  hist: SVG('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>', 18, 2.1),
+  raw:  SVG('<path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/>', 18, 2.1),
+  flecha: SVG('<path d="M9 6l6 6-6 6"/>', 18, 2.2),
+  compartir: SVG('<path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>', 18, 2.2),
+  ext:  SVG('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>', 15, 2.2),
+};
+
+// ── Utilidades ─────────────────────────────────────────────────────────────
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function leer(k, def){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch(e){ return def; } }
+function guardar(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } }
+// ── Sonidos (generados en el momento) y vibración ──────────────────────────
+const PREF = { sonido: leer('pl_sonido', true), vibrar: leer('pl_vibrar', true) };
+let _ctx = null;
+function audio(){
+  if (!_ctx){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try { if (navigator.audioSession) navigator.audioSession.type = 'ambient'; } catch(e){}   // respeta el modo silencio
+    _ctx = new AC();
+  }
+  if (_ctx.state === 'suspended') _ctx.resume();
+  return _ctx;
+}
+function nota(f, ini, dur, tipo = 'sine', vol = .1, fFin){
+  const c = audio(); if (!c) return;
+  const t0 = c.currentTime + ini, o = c.createOscillator(), g = c.createGain();
+  o.type = tipo; o.frequency.setValueAtTime(f, t0);
+  if (fFin) o.frequency.exponentialRampToValueAtTime(fFin, t0 + dur);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + .012);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0 + dur + .03);
+}
+const SONIDOS = {
+  tap:    () => nota(1900, 0, .035, 'triangle', .035),
+  marcar: () => { nota(1320, 0, .07, 'sine', .07); nota(1760, .05, .09, 'sine', .05); },
+  ok:     () => { nota(880, 0, .16, 'sine', .09); nota(1318.5, .1, .26, 'sine', .08); },
+  limpio: () => [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => nota(f, i * .085, .38 - i * .03, 'sine', .085)),
+  error:  () => { nota(392, 0, .16, 'triangle', .1); nota(261.6, .14, .3, 'triangle', .1); },
+  alerta: () => { nota(1046.5, 0, .11, 'square', .035); nota(1046.5, .17, .11, 'square', .035); nota(1396.9, .34, .2, 'sine', .06); },
+  enviar: () => nota(420, 0, .28, 'sine', .07, 1500),
+  inicio: () => { nota(659.25, 0, .3, 'sine', .05); nota(987.77, .12, .45, 'sine', .045); },
+};
+function vibrar(tipo){
+  if (!PREF.vibrar) return;
+  if (navigator.vibrate){ navigator.vibrate({ error:[35, 50, 35], exito:[15, 40, 20], alerta:[20, 40, 20, 40, 20] }[tipo] || 10); return; }
+  const l = $('haptico'); if (!l) return;          // iPhone (iOS 18+): el interruptor nativo da un toque háptico
+  try { l.click(); if (tipo && tipo !== 'leve') setTimeout(() => l.click(), 110); } catch(e){}
+}
+// Una sola función para sonar y vibrar según lo que pasó.
+function sentir(que){
+  if (PREF.sonido){ try { (SONIDOS[que] || SONIDOS.tap)(); } catch(e){} }
+  vibrar({ tap:'leve', marcar:'leve', ok:'exito', limpio:'exito', error:'error', alerta:'alerta', enviar:'leve' }[que] || 'leve');
+}
+
+let toastT = null;
+function toast(tipo, texto){
+  $('toastIc').innerHTML = tipo === 'ok' ? IC.ok.replace('width="18" height="18"', 'width="14" height="14"') : IC.bad.replace('width="18" height="18"', 'width="14" height="14"');
+  if (tipo === 'err') sentir('error');
+  const el = $('toast');
+  $('toastTxt').textContent = texto;
+  el.className = 'ver ' + tipo;
+  clearTimeout(toastT);
+  toastT = setTimeout(() => { el.className = tipo; }, tipo === 'ok' ? 4500 : 9000);
+}
+function aviso(id, tipo, texto){
+  if (id === 'avLogin'){ const el = $(id); el.className = 'aviso ver'; el.textContent = texto; return; }
+  toast(tipo, texto);
+}
+function quitarAviso(id){ if (id === 'avLogin') $(id).className = 'aviso'; else $('toast').className = ''; }
+function pesos(n){ return '$' + Math.round(n).toLocaleString('es-CO'); }
+function hoy0(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
+
+function fecha(v){
+  if (v == null || v === '') return null;
+  if (typeof v === 'number') return new Date(v);
+  const s = String(v).trim();
+  let m = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+  if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
+  m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+function fTxt(d){ return d ? d.toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'}) : '—'; }
+function fNum(d){ return d ? String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear() : '—'; }
+// "faltan 11 meses", "faltan 20 días", "venció hace 3 meses"
+function restante(dd){
+  if (dd == null) return '';
+  const n = Math.abs(dd), meses = Math.round(n / 30.44);
+  const txt = n < 60 ? `${n} día${n === 1 ? '' : 's'}` : meses < 24 ? `${meses} mes${meses === 1 ? '' : 'es'}` : `${(n / 365.25).toFixed(1).replace('.0', '').replace('.', ',')} años`;
+  if (dd === 0) return 'vence hoy';
+  return dd > 0 ? `faltan ${txt}` : `venció hace ${txt}`;
+}
+function hTxt(d){ return d ? d.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'}) : ''; }
+function hace(d){
+  if (!d) return '';
+  const min = Math.round((Date.now() - d) / 60000);
+  if (min < 1) return 'ahora';
+  if (min < 60) return `hace ${min} min`;
+  const h = Math.round(min / 60); if (h < 24) return `hace ${h} h`;
+  const dd = Math.round(h / 24); if (dd < 7) return `hace ${dd} día${dd === 1 ? '' : 's'}`;
+  return fTxt(d);
+}
+function dias(d){ return d ? Math.round((d - hoy0()) / 86400000) : null; }
+
+// Primer valor no vacío entre varios nombres posibles de campo.
+function campo(o, ...nombres){ if (!o) return undefined; for (const n of nombres){ if (o[n] != null && o[n] !== '') return o[n]; } return undefined; }
+// Busca una llave en cualquier nivel del objeto.
+function buscar(o, llave, prof = 0){
+  if (!o || typeof o !== 'object' || prof > 5) return undefined;
+  if (llave in o) return o[llave];
+  for (const k of Object.keys(o)){ const r = buscar(o[k], llave, prof + 1); if (r !== undefined) return r; }
+  return undefined;
+}
+// Convierte la respuesta de una sección del RUNT en una lista de filas.
+function filas(sec){
+  if (!sec) return [];
+  const d = sec.datos !== undefined ? sec.datos : sec;
+  if (Array.isArray(d)) return d;
+  if (d && typeof d === 'object'){
+    for (const k of ['revisiones','data','datos','lista','resultado','registros','polizas','limitaciones','prendas','garantias','solicitudes']){
+      if (Array.isArray(d[k])) return d[k];
+    }
+    for (const k of Object.keys(d)){ if (Array.isArray(d[k])) return d[k]; }
+  }
+  return [];
+}
+function seccionFallo(sec){ return !sec || (sec.ok === false && sec.estado !== 404); }
+function siNo(v){ const s = String(v == null ? '' : v).trim().toUpperCase(); return s === 'SI' || s === 'SÍ' || s === 'S' || s === 'TRUE' || s === '1'; }
+function nombreTipo(t){ return ({C:'C.C.', E:'C.E.', N:'NIT', P:'Pasaporte', Y:'P.P.T.', T:'T.I.', U:'R.C.', D:'C.D.'})[t] || t; }
+function chipPlaca(p, xl){ return `<span class="chip-placa${xl ? ' xl' : ''}">${esc(p)}<small>COLOMBIA</small></span>`; }
+
+// ── Análisis del RUNT ──────────────────────────────────────────────────────
+function analizarRunt(r){
+  const info = buscar(r.vehiculo, 'infoVehiculo') || {};
+  const out = { info, items: {} };
+
+  // Estado del vehículo
+  const estado = String(campo(info, 'estadoAutomotor', 'estadoDelVehiculo', 'estado') || '').toUpperCase();
+  out.estado = estado;
+
+  // SOAT
+  const soats = filas(r.soat).map(s => ({ ...s, _fin: fecha(campo(s, 'fechaFinVigencia', 'fechaVencimSoat', 'fechaVencimiento', 'fechaVigencia')) }))
+    .sort((a, b) => (b._fin || 0) - (a._fin || 0));
+  const soat = soats[0];
+  if (seccionFallo(r.soat) && !soat) out.items.soat = { nivel:'nd', t:'SOAT', d:'No se pudo consultar el SOAT en el RUNT.' };
+  else if (!soat) out.items.soat = { nivel:'bad', t:'SOAT', d:'No aparece ningún SOAT registrado.', falta:'Sacar SOAT' };
+  else {
+    const dd = dias(soat._fin), aseg = campo(soat, 'razonSocialAsegur', 'aseguradora', 'nombreAseguradora') || '';
+    if (dd != null && dd >= 0) out.items.soat = { nivel: dd <= 30 ? 'warn' : 'ok', t:'SOAT vigente',
+      d:`Vence el <b>${fNum(soat._fin)}</b> · ${restante(dd)}${aseg ? '<br>' + esc(aseg) : ''}` };
+    else out.items.soat = { nivel:'bad', t:'SOAT vencido', d:`Venció el <b>${fNum(soat._fin)}</b> · ${restante(dd)}${aseg ? '<br>' + esc(aseg) : ''}`, falta:'Renovar el SOAT' };
+  }
+
+  // Tecnomecánica
+  const rtms = filas(r.rtm).map(x => ({ ...x, _fin: fecha(campo(x, 'fechaVencimientoRvt', 'fechaVigencia', 'fechaVencimiento')) }))
+    .sort((a, b) => (b._fin || 0) - (a._fin || 0));
+  const rtm = rtms[0];
+  const fReg = fecha(campo(info, 'fechaRegistro', 'fechaMatricula'));
+  // Motos: la primera tecnomecánica se hace a los 2 años de matriculadas.
+  const primera = fReg ? new Date(fReg.getFullYear() + 2, fReg.getMonth(), fReg.getDate()) : null;
+  const ddP = dias(primera);
+  const nueva = primera && ddP >= 0;
+  const noAplica = /no\s*aplica/i.test(String(campo(r.rtm && r.rtm.datos, 'descripcionRespuesta') || ''));
+  if (seccionFallo(r.rtm) && !rtm) out.items.rtm = { nivel:'nd', t:'Tecnomecánica', d:'No se pudo consultar la tecnomecánica en el RUNT.' };
+  else if (!rtm) out.items.rtm = nueva
+    ? { nivel: ddP <= 30 ? 'warn' : 'ok', t:'Tecnomecánica: aún no la necesita',
+        d:`La primera tecnomecánica vence el <b>${fNum(primera)}</b> · ${restante(ddP)}<br>Matriculada el ${fNum(fReg)}; la primera revisión es a los 2 años${noAplica ? ' (el RUNT dice: NO APLICA)' : ''}.` }
+    : { nivel:'bad', t:'Tecnomecánica vencida', d:`No aparece ninguna revisión registrada.${primera ? ` La primera debía hacerse antes del <b>${fNum(primera)}</b> · ${restante(ddP)}.` : ''}`, falta:'Hacer la tecnomecánica' };
+  else {
+    const dd = dias(rtm._fin), cda = campo(rtm, 'nombreCda', 'cda') || '';
+    if (dd != null && dd >= 0) out.items.rtm = { nivel: dd <= 30 ? 'warn' : 'ok', t:'Tecnomecánica vigente',
+      d:`Vence el <b>${fNum(rtm._fin)}</b> · ${restante(dd)}${cda ? '<br>' + esc(cda) : ''}` };
+    else out.items.rtm = { nivel:'bad', t:'Tecnomecánica vencida', d:`Venció el <b>${fNum(rtm._fin)}</b> · ${restante(dd)}${cda ? '<br>' + esc(cda) : ''}`, falta:'Renovar la tecnomecánica' };
+  }
+
+  // Limitaciones a la propiedad (embargos, etc.)
+  const lims = filas(r.limitaciones);
+  if (seccionFallo(r.limitaciones) && !lims.length) out.items.lim = { nivel:'nd', t:'Embargos y limitaciones', d:'No se pudo consultar en el RUNT.' };
+  else if (!lims.length) out.items.lim = { nivel:'ok', t:'Sin embargos ni limitaciones', d:'El RUNT no registra limitaciones a la propiedad.' };
+  else out.items.lim = { nivel:'bad', t:`Tiene ${lims.length} limitación${lims.length === 1 ? '' : 'es'} a la propiedad`,
+    d: lims.map(l => `<b>${esc(campo(l, 'tipoLimitacion', 'tipo') || 'Limitación')}</b>${campo(l, 'entidadJuridica', 'entidad') ? ' · ' + esc(campo(l, 'entidadJuridica', 'entidad')) : ''}${campo(l, 'noDocumento') ? ' · Oficio ' + esc(l.noDocumento) : ''}${campo(l, 'municipio') ? ' · ' + esc(l.municipio) : ''}`).join('<br>'),
+    bloquea:'Tiene embargo o limitación a la propiedad: no se puede traspasar hasta levantarla' };
+
+  // Prendas y garantías mobiliarias
+  const inactiva = x => /cancel|levant|inactiv|termin|extin|liber/i.test(String(campo(x, 'estado', 'estadoPrenda') || ''));
+  const prendas = filas(r.prendas).filter(p => !inactiva(p));
+  const garantias = filas(r.garantias).filter(g => !inactiva(g));
+  const marcaInfo = info.prendas;
+  const pInfo = Array.isArray(marcaInfo) ? marcaInfo.length > 0 : siNo(marcaInfo);
+  const lista = [
+    ...prendas.map(p => `<b>Prenda</b>${campo(p, 'entidad', 'acreedor') ? ' con ' + esc(campo(p, 'entidad', 'acreedor')) : ''}${campo(p, 'fechaRegistro') ? ' · desde ' + esc(fTxt(fecha(p.fechaRegistro))) : ''}${campo(p, 'estado') ? ' · ' + esc(p.estado) : ''}`),
+    ...garantias.map(g => `<b>Garantía mobiliaria</b>${campo(g, 'acreedor', 'entidad') ? ' a favor de ' + esc(campo(g, 'acreedor', 'entidad')) : ''}${campo(g, 'fechaInscripcion') ? ' · inscrita ' + esc(fTxt(fecha(g.fechaInscripcion))) : ''}`),
+  ];
+  if (!lista.length && pInfo) lista.push('El RUNT marca que el vehículo tiene prenda.');
+  if (siNo(info.gravamenes)) lista.push('El RUNT marca que el vehículo tiene <b>gravámenes</b>.');
+  if (seccionFallo(r.prendas) && seccionFallo(r.garantias) && !lista.length) out.items.prenda = { nivel:'nd', t:'Prendas', d:'No se pudo consultar en el RUNT.' };
+  else if (!lista.length) out.items.prenda = { nivel:'ok', t:'Sin prendas', d:'No registra prendas ni garantías mobiliarias vigentes.' };
+  else out.items.prenda = { nivel:'bad', t:'Tiene prenda', d: lista.join('<br>'), bloquea:'Tiene prenda: no se puede traspasar hasta que la entidad la levante' };
+
+  // Estado del registro
+  if (estado && estado !== 'ACTIVO') out.items.estado = { nivel:'bad', t:`Estado del vehículo: ${esc(estado)}`, d:'El RUNT no lo muestra como ACTIVO.', bloquea:`El vehículo está ${estado} en el RUNT` };
+  else if (estado) out.items.estado = { nivel:'ok', t:'Vehículo activo', d:'Estado en el RUNT: <b>ACTIVO</b>.' };
+
+  // Regrabados (números de motor, chasis, serie o VIN regrabados)
+  const regra = [['Motor', 'numRegraMotor'], ['Chasis', 'numRegraChasis'], ['Serie', 'numRegraSerie'], ['Vin', 'numRegraVin']]
+    .filter(([n]) => siNo(info['esRegrabado' + n]))
+    .map(([n, k]) => `<b>${n === 'Vin' ? 'VIN' : n}</b>${info[k] ? ' · número regrabado ' + esc(info[k]) : ''}`);
+  if (regra.length) out.items.regrabado = { nivel:'bad', t:`Tiene regrabado de ${regra.length === 1 ? 'un número' : regra.length + ' números'}`,
+    d: regra.join('<br>') + '<br>Pide el documento que autoriza la regrabación y compara con la moto.',
+    falta:'Verificar que la regrabación esté autorizada' };
+
+  // Estado de seguridad
+  const seg = String(campo(info, 'seguridadEstado') || '').trim();
+  if (seg && !/^no$/i.test(seg)) out.items.seguridad = { nivel:'bad', t:'Alerta de seguridad en el RUNT',
+    d:`El RUNT marca "estado de seguridad": <b>${esc(seg)}</b>. Verifica en el organismo de tránsito antes de seguir.`, falta:'Aclarar la alerta de seguridad del RUNT' };
+
+  // Trámites en curso (no se puede radicar otro traspaso mientras haya uno abierto)
+  const enCurso = filas(r.solicitudes).filter(x => {
+    const e = String(campo(x, 'estado') || '');
+    return e && !/autoriz|aprob|anulad|rechaz|cancel|finaliz|termin|desist|negad|cerrad/i.test(e);
+  });
+  if (enCurso.length) out.items.tramite = { nivel:'bad', t:`Tiene ${enCurso.length === 1 ? 'un trámite' : enCurso.length + ' trámites'} en curso`,
+    d: enCurso.map(x => `<b>${esc(String(campo(x, 'tramitesRealizados') || 'Trámite').replace(/,\s*$/, ''))}</b> · ${esc(campo(x, 'estado'))}${campo(x, 'fechaSolicitud') ? ' · ' + fTxt(fecha(x.fechaSolicitud)) : ''}${campo(x, 'entidad') ? ' · ' + esc(x.entidad) : ''}`).join('<br>'),
+    bloquea:'Tiene un trámite en curso en el RUNT: hay que esperar a que termine antes del traspaso' };
+  else if (!seccionFallo(r.solicitudes)) out.items.tramite = { nivel:'ok', t:'Sin trámites en curso', d:'No hay solicitudes abiertas en el RUNT.' };
+
+  // Servicio distinto de particular
+  const serv = String(campo(info, 'tipoServicio') || '').trim();
+  if (serv && !/^particular$/i.test(serv)) out.items.servicio = { nivel:'warn', t:`Servicio: ${esc(serv)}`,
+    d:'No es de servicio particular: el traspaso puede pedir requisitos adicionales.' };
+
+  const txt = (...v) => v.filter(Boolean).map(x => String(x).trim()).join(' · ');
+  out.datos = {
+    estado,
+    lims: lims.map(l => txt(campo(l, 'tipoLimitacion', 'tipo') || 'Limitación', campo(l, 'entidadJuridica', 'entidad'))),
+    prendas: [...prendas.map(x => txt('Prenda', campo(x, 'entidad', 'acreedor'))), ...garantias.map(g => txt('Garantía mobiliaria', campo(g, 'acreedor', 'entidad'))),
+              ...(siNo(info.gravamenes) ? ['Gravámenes'] : []), ...(!prendas.length && !garantias.length && pInfo ? ['Prenda'] : [])],
+    tramites: enCurso.map(x => txt(String(campo(x, 'tramitesRealizados') || 'Trámite').replace(/,\s*$/, ''), campo(x, 'estado'))),
+    soatFin: soat ? soat._fin : null,
+    rtmFin: rtm ? rtm._fin : null,
+    primeraRtm: primera, rtmNueva: !!nueva,
+  };
+  return out;
+}
+
+// ── Análisis del SIMIT (texto leído por el lector) ─────────────────────────
+function numPesos(s){ const limpio = s.replace(/[^\d.,]/g, '').replace(/[.,](\d{2})$/, '').replace(/[.,]/g, ''); return +limpio || 0; }
+function analizarSimit(cap, revision){
+  const t = (cap && cap.t) || '';
+  const plano = t.replace(/\s+/g, ' ');
+  const res = { texto: t, fecha: cap && cap.f ? new Date(cap.f).toISOString() : new Date().toISOString(), consulta: (cap && cap.q) || '' };
+  if (!/simit|comparendo|multa|estado de cuenta/i.test(plano)) { res.estado = 'desconocido'; return res; }
+  // Mensajes de "sin deudas": "No tienes comparendos…", "No se encontraron resultados", "Sin multas", "Paz y salvo"…
+  const limpio = /\b(no|sin|ning[uú]n\w*)\b[^.!¡?\n]{0,80}\b(comparendos?|multas?|deudas?|pendientes?|resultados?|registros?|obligaciones?|informaci[oó]n)\b/i.test(plano)
+    || /paz\s+y\s+salvo|al\s+d[ií]a\s+con/i.test(plano);
+  const mTotal = plano.match(/total[^$]{0,60}\$\s?([\d][\d.,]*)/i);
+
+  // Recuadro "Resumen" del SIMIT: Comparendos: N · Multas: N · Acuerdos de pago: N · Total: $ X
+  const num = re => { const m = plano.match(re); return m ? +m[1] : null; };
+  const comp = num(/comparendos\s*:\s*(\d+)/i), mult = num(/multas\s*:\s*(\d+)/i), acu = num(/acuerdos\s+de\s+pago\s*:\s*(\d+)/i);
+  if (comp != null || mult != null){
+    res.comparendos = comp || 0;
+    res.multas = mult || 0;
+    res.acuerdos = acu || 0;
+    res.acuerdo = res.acuerdos > 0;
+    res.total = mTotal ? numPesos(mTotal[1]) : 0;
+    res.cantidad = res.comparendos + res.multas;
+    res.estadosReg = [...new Set([...plano.matchAll(/\bEstado\s+(?!de\s+cuenta)([A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,30}?)(?=\s+(?:Valor|Saldo|Total|Tipo|Fecha|Notificaci|Placa|Secretar|Infracci|Intereses|Descuento|Pagar|Detalle|$))/g)].map(m => m[1].trim()))];
+    res.placasReg = [...new Set([...plano.matchAll(/\bPlaca\s+([A-Z]{3}\d{2}[A-Z0-9]|[A-Z]{3}\d{3})\b/g)].map(m => m[1]))];
+    res.estado = (res.cantidad > 0 || res.acuerdos > 0 || res.total > 0) ? 'deudas' : 'limpio';
+    return res;
+  }
+
+  // Si el SIMIT cambia su diseño: lectura aproximada.
+  const montos = [...plano.matchAll(/\$\s?([\d][\d.,]*)/g)].map(m => numPesos(m[1])).filter(n => n > 0);
+  const total = mTotal ? numPesos(mTotal[1]) : (montos.length ? Math.max(...montos) : 0);
+  const ids = new Set([...plano.matchAll(/\b\d{12,25}\b/g)].map(m => m[0]).filter(x => x !== (revision && revision.documento)));
+  res.acuerdo = /acuerdo\s+de\s+pago/i.test(plano) && !/sin\s+acuerdo/i.test(plano);
+  res.total = total;
+  res.cantidad = ids.size;
+  res.estado = (limpio && total === 0) ? 'limpio' : (total > 0 || ids.size > 0 ? 'deudas' : (limpio ? 'limpio' : 'desconocido'));
+  return res;
+}
+
+function itemSimit(modo, s){
+  const quien = modo === 'placa' ? 'a la placa' : 'a la cédula';
+  const titulo = modo === 'placa' ? 'Comparendos a la placa' : 'Comparendos a la cédula';
+  const boton = `<div class="extra"><button class="btn btn-sec btn-peq" type="button" data-simit="${modo}">${IC.ext} ${s ? 'Volver a consultar' : 'Consultar'} SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'}</button></div>`;
+  if (!s) return { nivel:'nd', t:titulo, d:'Falta revisar en el SIMIT.', extra: boton, falta: modo === 'cedula' ? 'Revisar el SIMIT por cédula' : null };
+  const buscado = s.consulta ? ` · Buscado: <b>${esc(s.consulta)}</b>` : '';
+  if (s.estado === 'limpio') return { nivel:'ok', t:`Sin comparendos ${quien}`, d:`SIMIT revisado ${hace(new Date(s.fecha))}${s.manual ? ' (confirmado por ti)' : ''}${buscado}.`, extra: boton };
+  if (s.estado === 'desconocido') return { nivel:'nd', t:titulo,
+    d:`El lector no reconoció lo que salió en el SIMIT. Si viste que <b>no tiene comparendos ni multas</b>, confírmalo:`,
+    extra:`<div class="extra" style="display:flex; gap:8px; flex-wrap:wrap"><button class="btn btn-sec btn-peq" type="button" data-limpio="${modo}">✓ No tiene comparendos ${quien}</button><button class="btn btn-linea btn-peq" type="button" data-simit="${modo}">${IC.ext} Consultar otra vez</button></div>`,
+    falta: modo === 'cedula' ? 'Confirmar el SIMIT por cédula' : null };
+  const partes = [];
+  if (s.comparendos != null){
+    partes.push(`Comparendos: <b>${s.comparendos}</b>`, `Multas: <b>${s.multas}</b>`);
+    if (s.acuerdos) partes.push(`Acuerdos de pago: <b>${s.acuerdos}</b>`);
+  } else if (s.cantidad) partes.push(`<b>${s.cantidad}</b> comparendo(s)/multa(s)`);
+  else if (s.acuerdo) partes.push('Tiene acuerdo de pago');
+  partes.push(s.total ? `Total <b>${pesos(s.total)}</b>` : 'Valor no detectado (mira el detalle)');
+  if (s.estadosReg && s.estadosReg.length) partes.push(esc(s.estadosReg.join(', ')));
+  const det = partes.join(' · ') + buscado;
+  if (modo === 'placa') return { nivel:'warn', t:'Comparendo a la placa · se puede tramitar', d: det, extra: boton };
+  return { nivel:'bad', t:'Comparendo a la cédula · NO se puede tramitar', d: det, extra: boton,
+    bloquea:`El propietario tiene comparendos a la cédula${s.total ? ' por ' + pesos(s.total) : ''}: no se puede tramitar hasta pagarlos` };
+}
+
+// ── Impuesto vehicular ─────────────────────────────────────────────────────
+// Las motos de 125 c.c. o menos no pagan impuesto vehicular (Ley 488 de 1998, art. 141).
+// El impuesto se paga al departamento donde está matriculada.
+const DEPTOS = {
+  'Antioquia': { url:'https://www.vehiculosantioquia.com.co/',
+    claves:['ANTIOQUIA','MEDELLIN','ENVIGADO','ITAGUI','BELLO','SABANETA','LA ESTRELLA','CALDAS','COPACABANA','GIRARDOTA','BARBOSA','RIONEGRO','MARINILLA','LA CEJA','EL CARMEN DE VIBORAL','GUARNE','EL RETIRO','SANTUARIO','SONSON','PUERTO TRIUNFO','PUERTO BERRIO','APARTADO','TURBO','CAUCASIA','ANDES','SANTA FE DE ANTIOQUIA','YARUMAL','SEGOVIA','CAREPA','CHIGORODO','LA UNION','AMAGA','URRAO','DONMATIAS','SANTA ROSA DE OSOS','CIUDAD BOLIVAR','FREDONIA','JERICO','TAMESIS','EL BAGRE','ZARAGOZA','REMEDIOS','NECOCLI','ARBOLETES'] },
+  'Bogotá': { url:'https://www.haciendabogota.gov.co/', claves:['BOGOTA'] },
+  'Cundinamarca': { claves:['CUNDINAMARCA','SOACHA','CHIA','ZIPAQUIRA','FACATATIVA','FUSAGASUGA','GIRARDOT','MOSQUERA','MADRID','FUNZA','CAJICA','COTA','TOCANCIPA','SOPO'] },
+  'Valle del Cauca': { claves:['VALLE','CALI','PALMIRA','TULUA','BUGA','CARTAGO','JAMUNDI','YUMBO','BUENAVENTURA'] },
+  'Atlántico': { claves:['ATLANTICO','BARRANQUILLA','SOLEDAD','MALAMBO','PUERTO COLOMBIA','SABANALARGA'] },
+  'Santander': { claves:['SANTANDER','BUCARAMANGA','FLORIDABLANCA','GIRON','PIEDECUESTA','BARRANCABERMEJA','SAN GIL'] },
+  'Caldas': { claves:['MANIZALES','CHINCHINA','LA DORADA','VILLAMARIA'] },
+  'Risaralda': { claves:['RISARALDA','PEREIRA','DOSQUEBRADAS','SANTA ROSA DE CABAL'] },
+  'Quindío': { claves:['QUINDIO','ARMENIA','CALARCA'] },
+  'Córdoba': { claves:['CORDOBA','MONTERIA','CERETE','LORICA','SAHAGUN'] },
+  'Bolívar': { claves:['BOLIVAR','CARTAGENA','MAGANGUE','TURBACO'] },
+  'Tolima': { claves:['TOLIMA','IBAGUE','ESPINAL','HONDA'] },
+  'Huila': { claves:['HUILA','NEIVA','PITALITO','GARZON'] },
+  'Meta': { claves:['META','VILLAVICENCIO','ACACIAS','GRANADA'] },
+  'Boyacá': { claves:['BOYACA','TUNJA','DUITAMA','SOGAMOSO','CHIQUINQUIRA'] },
+  'Nariño': { claves:['NARINO','PASTO','IPIALES','TUMACO'] },
+  'Cauca': { claves:['POPAYAN','SANTANDER DE QUILICHAO'] },
+  'Norte de Santander': { claves:['NORTE DE SANTANDER','CUCUTA','OCANA','PAMPLONA','VILLA DEL ROSARIO'] },
+  'Cesar': { claves:['CESAR','VALLEDUPAR','AGUACHICA'] },
+  'Magdalena': { claves:['MAGDALENA','SANTA MARTA','CIENAGA'] },
+  'Sucre': { claves:['SUCRE','SINCELEJO','COROZAL'] },
+  'La Guajira': { claves:['GUAJIRA','RIOHACHA','MAICAO'] },
+  'Otro': { claves:[] },
+};
+function sinTildes(s){ return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase(); }
+function adivinarDepto(organismo){
+  const o = ' ' + sinTildes(organismo).replace(/[^A-Z ]/g, ' ').replace(/\s+/g, ' ') + ' ';
+  for (const [d, x] of Object.entries(DEPTOS)) if (x.claves.some(k => o.includes(' ' + k + ' '))) return d;
+  return null;
+}
+function urlImpuesto(depto){
+  const d = DEPTOS[depto];
+  if (d && d.url) return d.url;
+  return 'https://www.google.com/search?q=' + encodeURIComponent('consultar impuesto vehicular ' + (depto && depto !== 'Otro' ? depto : '') + ' por placa');
+}
+function cilindrajeDe(info){ const n = parseInt(String(campo(info, 'cilindraje') || '').replace(/[^\d]/g, ''), 10); return isNaN(n) ? null : n; }
+function deptoDe(rev, info){ return (rev.checks || {}).depto || adivinarDepto(campo(info, 'organismoTransito')) || leer('pl_depto_v1', 'Antioquia'); }
+
+function botonesCheck(k, ch, etSi, etNo){
+  const v = (ch || {})[k];
+  return `<div class="chk">
+    <button type="button" class="chk-b ${v === 'si' || v === 'aldia' ? 'on-ok' : ''}" data-check="${k}" data-val="${k === 'impuesto' ? 'aldia' : 'si'}">✓ ${etSi}</button>
+    <button type="button" class="chk-b ${v === 'no' || v === 'debe' ? 'on-bad' : ''}" data-check="${k}" data-val="${k === 'impuesto' ? 'debe' : 'no'}">✗ ${etNo}</button>
+  </div>`;
+}
+
+function itemImpuesto(rev, info){
+  const cc = cilindrajeDe(info);
+  const ch = rev.checks || {};
+  if (cc != null && cc <= 125) return { nivel:'ok', t:'No paga impuesto vehicular', d:`Tiene ${cc} c.c.: las motos de 125 c.c. o menos no pagan impuesto vehicular.` };
+  const depto = deptoDe(rev, info);
+  const quien = depto && depto !== 'Otro' ? ` en ${depto}` : '';
+  const extra = `<div class="extra">
+      <div class="fila-imp">
+        <select class="in" id="selDepto" aria-label="Departamento">${Object.keys(DEPTOS).map(d => `<option ${d === depto ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select>
+        <button class="btn btn-sec btn-peq" type="button" data-impuesto>${IC.ext} Consultar</button>
+      </div>
+      ${depto === 'Antioquia' ? `<p class="ayuda">Se lee solo con el <b>Lector PlacaLimpia</b>.${ES_APP ? ' Luego toca <b>Pegar resultado del lector</b>.' : ''} Si prefieres, márcalo a mano:</p>` : !DEPTOS[depto] || !DEPTOS[depto].url ? '<p class="ayuda">Para este departamento se abre una búsqueda con la página oficial.</p>' : ''}
+      ${ES_APP && depto === 'Antioquia' ? `<button class="btn btn-linea btn-peq" type="button" data-pegar style="margin-top:8px">${IC.raw} Pegar resultado del lector</button>` : ''}
+      ${botonesCheck('impuesto', ch, 'Al día', 'Debe impuesto')}
+    </div>`;
+  const imp = rev.impuesto && rev.checks && rev.impuesto.estado === ch.impuesto ? rev.impuesto : null;
+  const leido = imp ? ` Leído de la ${esc(imp.fuente)} ${hace(new Date(imp.fecha))}.` : ` Marcado por ti${quien}.`;
+  const ultimo = imp && imp.ultVigencia ? `Último pago: vigencia <b>${esc(imp.ultVigencia)}</b>${imp.ultFecha ? ` · pagado el <b>${esc(imp.ultFecha)}</b>` : ''}${imp.ultValor ? ` · ${pesos(imp.ultValor)}` : ''}.` : '';
+  if (ch.impuesto === 'aldia') return { nivel:'ok', t:'Impuesto vehicular al día', d:`${imp ? 'No tiene pagos pendientes. ' : ''}${ultimo}${leido}`, extra };
+  if (ch.impuesto === 'debe') return { nivel:'bad', t:'Debe impuesto vehicular', d:`${imp && imp.total ? `Debe <b>${pesos(imp.total)}</b>. ` : ''}${imp && imp.vigencias && imp.vigencias.length ? `Vigencias: ${esc(imp.vigencias.join(', '))}. ` : ''}${ultimo} Hay que pagarlo (paz y salvo) antes del traspaso.${leido}`, extra,
+    bloquea:`Debe impuesto vehicular${imp && imp.total ? ' (' + pesos(imp.total) + ')' : ''}: hay que pagarlo antes del traspaso` };
+  return { nivel:'nd', t:'Impuesto vehicular', d:`${cc ? `<b>${cc} c.c.</b>: sí paga impuesto` : 'Revisa si paga impuesto'}${quien}. Consulta con la cédula y la placa <b>${esc(rev.placa)}</b>.`, extra, falta:'Revisar el impuesto vehicular' };
+}
+
+function itemImprontas(rev, info){
+  const ch = rev.checks || {};
+  const motor = campo(info, 'numMotor'), chasis = campo(info, 'numChasis'), vin = campo(info, 'vin'), serie = campo(info, 'numSerie');
+  const num = (et, val) => val ? `<div class="num"><span>${et}</span><b class="mono">${esc(val)}</b></div>` : '';
+  const extra = `<div class="extra">
+      ${num('MOTOR', motor)}${botonesCheck('motor', ch, 'Motor coincide', 'No coincide')}
+      ${num('CHASIS', chasis)}${botonesCheck('chasis', ch, 'Chasis coincide', 'No coincide')}
+      ${vin && vin !== chasis ? num('VIN', vin) : ''}${serie ? num('SERIE', serie) : ''}
+    </div>`;
+  const no = ['motor', 'chasis'].filter(k => ch[k] === 'no');
+  if (no.length) return { nivel:'bad', t:`El número de ${no.join(' y ')} NO coincide`, d:'Marcado por ti al revisar la moto.', extra,
+    bloquea:`El número de ${no.join(' y ')} de la moto no coincide con el RUNT` };
+  if (ch.motor === 'si' && ch.chasis === 'si') return { nivel:'ok', t:'Motor y chasis coinciden', d:'Verificado por ti en la moto.', extra };
+  return { nivel:'nd', t:'Números de motor y chasis', d:'Compara con lo grabado en la moto (improntas) y marca.', extra, falta:'Verificar en la moto los números de motor y chasis' };
+}
+
+// ── Veredicto ──────────────────────────────────────────────────────────────
+function veredicto(rev){
+  const a = analizarRunt(rev.runt);
+  const grupos = {
+    legal:   [a.items.estado, a.items.lim, a.items.prenda, a.items.tramite, a.items.seguridad, a.items.regrabado, a.items.servicio].filter(Boolean),
+    papeles: [a.items.soat, a.items.rtm, itemImpuesto(rev, a.info)].filter(Boolean),
+    simit:   [itemSimit('placa', rev.simit && rev.simit.placa), itemSimit('cedula', rev.simit && rev.simit.cedula)],
+    fisica:  [itemImprontas(rev, a.info)],
+  };
+  const its = [...grupos.legal, ...grupos.papeles, ...grupos.simit, ...grupos.fisica];
+  const bloqueos = its.filter(i => i.bloquea).map(i => i.bloquea);
+  const faltas = its.filter(i => !i.bloquea && i.falta).map(i => i.falta);
+  const pend = its.filter(i => i.nivel === 'nd');
+  const hechos = its.filter(i => i.nivel !== 'nd').length;
+  let nivel, titulo, sub;
+  if (bloqueos.length){ nivel = 'bad'; titulo = 'No se puede hacer el traspaso'; sub = `${bloqueos.length} problema${bloqueos.length === 1 ? '' : 's'} lo impide${bloqueos.length === 1 ? '' : 'n'}`; }
+  else if (faltas.length || pend.length){ nivel = 'warn'; titulo = faltas.length ? 'Se puede, pero falta algo' : 'Por ahora sin bloqueos'; sub = faltas.length ? `${faltas.length} cosa${faltas.length === 1 ? '' : 's'} por resolver` : 'Completa la revisión'; }
+  else { nivel = 'ok'; titulo = 'Placa limpia · se puede traspasar'; sub = 'Todo revisado y en orden'; }
+  return { a, grupos, its, nivel, titulo, sub, bloqueos, faltas, hechos, total: its.length };
+}
+
+// ── Pintar la ficha ────────────────────────────────────────────────────────
+function tabla(rows){
+  if (!rows.length) return '<p class="ayuda">Sin registros.</p>';
+  const cols = [...new Set(rows.flatMap(r => Object.keys(r).filter(k => !k.startsWith('_') && (r[k] == null || typeof r[k] !== 'object'))))];
+  return `<div class="tabla"><table><thead><tr>${cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${
+    rows.map(r => `<tr>${cols.map(c => `<td>${esc(r[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function kv(o){
+  if (!o || typeof o !== 'object') return '<p class="ayuda">Sin datos.</p>';
+  const ks = Object.keys(o).filter(k => o[k] != null && o[k] !== '' && typeof o[k] !== 'object');
+  if (!ks.length) return '<p class="ayuda">Sin datos.</p>';
+  return `<dl class="kv">${ks.map(k => `<dt>${esc(k)}</dt><dd>${esc(o[k])}</dd>`).join('')}</dl>`;
+}
+function bloqueDet(titulo, sec){
+  const rows = filas(sec);
+  const cuerpo = seccionFallo(sec) && !rows.length ? `<p class="ayuda">El RUNT no respondió esta sección (código ${esc(sec && sec.estado)}).</p>` : tabla(rows);
+  return `<details class="det"><summary>${esc(titulo)} <span class="cnt">${rows.length}</span></summary>${cuerpo}</details>`;
+}
+const TAG = { ok:'Bien', warn:'Ojo', bad:'Problema', nd:'Pendiente' };
+function filaHtml(i){
+  const tag = i.bloquea ? 'Bloquea' : TAG[i.nivel];
+  return `<div class="fila ${i.nivel}"><span class="est">${IC[i.nivel]}</span><div class="cuerpo"><div class="t">${esc(i.t)}</div><div class="d">${i.d}</div>${i.extra || ''}</div><span class="tag ${i.nivel}">${tag}</span></div>`;
+}
+function tarjeta(ic, titulo, items, pie, id){
+  const malos = items.filter(i => i.nivel === 'bad').length, pend = items.filter(i => i.nivel === 'nd').length;
+  const cuenta = malos ? `<span class="cuenta" style="color:var(--bad)">${malos} con problema</span>` : pend ? `<span class="cuenta">${pend} pendiente${pend === 1 ? '' : 's'}</span>` : `<span class="cuenta" style="color:var(--ok)">Todo bien</span>`;
+  return `<section class="card"${id ? ` id="${id}"` : ''}><div class="card-h"><div class="ic">${ic}</div><h3>${titulo}</h3>${cuenta}</div><div class="filas">${items.map(filaHtml).join('')}</div>${pie || ''}</section>`;
+}
+
+// ── Siguiente paso: lo que falta, con un solo botón ────────────────────────
+function siguientePaso(rev){
+  const s = rev.simit || {}, ch = rev.checks || {};
+  const pegar = ES_APP ? `<button class="btn btn-linea btn-peq" type="button" data-pegar>${IC.raw} Pegar resultado</button>` : '';
+  if (!s.placa) return { t:'Consultar el SIMIT por placa', d:`Busca comparendos a la placa ${esc(rev.placa)}.`,
+    btn:`<button class="btn btn-oro btn-peq" type="button" data-simit="placa" style="margin:0; width:auto">${IC.ext} SIMIT por placa</button>${pegar}` };
+  if (!s.cedula) return { t:'Consultar el SIMIT por cédula', d:`Busca comparendos del propietario (${esc(nombreTipo(rev.tipoDocumento))} ${esc(rev.documento)}).`,
+    btn:`<button class="btn btn-oro btn-peq" type="button" data-simit="cedula" style="margin:0; width:auto">${IC.ext} SIMIT por cédula</button>${pegar}` };
+  if (!ch.motor || !ch.chasis) return { t:'Verificar motor y chasis', d:'Compara los números del RUNT con los grabados en la moto.',
+    btn:`<button class="btn btn-oro btn-peq" type="button" data-irsec="secFisica" style="margin:0; width:auto">Ir a verificar</button>` };
+  const imp = itemImpuesto(rev, analizarRunt(rev.runt).info);
+  if (imp.nivel === 'nd') return { t:'Revisar el impuesto vehicular', d:`Consulta con la cédula ${esc(rev.documento)} y la placa ${esc(rev.placa)}; el lector lo trae solo.`,
+    btn:`<button class="btn btn-oro btn-peq" type="button" data-impuesto style="margin:0; width:auto">${IC.ext} Consultar impuesto</button>${pegar}` };
+  return null;
+}
+function pasoHtml(p){
+  if (!p) return '';
+  return `<section class="card paso"><div class="paso-et">SIGUIENTE PASO</div><div class="t">${p.t}</div><div class="d">${p.d}</div><div class="paso-btns">${p.btn}</div></section>`;
+}
+
+// ── ¿Qué cambió desde la consulta anterior de la misma moto? ───────────────
+function consultaAnterior(rev){
+  return historial().filter(x => x.placa === rev.placa && x.id !== rev.id && new Date(x.fecha) < new Date(rev.fecha))
+    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))[0] || null;
+}
+function cambiosDesde(rev){
+  const ant = consultaAnterior(rev);
+  if (!ant) return null;
+  const A = analizarRunt(ant.runt).datos || {}, B = analizarRunt(rev.runt).datos || {};
+  const fa = new Date(ant.fecha), fb = new Date(rev.fecha), out = [];
+  const dif = (a = [], b = []) => ({ nuevos: b.filter(x => !a.includes(x)), quitados: a.filter(x => !b.includes(x)) });
+  let d = dif(A.lims, B.lims);
+  d.nuevos.forEach(x => out.push({ nivel:'bad', t:`Apareció un embargo o limitación: ${x}` }));
+  d.quitados.forEach(x => out.push({ nivel:'ok', t:`Se levantó: ${x}` }));
+  d = dif(A.prendas, B.prendas);
+  d.nuevos.forEach(x => out.push({ nivel:'bad', t:`Le montaron: ${x}` }));
+  d.quitados.forEach(x => out.push({ nivel:'ok', t:`Se levantó: ${x}` }));
+  d = dif(A.tramites, B.tramites);
+  d.nuevos.forEach(x => out.push({ nivel:'bad', t:`Nuevo trámite en curso: ${x}` }));
+  d.quitados.forEach(x => out.push({ nivel:'ok', t:`Ya no está en curso: ${x}` }));
+  if (A.estado && B.estado && A.estado !== B.estado) out.push({ nivel: B.estado === 'ACTIVO' ? 'ok' : 'bad', t:`El estado cambió de ${A.estado} a ${B.estado}` });
+  const vence = (nombre, fA, fB) => {
+    const a = fecha(fA), b = fecha(fB);
+    if (a && b && b > a) out.push({ nivel:'ok', t:`Renovaron ${nombre}: ahora vence el ${fNum(b)}` });
+    else if (a && a >= fa && a < fb) out.push({ nivel:'warn', t:`${nombre[0].toUpperCase() + nombre.slice(1)} se venció desde la consulta anterior (${fNum(a)})` });
+  };
+  vence('el SOAT', A.soatFin, B.soatFin);
+  vence('la tecnomecánica', A.rtmFin, B.rtmFin);
+  for (const m of ['placa', 'cedula']){
+    const a = (ant.simit || {})[m], b = (rev.simit || {})[m];
+    if (!a || !b || a === b || a.estado === 'desconocido' || b.estado === 'desconocido') continue;
+    const quien = m === 'placa' ? 'a la placa' : 'a la cédula';
+    if (a.estado === 'limpio' && b.estado === 'deudas') out.push({ nivel: m === 'cedula' ? 'bad' : 'warn', t:`Aparecieron comparendos ${quien}${b.total ? ': ' + pesos(b.total) : ''}` });
+    else if (a.estado === 'deudas' && b.estado === 'limpio') out.push({ nivel:'ok', t:`Ya no tiene comparendos ${quien}` });
+    else if (a.estado === 'deudas' && b.estado === 'deudas' && (b.total || 0) !== (a.total || 0)) out.push({ nivel: b.total > a.total ? 'warn' : 'ok', t:`Comparendos ${quien}: de ${pesos(a.total || 0)} a ${pesos(b.total || 0)}` });
+  }
+  return { ant, items: out };
+}
+function cambiosHtml(c){
+  if (!c) return '';
+  const cuando = `${fNum(new Date(c.ant.fecha))}`;
+  if (!c.items.length) return `<div class="cambios ok"><span class="est">${IC.ok}</span><div><b>Sin cambios</b> desde la consulta del ${cuando}.</div></div>`;
+  const peor = c.items.some(i => i.nivel === 'bad') ? 'bad' : c.items.some(i => i.nivel === 'warn') ? 'warn' : 'ok';
+  return `<section class="card cambios-card ${peor}"><div class="card-h"><div class="ic">${IC.hist}</div><h3>Cambios desde el ${cuando}</h3></div>
+    <div class="filas">${c.items.map(i => `<div class="fila ${i.nivel}"><span class="est">${IC[i.nivel]}</span><div class="cuerpo"><div class="t">${esc(i.t)}</div></div></div>`).join('')}</div></section>`;
+}
+
+function renderFicha(rev){
+  actual = rev;
+  guardar(K_ACTUAL, rev.id);
+  const v = veredicto(rev);
+  const info = v.a.info;
+  const nombre = [campo(info, 'marca'), campo(info, 'linea')].filter(Boolean).join(' ') || 'Vehículo';
+  const chips = [campo(info, 'modelo') ? 'Modelo ' + info.modelo : '', campo(info, 'cilindraje') ? info.cilindraje + ' c.c.' : '', campo(info, 'color'), campo(info, 'clase'), campo(info, 'tipoServicio')].filter(Boolean);
+  const org = campo(info, 'organismoTransito');
+  const s = rev.simit || {};
+  const pct = Math.round(v.hechos / v.total * 100);
+  const otras = historial().filter(x => x.placa === rev.placa && x.id !== rev.id);
+  const icoG = { ok: IC.ok, warn: IC.warn, bad: IC.bad }[v.nivel];
+
+  $('v-ficha').innerHTML = `
+    <div class="hero">
+      ${chipPlaca(rev.placa, true)}
+      <div class="nombre">${esc(nombre)}</div>
+      <div class="chips">${chips.map(c => `<span>${esc(c)}</span>`).join('')}</div>
+      <div class="meta">Propietario ${esc(nombreTipo(rev.tipoDocumento))} <span class="mono">${esc(rev.documento)}</span> · RUNT consultado ${fTxt(new Date(rev.fecha))}, ${hTxt(new Date(rev.fecha))}</div>
+      <div class="estado-g ${v.nivel}"><div class="ico">${icoG}</div><div><b>${esc(v.titulo)}</b><small>${esc(v.sub)}</small></div></div>
+      <div class="progreso"><div class="barra"><i style="width:0" data-w="${pct}"></i></div><small><span>Revisión ${v.hechos} de ${v.total}</span><span>${pct}%</span></small></div>
+    </div>
+
+    ${cambiosHtml(cambiosDesde(rev))}
+    ${pasoHtml(siguientePaso(rev))}
+
+    ${v.bloqueos.length ? `<div class="lista-alerta bad"><b>Esto impide el traspaso</b><ul>${v.bloqueos.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+    ${!v.bloqueos.length && v.faltas.length ? `<div class="lista-alerta warn"><b>Antes del traspaso</b><ul>${v.faltas.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+
+    ${tarjeta(IC.ley, 'Situación legal', v.grupos.legal)}
+    ${tarjeta(IC.doc, 'Papeles al día', v.grupos.papeles, '', 'secPapeles')}
+    ${tarjeta(IC.multa, 'Multas · SIMIT', v.grupos.simit, `<button class="btn btn-oro" type="button" data-pegar style="margin-top:12px; font-size:15px; padding:12px">${IC.raw} Pegar resultado del lector</button><p class="ayuda">Abre el SIMIT con el botón de arriba, toca tu favorito <b>Lector PlacaLimpia</b> con los resultados en pantalla y vuelve aquí a pegar.</p>`)}
+    ${tarjeta(IC.lupa, 'Verificación en la moto', v.grupos.fisica, '', 'secFisica')}
+
+    ${org ? `<section class="card"><div class="card-h"><div class="ic">${IC.sede}</div><h3>Dónde se hace el traspaso</h3></div>
+      <p style="margin:6px 0 0; font-weight:700">${esc(org)}</p><p class="ayuda" style="margin-top:2px">Organismo de tránsito donde está matriculada${v.a.info && deptoDe(rev, info) && deptoDe(rev, info) !== 'Otro' ? ` · ${esc(deptoDe(rev, info))}` : ''}.</p></section>` : ''}
+
+    ${otras.length ? `<section class="card"><div class="card-h"><div class="ic">${IC.hist}</div><h3>Consultas anteriores de esta moto</h3><span class="cuenta">${otras.length}</span></div>
+      <div class="lista-motos" style="margin-top:8px">${otras.map(o => { const vo = veredicto(o); return `<button class="moto" type="button" data-abrir="${esc(o.id)}" style="box-shadow:none"><div class="info"><div class="n">${fTxt(new Date(o.fecha))} · ${hTxt(new Date(o.fecha))}</div><span class="pill ${vo.nivel}"><i></i>${esc(vo.titulo)}</span></div><span class="flecha">${IC.flecha}</span></button>`; }).join('')}</div></section>` : ''}
+
+    <section class="card"><div class="card-h"><div class="ic">${IC.raw}</div><h3>Detalle completo del RUNT</h3></div>
+      <details class="det"><summary>Vehículo</summary>${kv(info)}</details>
+      ${bloqueDet('SOAT', rev.runt.soat)}
+      ${bloqueDet('Revisión técnico-mecánica', rev.runt.rtm)}
+      ${bloqueDet('Limitaciones (embargos)', rev.runt.limitaciones)}
+      ${bloqueDet('Prendas', rev.runt.prendas)}
+      ${bloqueDet('Garantías mobiliarias', rev.runt.garantias)}
+      ${bloqueDet('Solicitudes y trámites', rev.runt.solicitudes)}
+      <details class="det"><summary>Datos técnicos</summary>${kv(rev.runt.datosTecnicos && rev.runt.datosTecnicos.datos)}</details>
+      ${['placa', 'cedula'].map(m => s[m] && s[m].texto ? `<details class="det"><summary>SIMIT por ${m === 'placa' ? 'placa' : 'cédula'} (texto leído)</summary><pre class="crudo">${esc(s[m].texto)}</pre></details>` : '').join('')}
+    </section>
+
+    <button class="btn btn-oro" type="button" id="btnCompartir">${IC.compartir} Compartir informe (PDF)</button>
+    <div class="acciones">
+      <button class="btn btn-sec" type="button" id="btnReconsultar">${IC.hist} Consultar de nuevo</button>
+      <button class="btn btn-linea" type="button" id="btnEliminar" style="color:var(--bad)">Eliminar consulta</button>
+    </div>`;
+
+  const raiz = $('v-ficha');
+  requestAnimationFrame(() => requestAnimationFrame(() => raiz.querySelectorAll('[data-w]').forEach(i => { i.style.width = i.dataset.w + '%'; })));
+  raiz.querySelectorAll('[data-simit]').forEach(b => b.addEventListener('click', () => abrirSimit(b.dataset.simit)));
+  raiz.querySelectorAll('[data-pegar]').forEach(b => b.addEventListener('click', pegarLector));
+  raiz.querySelectorAll('[data-impuesto]').forEach(b => b.addEventListener('click', abrirImpuesto));
+  raiz.querySelectorAll('[data-irsec]').forEach(b => b.addEventListener('click', () => {
+    const el = $(b.dataset.irsec); if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+  }));
+  raiz.querySelectorAll('[data-check]').forEach(b => b.addEventListener('click', () => {
+    rev.checks = rev.checks || {};
+    const k = b.dataset.check, val = b.dataset.val;
+    rev.checks[k] = rev.checks[k] === val ? null : val;   // tocar de nuevo lo desmarca
+    if (k === 'impuesto') rev.impuesto = null;            // marcado a mano: ya no es lo leído
+    rev.checks.fecha = new Date().toISOString();
+    guardarRev(rev);
+    if (rev.checks[k] === 'no' || rev.checks[k] === 'debe') sentir('error');
+    else if (rev.checks[k]) sentir(veredicto(rev).nivel === 'ok' ? 'limpio' : 'marcar');
+    renderFicha(rev);
+  }));
+  const selDepto = raiz.querySelector('#selDepto');
+  if (selDepto) selDepto.addEventListener('change', () => {
+    rev.checks = rev.checks || {};
+    rev.checks.depto = selDepto.value;
+    guardar('pl_depto_v1', selDepto.value);
+    guardarRev(rev);
+    renderFicha(rev);
+  });
+  raiz.querySelectorAll('[data-limpio]').forEach(b => b.addEventListener('click', () => {
+    const modo = b.dataset.limpio;
+    const previo = (rev.simit && rev.simit[modo]) || {};
+    rev.simit = rev.simit || {};
+    rev.simit[modo] = { ...previo, estado:'limpio', manual:true, total:0, cantidad:0, fecha:new Date().toISOString() };
+    guardarRev(rev);
+    sentir(veredicto(rev).nivel === 'ok' ? 'limpio' : 'ok');
+    renderFicha(rev);
+  }));
+  raiz.querySelectorAll('[data-abrir]').forEach(b => b.addEventListener('click', () => {
+    const r = historial().find(x => x.id === b.dataset.abrir); if (r) abrirFicha(r);
+  }));
+  $('btnReconsultar').addEventListener('click', () => reconsultar(rev));
+  $('btnCompartir').addEventListener('click', () => compartirFicha(rev));
+  cargarJsPDF().catch(() => {});   // se deja listo para que compartir sea inmediato
+  $('btnEliminar').addEventListener('click', () => {
+    if (!confirm(`¿Eliminar esta consulta de ${rev.placa} del historial?`)) return;
+    guardar(K_HIST, historial().filter(x => x.id !== rev.id));
+    actual = null;
+    toast('ok', `Consulta de ${rev.placa} eliminada.`);
+    ir('motos');
+  });
+}
+// ── Compartir informe en PDF ───────────────────────────────────────────────
+let _jspdfP = null;
+function cargarJsPDF(){
+  if (window.jspdf) return Promise.resolve();
+  if (!_jspdfP) _jspdfP = new Promise((ok, mal) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload = ok; s.onerror = () => { _jspdfP = null; mal(new Error('No se pudo cargar el generador de PDF. Revisa tu conexión.')); };
+    document.head.appendChild(s);
+  });
+  return _jspdfP;
+}
+// Texto plano apto para el PDF (sin etiquetas ni símbolos que la fuente no tiene).
+function plano(html){
+  const d = document.createElement('div');
+  d.innerHTML = String(html || '').replace(/<br\s*\/?>/gi, ' · ');
+  return d.textContent.replace(/[‐-―]/g, '-').replace(/[“”]/g, '"').replace(/[^\x00-\xFF]/g, '').replace(/\s+/g, ' ').trim();
+}
+function docOculto(doc){ const s = String(doc || ''); return s.length > 4 ? '*'.repeat(Math.max(3, s.length - 4)) + s.slice(-4) : s; }
+
+function crearPDF(rev){
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit:'mm', format:'a4' });
+  const v = veredicto(rev), info = v.a.info, dat = v.a.datos || {};
+  const W = 210, H = 297, M = 14, AN = W - 2 * M;
+  const C = {
+    tinta:[17,19,24], gris:[96,103,116], grisC:[150,156,168], linea:[226,229,234], suave:[246,247,249],
+    oro:[201,154,42], oroC:[240,215,140], grafito:[20,22,27], grafito2:[38,42,51], placa:[246,201,0],
+    ok:[22,128,61], warn:[194,110,10], bad:[205,32,32], nd:[120,127,140],
+    okB:[232,246,237], warnB:[253,243,224], badB:[253,235,235], ndB:[240,242,245],
+  };
+  const ETQ = { ok:'BIEN', warn:'ATENCIÓN', bad:'PROBLEMA', nd:'PENDIENTE' };
+  const f = (c) => pdf.setFillColor(c[0], c[1], c[2]);
+  const d = (c) => pdf.setDrawColor(c[0], c[1], c[2]);
+  const t = (c) => pdf.setTextColor(c[0], c[1], c[2]);
+  const fuente = (estilo, tam) => { pdf.setFont('helvetica', estilo); pdf.setFontSize(tam); };
+  const hoy = new Date();
+  const codigo = `PL-${rev.placa}-${fNum(new Date(rev.fecha)).replace(/\//g, '')}`;
+  let y = 0;
+
+  // Iconos dibujados (check, alerta, x, reloj)
+  const icono = (nivel, cx, cy, r) => {
+    f(C[nivel]); pdf.circle(cx, cy, r, 'F');
+    d([255,255,255]); pdf.setLineWidth(r * 0.22); pdf.setLineCap('round'); pdf.setLineJoin('round');
+    if (nivel === 'ok') pdf.lines([[r * 0.38, r * 0.38], [r * 0.7, -r * 0.8]], cx - r * 0.5, cy + 0.02, [1, 1], 'S', false);
+    else if (nivel === 'bad'){ pdf.line(cx - r * .42, cy - r * .42, cx + r * .42, cy + r * .42); pdf.line(cx + r * .42, cy - r * .42, cx - r * .42, cy + r * .42); }
+    else if (nivel === 'warn'){ pdf.line(cx, cy - r * .5, cx, cy + r * .12); f([255,255,255]); pdf.circle(cx, cy + r * .45, r * .1, 'F'); }
+    else { pdf.setLineWidth(r * .16); pdf.circle(cx, cy, r * .55, 'S'); pdf.line(cx, cy, cx, cy - r * .35); pdf.line(cx, cy, cx + r * .28, cy); }
+  };
+
+  const encabezadoPagina = (primera) => {
+    f(C.grafito); pdf.rect(0, 0, W, primera ? 36 : 16, 'F');
+    f(C.oro); pdf.rect(0, primera ? 36 : 16, W, 1.1, 'F');
+    if (primera){
+      f(C.oro); pdf.roundedRect(M, 10, 15, 15, 3.5, 3.5, 'F');
+      t(C.grafito); fuente('bold', 10); pdf.text('PM', M + 7.5, 19.3, { align:'center' });
+      t([255,255,255]); fuente('bold', 18); pdf.text('Placa', M + 20, 18); const wp = pdf.getTextWidth('Placa');
+      t(C.oroC); pdf.text('Limpia', M + 20 + wp, 18);
+      t(C.oroC); fuente('bold', 7.5); pdf.text('INFORME DE REVISIÓN VEHICULAR', M + 20, 24.5);
+      t([255,255,255]); fuente('bold', 9.5); pdf.text('PLATINIUM MOTORS', W - M, 15, { align:'right' });
+      t([180,186,198]); fuente('normal', 8); pdf.text('Informe N.° ' + codigo, W - M, 21, { align:'right' });
+      pdf.text('Emitido el ' + fNum(hoy) + ' · ' + hTxt(hoy), W - M, 26, { align:'right' });
+      y = 46;
+    } else {
+      t([255,255,255]); fuente('bold', 10); pdf.text('PlacaLimpia · ' + rev.placa, M, 10.5);
+      t([180,186,198]); fuente('normal', 8); pdf.text('Informe N.° ' + codigo, W - M, 10.5, { align:'right' });
+      y = 26;
+    }
+  };
+  const nuevaPag = () => { pdf.addPage(); encabezadoPagina(false); };
+  const espacio = n => { if (y + n > H - 20) nuevaPag(); };
+  const tituloSeccion = (txt) => {
+    espacio(14);
+    f(C.oro); pdf.rect(M, y - 3.6, 1.4, 5, 'F');
+    t(C.tinta); fuente('bold', 11.5); pdf.text(txt.toUpperCase(), M + 4, y); y += 6;
+  };
+
+  encabezadoPagina(true);
+
+  // ── Vehículo
+  f(C.tinta); pdf.roundedRect(M, y, 62, 25, 3.5, 3.5, 'F');
+  f(C.placa); pdf.roundedRect(M + 1.4, y + 1.4, 59.2, 22.2, 2.6, 2.6, 'F');
+  d(C.tinta); pdf.setLineWidth(.5); pdf.roundedRect(M + 3, y + 3, 56, 19, 1.8, 1.8, 'S');
+  t(C.tinta); pdf.setFont('courier', 'bold'); pdf.setFontSize(27); pdf.text(rev.placa, M + 31, y + 14.6, { align:'center' });
+  fuente('bold', 5.5); pdf.text('C  O  L  O  M  B  I  A', M + 31, y + 20, { align:'center' });
+
+  const x0 = M + 68, colW = (AN - 68) / 3;
+  t(C.tinta); fuente('bold', 15); pdf.text(plano([campo(info, 'marca'), campo(info, 'linea')].filter(Boolean).join(' ') || 'Vehículo'), x0, y + 5);
+  const spec = [['MODELO', campo(info, 'modelo')], ['CILINDRAJE', campo(info, 'cilindraje') ? info.cilindraje + ' c.c.' : ''], ['COLOR', campo(info, 'color')],
+                ['SERVICIO', campo(info, 'tipoServicio')], ['CLASE', campo(info, 'clase')], ['ESTADO RUNT', campo(info, 'estadoAutomotor')]];
+  spec.forEach(([et, val], k) => {
+    const cx = x0 + (k % 3) * colW, cy = y + 11 + Math.floor(k / 3) * 9;
+    t(C.grisC); fuente('bold', 6.3); pdf.text(et, cx, cy);
+    t(C.tinta); fuente('bold', 8.6); pdf.text(pdf.splitTextToSize(plano(val || '—'), colW - 2)[0], cx, cy + 3.8);
+  });
+  y += 30;
+  t(C.gris); fuente('normal', 8.3);
+  pdf.text(plano(`Propietario: ${nombreTipo(rev.tipoDocumento)} ${docOculto(rev.documento)}   ·   Consulta RUNT: ${fNum(new Date(rev.fecha))} ${hTxt(new Date(rev.fecha))}`), M, y);
+  y += 6;
+
+  // ── Veredicto
+  const cv = C[v.nivel], cb = C[v.nivel + 'B'];
+  f(cb); pdf.roundedRect(M, y, AN, 24, 4, 4, 'F');
+  f(cv); pdf.roundedRect(M, y, 3, 24, 1.5, 1.5, 'F');
+  icono(v.nivel, M + 13, y + 12, 6.2);
+  t(cv); fuente('bold', 15); pdf.text(plano(v.titulo).toUpperCase(), M + 23, y + 10.5);
+  t(C.gris); fuente('normal', 9.5); pdf.text(plano(v.sub), M + 23, y + 16.5);
+  const bx = W - M - 52, pct = v.hechos / v.total;
+  t(C.gris); fuente('bold', 7); pdf.text('AVANCE DE LA REVISIÓN', bx, y + 9);
+  f([255,255,255]); pdf.roundedRect(bx, y + 11.5, 46, 3.2, 1.6, 1.6, 'F');
+  f(cv); pdf.roundedRect(bx, y + 11.5, Math.max(3.2, 46 * pct), 3.2, 1.6, 1.6, 'F');
+  t(C.tinta); fuente('bold', 8.5); pdf.text(`${v.hechos} de ${v.total} puntos`, bx, y + 19.5);
+  y += 30;
+
+  // ── Problemas o pendientes
+  const lista = v.bloqueos.length ? v.bloqueos : v.faltas;
+  if (lista.length){
+    const col = v.bloqueos.length ? C.bad : C.warn;
+    const lineas = lista.map(x => pdf.splitTextToSize(plano(x), AN - 14));
+    const alto = 9 + lineas.reduce((s, l) => s + l.length * 4.3 + 1, 0);
+    espacio(alto);
+    d(col); pdf.setLineWidth(.4); f([255,255,255]); pdf.roundedRect(M, y, AN, alto, 3, 3, 'FD');
+    t(col); fuente('bold', 9); pdf.text(v.bloqueos.length ? 'ESTO IMPIDE EL TRASPASO' : 'ANTES DEL TRASPASO', M + 5, y + 6);
+    let yy = y + 11.5; fuente('normal', 9); t(C.tinta);
+    lineas.forEach(l => { f(col); pdf.circle(M + 6, yy - 1.2, .9, 'F'); t(C.tinta); pdf.text(l, M + 9.5, yy); yy += l.length * 4.3 + 1; });
+    y += alto + 6;
+  }
+
+  // ── Cambios desde la consulta anterior
+  const cam = cambiosDesde(rev);
+  if (cam){
+    tituloSeccion(`Cambios desde el ${fNum(new Date(cam.ant.fecha))}`);
+    if (!cam.items.length){ t(C.ok); fuente('bold', 9.5); pdf.text('Sin cambios desde la consulta anterior.', M + 4, y); y += 7; }
+    cam.items.forEach(c => { espacio(7); icono(c.nivel, M + 6, y - 1.3, 2.3); t(C.tinta); fuente('normal', 9.3);
+      const l = pdf.splitTextToSize(plano(c.t), AN - 14); pdf.text(l, M + 11, y); y += l.length * 4.4 + 2; });
+    y += 3;
+  }
+
+  // ── Resumen en casillas
+  tituloSeccion('Resumen');
+  const s = rev.simit || {}, ch = rev.checks || {};
+  const simitCasilla = (m) => { const x = s[m]; if (!x || x.estado === 'desconocido') return ['nd', 'Por revisar'];
+    if (x.estado === 'limpio') return ['ok', 'Sin comparendos']; return [m === 'cedula' ? 'bad' : 'warn', x.total ? pesos(x.total) : 'Con comparendos']; };
+  const vig = (fin) => fin && fecha(fin) >= hoy0();
+  const imp = itemImpuesto(rev, info);
+  const casillas = [
+    ['EMBARGOS', ...(dat.lims && dat.lims.length ? ['bad', dat.lims.length + ' registrado' + (dat.lims.length > 1 ? 's' : '')] : ['ok', 'Ninguno'])],
+    ['PRENDAS', ...(dat.prendas && dat.prendas.length ? ['bad', 'Tiene prenda'] : ['ok', 'Ninguna'])],
+    ['TRÁMITES EN CURSO', ...(dat.tramites && dat.tramites.length ? ['bad', 'Sí, ' + dat.tramites.length] : ['ok', 'Ninguno'])],
+    ['SOAT', ...(dat.soatFin ? (vig(dat.soatFin) ? [dias(fecha(dat.soatFin)) <= 30 ? 'warn' : 'ok', 'Vence ' + fNum(fecha(dat.soatFin))] : ['bad', 'Venció ' + fNum(fecha(dat.soatFin))]) : ['bad', 'Sin SOAT'])],
+    ['TECNOMECÁNICA', ...(dat.rtmFin ? (vig(dat.rtmFin) ? ['ok', 'Vence ' + fNum(fecha(dat.rtmFin))] : ['bad', 'Venció ' + fNum(fecha(dat.rtmFin))])
+                         : dat.rtmNueva ? ['ok', '1.ª vence ' + fNum(fecha(dat.primeraRtm))] : ['bad', 'Sin revisión'])],
+    ['IMPUESTO', imp.nivel, imp.nivel === 'ok' ? (/No paga/.test(imp.t) ? 'No paga' : 'Al día') : imp.nivel === 'bad' ? 'Debe' : 'Por revisar'],
+    ['COMPARENDOS PLACA', ...simitCasilla('placa')],
+    ['COMPARENDOS CÉDULA', ...simitCasilla('cedula')],
+    ['MOTOR Y CHASIS', ...(ch.motor === 'no' || ch.chasis === 'no' ? ['bad', 'No coinciden'] : ch.motor === 'si' && ch.chasis === 'si' ? ['ok', 'Verificados'] : ['nd', 'Por verificar'])],
+  ];
+  const cw = (AN - 8) / 3, chh = 17;
+  espacio(3 * (chh + 4));
+  casillas.forEach(([et, niv, val], k) => {
+    const cx = M + (k % 3) * (cw + 4), cy = y + Math.floor(k / 3) * (chh + 4);
+    f(C[niv + 'B']); pdf.roundedRect(cx, cy, cw, chh, 3, 3, 'F');
+    icono(niv, cx + 6.5, cy + chh / 2, 3.2);
+    t(C.gris); fuente('bold', 6.5); pdf.text(et, cx + 12, cy + 6.6);
+    t(C[niv]); fuente('bold', 10); pdf.text(pdf.splitTextToSize(plano(val), cw - 14)[0], cx + 12, cy + 12.4);
+  });
+  y += 3 * (chh + 4) + 4;
+
+  // ── Detalle por secciones
+  const seccion = (titulo, items) => {
+    tituloSeccion(titulo);
+    items.forEach((it, k) => {
+      const det = pdf.splitTextToSize(plano(it.d), AN - 48);
+      const alto = 8 + det.length * 4.1;
+      espacio(alto + 1);
+      if (k % 2 === 0){ f(C.suave); pdf.roundedRect(M, y - 4.5, AN, alto, 2, 2, 'F'); }
+      f(C[it.nivel + 'B']); pdf.roundedRect(M + 3, y - 2.6, 24, 5.4, 2.7, 2.7, 'F');
+      t(C[it.nivel]); fuente('bold', 6.6); pdf.text(it.bloquea ? 'BLOQUEA' : ETQ[it.nivel], M + 15, y + 1.1, { align:'center' });
+      t(C.tinta); fuente('bold', 9.8); pdf.text(plano(it.t), M + 31, y + 1);
+      t(C.gris); fuente('normal', 8.6); pdf.text(det, M + 31, y + 5.4);
+      y += alto + 1;
+    });
+    y += 4;
+  };
+  seccion('Situación legal', v.grupos.legal);
+  seccion('Papeles', v.grupos.papeles);
+  seccion('Multas · SIMIT', v.grupos.simit);
+
+  // ── Identificación
+  tituloSeccion('Identificación del vehículo');
+  const nums = [['MOTOR', campo(info, 'numMotor'), ch.motor], ['CHASIS', campo(info, 'numChasis'), ch.chasis], ['VIN', campo(info, 'vin'), null]].filter(n => n[1]);
+  const nw = (AN - 4 * (nums.length - 1)) / nums.length;
+  espacio(22);
+  nums.forEach(([et, val, chk], k) => {
+    const cx = M + k * (nw + 4);
+    d(C.linea); pdf.setLineWidth(.4); f([255,255,255]); pdf.roundedRect(cx, y - 3, nw, 17, 3, 3, 'FD');
+    t(C.grisC); fuente('bold', 6.5); pdf.text(et, cx + 4, y + 2);
+    t(C.tinta); pdf.setFont('courier', 'bold'); pdf.setFontSize(10); pdf.text(pdf.splitTextToSize(String(val), nw - 8)[0], cx + 4, y + 7.6);
+    const est = chk === 'si' ? ['ok', 'Verificado en la moto'] : chk === 'no' ? ['bad', 'No coincide'] : chk === undefined || chk === null ? (et === 'VIN' ? null : ['nd', 'Sin verificar']) : null;
+    if (est){ t(C[est[0]]); fuente('bold', 7); pdf.text(est[1], cx + 4, y + 11.8); }
+  });
+  y += 24;
+
+  // ── Tránsito e historial
+  const org = campo(info, 'organismoTransito');
+  if (org){ tituloSeccion('Dónde se hace el traspaso'); t(C.tinta); fuente('bold', 9.5); pdf.text(plano(org), M + 4, y); y += 4.5;
+    const dep = deptoDe(rev, info); if (dep && dep !== 'Otro'){ t(C.gris); fuente('normal', 8.5); pdf.text('Departamento: ' + plano(dep), M + 4, y); y += 4.5; } y += 4; }
+
+  const todas = historial().filter(x => x.placa === rev.placa).sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+  if (todas.length > 1){
+    tituloSeccion('Consultas de esta moto');
+    todas.forEach(x => { espacio(6); const vx = veredicto(x); icono(vx.nivel, M + 6, y - 1.2, 2);
+      t(C.tinta); fuente('bold', 8.8); pdf.text(`${fNum(new Date(x.fecha))}  ${hTxt(new Date(x.fecha))}`, M + 11, y);
+      t(C[vx.nivel]); fuente('normal', 8.8); pdf.text(plano(vx.titulo), M + 50, y); y += 5.5; });
+  }
+
+  // ── Pie en todas las páginas
+  const n = pdf.getNumberOfPages();
+  for (let i = 1; i <= n; i++){
+    pdf.setPage(i);
+    f(C.oro); pdf.rect(M, H - 15, AN, .5, 'F');
+    t(C.tinta); fuente('bold', 7.5); pdf.text('PlacaLimpia · Platinium Motors', M, H - 10);
+    t(C.grisC); fuente('normal', 6.8);
+    pdf.text('Información tomada del RUNT y del SIMIT en la fecha de consulta; los datos marcados por el revisor se indican como tales.', M, H - 6.5);
+    pdf.text('Verifique antes de cualquier trámite. La cédula del propietario se muestra parcialmente por protección de datos.', M, H - 3.5);
+    t(C.gris); fuente('bold', 7.5); pdf.text(`Página ${i} de ${n}`, W - M, H - 10, { align:'right' });
+  }
+  return pdf;
+}
+
+function resumenTexto(rev){
+  const v = veredicto(rev), info = v.a.info;
+  const nombre = [campo(info, 'marca'), campo(info, 'linea'), campo(info, 'modelo')].filter(Boolean).join(' ');
+  const emo = { ok:'✅', warn:'⚠️', bad:'❌', nd:'⏳' };
+  const lineas = [`🏍️ *${rev.placa}* · ${nombre}`, `${emo[v.nivel]} *${v.titulo}*`];
+  [...v.grupos.legal, ...v.grupos.papeles, ...v.grupos.simit].forEach(i => lineas.push(`${emo[i.nivel]} ${plano(i.t)}`));
+  lineas.push('', `Consultado el ${fNum(new Date(rev.fecha))} · PlacaLimpia PM · Platinium Motors`);
+  return lineas.join('\n');
+}
+
+async function compartirFicha(rev){
+  const btn = $('btnCompartir');
+  const txtBtn = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = '<span class="cargando"></span> Preparando informe…';
+  try {
+    await cargarJsPDF();
+    const pdf = crearPDF(rev);
+    const nombreArchivo = `PlacaLimpia_${rev.placa}_${fNum(new Date()).replace(/\//g, '-')}.pdf`;
+    const archivo = new File([pdf.output('blob')], nombreArchivo, { type:'application/pdf' });
+    sentir('enviar');
+    const texto = resumenTexto(rev);
+    if (navigator.canShare && navigator.canShare({ files:[archivo] })) await navigator.share({ files:[archivo], title:`Informe ${rev.placa}`, text: texto });
+    else if (navigator.share) await navigator.share({ title:`Informe ${rev.placa}`, text: texto });
+    else { pdf.save(nombreArchivo); toast('ok', 'Informe descargado.'); }
+  } catch(e){
+    if (e && e.name !== 'AbortError') toast('err', e.message || 'No se pudo compartir el informe.');
+  } finally {
+    btn.disabled = false; btn.innerHTML = txtBtn;
+  }
+}
+
+function abrirFicha(rev, desde){
+  renderFicha(rev);
+  if (vista !== 'ficha') vistaAntes = desde || (vista === 'revisar' ? 'revisar' : 'motos');
+  ir('ficha');
+}
+// Compatibilidad: otras partes llaman pintar().
+function pintar(rev){ abrirFicha(rev); }
+
+function reconsultar(rev){
+  ir('revisar');
+  $('inPlaca').value = rev.placa;
+  $('inTipo').value = rev.tipoDocumento;
+  $('inDoc').value = rev.documento;
+  if (!captchaId || Date.now() - captchaEn > 3 * 60000) nuevoCaptcha();
+  setTimeout(() => $('inCaptcha').focus(), 250);
+}
+
+// ── Historial ──────────────────────────────────────────────────────────────
+function historial(){ return leer(K_HIST, []); }
+function guardarRev(rev){
+  let h = historial().filter(x => x.id !== rev.id);
+  h.unshift(rev);
+  h = h.slice(0, 150);
+  // Si el almacenamiento se llena, se quitan las consultas más viejas.
+  while (!guardar(K_HIST, h) && h.length > 1) h.pop();
+}
+// Una entrada por moto (la consulta más reciente de cada placa).
+function motosAgrupadas(){
+  const h = historial(), vistas = new Map();
+  for (const r of h){ if (!vistas.has(r.placa)) vistas.set(r.placa, { rev:r, n:0 }); vistas.get(r.placa).n++; }
+  return [...vistas.values()].map(x => ({ ...x, v: veredicto(x.rev) }));
+}
+function pintarMotos(){
+  const todas = motosAgrupadas();
+  const c = { ok:0, warn:0, bad:0 }; todas.forEach(m => c[m.v.nivel]++);
+  $('stats').innerHTML = `
+    <div class="stat"><b>${todas.length}</b><small>Motos</small></div>
+    <div class="stat ok"><b>${c.ok}</b><small>Limpias</small></div>
+    <div class="stat warn"><b>${c.warn}</b><small>Pendientes</small></div>
+    <div class="stat bad"><b>${c.bad}</b><small>No se pueden</small></div>`;
+  const q = sinTildes($('inBuscar').value).replace(/\s+/g, '');
+  const lista = todas.filter(m => (filtro === 'todas' || m.v.nivel === filtro) &&
+    (!q || sinTildes(m.rev.placa + m.rev.documento + (campo(m.v.a.info, 'marca') || '') + (campo(m.v.a.info, 'linea') || '')).replace(/\s+/g, '').includes(q)));
+  if (!todas.length){ $('listaMotos').innerHTML = `<div class="vacio"><b>Aún no has revisado motos</b>Ve a <b>Revisar</b> y consulta la primera.</div>`; return; }
+  if (!lista.length){ $('listaMotos').innerHTML = `<div class="vacio"><b>Sin resultados</b>Prueba con otra búsqueda o filtro.</div>`; return; }
+  $('listaMotos').innerHTML = lista.map(m => {
+    const info = m.v.a.info;
+    const nombre = [campo(info, 'marca'), campo(info, 'linea'), campo(info, 'modelo')].filter(Boolean).join(' ') || 'Vehículo';
+    return `<button class="moto" type="button" data-abrir="${esc(m.rev.id)}">
+      ${chipPlaca(m.rev.placa)}
+      <div class="info"><div class="n">${esc(nombre)}</div>
+        <div class="s">${esc(nombreTipo(m.rev.tipoDocumento))} ${esc(m.rev.documento)} · ${hace(new Date(m.rev.fecha))}${m.n > 1 ? ` · ${m.n} consultas` : ''}</div>
+        <span class="pill ${m.v.nivel}"><i></i>${esc(m.v.titulo)}</span>${(() => { const c = cambiosDesde(m.rev); return c && c.items.some(i => i.nivel !== 'ok') ? '<span class="pill cambio">⚠ Cambió</span>' : ''; })()}</div>
+      <span class="flecha">${IC.flecha}</span></button>`;
+  }).join('');
+  $('listaMotos').querySelectorAll('[data-abrir]').forEach(b => b.addEventListener('click', () => {
+    const r = historial().find(x => x.id === b.dataset.abrir); if (r) abrirFicha(r, 'motos');
+  }));
+}
+function pintarRecientes(){
+  const m = motosAgrupadas().slice(0, 8);
+  $('recientesBox').classList.toggle('oculto', !m.length);
+  $('recientes').innerHTML = m.map(x => {
+    const info = x.v.a.info;
+    return `<button class="reciente" type="button" data-abrir="${esc(x.rev.id)}">${chipPlaca(x.rev.placa)}<div class="n">${esc([campo(info, 'marca'), campo(info, 'linea')].filter(Boolean).join(' ') || 'Vehículo')}</div><span class="pill ${x.v.nivel}"><i></i>${{ ok:'Limpia', warn:'Pendiente', bad:'No se puede' }[x.v.nivel]}</span></button>`;
+  }).join('');
+  $('recientes').querySelectorAll('[data-abrir]').forEach(b => b.addEventListener('click', () => {
+    const r = historial().find(x => x.id === b.dataset.abrir); if (r) abrirFicha(r, 'revisar');
+  }));
+}
+// Compatibilidad con código anterior.
+function pintarHistorial(){ pintarMotos(); pintarRecientes(); }
+
+// ── Navegación ─────────────────────────────────────────────────────────────
+function ir(v){
+  vista = v;
+  document.querySelectorAll('.vista').forEach(x => x.classList.toggle('oculto', x.id !== 'v-' + v));
+  const tab = v === 'ficha' ? vistaAntes : v;
+  document.querySelectorAll('.nav [data-ir]').forEach(b => b.classList.toggle('on', b.dataset.ir === tab));
+  $('btnVolver').classList.toggle('oculto', v !== 'ficha');
+  $('marcaTop').classList.toggle('oculto', v === 'ficha');
+  $('txtVolver').textContent = vistaAntes === 'revisar' ? 'Revisar' : 'Motos';
+  if (v === 'motos') pintarMotos();
+  if (v === 'revisar'){ pintarRecientes(); if (captchaEn && Date.now() - captchaEn > 4 * 60000) nuevoCaptcha(); }
+  window.scrollTo(0, 0);
+  const el = $('v-' + v);
+  if (el){ el.classList.remove('entrar'); void el.offsetWidth; el.classList.add('entrar'); }
+}
+
+// ── RUNT ───────────────────────────────────────────────────────────────────
+async function llamar(cuerpo){
+  const { data, error } = await _supa.functions.invoke(FUNCION, { body: cuerpo });
+  if (error){
+    let msg = 'No se pudo conectar con el servidor de PlacaLimpia.';
+    try { const j = await error.context.json(); if (j && j.mensaje) msg = j.mensaje; } catch(e){}
+    if (/not found|404/i.test(String(error.message)) ) msg = 'Falta instalar la función placalimpia-runt en Supabase (supabase/LEEME.md → FASE 13).';
+    throw new Error(msg);
+  }
+  return data;
+}
+
+async function nuevoCaptcha(){
+  captchaId = null;
+  $('inCaptcha').value = '';
+  $('capImg').innerHTML = '<span class="cargando" style="color:var(--muted)"></span>';
+  try {
+    const d = await llamar({ accion:'captcha' });
+    if (!d || !d.ok) throw new Error((d && d.mensaje) || 'No llegó el código.');
+    captchaId = d.id; captchaEn = Date.now();
+    $('capImg').innerHTML = `<img alt="Código de seguridad del RUNT" src="${esc(d.imagen)}">`;
+  } catch(e){
+    $('capImg').innerHTML = `<span class="ayuda" style="padding:8px; text-align:center">${esc(e.message)}</span>`;
+  }
+}
+
+// Pantalla de carga con los pasos que va revisando.
+const PASOS_CARGA = ['Conectando con el RUNT', 'Datos del vehículo', 'SOAT y tecnomecánica', 'Embargos y prendas', 'Trámites y solicitudes'];
+let _cargaT = null, _cargaI = 0;
+function mostrarCarga(placa){
+  $('cargaPlaca').innerHTML = chipPlaca(placa, true);
+  $('cargaPasos').innerHTML = PASOS_CARGA.map(p => `<li><i></i>${p}</li>`).join('');
+  _cargaI = 0;
+  const marcar = () => $('cargaPasos').querySelectorAll('li').forEach((li, k) => {
+    li.className = k < _cargaI ? 'ok' : k === _cargaI ? 'act' : '';
+    li.querySelector('i').innerHTML = k < _cargaI ? IC.ok.replace('width="18" height="18"', 'width="11" height="11"') : '';
+  });
+  marcar();
+  $('carga').classList.add('ver');
+  clearInterval(_cargaT);
+  _cargaT = setInterval(() => { if (_cargaI < PASOS_CARGA.length - 1){ _cargaI++; marcar(); } }, 650);
+  mostrarCarga.marcar = marcar;
+}
+function terminarCarga(){
+  return new Promise(ok => {
+    clearInterval(_cargaT);
+    const avanzar = () => {
+      if (_cargaI < PASOS_CARGA.length){ _cargaI++; mostrarCarga.marcar && mostrarCarga.marcar(); setTimeout(avanzar, 120); }
+      else setTimeout(() => { ocultarCarga(); ok(); }, 220);
+    };
+    avanzar();
+  });
+}
+function ocultarCarga(){ clearInterval(_cargaT); $('carga').classList.remove('ver'); }
+
+// Sonido según el resultado: limpia, con pendientes, bloqueada o con cambios.
+function sonarResultado(rev){
+  const v = veredicto(rev), c = cambiosDesde(rev);
+  setTimeout(() => {
+    if (c && c.items.some(i => i.nivel === 'bad')) sentir('alerta');
+    else if (v.nivel === 'ok') sentir('limpio');
+    else if (v.nivel === 'bad') sentir('error');
+    else sentir('ok');
+  }, 380);
+}
+
+async function consultar(ev){
+  ev.preventDefault();
+  const placa = $('inPlaca').value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const documento = $('inDoc').value.replace(/[^0-9A-Za-z]/g, '');
+  const tipoDocumento = $('inTipo').value;
+  const captcha = $('inCaptcha').value.trim();
+  if (!/^[A-Z0-9]{5,7}$/.test(placa)) return toast('err', 'Revisa la placa.');
+  if (!documento) return toast('err', 'Escribe el número de documento del propietario.');
+  if (!captchaId) return toast('err', 'Espera a que cargue el código de seguridad.');
+  if (!captcha) return toast('err', 'Escribe el código de seguridad.');
+
+  const btn = $('btnConsultar');
+  btn.disabled = true; btn.innerHTML = '<span class="cargando"></span> Consultando el RUNT…';
+  mostrarCarga(placa);
+  try {
+    const d = await llamar({ accion:'consultar', placa, documento, tipoDocumento, captcha, idLibreCaptcha: captchaId });
+    if (!d || !d.ok){
+      ocultarCarga();
+      toast('err', (d && d.mensaje) || 'El RUNT no devolvió información.');
+      nuevoCaptcha();
+      setTimeout(() => $('inCaptcha').focus(), 300);
+      return;
+    }
+    await terminarCarga();
+    const rev = { id: placa + '-' + Date.now(), placa, tipoDocumento, documento, fecha: d.consultadoEn || new Date().toISOString(), runt: d, simit: {} };
+    // Si ya habías revisado el SIMIT de esta misma placa y cédula hace poco, se conserva.
+    const previa = historial().find(x => x.placa === placa && x.documento === documento);
+    if (previa && previa.simit && (Date.now() - new Date(previa.fecha)) < 3 * 86400000) rev.simit = previa.simit;
+    // Lo verificado en la moto (motor, chasis, departamento) se conserva; el impuesto solo si es reciente.
+    if (previa && previa.checks){
+      const c = previa.checks, reciente = (Date.now() - new Date(c.fecha || previa.fecha)) < 3 * 86400000;
+      rev.checks = { motor:c.motor, chasis:c.chasis, depto:c.depto, impuesto: reciente ? c.impuesto : null, fecha:c.fecha };
+      if (reciente && previa.impuesto) rev.impuesto = previa.impuesto;
+    }
+    guardarRev(rev);
+    $('formConsulta').reset();
+    nuevoCaptcha();
+    abrirFicha(rev, 'revisar');
+    sonarResultado(rev);
+  } catch(e){
+    ocultarCarga();
+    toast('err', e.message);
+    nuevoCaptcha();
+  } finally {
+    btn.disabled = false; btn.textContent = 'Revisar moto';
+  }
+}
+
+// ── SIMIT ──────────────────────────────────────────────────────────────────
+async function abrirSimit(modo){
+  if (!actual) return;
+  const valor = modo === 'placa' ? actual.placa : actual.documento;
+  guardar(K_PEND, { id: actual.id, modo, valor, desde: Date.now() });
+  try { await navigator.clipboard.writeText(valor); } catch(e){}
+  if (ES_APP){
+    window.open(SIMIT_URL + encodeURIComponent(valor), '_blank');
+    toast('ok', `Se abrió el SIMIT (${valor} copiado). Con los resultados en pantalla toca el Lector, vuelve aquí y toca "Pegar resultado del lector".`);
+  } else location.href = SIMIT_URL + encodeURIComponent(valor);
+}
+
+function recibirSimit(){
+  const m = location.hash.match(/^#simit=(.+)$/);
+  if (!m) return false;
+  history.replaceState(null, '', location.pathname + location.search);
+  return procesarCaptura(decodeURIComponent(m[1]));
+}
+
+// En la app: el lector copia el resultado y aquí se pega.
+async function pegarLector(){
+  let txt = '';
+  try { txt = await navigator.clipboard.readText(); } catch(e){}
+  if (!/PLACALIMPIA:/.test(txt || '')) txt = prompt('Pega aquí lo que copió el Lector PlacaLimpia (mantén presionado → Pegar):') || '';
+  const m = String(txt).match(/PLACALIMPIA:([A-Za-z0-9+\/=%]+)/);
+  if (!m) return toast('err', 'No encontré un resultado del lector. En el SIMIT toca el Lector PlacaLimpia y vuelve a intentar.');
+  procesarCaptura(decodeURIComponent(m[1]));
+}
+
+function procesarCaptura(b64){
+  let cap;
+  try { cap = JSON.parse(decodeURIComponent(escape(atob(b64)))); } catch(e){ toast('err', 'No se pudo leer lo que trajo el lector.'); return false; }
+  const pend = leer(K_PEND, null);
+  const h = historial();
+  const idVista = actual ? actual.id : leer(K_ACTUAL, null);   // la moto que estabas viendo
+  const enRevision = (pend && h.find(x => x.id === pend.id)) || (idVista && h.find(x => x.id === idVista)) || null;
+  const descRev = r => r ? `${r.placa} / ${nombreTipo(r.tipoDocumento)} ${r.documento}` : '';
+  const rechazar = msg => {
+    if (enRevision) abrirFicha(enRevision);
+    toast('err', msg + ' No se guardó nada.');
+    return true;
+  };
+  if (/vehiculosantioquia\.com\.co/i.test(String(cap.u || ''))) return procesarImpuesto(cap, enRevision, rechazar);
+
+  // 1. ¿Qué se buscó en el SIMIT? (el cuadro de búsqueda, o la dirección de la página)
+  const limpiar = v => String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  let q = limpiar(cap.q);
+  if (!q && cap.u){ const mu = String(cap.u).match(/numDocPlacaProp=([^&#]+)/i); if (mu) q = limpiar(decodeURIComponent(mu[1])); }
+  if (!q) return rechazar('No se pudo ver qué placa o cédula se buscó en el SIMIT.');
+
+  // 2. Solo se acepta si coincide EXACTO con la placa o la cédula de una revisión.
+  const coinciden = h.filter(x => x.placa === q || x.documento === q);
+  if (!coinciden.length){
+    return rechazar(`El SIMIT que leíste es de «${q}» y no coincide con ninguna moto revisada` +
+      (enRevision ? ` (la que estás revisando es ${descRev(enRevision)})` : '') + '.');
+  }
+  const rev = (enRevision && coinciden.find(x => x.id === enRevision.id)) || coinciden[0];
+  const modo = q === rev.placa ? 'placa' : 'cedula';
+  if (enRevision && rev.id !== enRevision.id){
+    return rechazar(`El SIMIT que leíste es de «${q}», pero la moto que estás revisando es ${descRev(enRevision)}. ` +
+      `Abre esa moto desde "Motos" si quieres agregarlo allá.`);
+  }
+
+  // 3. Si el SIMIT muestra registros de otra placa al buscar por placa, también se rechaza.
+  const s = analizarSimit(cap, rev);
+  s.consulta = q;
+  if (modo === 'placa' && s.placasReg && s.placasReg.length && !s.placasReg.includes(rev.placa)){
+    return rechazar(`Los resultados del SIMIT son de la placa ${s.placasReg.join(', ')}, no de ${rev.placa}. Vuelve a buscar y espera a que carguen.`);
+  }
+
+  rev.simit = rev.simit || {};
+  rev.simit[modo] = s;
+  guardarRev(rev);
+  try { localStorage.removeItem(K_PEND); } catch(e){}
+  abrirFicha(rev);
+  if (s.estado !== 'desconocido') setTimeout(() => sentir(veredicto(rev).nivel === 'ok' ? 'limpio' : s.estado === 'deudas' ? 'alerta' : 'ok'), 250);
+  toast(s.estado === 'desconocido' ? 'err' : 'ok',
+    s.estado === 'desconocido' ? 'El lector no reconoció la pantalla del SIMIT. Si viste que no hay comparendos, confírmalo en "Multas · SIMIT".'
+      : `✓ Coincide: SIMIT por ${modo === 'placa' ? 'placa' : 'cédula'} (${q}) agregado a ${rev.placa}.${modo === 'placa' && !(rev.simit || {}).cedula ? ' Sigue con el SIMIT por cédula (botón arriba).' : ''}`);
+  return true;
+}
+
+// ── Impuesto de Antioquia (leído con el lector) ────────────────────────────
+function analizarImpuestoAnt(cap){
+  const t = String((cap && cap.t) || ''), plano = t.replace(/\s+/g, ' ');
+  const r = { fuente:'Gobernación de Antioquia', texto: t.slice(0, 6000), fecha: new Date(cap && cap.f || Date.now()).toISOString() };
+  const mp = plano.match(/\bPlaca\s*:?\s*([A-Z]{3}\s?\d{2}[A-Z0-9]|[A-Z]{3}\s?\d{3})\b/i);
+  r.placa = mp ? mp[1].toUpperCase().replace(/\s/g, '') : '';
+  const ult = plano.match(/ltimo\s+pago\s+realizado\s*Vigencia\s*:?\s*(\d{4})\s*Fecha de pago\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{4})\s*Valor pagado\s*:?\s*\$\s?([\d.,]+)/i);
+  if (ult){ r.ultVigencia = ult[1]; r.ultFecha = ult[2]; r.ultValor = numPesos(ult[3]); }
+  if (/no\s+tiene[s]?\s+(pagos|deudas|saldos?|obligaciones)\s+pendientes|paz\s+y\s+salvo|se\s+encuentra\s+al\s+d[ií]a/i.test(plano)) r.estado = 'aldia';
+  else if (/(tiene[s]?|presenta|registra)\s+(pagos|deudas|saldos?|vigencias|obligaciones)\s+pendientes|en\s+mora|total\s+a\s+pagar|valor\s+a\s+pagar|saldo\s+pendiente|pendiente[s]?\s+de\s+pago/i.test(plano)){
+    r.estado = 'debe';
+    // El total a pagar (nunca el "valor pagado" del último pago).
+    const m = plano.match(/(total\s+a\s+pagar|valor\s+a\s+pagar|saldo\s+(?:pendiente|a\s+pagar)|total\s+adeudado|total\s+deuda|total)\s*:?[^$]{0,40}?\$\s?([\d.,]+)/i);
+    if (m) r.total = numPesos(m[2]);
+    r.vigencias = [...new Set([...plano.matchAll(/\b(20\d{2})\b/g)].map(x => x[1]))].filter(a => a !== r.ultVigencia).slice(0, 8);
+  } else r.estado = 'desconocido';
+  return r;
+}
+function procesarImpuesto(cap, enRevision, rechazar){
+  const r = analizarImpuestoAnt(cap);
+  if (!enRevision && r.placa) enRevision = historial().find(x => x.placa === r.placa) || null;   // la más reciente con esa placa
+  if (!enRevision) return rechazar('Esa placa no está en tus motos revisadas. Consulta primero el RUNT y luego el impuesto.');
+  if (!r.placa) return rechazar('No se vio la placa en el resultado del impuesto. Toca el lector cuando aparezca "Información del vehículo".');
+  if (r.placa !== enRevision.placa) return rechazar(`El impuesto que leíste es de la placa «${r.placa}», pero la moto que estás revisando es ${enRevision.placa}.`);
+  if (r.estado === 'desconocido') return rechazar('El lector no reconoció si la moto debe o está al día. Revísalo en la página y márcalo a mano.');
+  const rev = enRevision;
+  rev.impuesto = r;
+  rev.checks = rev.checks || {};
+  rev.checks.impuesto = r.estado;
+  rev.checks.depto = 'Antioquia';
+  rev.checks.fecha = new Date().toISOString();
+  guardarRev(rev);
+  try { localStorage.removeItem(K_PEND); } catch(e){}
+  abrirFicha(rev);
+  setTimeout(() => sentir(r.estado === 'debe' ? 'alerta' : veredicto(rev).nivel === 'ok' ? 'limpio' : 'ok'), 250);
+  toast(r.estado === 'debe' ? 'err' : 'ok', r.estado === 'debe'
+    ? `${rev.placa} debe impuesto vehicular${r.total ? ': ' + pesos(r.total) : ''}.`
+    : `✓ Coincide: impuesto de ${rev.placa} al día${r.ultVigencia ? ` (último pago vigencia ${r.ultVigencia})` : ''}.`);
+  return true;
+}
+async function abrirImpuesto(){
+  if (!actual) return;
+  const depto = deptoDe(actual, analizarRunt(actual.runt).info);
+  const url = urlImpuesto(depto);
+  guardar(K_PEND, { id: actual.id, modo:'impuesto', desde: Date.now() });
+  try { await navigator.clipboard.writeText(actual.documento); } catch(e){}
+  const aviso = `Cédula ${actual.documento} copiada · placa ${actual.placa}. Con el resultado en pantalla toca el Lector PlacaLimpia.`;
+  if (ES_APP || depto !== 'Antioquia'){ window.open(url, '_blank'); toast('ok', aviso + (ES_APP ? ' Luego vuelve y toca "Pegar resultado".' : '')); }
+  else { location.href = url; }
+}
+
+// Código del lector (favorito). Lee el texto de la página del SIMIT y lo trae aquí.
+function codigoLector(){
+  const destino = location.origin + location.pathname;
+  const js = "(function(){try{if(!/fcm\\.org\\.co|vehiculosantioquia\\.com\\.co/.test(location.hostname)){alert('Usa el lector en la página del SIMIT o del impuesto de Antioquia.');return;}" +
+    "var t=document.body.innerText||'';var q='';var ins=document.querySelectorAll('input');for(var i=0;i<ins.length;i++){var ty=(ins[i].type||'').toLowerCase();if(ins[i].value&&!/checkbox|radio|hidden|submit|button/.test(ty)){q=ins[i].value;break;}}" +
+    "var d=JSON.stringify({t:t.slice(0,12000),q:q,u:location.href,f:Date.now()});var s=btoa(unescape(encodeURIComponent(d)));var c='PLACALIMPIA:'+s;" +
+    "var ok=false;try{var a=document.createElement('textarea');a.value=c;a.setAttribute('readonly','');a.style.position='fixed';a.style.top='0';a.style.opacity='0';document.body.appendChild(a);a.focus();a.select();a.setSelectionRange(0,c.length);ok=document.execCommand('copy');document.body.removeChild(a);}catch(e){}" +
+    "try{if(navigator.clipboard){navigator.clipboard.writeText(c);ok=true;}}catch(e){}" +
+    "location.href='" + destino + "#simit='+encodeURIComponent(s);}catch(e){alert('Lector PlacaLimpia: '+e);}})();";
+  return 'javascript:' + js;
+}
+
+// ── Sesión ─────────────────────────────────────────────────────────────────
+function mostrarApp(sesion){
+  $('vLogin').classList.toggle('oculto', !!sesion);
+  $('nav').classList.toggle('oculto', !sesion);
+  if (!sesion) document.querySelectorAll('.vista').forEach(x => x.classList.add('oculto'));
+  if (sesion && sesion.user) $('txtCuenta').textContent = 'Sesión iniciada como ' + (sesion.user.email || 'usuario') + '.';
+}
+
+async function iniciar(){
+  const cod = codigoLector();
+  $('codLector').textContent = cod;
+  $('lnkLector').setAttribute('href', cod);
+  $('lnkLector').addEventListener('click', e => { e.preventDefault(); alert('Arrastra este botón a la barra de favoritos. Úsalo en la página del SIMIT.'); });
+  $('btnCopiarLector').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(cod); $('btnCopiarLector').textContent = '✓ Código copiado'; }
+    catch(e){ $('btnCopiarLector').textContent = 'Selecciona y copia el código de abajo'; }
+    setTimeout(() => { $('btnCopiarLector').textContent = 'Copiar código del lector'; }, 2500);
+  });
+  $('toastX').addEventListener('click', () => { $('toast').className = ''; });
+  // Apariencia: Automático / Claro / Oscuro
+  const temaActual = () => { try { return localStorage.getItem('pl_tema') || 'auto'; } catch(e){ return 'auto'; } };
+  const marcarTema = () => $('selTema').querySelectorAll('[data-tema]').forEach(b => b.classList.toggle('on', b.dataset.tema === temaActual()));
+  $('selTema').querySelectorAll('[data-tema]').forEach(b => b.addEventListener('click', () => {
+    const t = b.dataset.tema;
+    try { if (t === 'auto') localStorage.removeItem('pl_tema'); else localStorage.setItem('pl_tema', t); } catch(e){}
+    if (t === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t);
+    marcarTema();
+  }));
+  marcarTema();
+  // iPhone: al tocar un campo se enfoca dentro del mismo toque, para que siempre abra el teclado.
+  document.addEventListener('touchend', e => {
+    const el = e.target && e.target.closest && e.target.closest('input, select, textarea');
+    if (el && document.activeElement !== el && !el.disabled) el.focus();
+  }, { passive:true });
+  $('inPlaca').addEventListener('input', e => {
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    // Placa completa (moto ABC12D o carro ABC123): pasa sola a la cédula.
+    if (e.inputType && e.inputType.startsWith('insert') && /^[A-Z]{3}\d{2}[A-Z]$|^[A-Z]{3}\d{3}$/.test(e.target.value)){ sentir('tap'); $('inDoc').focus(); }
+  });
+  $('inDoc').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); $('inCaptcha').focus(); } });
+  // Toque sutil en botones y tarjetas
+  document.addEventListener('click', e => {
+    if (e.target.closest && e.target.closest('.nav button, .btn-volver, .moto, .reciente, .filtros button, #btnCaptcha, [data-irsec]')) sentir('tap');
+  });
+  // Sonido y vibración (Ajustes)
+  $('optSonido').checked = !!PREF.sonido; $('optVibrar').checked = !!PREF.vibrar;
+  $('optSonido').addEventListener('change', e => { PREF.sonido = e.target.checked; guardar('pl_sonido', PREF.sonido); if (PREF.sonido) sentir('ok'); });
+  $('optVibrar').addEventListener('change', e => { PREF.vibrar = e.target.checked; guardar('pl_vibrar', PREF.vibrar); if (PREF.vibrar) vibrar('exito'); });
+  $('formConsulta').addEventListener('submit', consultar);
+  $('btnCaptcha').addEventListener('click', nuevoCaptcha);
+  $('btnVolver').addEventListener('click', () => ir(vistaAntes));
+  document.querySelectorAll('[data-ir]').forEach(b => b.addEventListener('click', () => ir(b.dataset.ir)));
+  $('inBuscar').addEventListener('input', pintarMotos);
+  $('filtros').querySelectorAll('[data-f]').forEach(b => b.addEventListener('click', () => {
+    filtro = b.dataset.f;
+    $('filtros').querySelectorAll('[data-f]').forEach(x => x.classList.toggle('on', x === b));
+    pintarMotos();
+  }));
+  $('btnSalir').addEventListener('click', async () => { try { await _supa.auth.signOut(); } catch(e){} arrancado = false; mostrarApp(null); });
+  $('formLogin').addEventListener('submit', async e => {
+    e.preventDefault();
+    $('btnLogin').disabled = true;
+    const { data, error } = await _supa.auth.signInWithPassword({ email: $('lgEmail').value.trim(), password: $('lgPass').value });
+    $('btnLogin').disabled = false;
+    if (error) return aviso('avLogin', 'err', 'Correo o contraseña incorrectos.');
+    quitarAviso('avLogin');
+    arrancar(data.session);
+  });
+
+  if (!_supa){ mostrarApp(null); aviso('avLogin', 'err', 'No se pudo cargar Supabase. Revisa tu conexión.'); return; }
+  let sesion = null;
+  try { sesion = (await _supa.auth.getSession()).data.session; } catch(e){}
+  if (sesion) arrancar(sesion); else mostrarApp(null);
+}
+
+let arrancado = false;
+// Las consultas de más de 30 días se borran solas (no se guardan datos que ya no se necesitan).
+const DIAS_HISTORIAL = 30;
+function limpiarViejas(){
+  const limite = Date.now() - DIAS_HISTORIAL * 86400000;
+  const h = historial(), quedan = h.filter(x => new Date(x.fecha).getTime() >= limite);
+  if (quedan.length !== h.length) guardar(K_HIST, quedan);
+}
+
+function arrancar(sesion){
+  mostrarApp(sesion);
+  if (arrancado){ ir(vista === 'ficha' && actual ? 'ficha' : 'revisar'); return; }
+  arrancado = true;
+  limpiarViejas();
+  ir('revisar');
+  recibirSimit();
+  nuevoCaptcha();
+  // Si el lector vuelve a esta misma pestaña, la página no se recarga: solo cambia el #.
+  window.addEventListener('hashchange', recibirSimit);
+}
+
+iniciar();
+// Bienvenida breve
+setTimeout(() => { const s = $('splash'); if (s) s.classList.add('fuera'); }, location.hash.startsWith('#simit=') ? 250 : 900);
+// El primer toque habilita el sonido (requisito del iPhone)
+document.addEventListener('touchstart', () => { if (PREF.sonido) audio(); }, { once:true, passive:true });
+</script>
+</body>
+</html>

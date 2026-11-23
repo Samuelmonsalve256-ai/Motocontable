@@ -19,7 +19,12 @@ Esta guía te lleva paso a paso para configurar tu proyecto de Supabase.
 | `03_funciones.sql` | Crea funciones | Sincronización con control de versiones y tiempo real |
 | `04_migracion.sql` | Copia datos | Pasa tus datos de `mc_datos` a `mc_registros`, y antes guarda un respaldo |
 | `05_cerrar_tabla_antigua.sql` | Quita el acceso público a `mc_datos` | **Solo al final.** No borra datos |
-| `06_traspasos.sql` | Permite la colección `traspasos` | Conecta MotoContable con Traspasos Vehiculares. No borra datos |
+| `06_traspasos.sql` | Amplía la lista de colecciones permitidas | Permite guardar Traspasos de Vehículos en la nube (FASE 8). No borra datos |
+| `07_fotos.sql` | Crea el bucket privado `fotos` y sus reglas | Guarda las fotos de motos y carros como archivos en Supabase Storage (FASE 9). No toca ninguna tabla ni dato |
+| `08_respaldos.sql` | Crea el bucket privado `respaldos` y sus reglas | Respaldo semanal automático de tus datos en la nube, aparte de la sincronización (FASE 10). No toca ninguna tabla ni dato |
+| `09_aprobaciones.sql` | Crea la tabla `mc_aprobaciones` y 4 funciones | Quien paga en la financiera aprueba las cuentas cobradas desde un enlace, con su cédula (FASE 11). No toca ninguna tabla ni dato existente |
+| `10_cotizaciones.sql` | Amplía la lista de colecciones permitidas | Guarda en la nube las Cotizaciones de crédito, el catálogo de motos y los requisitos (FASE 12). No borra datos |
+| `functions/placalimpia-runt/index.ts` | No toca la base de datos | Función que consulta el RUNT para PlacaLimpia PM (FASE 13) |
 
 Ningún archivo borra la tabla `mc_datos` ni tus datos. Los archivos 01 a 05 se pueden volver a ejecutar sin problema: no duplican ni pisan nada.
 
@@ -197,6 +202,89 @@ GitHub Pages publica solo la rama `main`, y los cambios están en la rama `claud
 
 ---
 
+## FASE 8: Traspasos de Vehículos en la nube
+
+Traspasos de Vehículos queda publicado junto a MotoContable, en
+`https://samuelmonsalve256-ai.github.io/Motocontable/traspasos.html`. Usa la misma cuenta y guarda sus trámites en la nube.
+
+**Por qué se había perdido la conexión:**
+- Antes abrías MotoContable y Traspasos como archivos en Safari del Mac, y los dos compartían el almacenamiento del navegador.
+- Al pasar MotoContable a GitHub Pages quedaron en sitios distintos, y Safari no deja que un sitio lea lo que guardó otro.
+- Ahora los dos están en el mismo sitio y, además, se comunican por la nube.
+
+**Paso 1: ejecutar el SQL (una sola vez)**
+1. En Supabase abre **SQL Editor → New query**.
+2. Pega `06_traspasos.sql` y pulsa **Run**.
+3. Al final debe mostrar la regla con 9 colecciones.
+
+**Paso 2: rescatar los trámites que tenías en el Mac**
+- Tus trámites antiguos siguen guardados en Safari del Mac, en el mismo archivo que abrías antes.
+- **No borres el historial ni los datos de Safari** hasta terminar este paso.
+1. Reemplaza el archivo `traspasos_vehiculos.html` que abrías en el Mac por la versión nueva (`traspasos.html` de este repositorio). Usa el **mismo nombre y la misma carpeta** de antes.
+2. Ábrelo en Safari como siempre. Deberían aparecer tus trámites antiguos.
+3. **Antes que nada**, ve a **Respaldo y nube → Descargar respaldo** y guarda el archivo.
+4. Inicia sesión con tu cuenta de MotoContable. La app sube tus trámites a la nube y te muestra un resumen.
+5. Desde ese momento usa la dirección publicada en todos tus dispositivos. Los trámites estarán ahí.
+6. Si el archivo nuevo no muestra tus trámites, abre la versión publicada, inicia sesión y usa **Respaldo y nube → Importar respaldo** con el archivo del punto 3. Importar **suma**: nunca borra ni reemplaza.
+
+**Cómo funciona desde ahora:**
+- El botón 📋 de una venta en MotoContable envía el vehículo a la nube. Aparece en **Desde MotoContable** de Traspasos en cualquier dispositivo.
+- Al confirmar o descartar un vehículo, se actualiza en todos tus dispositivos.
+- Los trámites se guardan solos en la nube. El indicador de la cabecera muestra «Guardando…», «Guardado en la nube», «Error al guardar» o «Sin conexión».
+- Si ya iniciaste sesión en MotoContable en ese navegador, Traspasos entra solo.
+
+
+---
+
+## FASE 9: Fotos de los vehículos en la nube (Supabase Storage)
+
+Antes, cada foto se guardaba **dentro** de los datos de la moto. Eso llenaba el almacenamiento del navegador (unos 5 MB) y hacía pesada la sincronización. Ahora cada foto es un archivo en Supabase Storage, y en la moto solo queda una referencia corta.
+
+**Paso 1: ejecutar el SQL (una sola vez)**
+1. En Supabase abre **SQL Editor → New query**.
+2. Pega `07_fotos.sql` y pulsa **Run**.
+3. Al final debe mostrar el bucket `fotos` con `public = false` y 4 políticas (`mc_fotos_ver`, `mc_fotos_subir`, `mc_fotos_cambiar`, `mc_fotos_borrar`).
+4. Si quieres verlo, entra a **Storage**: aparece el bucket `fotos` marcado como privado.
+
+**Paso 2: abrir MotoContable**
+1. Recarga MotoContable (en el Mac **Cmd + Opción + R**).
+2. Al entrar, la app sube sola las fotos que ya tenías. Cada foto se reemplaza por su referencia **solo después** de que la subida termina bien: si algo falla, la foto sigue donde estaba y se reintenta.
+3. Para comprobarlo, ve a **Ajustes → Fotos de los vehículos → Ver estado**. Debe decir "N fotos en la nube · 0 solo en este dispositivo · Todo al día ✓".
+
+**Cómo funciona desde ahora:**
+- Al agregar una foto, se comprime (máx. 1280 px, buena calidad) y se sube directo a la nube. Se ve en el Mac y en el iPhone.
+- Las fotos son **privadas**: solo se ven con tu sesión iniciada, y cada usuario solo puede ver su carpeta.
+- Sin internet, la foto se guarda en el dispositivo un momento y se sube sola cuando vuelve la conexión.
+- La misma foto nunca se sube dos veces. Por ejemplo, la foto de la moto y la de su venta usan el mismo archivo.
+- Quitar o cambiar una foto **no borra el archivo** de Storage, por seguridad: se puede recuperar desde el historial.
+- Las versiones antiguas guardadas en `mc_historial` conservan la foto como estaba. No se borran.
+- El plan gratis de Supabase incluye 1 GB de Storage, suficiente para miles de fotos de ~150 KB.
+
+
+---
+
+## FASE 10: Respaldo semanal automático en la nube
+
+La sincronización copia al instante lo que haces: si borras algo por error, el borrado también se sincroniza. Por eso, además, la app guarda **una vez por semana** una copia completa de tus datos (motos, carros, ventas, cuentas por cobrar, contactos, metas, ajustes y papelera) como un archivo aparte en Supabase Storage. Las fotos no van dentro: ya están guardadas en el bucket `fotos`.
+
+**Paso 1: ejecutar el SQL (una sola vez)**
+1. En Supabase abre **SQL Editor → New query**.
+2. Abre el archivo `08_respaldos.sql`, copia **todo su contenido** (no el nombre del archivo) y pégalo en el editor. Pulsa **Run**.
+3. Al final debe mostrar el bucket `respaldos` con `public = false` y 4 políticas (`mc_respaldos_ver`, `mc_respaldos_subir`, `mc_respaldos_cambiar`, `mc_respaldos_borrar`).
+
+**Paso 2: abrir MotoContable**
+1. Recarga MotoContable (en el Mac **Cmd + Opción + R**).
+2. Al entrar con tu sesión, si no hay un respaldo de los últimos 7 días, la app lo hace sola.
+3. Para verlo, ve a **Ajustes → Respaldo semanal en la nube**.
+
+**Cómo funciona:**
+- Se guardan los **últimos 12 respaldos** (unos 3 meses). Los más viejos se borran solos.
+- **Recuperar lo borrado** compara un respaldo con lo que tienes hoy y te muestra lo que falta (por ejemplo, una moto que se borró). Solo **agrega** lo que falta: nunca cambia ni borra lo que ya tienes.
+- **Descargar** baja el archivo del respaldo a tu dispositivo.
+- Lo que está en la Papelera se restaura desde la Papelera, no desde el respaldo.
+
+---
+
 ## Consultas útiles (SQL Editor)
 
 **Ver los cambios que perdieron un conflicto o se apartaron en la migración:**
@@ -242,33 +330,105 @@ Tus dispositivos lo recibirán en la próxima sincronización.
 
 ---
 
-## Traspasos Vehiculares (`06_traspasos.sql`)
-
-La app de trámites está en `traspasos/index.html`. Guarda los trámites en la misma
-tabla `mc_registros` (colección `traspasos`), con tu misma cuenta, versiones e historial.
-
-1. **SQL Editor → pegar `06_traspasos.sql` → Run.** Al final debe aparecer una fila
-   cuya lista incluye `'traspasos'`. Solo hay que hacerlo una vez.
-2. En MotoContable, en una venta, pulsa **📋**. El vehículo, el vendedor y el comprador
-   se envían a la nube con estado *Recibido*.
-3. Abre Traspasos (`.../traspasos/`) con la misma
-   cuenta. El vehículo aparece en **Recibidos de MotoContable**; pulsa **Aceptar trámite**.
-
-Cómo se evitan errores entre las dos apps:
-- **Mismo formato de datos** (`formato: 1`): los dos lados usan los mismos campos y la
-  placa se guarda siempre en mayúsculas y sin espacios.
-- **Volver a enviar** una venta solo actualiza el vehículo y las personas: el estado del
-  trámite, el tránsito, las fechas y las notas que llenaste en Traspasos se conservan.
-- **Control de versiones**: si dos dispositivos cambian el mismo trámite a la vez, gana la
-  nube y el otro cambio queda en `mc_historial`. La app avisa y recarga.
-- **Sin conexión o sin sesión**: MotoContable lo guarda en el dispositivo y Traspasos lo
-  sube la próxima vez que se abra con sesión en ese mismo navegador.
-- **Si falta este SQL**, las dos apps lo dicen con un mensaje claro en vez de fallar.
-
----
-
 ## Si algo sale mal
 
 - **La versión anterior de la app sigue en `main`** hasta que se haga el merge.
 - **`mc_datos` y `mc_datos_respaldo_pre_migracion` conservan tus datos originales.**
 - **Los backups JSON de la FASE 0** se pueden restaurar desde la app.
+
+---
+
+## FASE 11: Aprobación de las cuentas cobradas
+
+Cuando envías en PDF una cuenta ya cobrada, el mensaje y el PDF llevan un **enlace único**. La persona que paga en la financiera lo abre en su celular, sin cuenta ni contraseña, ve el resumen de esa cuenta y la **aprueba escribiendo su cédula**, o deja una **observación** si algo no cuadra. La respuesta se guarda en Supabase y MotoContable la trae sola.
+
+**Paso 1: ejecutar el SQL (una sola vez)**
+1. En Supabase abre **SQL Editor → New query**.
+2. Abre el archivo `09_aprobaciones.sql`, copia **todo su contenido** (no el nombre del archivo) y pégalo en el editor. Pulsa **Run**.
+3. Al final debe mostrar la tabla `mc_aprobaciones` con `relrowsecurity = true` y 4 funciones: `mc_aprobacion_crear`, `mc_aprobacion_responder`, `mc_aprobacion_ver` y `mc_aprobaciones_estado`.
+
+**Paso 2: datos de quien paga**
+1. Recarga MotoContable (en el Mac **Cmd + Opción + R**).
+2. Ve a **Por cobrar** y pulsa **Configurar** (o **Cambiar datos**) en el aviso de arriba.
+3. Escribe el nombre completo, la **cédula** (con ella se verifica la aprobación) y el WhatsApp.
+
+**Cómo funciona:**
+- En una cuenta cobrada pulsa **Enviar a … (PDF)**. El enlace se crea solo y va en el mensaje y dentro del PDF.
+- La cuenta muestra **Esperando aprobación**; si pasan 3 días sin respuesta se pone en amarillo. Con **Copiar enlace** lo puedes volver a mandar.
+- Cuando ella aprueba, te llega el aviso y la cuenta queda **Aprobada por … el día a la hora**, con su cédula. Una vez respondida, el enlace ya no se puede cambiar.
+- Si deja una observación, la ves en la cuenta. Corrige lo necesario y pulsa **Reenviar PDF**: se crea un enlace nuevo y el anterior queda sin efecto.
+- **Marcar aprobada** registra la aprobación a mano (por ejemplo, si te respondió por WhatsApp), con fecha, cómo la aprobó, una nota y, si quieres, un pantallazo como prueba.
+
+**Seguridad:**
+- Cada enlace es para una sola cuenta y lleva un código aleatorio imposible de adivinar.
+- La página solo muestra el resumen de esa cuenta: nada más de tu negocio, y nunca la cédula guardada.
+- Si escriben mal la cédula 5 veces, el enlace se bloquea.
+- Solo tú, con tu sesión, puedes ver la lista de aprobaciones.
+
+---
+
+## FASE 12: Cotizaciones de crédito en la nube
+
+La página **Cotizaciones** (`cotizaciones.html`) reemplaza el Excel "COTIZACION Y REQUISITOS". Es un sistema aparte de MotoContable: no aparece en su menú y tiene su propia sesión (se entra con el mismo correo y contraseña de Supabase). Guarda en la nube las cotizaciones, el catálogo de motos, los ajustes y los requisitos, para que se vean igual en el iPhone y en el Mac.
+
+**Paso único: ejecutar el SQL**
+1. En Supabase abre **SQL Editor → New query**.
+2. Abre el archivo `10_cotizaciones.sql`, copia **todo su contenido** y pégalo en el editor. Pulsa **Run**.
+3. Al final debe mostrar la regla nueva (incluye `cotizaciones`, `cot_motos` y `cot_config`) y cuántos registros hay por colección. Si tu tabla ya tenía otras colecciones, el SQL las conserva en la regla.
+
+**Cómo entrar:**
+- Directo: `https://samuelmonsalve256-ai.github.io/Motocontable/cotizaciones.html`. En el iPhone agrégala a la pantalla de inicio (Compartir → Agregar a inicio) para tenerla como una app aparte. En el Mac, guárdala en favoritos o en el Dock (Safari → Archivo → Agregar al Dock).
+
+**Si no ejecutas el SQL**, la página funciona igual pero todo queda solo en ese dispositivo, y al iniciar sesión verás el aviso "Falta ejecutar supabase/10_cotizaciones.sql".
+
+**Fórmulas (las mismas del Excel):**
+- Total = valor del vehículo, que se escribe con todo incluido (la mayoría son de segunda mano: no se suma SOAT ni matrícula aparte).
+- Saldo a financiar = total − cuota inicial.
+- Cuota = (saldo ÷ número de cuotas + saldo × tasa mensual), redondeada hacia arriba a $1.000.
+- Valor pagaré = cuota × número de cuotas. Inicial mínima sugerida = total ÷ 3.
+- Una sola tasa para todas las cotizaciones: 2,5 % mensual (se cambia en **Ajustes**).
+
+
+---
+
+## FASE 13: PlacaLimpia PM (revisión de vehículos RUNT + SIMIT)
+
+**PlacaLimpia PM** (`placalimpia.html`) es un sistema aparte de MotoContable, solo para ti. Pones **placa + tipo y número de documento del propietario + el captcha del RUNT**, y te muestra en una sola tarjeta:
+- SOAT y tecnomecánica (vigente / vencido, con fecha).
+- Embargos y limitaciones a la propiedad, prendas y garantías mobiliarias.
+- Comparendos del SIMIT por placa y por cédula.
+- El veredicto: **se puede o no se puede hacer el traspaso**, y por qué.
+
+Debajo queda el **detalle completo** tal como lo entrega el RUNT, y el texto leído del SIMIT. Se entra con el mismo correo y contraseña de MotoContable.
+
+**Reglas que aplica:**
+- Comparendo **a la placa** → *se puede hacer el trámite* (aviso amarillo).
+- Comparendo **a la cédula** → *no se puede hacer el trámite*.
+- Embargo / limitación o prenda vigente → *no se puede*.
+- SOAT o tecnomecánica vencidos → *se puede, pero hay que renovarlos antes*.
+- Moto con menos de 2 años de matriculada y sin tecnomecánica → no la necesita todavía.
+
+### Paso 1: instalar la función del RUNT (una sola vez)
+El RUNT no deja que una página de otro sitio lo consulte desde el navegador, así que la consulta pasa por una función de tu Supabase.
+
+1. En Supabase abre **Edge Functions** (menú izquierdo).
+2. Pulsa **Deploy a new function → Via Editor** (o "Create a new function").
+3. Nombre de la función: **`placalimpia-runt`** (exactamente así).
+4. Borra el código de ejemplo, abre el archivo `supabase/functions/placalimpia-runt/index.ts` de este repositorio, copia **todo** y pégalo.
+5. Pulsa **Deploy**.
+6. Deja activada la opción **Verify JWT** (viene así por defecto). La función además comprueba que tengas sesión iniciada, así que nadie más puede usarla.
+
+Si al abrir PlacaLimpia ves "Falta instalar la función placalimpia-runt", es que falta este paso o el nombre quedó distinto.
+
+### Paso 2: instalar el lector del SIMIT (una sola vez por dispositivo)
+El SIMIT bloquea las consultas que no vienen de un navegador, por eso se consulta desde tu celular y el **lector** (un favorito) trae lo que salió en pantalla. En PlacaLimpia, abajo, abre **Instalar el lector del SIMIT** y sigue los pasos (en el iPhone: copiar el código, crear un marcador y pegar el código como dirección).
+
+### Cómo se usa
+1. Abre `https://samuelmonsalve256-ai.github.io/Motocontable/placalimpia.html` (en el iPhone: Compartir → Agregar a inicio, para tenerla como app).
+2. Escribe placa, tipo y número de documento, el captcha, y toca **Revisar vehículo**.
+3. Toca **SIMIT por placa**: se abre el SIMIT con la placa (y queda copiada por si hay que pegarla). Cuando salgan los resultados, toca el favorito **Lector PlacaLimpia** y vuelves con todo junto.
+4. Haz lo mismo con **SIMIT por cédula**.
+
+**Privacidad:** el historial de revisiones queda solo en ese dispositivo. La función no guarda nada. Consulta datos de personas solo con su autorización (Ley 1581 de 2012, habeas data).
+
+**Si algo deja de funcionar:** el RUNT y el SIMIT pueden cambiar sus páginas sin avisar. Si una sección sale como "no se pudo consultar", o el lector no encuentra resultados, revisa directamente en la página oficial y avisa para ajustar el sistema.
